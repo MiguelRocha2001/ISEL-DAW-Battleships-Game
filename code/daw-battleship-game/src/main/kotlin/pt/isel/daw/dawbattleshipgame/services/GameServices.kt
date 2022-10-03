@@ -11,8 +11,7 @@ import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
 @Component
 class GameServices(private val data: GameData) {
     private fun startGame() {
-        val gameConfiguration = gameConfigData.configuration
-        data.startNewGame(gameConfiguration)
+
     }
 
     private fun placeShip(ship: ShipType, position: Coordinate, orientation: Orientation) {

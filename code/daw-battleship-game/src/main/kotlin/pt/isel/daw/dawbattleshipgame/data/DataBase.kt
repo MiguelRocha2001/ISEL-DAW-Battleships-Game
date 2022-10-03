@@ -13,7 +13,7 @@ class DataBase {
 
     internal fun saveGame(game: Game) {
         saveState(game.state)
-        saveBoard(game.board)
+        saveBoard(game.myBoard)
     }
 
     private fun saveState(state: State) {
