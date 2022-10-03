@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.data
 
 import pt.isel.daw.dawbattleshipgame.model.Board
 import pt.isel.daw.dawbattleshipgame.model.Configuration
+import pt.isel.daw.dawbattleshipgame.model.Player
 import pt.isel.daw.dawbattleshipgame.model.game.Game
 import pt.isel.daw.dawbattleshipgame.model.game.State
 
@@ -11,7 +12,7 @@ class DataBase {
         // TODO: Create connection
     }
 
-    internal fun saveGame(game: Game) {
+    internal fun saveGame(player: String, game: Game) {
         saveState(game.state)
         saveBoard(game.myBoard)
     }
@@ -37,6 +38,10 @@ class DataBase {
     }
 
     fun saveConfiguration(configuration: Configuration) {
+        TODO("Not yet implemented")
+    }
+
+    fun getCurrentPlayer(): Player {
         TODO("Not yet implemented")
     }
 }

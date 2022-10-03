@@ -1,44 +1,66 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
-import pt.isel.daw.dawbattleshipgame.data.GameData
-import pt.isel.daw.dawbattleshipgame.model.Board
-import pt.isel.daw.dawbattleshipgame.model.Coordinate
-import pt.isel.daw.dawbattleshipgame.model.Orientation
+import pt.isel.daw.dawbattleshipgame.data.DataBase
+import pt.isel.daw.dawbattleshipgame.model.*
+import pt.isel.daw.dawbattleshipgame.model.game.Game
 import pt.isel.daw.dawbattleshipgame.model.game.State
 import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
 
 @Component
-class GameServices(private val data: GameData) {
-    private fun startGame() {
-
+class GameServices(private val dataBase: DataBase) {
+    private fun startGame(token: String, configuration: Configuration) {
+        val player = tokenToPlayer(token)
+        val gameResult = Game.newGame(configuration)
+        saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
-    private fun placeShip(ship: ShipType, position: Coordinate, orientation: Orientation) {
-        data.placeShip(ship, position, orientation)
+    private fun placeShip(token: String, ship: ShipType, position: Coordinate, orientation: Orientation) {
+        val player = tokenToPlayer(token)
+        val game = dataBase.getGame()
+        val gameResult = game?.tryPlaceShip(ship, position, orientation)
+        saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
-    private fun confirmFleet() {
-        data.confirmFleet()
+    private fun confirmFleet(token: String) {
+        val player = tokenToPlayer(token)
+        val game = dataBase.getGame()
+        val opponentFleet = dataBase.getOpponentBoard()
+        val gameResult = game?.confirmFleet(opponentFleet)
+        saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
-    private fun placeShot(c: Coordinate) {
-        data.placeShot(c)
+    private fun placeShot(token: String, c: Coordinate) {
+        val player = dataBase.getCurrentPlayer()
+        val game = dataBase.getGame()
+        val gameResult = game?.tryPlaceShot(c)
+        saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
-    private fun getMyFleetLayout(): Board? {
-        return data.myBoard
+    private fun getMyFleetLayout(token: String?): Board? {
+        TODO("Not yet implemented")
     }
 
-    private fun getEnemyFleetLayout(): Board? {
-        return data.opponentBoard
+    private fun getEnemyFleetLayout(token: String?): Board? {
+        TODO("Not yet implemented")
     }
 
-    private fun getGameState(): State? {
-        return data.getGameState()
+    private fun getGameState(token: String?): State? {
+        TODO("Not yet implemented")
     }
 
-    private fun rotateShip(position: Coordinate) {
-        data.rotateShip(position)
+    private fun rotateShip(token: String, position: Coordinate) {
+        val player = dataBase.getCurrentPlayer()
+        val game = dataBase.getGame()
+        val gameResult = game?.tryRotateShip(position)
+        saveAndUpdateGameIfNecessary(token, gameResult)
+    }
+
+    private fun saveAndUpdateGameIfNecessary(token: String, game: Game?) {
+        if (game != null) dataBase.saveGame(token, game)
+    }
+
+    private fun tokenToPlayer(token: String?): Player {
+        TODO("Not yet implemented")
     }
 }

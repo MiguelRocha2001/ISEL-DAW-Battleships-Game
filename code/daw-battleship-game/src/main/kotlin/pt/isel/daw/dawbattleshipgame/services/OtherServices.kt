@@ -1,8 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.services
 
+import org.springframework.stereotype.Component
+import pt.isel.daw.dawbattleshipgame.data.DataBase
 
-import pt.isel.daw.dawbattleshipgame.data.UserData
 
-class OtherServices(private val data: UserData) {
+@Component
+class OtherServices(private val dataBase: DataBase) {
 
 }
