@@ -1,12 +1,13 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 
-import pt.isel.daw.dawbattleshipgame.data.GameConfigData
-import pt.isel.daw.dawbattleshipgame.data.UserData
+import org.springframework.stereotype.Component
+import pt.isel.daw.dawbattleshipgame.data.DataBase
 import pt.isel.daw.dawbattleshipgame.model.Configuration
 
-class GameConfigurationServices(private val data: GameConfigData) {
+@Component
+class GameConfigurationServices(private val dataBase: DataBase) {
     fun setConfiguration(configuration: Configuration) {
-        data.setConfiguration(configuration)
+        dataBase.saveConfiguration(configuration)
     }
 }

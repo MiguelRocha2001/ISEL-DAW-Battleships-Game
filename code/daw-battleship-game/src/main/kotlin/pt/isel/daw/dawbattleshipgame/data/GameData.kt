@@ -6,10 +6,10 @@ import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
 
 class GameData {
     val myBoard: Board?
-        get() = dataBase.getGame()?.board
+        get() = dataBase.getGame()?.myBoard
 
     val opponentBoard: Board?
-        get() = dataBase.getGame()?.board // TODO change to opponent board
+        get() = dataBase.getGame()?.myBoard // TODO change to opponent board
 
     private val dataBase = DataBase()
 

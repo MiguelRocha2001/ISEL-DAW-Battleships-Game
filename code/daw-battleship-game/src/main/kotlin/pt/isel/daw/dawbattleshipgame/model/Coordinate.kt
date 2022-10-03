@@ -72,16 +72,15 @@ class Coordinates(private val dim: Int) {
      * amd '[]' the adjacent coordinates
      */
     fun radius(c: Coordinate): List<Coordinate> {
-        val up = up(c)
-        val down = down(c)
         val left = left(c)
         val right = right(c)
-        val listToReturn = mutableListOf(up, down, left, right)
-        if (up != null && left != null) listToReturn.add(up(left)) // up left
-        if (up != null && right != null) listToReturn.add(up(right)) // up right
-        if (down != null && left != null) listToReturn.add(down(left)) // down left
-        if (down != null && right != null) listToReturn.add(down(right)) // down right
-        return listToReturn.filterNotNull()
+        return listOfNotNull(
+            up(c), down(c), left, right,
+            right?.let { up(it) },
+            left?.let { up(it) },
+            right?.let { down(it) },
+            left?.let { down(it) },
+        )
     }
 
     fun getDimension() = dim

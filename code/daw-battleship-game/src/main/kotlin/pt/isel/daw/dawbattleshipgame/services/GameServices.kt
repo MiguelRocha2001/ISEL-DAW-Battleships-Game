@@ -1,6 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.services
 
-import pt.isel.daw.dawbattleshipgame.data.GameConfigData
+import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.data.GameData
 import pt.isel.daw.dawbattleshipgame.model.Board
 import pt.isel.daw.dawbattleshipgame.model.Coordinate
@@ -8,8 +8,8 @@ import pt.isel.daw.dawbattleshipgame.model.Orientation
 import pt.isel.daw.dawbattleshipgame.model.game.State
 import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
 
-class GameServices(private val data: GameData, private val gameConfigData: GameConfigData) {
-
+@Component
+class GameServices(private val data: GameData) {
     private fun startGame() {
         val gameConfiguration = gameConfigData.configuration
         data.startNewGame(gameConfiguration)

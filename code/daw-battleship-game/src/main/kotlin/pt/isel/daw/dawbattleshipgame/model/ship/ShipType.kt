@@ -15,12 +15,14 @@ enum class ShipType(val length: Int) {
 fun ShipType.generateShip(
     coordinateSet: CoordinateSet,
     orientation: Orientation = Orientation.HORIZONTAL,
+    length: Int? = null,
 ) : Ship{
+    val l = length ?: this.length
     return when(this){
-        ShipType.CARRIER -> Carrier(orientation, coordinateSet)
-        ShipType.BATTLESHIP -> Battleship(orientation, coordinateSet)
-        ShipType.CRUISER -> Cruiser(orientation, coordinateSet)
-        ShipType.SUBMARINE -> Submarine(orientation, coordinateSet)
-        ShipType.DESTROYER -> Destroyer(orientation, coordinateSet)
+        ShipType.CARRIER -> Carrier(orientation, coordinateSet, l)
+        ShipType.BATTLESHIP -> Battleship(orientation, coordinateSet, l)
+        ShipType.CRUISER -> Cruiser(orientation, coordinateSet, l)
+        ShipType.SUBMARINE -> Submarine(orientation, coordinateSet, l)
+        ShipType.DESTROYER -> Destroyer(orientation, coordinateSet, l)
     }
 }

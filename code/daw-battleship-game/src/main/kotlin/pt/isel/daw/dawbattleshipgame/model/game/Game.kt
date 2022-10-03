@@ -6,6 +6,7 @@ import pt.isel.daw.dawbattleshipgame.model.game.game_state.End
 import pt.isel.daw.dawbattleshipgame.model.game.game_state.GameState
 import pt.isel.daw.dawbattleshipgame.model.game.game_state.Warmup
 import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.model.ship.generateShip
 
 enum class State { WARMUP, BATTLE, END }
 
@@ -18,14 +19,11 @@ enum class State { WARMUP, BATTLE, END }
  * Through this class, depending on the calls, the state can change, and, so, the same calls can become invalid.
  * For example, after confirming the fleet, the state has changed to battle, and, it is not possible to place a new ship.
  */
-class Game private constructor(private val gameState: GameState) {
-    val configuration: Configuration
-        get() = gameState.configuration
-    val boardCoordinates = board.coordinates
+class Game {
+    private val gameState: GameState
     val state: State
         get() = getGameState()
-    val board: Board
-        get() = gameState.myBoard
+    val myBoard: Board
     val opponentBoard: Board?
         get() = getOpponentBoardInternal()
 
@@ -33,9 +31,12 @@ class Game private constructor(private val gameState: GameState) {
         fun newGame(configuration: Configuration) = Game(Warmup(configuration))
     }
 
-    override fun toString() = gameState.toString()
+    private constructor(newGameState: GameState) {
+        gameState = newGameState
+        myBoard = newGameState.myBoard
+    }
 
-    operator fun get(coordinate: Coordinate) = board[coordinate]
+    override fun toString() = gameState.toString()
 
     private fun getGameState(): State {
         return when(gameState) {
@@ -130,7 +131,4 @@ class Game private constructor(private val gameState: GameState) {
             Game(gameResult)
         } else null
     }
-
-    fun isShip(position: Coordinate) =
-        gameState.myBoard.isShipPanel(position)
 }
