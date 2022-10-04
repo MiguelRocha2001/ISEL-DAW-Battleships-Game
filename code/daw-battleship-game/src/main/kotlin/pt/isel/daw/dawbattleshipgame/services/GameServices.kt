@@ -22,6 +22,13 @@ class GameServices(private val dataBase: DataBase) {
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
+    private fun rotateShip(token: String, position: Coordinate) {
+        val player = dataBase.getCurrentPlayer()
+        val game = dataBase.getGame()
+        val gameResult = game?.tryRotateShip(position)
+        saveAndUpdateGameIfNecessary(token, gameResult)
+    }
+
     private fun confirmFleet(token: String) {
         val player = tokenToPlayer(token)
         val game = dataBase.getGame()
@@ -47,13 +54,6 @@ class GameServices(private val dataBase: DataBase) {
 
     private fun getGameState(token: String?): State? {
         TODO("Not yet implemented")
-    }
-
-    private fun rotateShip(token: String, position: Coordinate) {
-        val player = dataBase.getCurrentPlayer()
-        val game = dataBase.getGame()
-        val gameResult = game?.tryRotateShip(position)
-        saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
     private fun saveAndUpdateGameIfNecessary(token: String, game: Game?) {

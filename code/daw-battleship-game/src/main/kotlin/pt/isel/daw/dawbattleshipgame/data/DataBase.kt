@@ -17,6 +17,10 @@ class DataBase {
         saveBoard(game.myBoard)
     }
 
+    fun getGame(): Game? {
+        TODO("Not yet implemented")
+    }
+
     private fun saveState(state: State) {
         TODO("Not yet implemented")
     }
@@ -33,15 +37,15 @@ class DataBase {
         TODO("Not yet implemented")
     }
 
-    fun getGame(): Game? {
-        TODO("Not yet implemented")
-    }
-
     fun saveConfiguration(configuration: Configuration) {
         TODO("Not yet implemented")
     }
 
     fun getCurrentPlayer(): Player {
+        TODO("Not yet implemented")
+    }
+
+    fun login(username: String, password: String): Boolean {
         TODO("Not yet implemented")
     }
 }
