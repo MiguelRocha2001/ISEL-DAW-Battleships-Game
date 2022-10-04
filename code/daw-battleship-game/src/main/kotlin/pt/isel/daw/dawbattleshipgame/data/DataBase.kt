@@ -7,7 +7,6 @@ import pt.isel.daw.dawbattleshipgame.model.game.Game
 import pt.isel.daw.dawbattleshipgame.model.game.State
 
 class DataBase {
-
     init {
         // TODO: Create connection
     }
