@@ -141,4 +141,25 @@ class Game {
     fun isShip(it: Coordinate): Boolean {
         return gameState.myBoard.isShipPanel(it)
     }
+
+    fun generateShips() : Game? {
+        var game = this
+        var auxGame : Game? = this
+        if(game.gameState is Warmup) {
+            ShipType.values().forEach {
+                do{
+                    auxGame = game.tryPlaceShip(
+                        it,
+                        Coordinates(game.gameState.configuration.boardSize).random(),
+                        Orientation.random(),
+                    )
+                }while(auxGame == null)
+                game = auxGame!!
+                auxGame = null
+            }
+            return game
+        }
+        return null
+    }
+
 }

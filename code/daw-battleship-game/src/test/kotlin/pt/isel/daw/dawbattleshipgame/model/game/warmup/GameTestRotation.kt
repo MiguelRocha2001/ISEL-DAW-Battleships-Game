@@ -1,9 +1,9 @@
-package pt.isel.daw.dawbattleshipgame.game.warmup
+package pt.isel.daw.dawbattleshipgame.model.game.warmup
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import pt.isel.daw.dawbattleshipgame.game.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.model.game.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.model.Orientation
 import pt.isel.daw.dawbattleshipgame.model.game.Game
 import pt.isel.daw.dawbattleshipgame.model.ship.ShipType

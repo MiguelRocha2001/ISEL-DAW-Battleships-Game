@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.game.warmup
+package pt.isel.daw.dawbattleshipgame.model.game.warmup
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

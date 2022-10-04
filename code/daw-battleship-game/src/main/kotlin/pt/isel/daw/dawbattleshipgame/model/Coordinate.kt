@@ -43,6 +43,11 @@ class Coordinates(private val dim: Int) {
 
     private fun Int.isGameDim() = this == dim
 
+    fun random() = Coordinate(
+        (1..dim).random(),
+        (1..dim).random(),
+    )
+
     /**
      * Generates all possible/valid coordinates.
      */

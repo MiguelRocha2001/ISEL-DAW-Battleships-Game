@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.game.coordinate
+package pt.isel.daw.dawbattleshipgame.model.game.coordinate
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*

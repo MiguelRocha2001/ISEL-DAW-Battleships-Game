@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.game.utils
+package pt.isel.daw.dawbattleshipgame.model.game.utils
 
 import pt.isel.daw.dawbattleshipgame.model.Configuration
 import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
