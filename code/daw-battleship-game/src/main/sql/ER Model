@@ -1,0 +1,41 @@
+USER(id, pass_hash)
+pk: id
+
+PLAYER(user, number)
+pk: user
+FK: user references USER(id)
+
+GAME(id, state)
+pk: id
+FK: state references STATE(name)
+
+STATE(name)
+pk: name
+
+CONFIG(game, board_size, n_shots, timeout)
+pk: game
+FK: game references GAME(id)
+
+BOARD(game, is_player_1)
+pk: game
+fk: game references GAME(id)
+
+PANEL(game, type, hit)
+pk: game
+fk: game references GAME(id)
+
+SHIPS(game, is_player_1)
+pk: game
+fk: game references GAME(id)
+
+SHIP_TYPE(name)
+pk: name
+
+SHIP(ships, type, orientation)
+pk: ships
+fk: ships references SHIPS(game)
+
+COORDINATE(row, column, ship, ship_type)
+pk: row, column
+fk: ship references SHIP(ships)
+fk: ship_type references SHIP(type)
