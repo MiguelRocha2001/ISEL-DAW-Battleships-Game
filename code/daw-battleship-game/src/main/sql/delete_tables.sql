@@ -1,2 +1,10 @@
-drop table SQUARE;
+drop table COORDINATE;
+drop table SHIP;
+drop table SHIPS;
+drop table SHIP_TYPE;
+drop table PANEL;
 drop table BOARD;
+drop table CONFIG;
+drop table GAME;
+drop table PLAYER;
+drop table _USER;

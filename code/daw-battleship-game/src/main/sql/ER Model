@@ -1,4 +1,4 @@
-USER(id, pass_hash)
+USER(id, username, passwordValidation)
 pk: id
 
 PLAYER(user, number)

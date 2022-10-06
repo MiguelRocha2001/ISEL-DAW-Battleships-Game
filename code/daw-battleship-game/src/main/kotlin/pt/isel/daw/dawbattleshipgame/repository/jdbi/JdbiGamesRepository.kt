@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.data
+package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Jdbi
 import org.springframework.boot.jdbc.DataSourceBuilder
@@ -6,10 +6,9 @@ import pt.isel.daw.dawbattleshipgame.domain.Board
 import pt.isel.daw.dawbattleshipgame.domain.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.Player
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.State
 
 
-class DataBase {
+class JdbiGamesRepository {
     private val jdbi: Jdbi
 
     init {
@@ -23,20 +22,11 @@ class DataBase {
         // TODO
     }
 
-    internal fun saveGame(player: String, game: Game) {
-        saveState(game.state)
-        saveBoard(game.myBoard)
+    internal fun saveGame(game: Game) {
+        jdbi
     }
 
     fun getGame(): Game? {
-        TODO("Not yet implemented")
-    }
-
-    private fun saveState(state: State) {
-        TODO("Not yet implemented")
-    }
-
-    private fun saveBoard(board: Board) {
         TODO("Not yet implemented")
     }
 

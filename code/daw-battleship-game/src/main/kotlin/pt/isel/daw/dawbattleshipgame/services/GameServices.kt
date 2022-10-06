@@ -1,14 +1,14 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
-import pt.isel.daw.dawbattleshipgame.data.DataBase
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiGamesRepository
 import pt.isel.daw.dawbattleshipgame.domain.*
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.State
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 @Component
-class GameServices(private val dataBase: DataBase) {
+class GameServices(private val jdbiGamesRepository: JdbiGamesRepository) {
     private fun startGame(token: String, configuration: Configuration) {
         val player = tokenToPlayer(token)
         val gameResult = Game.newGame(configuration, player)
@@ -17,29 +17,29 @@ class GameServices(private val dataBase: DataBase) {
 
     private fun placeShip(token: String, ship: ShipType, position: Coordinate, orientation: Orientation) {
         val player = tokenToPlayer(token)
-        val game = dataBase.getGame()
+        val game = jdbiGamesRepository.getGame()
         val gameResult = game?.tryPlaceShip(ship, position, orientation)
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
     private fun rotateShip(token: String, position: Coordinate) {
-        val player = dataBase.getCurrentPlayer()
-        val game = dataBase.getGame()
+        val player = jdbiGamesRepository.getCurrentPlayer()
+        val game = jdbiGamesRepository.getGame()
         val gameResult = game?.tryRotateShip(position)
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
     private fun confirmFleet(token: String) {
         val player = tokenToPlayer(token)
-        val game = dataBase.getGame()
-        val opponentFleet = dataBase.getOpponentBoard()
+        val game = jdbiGamesRepository.getGame()
+        val opponentFleet = jdbiGamesRepository.getOpponentBoard()
         val gameResult = game?.confirmFleet(opponentFleet)
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
 
     private fun placeShot(token: String, c: Coordinate) {
-        val player = dataBase.getCurrentPlayer()
-        val game = dataBase.getGame()
+        val player = jdbiGamesRepository.getCurrentPlayer()
+        val game = jdbiGamesRepository.getGame()
         val gameResult = game?.tryPlaceShot(c)
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
@@ -57,7 +57,7 @@ class GameServices(private val dataBase: DataBase) {
     }
 
     private fun saveAndUpdateGameIfNecessary(token: String, game: Game?) {
-        if (game != null) dataBase.saveGame(token, game)
+        if (game != null) jdbiGamesRepository.saveGame(game)
     }
 
     private fun tokenToPlayer(token: String?): Player {

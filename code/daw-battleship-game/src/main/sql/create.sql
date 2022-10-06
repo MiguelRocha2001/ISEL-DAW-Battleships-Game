@@ -1,6 +1,7 @@
 create table _USER(
-    id int primary key ,
-    pass_hash varchar(32)
+    id int primary key,
+    username varchar(20) not null,
+    passwordValidation varchar(32)
 );
 
 create table PLAYER(
