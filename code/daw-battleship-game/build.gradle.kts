@@ -20,6 +20,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+	// for JDBI
+	implementation("org.jdbi:jdbi3-core:3.32.0")
+	implementation("org.jdbi:jdbi3-kotlin:3.32.0")
+	implementation("org.postgresql:postgresql:42.5.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

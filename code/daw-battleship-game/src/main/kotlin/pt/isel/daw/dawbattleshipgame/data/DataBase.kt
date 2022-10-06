@@ -1,14 +1,26 @@
 package pt.isel.daw.dawbattleshipgame.data
 
-import pt.isel.daw.dawbattleshipgame.model.Board
-import pt.isel.daw.dawbattleshipgame.model.Configuration
-import pt.isel.daw.dawbattleshipgame.model.Player
-import pt.isel.daw.dawbattleshipgame.model.game.Game
-import pt.isel.daw.dawbattleshipgame.model.game.State
+import org.jdbi.v3.core.Jdbi
+import org.springframework.boot.jdbc.DataSourceBuilder
+import pt.isel.daw.dawbattleshipgame.domain.Board
+import pt.isel.daw.dawbattleshipgame.domain.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.Player
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.State
+
 
 class DataBase {
+    private val jdbi: Jdbi
+
     init {
-        // TODO: Create connection
+        val dbPassword = System.getenv("DB_POSTGRES_PASSWORD")
+        val dataSource = DataSourceBuilder.create()
+            .url("jdbc:postgresql://localhost:5432/postgres")
+            .username("postgres")
+            .password(dbPassword)
+            .build()
+        jdbi = Jdbi.create(dataSource)
+        // TODO
     }
 
     internal fun saveGame(player: String, game: Game) {

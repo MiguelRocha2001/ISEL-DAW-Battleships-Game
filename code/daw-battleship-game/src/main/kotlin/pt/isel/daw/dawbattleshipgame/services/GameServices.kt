@@ -2,16 +2,16 @@ package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.data.DataBase
-import pt.isel.daw.dawbattleshipgame.model.*
-import pt.isel.daw.dawbattleshipgame.model.game.Game
-import pt.isel.daw.dawbattleshipgame.model.game.State
-import pt.isel.daw.dawbattleshipgame.model.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.*
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.State
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 @Component
 class GameServices(private val dataBase: DataBase) {
     private fun startGame(token: String, configuration: Configuration) {
         val player = tokenToPlayer(token)
-        val gameResult = Game.newGame(configuration)
+        val gameResult = Game.newGame(configuration, player)
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
 

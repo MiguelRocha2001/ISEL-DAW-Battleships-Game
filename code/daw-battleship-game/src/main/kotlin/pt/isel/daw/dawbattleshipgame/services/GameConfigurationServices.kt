@@ -3,7 +3,7 @@ package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.data.DataBase
-import pt.isel.daw.dawbattleshipgame.model.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.Configuration
 
 @Component
 class GameConfigurationServices(private val dataBase: DataBase) {
