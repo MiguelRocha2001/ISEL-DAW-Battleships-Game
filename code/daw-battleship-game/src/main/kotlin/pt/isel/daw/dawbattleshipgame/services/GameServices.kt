@@ -37,7 +37,7 @@ class GameServices(private val jdbiGamesRepository: JdbiGamesRepository) {
         val player = tokenToPlayer(token)
         val game = jdbiGamesRepository.getGame()
         val opponentFleet = jdbiGamesRepository.getOpponentBoard()
-        val gameResult = game?.confirmFleet(opponentFleet)
+        val gameResult = game?.tryConfirmFleet()
         saveAndUpdateGameIfNecessary(token, gameResult)
     }
 

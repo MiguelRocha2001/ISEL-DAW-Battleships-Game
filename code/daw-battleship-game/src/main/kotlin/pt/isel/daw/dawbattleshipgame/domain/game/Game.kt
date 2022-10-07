@@ -4,15 +4,12 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.Battle
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.End
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.GameState
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.Warmup
+import pt.isel.daw.dawbattleshipgame.domain.game.game_state.*
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
-enum class State { WARMUP, BATTLE, END }
+enum class State { WARMUP, WAITING, BATTLE, END }
 
 /**
  * Represents the main Battleship game model.
@@ -54,6 +51,7 @@ class Game {
         return when(gameState) {
             is Warmup -> State.WARMUP
             is Battle -> State.BATTLE
+            is Waiting -> State.WAITING
             is End -> State.END
         }
     }
@@ -112,7 +110,7 @@ class Game {
 
     fun tryPlaceShot(c: Coordinate): Game? {
         if (gameState is Battle) {
-            val newGameResult = gameState.tryPlaceShot(c, player) ?: return null
+            val newGameResult = gameState.tryPlaceShot(c) ?: return null
             return Game(newGameResult, player)
         } else return null
     }
@@ -122,10 +120,9 @@ class Game {
      * This function will result in a new Game object, with the state changed to BATTLE.
      * From this point, it is not possible to place/move/rotate new ships.
      */
-    fun confirmFleet(opponentBoard: Board): Game? {
+    fun tryConfirmFleet(): Game? {
         return if (gameState is Warmup) {
-            val configuration = gameState.configuration
-            Game(Battle(configuration, gameState.myBoard, opponentBoard), player)
+            Game(Waiting(gameState.configuration, gameState.myBoard), player)
         } else null
     }
 

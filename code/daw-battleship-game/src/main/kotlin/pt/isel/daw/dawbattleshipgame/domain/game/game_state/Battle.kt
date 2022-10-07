@@ -8,14 +8,14 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
 
 class Battle: GameState {
     override val configuration: Configuration
-    private val curPlayer: Player
+    /** The player that is playing this turn */
+    private val isMyTurn: Boolean
     override val myBoard: Board
-
     internal val opponentBoard: Board
 
-    constructor(configuration: Configuration, myBoard: Board, opponentBoard: Board) {
+    constructor(configuration: Configuration, myBoard: Board, opponentBoard: Board, isMyTurn: Boolean) {
         this.configuration = configuration
-        curPlayer = Player.Player1
+        this.isMyTurn = isMyTurn
         this.myBoard = myBoard
         this.opponentBoard = opponentBoard
     }
@@ -25,7 +25,7 @@ class Battle: GameState {
      */
     private constructor(old: Battle, shot: Coordinate) {
         configuration = old.configuration
-        curPlayer = old.curPlayer.other()
+        isMyTurn = !old.isMyTurn
         myBoard = old.myBoard
         opponentBoard = old.opponentBoard.hitPanel(shot) ?: throw Exception("Invalid shot")
     }
@@ -34,8 +34,8 @@ class Battle: GameState {
      * Builds a new Game object, with place shot on [shot], in opponent board.
      * If this shot sinks all enemy fleet, the game is over. In this case, End object is returned.
      */
-    fun tryPlaceShot(shot: Coordinate, player: Player): GameState? {
-        if (player != curPlayer) return null
+    fun tryPlaceShot(shot: Coordinate): GameState? {
+        if (!isMyTurn) return null
         return try {
             val gameResult = Battle(this, shot)
             if (gameResult.opponentBoard.isGameOver()) {
