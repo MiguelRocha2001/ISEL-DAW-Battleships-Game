@@ -125,7 +125,7 @@ class Game {
     fun confirmFleet(opponentBoard: Board): Game? {
         return if (gameState is Warmup) {
             val configuration = gameState.configuration
-            Game(Battle(configuration, gameState.myBoard, gameState.playerShips, opponentBoard), player)
+            Game(Battle(configuration, gameState.myBoard, opponentBoard), player)
         } else null
     }
 

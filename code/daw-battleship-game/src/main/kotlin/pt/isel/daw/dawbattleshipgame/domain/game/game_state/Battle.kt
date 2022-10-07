@@ -10,15 +10,13 @@ class Battle: GameState {
     override val configuration: Configuration
     private val curPlayer: Player
     override val myBoard: Board
-    override val playerShips : ShipSet
 
     internal val opponentBoard: Board
 
-    constructor(configuration: Configuration, myBoard: Board, playerShips: ShipSet, opponentBoard: Board) {
+    constructor(configuration: Configuration, myBoard: Board, opponentBoard: Board) {
         this.configuration = configuration
         curPlayer = Player.Player1
         this.myBoard = myBoard
-        this.playerShips = playerShips
         this.opponentBoard = opponentBoard
     }
 
@@ -30,7 +28,6 @@ class Battle: GameState {
         curPlayer = old.curPlayer.other()
         myBoard = old.myBoard
         opponentBoard = old.opponentBoard.hitPanel(shot) ?: throw Exception("Invalid shot")
-        playerShips = old.playerShips
     }
 
     /**
@@ -42,7 +39,7 @@ class Battle: GameState {
         return try {
             val gameResult = Battle(this, shot)
             if (gameResult.opponentBoard.isGameOver()) {
-                End(configuration, myBoard, opponentBoard, playerShips)
+                End(configuration, myBoard, opponentBoard)
             } else {
                 gameResult
             }

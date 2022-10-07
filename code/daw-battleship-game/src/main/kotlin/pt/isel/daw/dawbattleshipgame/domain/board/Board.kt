@@ -1,6 +1,8 @@
 package pt.isel.daw.dawbattleshipgame.domain.board
 
-import pt.isel.daw.dawbattleshipgame.domain.*
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.ship.types.*
 
 class Board {
     private val board: List<Panel>
@@ -32,24 +34,37 @@ class Board {
     }
 
     /**
-     * Creates a new Board, adding [panelType] (non hit) to given [coordinateSet].
+     * Creates a new Board, adding ShipPanel (non hit) to given [coordinateSet].
      */
-    constructor(old: Board, coordinateSet: CoordinateSet, panelType: PanelType) {
+    constructor(old: Board, coordinateSet: CoordinateSet, shipType: ShipType) {
         this._coordinates = old._coordinates
         this.dimension = old.dimension
         var newBoard = old.board
 
-        if (panelType === PanelType.ShipPane) {
-            val shipPanel = ShipPanel(false)
-            coordinateSet.forEach {
-                newBoard = newBoard.placePanel(it, shipPanel)
-            }
+        val shipPanel = when (shipType) {
+            ShipType.BATTLESHIP -> BattleshipPanel(false)
+            ShipType.CARRIER -> CarrierPanel(false)
+            ShipType.CRUISER -> CruiserPanel(false)
+            ShipType.DESTROYER -> DestroyerPanel(false)
+            ShipType.SUBMARINE -> SubmarinePanel(false)
         }
-        else if (panelType === PanelType.WaterPanel) {
-            val waterPanel = WaterPanel(false)
-            coordinateSet.forEach {
-                newBoard = newBoard.placePanel(it, waterPanel)
-            }
+        coordinateSet.forEach {
+            newBoard = newBoard.placePanel(it, shipPanel)
+        }
+        board = newBoard
+    }
+
+    /**
+     * Creates a new Board, adding WaterPanel (non hit) to given [coordinateSet].
+     */
+    constructor(old: Board, coordinateSet: CoordinateSet) {
+        this._coordinates = old._coordinates
+        this.dimension = old.dimension
+        var newBoard = old.board
+
+        val waterPanel = WaterPanel(false)
+        coordinateSet.forEach {
+            newBoard = newBoard.placePanel(it, waterPanel)
         }
         board = newBoard
     }
@@ -98,14 +113,14 @@ class Board {
      * Places a ShipPanel (non hit) on the Board.
      * @return newly created Board, with [cs] set.
      */
-    fun placeShipPanel(cs: CoordinateSet) =
-        Board(this, cs, PanelType.ShipPane)
+    fun placeShipPanel(cs: CoordinateSet, shipType: ShipType) =
+        Board(this, cs, shipType)
 
     /**
      * Places a WaterPanel (non hit) on the Board.
      */
     fun placeWaterPanel(cs: CoordinateSet) =
-        Board(this, cs, PanelType.WaterPanel)
+        Board(this, cs)
 
     fun isShipPanel(c: Coordinate) = board[c] is ShipPanel
 
@@ -124,4 +139,63 @@ class Board {
     fun getHitCoordinates() = _coordinates.values().filter { c -> board[c].isHit }
 
     fun getShipCoordinates() = _coordinates.values().filter { c -> board[c] is ShipPanel }
+    fun getShips(): ShipSet {
+        return mutableSetOf(
+            getBattleshipShip(),
+            getCarrierShip(),
+            getCruiserShip(),
+            getDestroyerShip(),
+            getSubmarineShip()
+        ).filterNotNull().toSet()
+    }
+
+    private fun getBattleshipShip(): Battleship? {
+        val destroyerCoordinates =
+            coordinates.map { it to board[it] }
+                .filter { it.second is BattleshipPanel }
+                .map { it.first }
+                .toSet()
+        if (destroyerCoordinates.isEmpty()) return null
+        return Battleship(destroyerCoordinates)
+    }
+
+    private fun getCarrierShip(): Carrier? {
+        val carrierCoordinates =
+            coordinates.map { it to board[it] }
+                .filter { it.second is CarrierPanel }
+                .map { it.first }
+                .toSet()
+        if (carrierCoordinates.isEmpty()) return null
+        return Carrier(carrierCoordinates)
+    }
+
+    private fun getCruiserShip(): Cruiser? {
+        val cruiserCoordinates =
+            coordinates.map { it to board[it] }
+                .filter { it.second is CruiserPanel }
+                .map { it.first }
+                .toSet()
+        if (cruiserCoordinates.isEmpty()) return null
+        return Cruiser(cruiserCoordinates)
+    }
+
+    private fun getDestroyerShip(): Destroyer? {
+        val destroyerCoordinates =
+            coordinates.map { it to board[it] }
+                .filter { it.second is DestroyerPanel }
+                .map { it.first }
+                .toSet()
+        if (destroyerCoordinates.isEmpty()) return null
+        return Destroyer(destroyerCoordinates)
+    }
+
+    private fun getSubmarineShip(): Submarine? {
+        val submarineCoordinates =
+            coordinates.map { it to board[it] }
+                .filter { it.second is SubmarinePanel }
+                .map { it.first }
+                .toSet()
+        if (submarineCoordinates.isEmpty()) return null
+        return Submarine(submarineCoordinates)
+    }
 }

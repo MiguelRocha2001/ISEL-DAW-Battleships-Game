@@ -7,6 +7,5 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
 class End(
     override val configuration: Configuration,
     override val myBoard: Board,
-    internal val opponentBoard: Board,
-    override val playerShips: ShipSet
+    internal val opponentBoard: Board
 ) : GameState()

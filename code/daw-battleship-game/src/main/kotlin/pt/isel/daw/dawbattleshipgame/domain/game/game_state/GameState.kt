@@ -7,5 +7,4 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
 sealed class GameState {
     abstract val configuration: Configuration
     abstract val myBoard: Board
-    abstract val playerShips: ShipSet
 }

@@ -13,10 +13,28 @@ class WaterPanel(isHit: Boolean = false) : Panel(isHit) {
         return if (isHit) "x" else "  "
     }
 }
-class ShipPanel(isHit: Boolean = false) : Panel(isHit) {
-    override fun getPanelHit() = ShipPanel(true)
-
+sealed class ShipPanel(isHit: Boolean = false) : Panel(isHit) {
     override fun toString(): String {
         return if (isHit) "X" else "[]"
     }
+}
+
+class BattleshipPanel(isHit: Boolean = false): ShipPanel() {
+    override fun getPanelHit() = BattleshipPanel(true)
+}
+
+class CarrierPanel(isHit: Boolean = false): ShipPanel() {
+    override fun getPanelHit() = CarrierPanel(true)
+}
+
+class CruiserPanel(isHit: Boolean = false): ShipPanel() {
+    override fun getPanelHit() = CruiserPanel(true)
+}
+
+class DestroyerPanel(isHit: Boolean = false): ShipPanel() {
+    override fun getPanelHit() = DestroyerPanel(true)
+}
+
+class SubmarinePanel(isHit: Boolean = false): ShipPanel() {
+    override fun getPanelHit() = SubmarinePanel(true)
 }
