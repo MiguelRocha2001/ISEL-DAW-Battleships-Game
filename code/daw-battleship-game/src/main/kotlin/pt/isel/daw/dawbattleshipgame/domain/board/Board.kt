@@ -1,5 +1,6 @@
-package pt.isel.daw.dawbattleshipgame.domain
+package pt.isel.daw.dawbattleshipgame.domain.board
 
+import pt.isel.daw.dawbattleshipgame.domain.*
 
 class Board {
     private val board: List<Panel>

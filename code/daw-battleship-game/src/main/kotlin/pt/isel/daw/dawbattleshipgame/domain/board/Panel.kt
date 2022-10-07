@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain
+package pt.isel.daw.dawbattleshipgame.domain.board
 
 enum class PanelType { WaterPanel, ShipPane }
 

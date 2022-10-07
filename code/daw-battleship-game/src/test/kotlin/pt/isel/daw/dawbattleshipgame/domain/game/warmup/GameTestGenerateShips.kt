@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.domain.game.warmup
 
 import org.junit.jupiter.api.Test
-import pt.isel.daw.dawbattleshipgame.domain.Player
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration

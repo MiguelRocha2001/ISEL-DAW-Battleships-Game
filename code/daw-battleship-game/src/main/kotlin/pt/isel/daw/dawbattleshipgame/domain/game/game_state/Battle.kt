@@ -1,9 +1,9 @@
 package pt.isel.daw.dawbattleshipgame.domain.game.game_state
 
-import pt.isel.daw.dawbattleshipgame.domain.Board
-import pt.isel.daw.dawbattleshipgame.domain.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.Player
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
 
 class Battle: GameState {

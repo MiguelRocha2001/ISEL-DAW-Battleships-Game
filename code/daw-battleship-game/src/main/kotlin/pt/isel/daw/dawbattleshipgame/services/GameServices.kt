@@ -2,9 +2,13 @@ package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiGamesRepository
-import pt.isel.daw.dawbattleshipgame.domain.*
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.State
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 @Component

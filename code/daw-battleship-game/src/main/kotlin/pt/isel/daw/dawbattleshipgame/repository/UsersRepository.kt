@@ -1,8 +1,8 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
-import pt.isel.daw.dawbattleshipgame.domain.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.TokenValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.User
+import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
+import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
+import pt.isel.daw.dawbattleshipgame.domain.player.User
 
 interface UsersRepository {
 

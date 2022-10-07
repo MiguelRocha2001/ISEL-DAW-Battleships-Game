@@ -1,7 +1,9 @@
 package pt.isel.daw.dawbattleshipgame.domain.game.game_state
 
-import pt.isel.daw.dawbattleshipgame.domain.*
+import pt.isel.daw.dawbattleshipgame.domain.board.*
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.ship.*
+import kotlin.collections.first
 
 
 class Warmup: GameState {

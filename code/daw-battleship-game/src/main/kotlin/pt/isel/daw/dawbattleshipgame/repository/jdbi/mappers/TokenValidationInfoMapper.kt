@@ -2,7 +2,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.mappers
 
 import org.jdbi.v3.core.mapper.ColumnMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.daw.dawbattleshipgame.domain.TokenValidationInfo
+import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
 import java.sql.ResultSet
 import java.sql.SQLException
 

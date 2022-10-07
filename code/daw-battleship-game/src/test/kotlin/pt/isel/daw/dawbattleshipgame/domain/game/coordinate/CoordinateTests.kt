@@ -2,8 +2,8 @@ package pt.isel.daw.dawbattleshipgame.domain.game.coordinate
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
-import pt.isel.daw.dawbattleshipgame.domain.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.Coordinates
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
 
 internal class CoordinateTest {
 

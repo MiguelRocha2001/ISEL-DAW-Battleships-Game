@@ -3,7 +3,7 @@ package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiGamesRepository
-import pt.isel.daw.dawbattleshipgame.domain.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 
 @Component
 class GameConfigurationServices(private val jdbiGamesRepository: JdbiGamesRepository) {

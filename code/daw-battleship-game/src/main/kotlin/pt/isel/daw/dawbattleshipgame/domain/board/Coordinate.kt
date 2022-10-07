@@ -1,4 +1,6 @@
-package pt.isel.daw.dawbattleshipgame.domain
+package pt.isel.daw.dawbattleshipgame.domain.board
+
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 
 const val ONE = 1
 

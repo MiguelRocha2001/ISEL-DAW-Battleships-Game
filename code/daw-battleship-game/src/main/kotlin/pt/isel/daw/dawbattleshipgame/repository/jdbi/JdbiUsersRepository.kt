@@ -2,9 +2,9 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.isel.daw.dawbattleshipgame.domain.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.TokenValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.User
+import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
+import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
+import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.repository.UsersRepository
 
 class JdbiUsersRepository(
@@ -12,7 +12,7 @@ class JdbiUsersRepository(
 ) : UsersRepository {
 
     override fun getUserByUsername(username: String): User? =
-        handle.createQuery("select * from dbo.USER where username = :username")
+        handle.createQuery("select * from _USER where username = :username")
             .bind("username", username)
             .mapTo<User>()
             .singleOrNull()
@@ -20,7 +20,7 @@ class JdbiUsersRepository(
     override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): Boolean =
         handle.createUpdate(
             """
-            insert into dbo.Users (username, password_validation) values (:username, :password_validation)
+            insert into _user (username, password_validation) values (:username, :passwordvalidation)
             """
         )
             .bind("username", username)

@@ -1,10 +1,15 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
-import pt.isel.daw.dawbattleshipgame.domain.*
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
+import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.game_state.Battle
 import pt.isel.daw.dawbattleshipgame.domain.game.game_state.End
 import pt.isel.daw.dawbattleshipgame.domain.game.game_state.GameState
 import pt.isel.daw.dawbattleshipgame.domain.game.game_state.Warmup
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 enum class State { WARMUP, BATTLE, END }

@@ -2,9 +2,9 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Jdbi
 import org.springframework.boot.jdbc.DataSourceBuilder
-import pt.isel.daw.dawbattleshipgame.domain.Board
-import pt.isel.daw.dawbattleshipgame.domain.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.Player
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 
 

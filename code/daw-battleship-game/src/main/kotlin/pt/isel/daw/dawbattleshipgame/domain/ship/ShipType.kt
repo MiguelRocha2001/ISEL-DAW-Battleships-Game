@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.domain.ship
 
-import pt.isel.daw.dawbattleshipgame.domain.CoordinateSet
-import pt.isel.daw.dawbattleshipgame.domain.Orientation
+import pt.isel.daw.dawbattleshipgame.domain.board.CoordinateSet
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.*
 
 enum class ShipType(val length: Int) {
