@@ -1,51 +1,81 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.Battle
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.GameState
-import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.game.game_state.End
 
-class BattlePhase(val id: Int): Game(id) {
-    private val gameState: Battle
+class BattlePhase: Game {
+    override val gameId: Int
+    override val configuration: Configuration
 
-    private constructor(old: BattlePhase, newGameState: GameState) {
-        gameState = newGameState
-        id = old.id
-        playerId = old.playerId
+    private val playerA: String // user1 Id
+    private val playerB: String // user2 Id
+
+    private val boardA: Board
+    private val boardB: Board
+
+    private val isPlayerA: Boolean
+
+    constructor(
+        configuration: Configuration,
+        gameId: Int,
+        playerA: String,
+        playerB: String,
+        boardA: Board,
+        boardB: Board
+    ) {
+        this.gameId = gameId
+        this.configuration = configuration
+        this.playerA = playerA
+        this.playerB = playerB
+        this.boardA = boardA
+        this.boardB = boardB
+        this.isPlayerA = true // always starts with playerA
     }
 
-    override fun tryPlaceShip(ship: ShipType, position: Coordinate, orientation: Orientation): Game? {
-        return null
+    /**
+     * Builds a new Game object, with place shot on [shot], in opponent board.
+     */
+    private constructor(old: BattlePhase, shot: Coordinate) {
+        gameId = old.gameId
+        configuration = old.configuration
+        playerA = old.playerA
+        playerB = old.playerB
+
+        if (old.isPlayerA) {
+            boardA = old.boardA
+            boardB = old.boardB.hitPanel(shot) ?: throw Exception("Invalid shot")
+        } else {
+            boardA = old.boardA.hitPanel(shot) ?: throw Exception("Invalid shot")
+            boardB = old.boardB
+        }
+        isPlayerA = !old.isPlayerA
     }
 
-    override fun tryMoveShip(position: Coordinate, destination: Coordinate): Game? {
-        return null
+    /**
+     * Builds a new Game object, with place shot on [shot], in opponent board.
+     * If this shot sinks all enemy fleet, the game is over. In this case, End object is returned.
+     */
+    override fun tryPlaceShot(shot: Coordinate): BattlePhase? {
+        return try {
+            val gameResult = BattlePhase(this, shot)
+            if (gameResult.opponentBoard.isGameOver()) {
+                End(configuration, board, opponentBoard)
+            } else {
+                gameResult
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
-    override fun tryPlaceShot(c: Coordinate): Game? {
-        val gameStateResult = gameState.tryPlaceShot(c) ?: return null
-        return Game(this, gameStateResult)
+    private fun Board.isGameOver(): Boolean {
+        val hitPanels = this.getHitCoordinates()
+        val shipPanels = this.getShipCoordinates()
+        return hitPanels.containsAll(shipPanels)
     }
 
-    override fun tryConfirmFleet(): Game? {
-        return null
-    }
-
-    override fun tryRotateShip(position: Coordinate): Game? {
-        return null
-    }
-
-    override fun tryRotateShip(position: String): Game? {
-        return null
-    }
-
-    override fun isShip(it: Coordinate): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun generateShips(): Game? {
-        return null
-    }
+    fun isMyTurn(token: String) =
+        (isPlayerA && token == playerA) || (!isPlayerA && token == playerB)
 
 }

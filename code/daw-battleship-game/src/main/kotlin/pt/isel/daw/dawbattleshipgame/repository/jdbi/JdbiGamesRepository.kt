@@ -3,10 +3,15 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 import org.jdbi.v3.core.Jdbi
 import org.springframework.boot.jdbc.DataSourceBuilder
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.game.BattlePhase
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.PreparationPhase
 
+sealed class GameResponse
+data class Phase1(val gameA: PreparationPhase, val gameB: PreparationPhase) : GameResponse()
+data class Phase2(val game: BattlePhase) : GameResponse()
 
 class JdbiGamesRepository {
     private val jdbi: Jdbi
@@ -26,7 +31,11 @@ class JdbiGamesRepository {
         jdbi
     }
 
-    fun getGame(gameId: Int): Game? {
+    fun getGameById(gameId: Int): GameResponse? {
+        TODO("Not yet implemented")
+    }
+
+    fun getGameByUser(gameId: String): GameResponse? {
         TODO("Not yet implemented")
     }
 
@@ -47,6 +56,22 @@ class JdbiGamesRepository {
     }
 
     fun login(username: String, password: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    fun getWaitingUser(configuration: Configuration): String? {
+        TODO("Not yet implemented")
+    }
+
+    fun joinGameQueue(token: String, configuration: Configuration) {
+        TODO("Not yet implemented")
+    }
+
+    fun removeUserFromQueue(userWating: String) {
+        TODO("Not yet implemented")
+    }
+
+    fun removeGame(gameId: Int) {
         TODO("Not yet implemented")
     }
 }

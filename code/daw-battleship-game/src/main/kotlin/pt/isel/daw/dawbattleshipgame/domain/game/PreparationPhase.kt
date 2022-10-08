@@ -1,119 +1,205 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
-import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
-import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.GameState
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.Warmup
+import pt.isel.daw.dawbattleshipgame.domain.board.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
+import pt.isel.daw.dawbattleshipgame.domain.ship.types.getOrientation
+import kotlin.collections.first
 
-class PreparationPhase(private val id: Int, private val playerId: String): Game(id) {
-    private val gameState: Warmup
+class PreparationPhase: Game {
+    override val gameId: Int
+    val playerId: String
+
+    override val configuration: Configuration
+    private val coordinates: Coordinates
+    val board: Board
+
     val confirmed: Boolean
 
-    private constructor(old: PreparationPhase, newGameState: GameState) {
-        gameState = newGameState
-        id = old.id
-        playerId = old.playerId
+    /**
+     * Creates a new Game.
+     */
+    constructor(gameId: Int, configuration: Configuration, playerId: String) {
+        this.gameId = gameId
+        this.configuration = configuration
+        this.playerId = playerId
+
+        board = Board(configuration.boardSize)
+        coordinates = Coordinates(configuration.boardSize)
         confirmed = false
     }
 
     /**
-     * Confirms current fleet
+     * Places a ship on the board.
+     * @throws Exception if is not possible to place the ship
      */
-    private constructor(old: PreparationPhase) {
-        gameState = old.gameState
-        id = old.id
-        playerId = old.playerId
-        confirmed = true
+    private constructor(old: PreparationPhase, shipType: ShipType, coordinate: Coordinate, orientation: Orientation) {
+        if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
+        val shipCoordinates = old.generateShipCoordinates(shipType, coordinate, orientation) ?: throw Exception()
+        this.gameId = old.gameId
+        this.playerId = old.playerId
+        configuration = old.configuration
+        board = old.board.placeShipPanel(shipCoordinates, shipType)
+        coordinates = old.coordinates
+        confirmed = old.confirmed
     }
 
+    /**
+     * Builds a new Game object, with ship removed from [position]
+     * @throws Exception if is not possible to place the ship
+     */
+    private constructor(old: PreparationPhase, position: Coordinate) {
+        if(old.isNotShip(position)) throw Exception()
+
+        val ship = old.board.getShips().getShip(position)
+        val shipCoordinates = ship?.coordinates ?: throw Exception()
+
+        this.gameId = old.gameId
+        this.playerId = old.playerId
+        configuration = old.configuration
+        board = old.board.placeWaterPanel(shipCoordinates) // new Board with ship removed
+        coordinates = old.coordinates
+        confirmed = old.confirmed
+    }
+
+    operator fun get(coordinate: Coordinate): Panel {
+        return board[coordinate]
+    }
+
+    override fun toString(): String {
+        return board.toString()
+    }
+
+    override fun isShip(c: Coordinate) = board.isShipPanel(c)
+
+    private fun isNotShip(c: Coordinate) = board.isWaterPanel(c)
+
+    /**
+     * Tries to place [shipType] on the Board, on give in [position].
+     * @return updated Game or null, if is not possible to position [shipType] in [position]
+     */
     override fun tryPlaceShip(
-        ship: ShipType,
+        shipType: ShipType,
         position: Coordinate,
         orientation: Orientation
-    ): Game? {
-        val newGameState = gameState.tryPlaceShip(ship, position, orientation) ?: return null
-        return PreparationPhase(this, newGameState)
-    }
-
-    /**
-     * Places a ship on the board.
-     * @param command the command to place the ship. Format: "shipType,coordinate,orientation"
-     */
-    fun tryPlaceShip(command: String): Game? {
-        val parsedCommand = parseCommand(command) ?: return null
-        val gameResult = gameState.tryPlaceShip(parsedCommand.first, parsedCommand.second, parsedCommand.third) ?: return null
-        return Game(gameResult)
-    }
-
-    /**
-     * Parses a string command to place a ship.
-     * @param command the command to place the ship. Format: "shipType,coordinate,orientation"
-     * @return a triple with the ship type, the coordinate and the orientation
-     */
-    private fun parseCommand(command: String): Triple<ShipType, Coordinate, Orientation>? {
-        val commandParts = command.split(",")
-        if (commandParts.size != 3) return null
-        val shipType = ShipType.valueOf(commandParts[0])
-        val coordinate = commandParts[1].toCoordinate() ?: return null
-        val orientation = Orientation.valueOf(commandParts[2])
-        return Triple(shipType, coordinate, orientation)
-    }
-
-    override fun tryMoveShip(position: Coordinate, destination: Coordinate): Game? {
-        val newGameResult = gameState.tryMoveShip(position, destination) ?: return null
-        return Game(newGameResult)
-    }
-
-    override fun tryPlaceShot(c: Coordinate): Game? {
-        return null
-    }
-
-    /**
-     * Builds a new Game object, with the fleet confirmed.
-     * This function will result in a new Game object, with the state changed to BATTLE.
-     * From this point, it is not possible to place/move/rotate new ships.
-     */
-    override fun tryConfirmFleet(): Game {
-        return PreparationPhase(this)
-    }
-
-    override fun tryRotateShip(position: Coordinate): Game? {
-        val gameResult = gameState.tryRotateShip(position) ?: return null
-        return Game(gameResult, player)
-    }
-
-    fun tryRotateShip(position: String): Game? {
-        return if (gameState is Warmup) {
-            val coordinate = position.toCoordinate() ?: return null
-            val gameResult = gameState.tryRotateShip(coordinate) ?: return null
-            Game(gameResult, player)
-        } else null
-    }
-
-    fun isShip(it: Coordinate): Boolean {
-        return gameState.myBoard.isShipPanel(it)
-    }
-
-    fun generateShips() : Game? {
-        var game = this
-        var auxGame : Game? = this
-        if(game.gameState is Warmup) {
-            ShipType.values().forEach {
-                do{
-                    auxGame = game.tryPlaceShip(
-                        it,
-                        Coordinates(game.gameState.configuration.boardSize).random(),
-                        Orientation.random(),
-                    )
-                }while(auxGame == null)
-                game = auxGame!!
-                auxGame = null
-            }
-            return game
+    ): PreparationPhase? {
+        if (isShipPlaced(shipType)) return null
+        return try {
+            PreparationPhase(this, shipType, position, orientation) // Builds Game with new ship
+        } catch (e: Exception) {
+            null
         }
-        return null
     }
+
+    override fun tryMoveShip(position: Coordinate, destination: Coordinate): PreparationPhase? {
+        val ship = board.getShips().getShip(position) ?: return null
+        val orientation = ship.getOrientation()
+        val computedDestination = getAppropriateCoordinateToMoveShipTo(position, destination, orientation) ?: return null
+
+        val newGame = tryRemoveShip(position) ?: return null
+        return newGame.tryPlaceShip(ship.type, computedDestination, orientation)
+    }
+
+    private fun getAppropriateCoordinateToMoveShipTo(
+        position: Coordinate,
+        destination: Coordinate,
+        orientation: Orientation
+    ): Coordinate? {
+        val playerShips = board.getShips()
+        val posIndex = playerShips.getShip(position)?.coordinates?.index(position) ?: return null // ship [position] index
+        var computedDestination = destination
+        repeat(posIndex) {
+            computedDestination = if (orientation === Orientation.HORIZONTAL)
+                coordinates.left(computedDestination) ?: return null
+            else
+                coordinates.up(computedDestination) ?: return null
+        }
+        return computedDestination
+    }
+
+    /**
+     * Tries to remove ship from the game, if one exists.
+     * @param position coordinate where the ship is located (some part of the ship)
+     * @return new Game with ship removed or null if ship was not found, for [position]
+     */
+    private fun tryRemoveShip(position: Coordinate): PreparationPhase? {
+        return try {
+            PreparationPhase(this, position) // Builds new Game with ship removed
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Tries to rotate a ship, if possible.
+     * @return newly created game, with ship rotated, or null if not possible
+     */
+    override fun tryRotateShip(position: Coordinate): PreparationPhase? {
+        val ship = board.getShips().getShip(position) ?: return null
+        val curOrientation = ship.getOrientation()
+        val shipPosOrigin = board.getShips().getShip(position)?.coordinates?.first() ?: return null
+        val tmpGame = tryRemoveShip(position) ?: return null
+        return tmpGame.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
+    }
+
+    override fun tryRotateShip(position: String): Game? {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * @return Ship type, positioned at [position] or null if no Ship is placed there
+     */
+    private fun getShipType(position: Coordinate) = board.getShips().getShip(position)?.type
+
+    /**
+     * @returns List of Coordinates with positions to build a ship or null if impossible
+     */
+    private fun generateShipCoordinates(ship: ShipType, position: Coordinate, orientation: Orientation): CoordinateSet? {
+        if (isShip(position)) return null
+        val shipLength = getShipLength(ship)
+        val shipCoordinates = tryGenerateShipPanels(shipLength, position, orientation) ?: return null
+        if (isShipTouchingAnother(board, shipCoordinates)) return null
+        return shipCoordinates
+    }
+
+    /**
+     * Detects if a Ship, given by [shipCoordinates] is touching another Ship (ShipPanel).
+     */
+    private fun isShipTouchingAnother(board: Board, shipCoordinates: CoordinateSet): Boolean =
+        shipCoordinates.any { isShipNearCoordinate(it, board) }
+
+    /**
+     * Check if any ship from the player is near the coordinate
+     */
+    private fun isShipNearCoordinate(c: Coordinate, board: Board) =
+        coordinates.radius(c).any { board.isShipPanel(it) }
+
+
+    /**
+     * Generates the coordinates needed to make the ship
+     */
+    private fun tryGenerateShipPanels(size: Int, coordinate: Coordinate, orientation: Orientation): CoordinateSet? {
+        var auxCoordinate = coordinate
+        val set = mutableSetOf(coordinate)
+        repeat(size - 1) {
+            auxCoordinate = if (orientation === Orientation.HORIZONTAL)
+                coordinates.right(auxCoordinate) ?: return null
+            else
+                coordinates.down(auxCoordinate) ?: return null
+            set.add(auxCoordinate)
+        }
+        return set
+    }
+
+    /**
+     * Retrieves the ship length according to class game configuration.
+     */
+    private fun getShipLength(shipType: ShipType) =
+        configuration.fleet.first { it.first === shipType }.second
+
+    private fun isShipPlaced(shipType: ShipType) =
+        board.getShips().map { it.type }.any { it === shipType }
+
+
 }
