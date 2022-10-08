@@ -178,5 +178,6 @@ class Warmup: GameState {
     private fun getShipLength(shipType: ShipType) =
         configuration.fleet.first { it.first === shipType }.second
 
-    private fun isShipPlaced(shipType: ShipType) = myBoard.getShips().map { it.type }.isEmpty()
+    private fun isShipPlaced(shipType: ShipType) =
+        myBoard.getShips().map { it.type }.any { it === shipType }
 }
