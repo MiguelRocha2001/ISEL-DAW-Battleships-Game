@@ -68,6 +68,7 @@ class Warmup: GameState {
         position: Coordinate,
         orientation: Orientation
     ): Warmup? {
+        if (isShipPlaced(shipType)) return null
         return try {
             Warmup(this, shipType, position, orientation) // Builds Game with new ship
         } catch (e: Exception) {
@@ -176,4 +177,6 @@ class Warmup: GameState {
      */
     private fun getShipLength(shipType: ShipType) =
         configuration.fleet.first { it.first === shipType }.second
+
+    private fun isShipPlaced(shipType: ShipType) = myBoard.getShips().map { it.type }.isEmpty()
 }
