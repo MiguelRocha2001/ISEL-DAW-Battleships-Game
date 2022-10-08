@@ -26,7 +26,7 @@ class JdbiGamesRepository {
         jdbi
     }
 
-    fun getGame(): Game? {
+    fun getGame(gameId: Int): Game? {
         TODO("Not yet implemented")
     }
 
