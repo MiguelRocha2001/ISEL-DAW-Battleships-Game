@@ -170,7 +170,7 @@ class Warmup: GameState {
      * Check if any ship from the player is near the coordinate
      */
     private fun isShipNearCoordinate(c: Coordinate, board: Board) =
-        coordinates.radius(c).any { board.isShipPanel(it) }
+        coordinates.radius(c)!!.any { board.isShipPanel(it) }
 
 
     /**

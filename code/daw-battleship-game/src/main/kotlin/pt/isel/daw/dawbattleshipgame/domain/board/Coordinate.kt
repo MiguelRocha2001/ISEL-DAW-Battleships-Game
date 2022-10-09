@@ -60,7 +60,7 @@ fun CoordinateSet.moveFromTo(origin : Coordinate, destination: Coordinate, gameD
 }
 /**
  * Represents a set of coordinates.
- * @param dim ensures the creation of all valid coordinates
+ * @param dim number of the tiles on the side of the board, ensures the creation of all valid coordinates
  */
 class Coordinates(private val dim: Int) {
     /**
@@ -107,8 +107,8 @@ class Coordinates(private val dim: Int) {
      * @return a new [Coordinate] with the column affected
      */
     private fun moveVertically(c: Coordinate, amount: Int): Coordinate {
-        if (c.row.isOne() && amount < 0) throw Exception("Unable to move vertically")
-        if (c.row.isGameDim() && amount > 0) throw Exception("Unable to move vertically")
+        if (c.row + amount <= 0  && amount < 0) throw Exception("Unable to move vertically")
+        if (c.row + amount > dim && amount > 0) throw Exception("Unable to move vertically")
         return Coordinate(c.row + amount, c.column)
     }
 
@@ -120,8 +120,8 @@ class Coordinates(private val dim: Int) {
      * @return a new [Coordinate] with the row affected
      */
     private fun moveHorizontally(c: Coordinate, amount : Int): Coordinate {
-        if (c.column.isOne() && amount < 0) throw Exception("Unable to move horizontally")
-        if (c.column.isGameDim() && amount > 0) throw Exception("Unable to move horizontally")
+        if (c.column + amount <= 0  && amount < 0) throw Exception("Unable to move horizontally")
+        if (c.column + amount > dim && amount > 0) throw Exception("Unable to move horizontally")
         return Coordinate(c.row, c.column + amount)
     }
 
@@ -129,29 +129,29 @@ class Coordinates(private val dim: Int) {
     /**
      * Moves coordinate up, x "amount" of times, by default is ONE (1)
      */
-    fun up(c: Coordinate, amount : Int = ONE) = if(c.row.isOne()) null
+    fun up(c: Coordinate, amount : Int = ONE) = if(c.row - amount <= 0 || amount < 0) null
     else Coordinate(c.row - amount, c.column)
 
     /**
      * Moves coordinates down, x "amount" of times, by default is ONE (1)
      */
-    fun down(c: Coordinate, amount : Int = ONE) = if (c.row.isGameDim()) null
+    fun down(c: Coordinate, amount : Int = ONE) = if (c.row + amount > dim || amount < 0) null
     else Coordinate(c.row + amount, c.column)
 
     /**
      * Moves coordinates left, x "amount" of times, by default is ONE (1)
      */
-    fun left(c: Coordinate, amount : Int = ONE) = if (c.column.isOne()) null
+    fun left(c: Coordinate, amount : Int = ONE) = if (c.column - amount <= 0 || amount < 0) null
     else Coordinate(c.row, c.column - amount)
 
     /**
      * Moves coordinates right, x "amount" of times, by default is ONE (1)
      */
-    fun right(c: Coordinate, amount : Int = ONE) = if (c.column.isGameDim()) null
+    fun right(c: Coordinate, amount : Int = ONE) = if (c.column + amount > dim || amount < 0) null
     else Coordinate(c.row, c.column + amount)
 
     /**
-     * @return a not null list of coordinates corresponding to the coordinates adjacent to the instance
+     * @return a not null list of coordinates corresponding to the coordinates adjacent to the instance if [c] is a valid coordinate
      * example:
      * [] [] []
      * [] {} []
@@ -159,7 +159,8 @@ class Coordinates(private val dim: Int) {
      * being '{}' as the instance coordinate
      * amd '[]' the adjacent coordinates
      */
-    fun radius(c: Coordinate): List<Coordinate> {
+    fun radius(c: Coordinate): List<Coordinate>? {
+        if(c.row > dim || c.column > dim) return null
         val left = left(c)
         val right = right(c)
         return listOfNotNull(
@@ -175,6 +176,9 @@ class Coordinates(private val dim: Int) {
 
 
 class Coordinate(val row: Int, val column: Int) {
+    init {
+    check(row > 0 && column > 0) { "Coordinate cannot possess values inferior to zero"}
+    }
     override fun equals(other: Any?): Boolean {
         return if (other is Coordinate) {
             return row == other.row && column == other.column
