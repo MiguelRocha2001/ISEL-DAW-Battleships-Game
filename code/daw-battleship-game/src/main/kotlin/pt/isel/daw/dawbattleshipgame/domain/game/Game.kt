@@ -22,14 +22,20 @@ enum class State { WARMUP, WAITING, BATTLE, END }
  */
 class Game {
     private val gameState: GameState
+
     val configuration: Configuration
         get() = gameState.configuration
+
     private val player: Player
+
     val state: State
         get() = getGameState()
+
     val myBoard: Board
+
     val boardCoordinates: List<Coordinate>
         get() = myBoard.coordinates
+
     val opponentBoard: Board?
         get() = getOpponentBoardInternal()
 
@@ -139,10 +145,6 @@ class Game {
             val gameResult = gameState.tryRotateShip(coordinate) ?: return null
             Game(gameResult, player)
         } else null
-    }
-
-    fun isShip(it: Coordinate): Boolean {
-        return gameState.myBoard.isShipPanel(it)
     }
 
     fun generateShips() : Game? {

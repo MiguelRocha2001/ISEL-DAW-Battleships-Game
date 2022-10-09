@@ -8,7 +8,7 @@ typealias ShipSet = Set<Ship>
 fun ShipSet.getShipByType(shipType: ShipType) = this.firstOrNull { it.type == shipType }
 
 fun ShipSet.getShip(position: Coordinate) =
-    this.firstOrNull { it.coordinates.any { c -> c == position}}
+    this.first { it.coordinates.any { c -> c == position}}
 
 fun ShipSet.addOrReplaceShip(ship : Ship): ShipSet {
     val auxMutableSet = this.toMutableSet()

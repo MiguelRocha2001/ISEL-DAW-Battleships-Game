@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.domain.board
 
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.ship.generateShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.*
 
 class Board {
@@ -41,15 +42,8 @@ class Board {
         this.dimension = old.dimension
         var newBoard = old.board
 
-        val shipPanel = when (shipType) {
-            ShipType.BATTLESHIP -> BattleshipPanel(false)
-            ShipType.CARRIER -> CarrierPanel(false)
-            ShipType.CRUISER -> CruiserPanel(false)
-            ShipType.DESTROYER -> DestroyerPanel(false)
-            ShipType.SUBMARINE -> SubmarinePanel(false)
-        }
         coordinateSet.forEach {
-            newBoard = newBoard.placePanel(it, shipPanel)
+            newBoard = newBoard.placePanel(it, ShipPanel(shipType))
         }
         board = newBoard
     }
@@ -139,63 +133,33 @@ class Board {
     fun getHitCoordinates() = _coordinates.values().filter { c -> board[c].isHit }
 
     fun getShipCoordinates() = _coordinates.values().filter { c -> board[c] is ShipPanel }
+
+    /**
+     * Gets all ships from board
+     */
     fun getShips(): ShipSet {
-        return mutableSetOf(
-            getBattleshipShip(),
-            getCarrierShip(),
-            getCruiserShip(),
-            getDestroyerShip(),
-            getSubmarineShip()
-        ).filterNotNull().toSet()
+        val shipSet = mutableSetOf<Ship>()
+        ShipType.values().forEach {
+            val s = getShipFromBoard(it)
+            if(s != null) shipSet.add(s)
+        }
+        return shipSet
     }
 
-    private fun getBattleshipShip(): Battleship? {
-        val destroyerCoordinates =
-            coordinates.map { it to board[it] }
-                .filter { it.second is BattleshipPanel }
-                .map { it.first }
-                .toSet()
-        if (destroyerCoordinates.isEmpty()) return null
-        return Battleship(destroyerCoordinates)
-    }
 
-    private fun getCarrierShip(): Carrier? {
-        val carrierCoordinates =
+    /**
+     * Returns a ship from the board, given a specific ShipType
+     */
+    private fun getShipFromBoard(type : ShipType): Ship? {
+        val coordinates =
             coordinates.map { it to board[it] }
-                .filter { it.second is CarrierPanel }
+                .filter {
+                    it.second is ShipPanel &&
+                            (it.second as ShipPanel).shipType == type
+                }
                 .map { it.first }
                 .toSet()
-        if (carrierCoordinates.isEmpty()) return null
-        return Carrier(carrierCoordinates)
-    }
-
-    private fun getCruiserShip(): Cruiser? {
-        val cruiserCoordinates =
-            coordinates.map { it to board[it] }
-                .filter { it.second is CruiserPanel }
-                .map { it.first }
-                .toSet()
-        if (cruiserCoordinates.isEmpty()) return null
-        return Cruiser(cruiserCoordinates)
-    }
-
-    private fun getDestroyerShip(): Destroyer? {
-        val destroyerCoordinates =
-            coordinates.map { it to board[it] }
-                .filter { it.second is DestroyerPanel }
-                .map { it.first }
-                .toSet()
-        if (destroyerCoordinates.isEmpty()) return null
-        return Destroyer(destroyerCoordinates)
-    }
-
-    private fun getSubmarineShip(): Submarine? {
-        val submarineCoordinates =
-            coordinates.map { it to board[it] }
-                .filter { it.second is SubmarinePanel }
-                .map { it.first }
-                .toSet()
-        if (submarineCoordinates.isEmpty()) return null
-        return Submarine(submarineCoordinates)
+        if (coordinates.isEmpty()) return null
+        return type.generateShip(coordinates)
     }
 }

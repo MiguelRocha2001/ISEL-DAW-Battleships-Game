@@ -34,7 +34,7 @@ class GameTestPlacing {
     @Test
     fun placing_ship_on_valid_location_1() {
         val game = Game.newGame(gameConfig)
-        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "C2".toCoordinate()!!, Orientation.HORIZONTAL)
+        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "C2".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -54,7 +54,7 @@ class GameTestPlacing {
     @Test
     fun placing_ship_on_valid_location_2() {
         val game = Game.newGame(gameConfig)
-        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "A2".toCoordinate()!!, Orientation.HORIZONTAL)
+        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "A2".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -74,7 +74,7 @@ class GameTestPlacing {
     @Test
     fun placing_ship_on_valid_location_3() {
         val game = Game.newGame(gameConfig)
-        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "E8".toCoordinate()!!, Orientation.HORIZONTAL)
+        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "E8".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -94,14 +94,14 @@ class GameTestPlacing {
     @Test
     fun placing_ship_on_invalid_location_1() {
         val game = Game.newGame(gameConfig)
-        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "j1".toCoordinate()!!, Orientation.HORIZONTAL)
+        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "j1".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(null, gameResult)
     }
 
     @Test
     fun placing_ship_on_invalid_location_2() {
         val game = Game.newGame(gameConfig)
-        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "J10".toCoordinate()!!, Orientation.HORIZONTAL)
+        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "J10".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(null, gameResult)
     }
 }

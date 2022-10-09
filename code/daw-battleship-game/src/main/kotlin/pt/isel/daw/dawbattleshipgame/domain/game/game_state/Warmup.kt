@@ -21,31 +21,44 @@ class Warmup: GameState {
         coordinates = Coordinates(configuration.boardSize)
     }
 
+    private constructor(newConfiguration: Configuration, newBoard: Board){
+        configuration = newConfiguration
+        myBoard = newBoard
+        coordinates = Coordinates(configuration.boardSize)
+    }
+
     /**
      * Places a ship on the board.
      * @throws Exception if is not possible to place the ship
      */
-    private constructor(old: Warmup, shipType: ShipType, coordinate: Coordinate, orientation: Orientation) {
+    private fun buildGamePlaceShip(old: Warmup, shipType: ShipType, coordinate: Coordinate, orientation: Orientation): Warmup {
         if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = old.generateShipCoordinates(shipType, coordinate, orientation) ?: throw Exception()
-        configuration = old.configuration
-        myBoard = old.myBoard.placeShipPanel(shipCoordinates, shipType)
-        coordinates = old.coordinates
+        return Warmup(old.configuration,
+            old.myBoard.placeShipPanel(shipCoordinates, shipType),
+        )
     }
 
     /**
      * Builds a new Game object, with ship removed from [position]
      * @throws Exception if is not possible to place the ship
      */
-    private constructor(old: Warmup, position: Coordinate) {
+    private fun buildGameRemovedShip(old: Warmup, position: Coordinate): Warmup {
         if(old.isNotShip(position)) throw Exception()
-
         val ship = old.myBoard.getShips().getShip(position)
-        val shipCoordinates = ship?.coordinates ?: throw Exception()
+        val shipCoordinates = ship.coordinates
+        return Warmup(
+            old.configuration,
+            old.myBoard.placeWaterPanel(shipCoordinates),
+        )
+    }
 
-        configuration = old.configuration
-        myBoard = old.myBoard.placeWaterPanel(shipCoordinates) // new Board with ship removed
-        coordinates = old.coordinates
+    private fun buildGameMoveShip(old : Warmup, coordinateS: CoordinateSet, shipType: ShipType): Warmup {
+        if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
+        return Warmup(
+            old.configuration,
+            old.myBoard.placeShipPanel(coordinateS, shipType)
+        )
     }
 
     operator fun get(coordinate: Coordinate): Panel {
@@ -70,36 +83,34 @@ class Warmup: GameState {
     ): Warmup? {
         if (isShipPlaced(shipType)) return null
         return try {
-            Warmup(this, shipType, position, orientation) // Builds Game with new ship
+            buildGamePlaceShip(this, shipType, position, orientation)
         } catch (e: Exception) {
             null
         }
     }
 
-    fun tryMoveShip(position: Coordinate, destination: Coordinate): Warmup? {
-        val ship = myBoard.getShips().getShip(position) ?: return null
-        val orientation = ship.getOrientation()
-        val computedDestination = getAppropriateCoordinateToMoveShipTo(position, destination, orientation) ?: return null
-
-        val newGame = tryRemoveShip(position) ?: return null
-        return newGame.tryPlaceShip(ship.type, computedDestination, orientation)
+    private fun tryPlaceShipWithCoordinates(
+        shipType: ShipType,
+        position: CoordinateSet,
+    ) : Warmup? {
+        return try {
+            buildGameMoveShip(this, position, shipType)
+        }catch (e : Exception){
+            null
+        }
     }
 
-    private fun getAppropriateCoordinateToMoveShipTo(
-        position: Coordinate,
-        destination: Coordinate,
-        orientation: Orientation
-    ): Coordinate? {
-        val playerShips = myBoard.getShips()
-        val posIndex = playerShips.getShip(position)?.coordinates?.index(position) ?: return null // ship [position] index
-        var computedDestination = destination
-        repeat(posIndex) {
-            computedDestination = if (orientation === Orientation.HORIZONTAL)
-                coordinates.left(computedDestination) ?: return null
-            else
-                coordinates.up(computedDestination) ?: return null
+    /**
+     * Generates a new Warmup Board with a moved ship
+     */
+    fun tryMoveShip(position: Coordinate, destination: Coordinate): Warmup? {
+        return try {
+            val ship = myBoard.getShips().getShip(position)
+            val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
+            tryRemoveShip(position)?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
+        }catch (e : Exception){
+            null
         }
-        return computedDestination
     }
 
     /**
@@ -109,7 +120,7 @@ class Warmup: GameState {
      */
     private fun tryRemoveShip(position: Coordinate): Warmup? {
         return try {
-            Warmup(this, position) // Builds new Game with ship removed
+            buildGameRemovedShip(this, position)
         } catch (e: Exception) {
             null
         }
@@ -120,25 +131,28 @@ class Warmup: GameState {
      * @return newly created game, with ship rotated, or null if not possible
      */
     fun tryRotateShip(position: Coordinate): Warmup? {
-        val ship = myBoard.getShips().getShip(position) ?: return null
-        val curOrientation = ship.getOrientation()
-        val shipPosOrigin = myBoard.getShips().getShip(position)?.coordinates?.first() ?: return null
-        val tmpGame = tryRemoveShip(position) ?: return null
-        return tmpGame.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
+        return try {
+            val ship = myBoard.getShips().getShip(position)
+            val curOrientation = ship.getOrientation()
+            val shipPosOrigin = myBoard.getShips().getShip(position).coordinates.first()
+            val tmpGame = tryRemoveShip(position)
+            tmpGame?.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
+        }catch (e : Exception){
+            null
+        }
     }
 
-    /**
-     * @return Ship type, positioned at [position] or null if no Ship is placed there
-     */
-    private fun getShipType(position: Coordinate) = myBoard.getShips().getShip(position)?.type
 
     /**
      * @returns List of Coordinates with positions to build a ship or null if impossible
      */
     private fun generateShipCoordinates(ship: ShipType, position: Coordinate, orientation: Orientation): CoordinateSet? {
         if (isShip(position)) return null
-        val shipLength = getShipLength(ship)
-        val shipCoordinates = tryGenerateShipPanels(shipLength, position, orientation) ?: return null
+
+        val shipCoordinates = tryGenerateShipPanels(
+            getShipLength(ship), position, orientation
+        ) ?: return null
+
         if (isShipTouchingAnother(myBoard, shipCoordinates)) return null
         return shipCoordinates
     }
