@@ -1,9 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
-import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
-import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
+import pt.isel.daw.dawbattleshipgame.domain.board.*
 import pt.isel.daw.dawbattleshipgame.domain.game.game_state.*
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
@@ -102,7 +99,7 @@ class Game {
         val commandParts = command.split(",")
         if (commandParts.size != 3) return null
         val shipType = ShipType.valueOf(commandParts[0])
-        val coordinate = commandParts[1].toCoordinate() ?: return null
+        val coordinate = commandParts[1].toCoordinateOrNull() ?: return null
         val orientation = Orientation.valueOf(commandParts[2])
         return Triple(shipType, coordinate, orientation)
     }

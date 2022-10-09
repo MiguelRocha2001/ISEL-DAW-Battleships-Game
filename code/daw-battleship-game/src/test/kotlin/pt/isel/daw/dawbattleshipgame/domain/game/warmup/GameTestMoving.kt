@@ -54,6 +54,7 @@ class GameTestMoving {
         )
     }
 
+
     @Test
     fun valid_ship_move_3() {
         val game = Game.newGame(gameConfig)
@@ -110,6 +111,27 @@ class GameTestMoving {
                     "| 5 |    |    |    |    |    |    |    |    |    |    |\n" +
                     "| 6 |    |    |    |    |    |    |    |    |    |    |\n" +
                     "| 7 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 8 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 9 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 10|    |    |    |    |    |    |    |    |    |    |\n",
+            gameResult.toString()
+        )
+    }
+
+    @Test
+    fun valid_ship_move_6() {
+        val game = Game.newGame(gameConfig)
+        var gameResult = game.tryPlaceShip(ShipType.SUBMARINE, "D1".toCoordinate(), Orientation.VERTICAL)
+        gameResult = gameResult?.tryMoveShip("D2".toCoordinate(), "D6".toCoordinate())
+        assertEquals(
+            "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
+                    "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 2 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 3 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 4 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 5 |    |    |    | [] |    |    |    |    |    |    |\n" +
+                    "| 6 |    |    |    | [] |    |    |    |    |    |    |\n" +
+                    "| 7 |    |    |    | [] |    |    |    |    |    |    |\n" +
                     "| 8 |    |    |    |    |    |    |    |    |    |    |\n" +
                     "| 9 |    |    |    |    |    |    |    |    |    |    |\n" +
                     "| 10|    |    |    |    |    |    |    |    |    |    |\n",
