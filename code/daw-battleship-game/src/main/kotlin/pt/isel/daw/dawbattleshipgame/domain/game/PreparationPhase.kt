@@ -7,15 +7,29 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.getOrientation
 import kotlin.collections.first
 
-class PreparationPhase: Game {
-    override val gameId: Int
+class PreparationPhase(
+    override val gameId: Int,
+    player1Id: String,
+    player2Id: String,
+    override val configuration: Configuration
+) : Game() {
+
+    val player1PreparationPhase: PlayerPreparationPhase
+    val player2PreparationPhase: PlayerPreparationPhase
+
+    init {
+        this.player1PreparationPhase = PlayerPreparationPhase(gameId, configuration, player1Id)
+        this.player2PreparationPhase = PlayerPreparationPhase(gameId, configuration, player2Id)
+    }
+}
+
+class PlayerPreparationPhase {
+    val gameId: Int
     val playerId: String
 
-    override val configuration: Configuration
+    val configuration: Configuration
     private val coordinates: Coordinates
     val board: Board
-
-    val confirmed: Boolean
 
     /**
      * Creates a new Game.
@@ -27,14 +41,13 @@ class PreparationPhase: Game {
 
         board = Board(configuration.boardSize)
         coordinates = Coordinates(configuration.boardSize)
-        confirmed = false
     }
 
     /**
      * Places a ship on the board.
      * @throws Exception if is not possible to place the ship
      */
-    private constructor(old: PreparationPhase, shipType: ShipType, coordinate: Coordinate, orientation: Orientation) {
+    private constructor(old: PlayerPreparationPhase, shipType: ShipType, coordinate: Coordinate, orientation: Orientation) {
         if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = old.generateShipCoordinates(shipType, coordinate, orientation) ?: throw Exception()
         this.gameId = old.gameId
@@ -42,14 +55,13 @@ class PreparationPhase: Game {
         configuration = old.configuration
         board = old.board.placeShipPanel(shipCoordinates, shipType)
         coordinates = old.coordinates
-        confirmed = old.confirmed
     }
 
     /**
      * Builds a new Game object, with ship removed from [position]
      * @throws Exception if is not possible to place the ship
      */
-    private constructor(old: PreparationPhase, position: Coordinate) {
+    private constructor(old: PlayerPreparationPhase, position: Coordinate) {
         if(old.isNotShip(position)) throw Exception()
 
         val ship = old.board.getShips().getShip(position)
@@ -60,7 +72,6 @@ class PreparationPhase: Game {
         configuration = old.configuration
         board = old.board.placeWaterPanel(shipCoordinates) // new Board with ship removed
         coordinates = old.coordinates
-        confirmed = old.confirmed
     }
 
     operator fun get(coordinate: Coordinate): Panel {
@@ -71,7 +82,7 @@ class PreparationPhase: Game {
         return board.toString()
     }
 
-    override fun isShip(c: Coordinate) = board.isShipPanel(c)
+    fun isShip(c: Coordinate) = board.isShipPanel(c)
 
     private fun isNotShip(c: Coordinate) = board.isWaterPanel(c)
 
@@ -79,20 +90,20 @@ class PreparationPhase: Game {
      * Tries to place [shipType] on the Board, on give in [position].
      * @return updated Game or null, if is not possible to position [shipType] in [position]
      */
-    override fun tryPlaceShip(
+    fun tryPlaceShip(
         shipType: ShipType,
         position: Coordinate,
         orientation: Orientation
-    ): PreparationPhase? {
+    ): PlayerPreparationPhase? {
         if (isShipPlaced(shipType)) return null
         return try {
-            PreparationPhase(this, shipType, position, orientation) // Builds Game with new ship
+            PlayerPreparationPhase(this, shipType, position, orientation) // Builds Game with new ship
         } catch (e: Exception) {
             null
         }
     }
 
-    override fun tryMoveShip(position: Coordinate, destination: Coordinate): PreparationPhase? {
+    fun tryMoveShip(position: Coordinate, destination: Coordinate): PlayerPreparationPhase? {
         val ship = board.getShips().getShip(position) ?: return null
         val orientation = ship.getOrientation()
         val computedDestination = getAppropriateCoordinateToMoveShipTo(position, destination, orientation) ?: return null
@@ -123,9 +134,9 @@ class PreparationPhase: Game {
      * @param position coordinate where the ship is located (some part of the ship)
      * @return new Game with ship removed or null if ship was not found, for [position]
      */
-    private fun tryRemoveShip(position: Coordinate): PreparationPhase? {
+    private fun tryRemoveShip(position: Coordinate): PlayerPreparationPhase? {
         return try {
-            PreparationPhase(this, position) // Builds new Game with ship removed
+            PlayerPreparationPhase(this, position) // Builds new Game with ship removed
         } catch (e: Exception) {
             null
         }
@@ -135,7 +146,7 @@ class PreparationPhase: Game {
      * Tries to rotate a ship, if possible.
      * @return newly created game, with ship rotated, or null if not possible
      */
-    override fun tryRotateShip(position: Coordinate): PreparationPhase? {
+    fun tryRotateShip(position: Coordinate): PlayerPreparationPhase? {
         val ship = board.getShips().getShip(position) ?: return null
         val curOrientation = ship.getOrientation()
         val shipPosOrigin = board.getShips().getShip(position)?.coordinates?.first() ?: return null
@@ -143,7 +154,7 @@ class PreparationPhase: Game {
         return tmpGame.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
     }
 
-    override fun tryRotateShip(position: String): Game? {
+    fun tryRotateShip(position: String): Game? {
         TODO("Not yet implemented")
     }
 
@@ -201,5 +212,5 @@ class PreparationPhase: Game {
     private fun isShipPlaced(shipType: ShipType) =
         board.getShips().map { it.type }.any { it === shipType }
 
-
+    fun confirmFleet() = PlayerWaitingPhase(gameId, configuration, board)
 }

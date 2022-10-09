@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.game_state.End
 
 class BattlePhase: Game {
     override val gameId: Int
@@ -56,7 +55,7 @@ class BattlePhase: Game {
      * Builds a new Game object, with place shot on [shot], in opponent board.
      * If this shot sinks all enemy fleet, the game is over. In this case, End object is returned.
      */
-    override fun tryPlaceShot(shot: Coordinate): BattlePhase? {
+    override fun tryPlaceShot(token: String, shot: Coordinate): BattlePhase? {
         return try {
             val gameResult = BattlePhase(this, shot)
             if (gameResult.opponentBoard.isGameOver()) {

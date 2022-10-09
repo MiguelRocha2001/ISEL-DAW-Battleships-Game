@@ -2,16 +2,13 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Jdbi
 import org.springframework.boot.jdbc.DataSourceBuilder
-import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.game.BattlePhase
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.player.Player
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.PreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.game.*
 
-sealed class GameResponse
-data class Phase1(val gameA: PreparationPhase, val gameB: PreparationPhase) : GameResponse()
-data class Phase2(val game: BattlePhase) : GameResponse()
+sealed class DbGameResponse
+data class DbPreparationPhase(val preparationPhase: PreparationPhase) : DbGameResponse()
+data class DbWaitingPhase(val waitingPhase: WaitingPhase) : DbGameResponse()
+data class DbPlayerPreparationPhase(val playerPreparationPhase: PlayerPreparationPhase) : DbGameResponse()
+data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
 
 class JdbiGamesRepository {
     private val jdbi: Jdbi
@@ -28,30 +25,46 @@ class JdbiGamesRepository {
     }
 
     internal fun saveGame(game: Game) {
-        jdbi
-    }
-
-    fun getGameById(gameId: Int): GameResponse? {
         TODO("Not yet implemented")
     }
 
-    fun getGameByUser(gameId: String): GameResponse? {
+    internal fun savePreparationPhase(preparationPhase: PreparationPhase) {
         TODO("Not yet implemented")
     }
 
-    fun getOpponentBoard(): Board {
+    internal fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
         TODO("Not yet implemented")
     }
+
+    internal fun savePlayerWaitingPhase(playerWaitingPhase: PlayerWaitingPhase) {
+        TODO("Not yet implemented")
+    }
+
+    internal fun getPreparationPhase(gameId: Int): PreparationPhase? {
+        TODO("Not yet implemented")
+    }
+
+    /**
+     * Returns the game if both players have confirmed their fleets.
+     */
+    internal fun getWaitingPhase(gameId: Int): DbWaitingPhase? {
+        TODO("Not yet implemented")
+    }
+
+    internal fun getPlayerPreparationPhase(token: String): DbPlayerPreparationPhase? {
+        TODO("Not yet implemented")
+    }
+
+    internal fun getGame(): DbGameResponse? {
+        TODO("Not yet implemented")
+    }
+
 
     fun createUser(username: String, password: String) {
         TODO("Not yet implemented")
     }
 
     fun saveConfiguration(configuration: Configuration) {
-        TODO("Not yet implemented")
-    }
-
-    fun getCurrentPlayer(): Player {
         TODO("Not yet implemented")
     }
 

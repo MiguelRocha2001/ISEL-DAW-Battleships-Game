@@ -10,6 +10,11 @@ sealed class Game {
     abstract val gameId: Int
     abstract val configuration: Configuration
 
+    companion object {
+        fun getNewGame(gameId: Int, player1Id: String, player2Id: String, configuration: Configuration) =
+            PreparationPhase(gameId, player1Id, player2Id, configuration)
+    }
+
     open fun tryPlaceShip(ship: ShipType, position: Coordinate, orientation: Orientation): Game? = null
 
     open fun tryMoveShip(position: Coordinate, destination: Coordinate): Game? = null
