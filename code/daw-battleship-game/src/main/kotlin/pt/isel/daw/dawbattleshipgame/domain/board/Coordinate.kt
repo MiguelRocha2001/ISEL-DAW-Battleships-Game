@@ -37,22 +37,16 @@ fun String.toCoordinate(): Coordinate {
     return Coordinate(row.toInt(), column)
 }
 
-
-
 typealias CoordinateSet = Set<Coordinate>
 
-fun CoordinateSet.rotate(orientation: Orientation, origin: Coordinate) = this.map { it.rotate(orientation, origin) }.toSet()
 private fun CoordinateSet.sorted() = sortedBy { it.row }.sortedBy { it.column }
 
 /** Obtains the first coordinate (with lower row and column) */
 fun CoordinateSet.first() = sorted().first()
 
-/** Obtains the index of the coordinate, for implicit CoordinateSet */
-fun CoordinateSet.index(c: Coordinate): Int? {
-    if (all { c != it }) return null
-    return sorted().indexOf(c)
-}
-
+/**
+ * Moves all coordinates to a new position calculated using the [destination]
+ */
 fun CoordinateSet.moveFromTo(origin : Coordinate, destination: Coordinate, gameDim : Int): CoordinateSet {
     val operator = Coordinates(gameDim)
     val horizontalAmount = destination.row - origin.row
@@ -94,11 +88,24 @@ class Coordinates(private val dim: Int) {
         Coordinate((it / dim + ONE), (it % dim) + ONE)
     }
 
+    /**
+     * @param c the original coordinate
+     * @param verticalAmount the amount of times to move the column
+     * @param horizontalAmount the amount of times to move the row
+     * Moves a coordinate to a new place (row , column) given an amount of moves to make
+     * @returns a new Coordinate with the moved row and column
+     */
     fun move(c : Coordinate, verticalAmount : Int, horizontalAmount : Int): Coordinate {
         val aux = moveHorizontally(c, horizontalAmount)
         return moveVertically(aux, verticalAmount)
     }
 
+    /**
+     * Moves vertically a coordinate, up or down depending on the amount of times
+     * if [amount] is a positive number, moves up on the column i.e A -> B
+     * if [amount] is a negative number, moves down on the column i.e B -> A
+     * @return a new [Coordinate] with the column affected
+     */
     private fun moveVertically(c: Coordinate, amount: Int): Coordinate {
         if (c.row.isOne() && amount < 0) throw Exception("Unable to move vertically")
         if (c.row.isGameDim() && amount > 0) throw Exception("Unable to move vertically")
@@ -106,6 +113,12 @@ class Coordinates(private val dim: Int) {
     }
 
 
+    /**
+     * Moves horizontally a coordinate, right or left depending on the amount of times
+     * if [amount] is a positive number, moves right on the row i.e 1 -> 2
+     * if [amount] is a negative number, moves left on the row i.e 2 -> 1
+     * @return a new [Coordinate] with the row affected
+     */
     private fun moveHorizontally(c: Coordinate, amount : Int): Coordinate {
         if (c.column.isOne() && amount < 0) throw Exception("Unable to move horizontally")
         if (c.column.isGameDim() && amount > 0) throw Exception("Unable to move horizontally")

@@ -89,12 +89,15 @@ class Warmup: GameState {
         }
     }
 
+    /**
+     * Tries to place a ship, giving its coordinates and its type
+     */
     private fun tryPlaceShipWithCoordinates(
         shipType: ShipType,
-        position: CoordinateSet,
+        coordinates: CoordinateSet,
     ) : Warmup? {
         return try {
-            buildGameMoveShip(this, position, shipType)
+            buildGameMoveShip(this, coordinates, shipType)
         }catch (e : Exception){
             null
         }

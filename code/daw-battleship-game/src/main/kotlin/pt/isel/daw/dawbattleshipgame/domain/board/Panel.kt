@@ -1,15 +1,15 @@
 package pt.isel.daw.dawbattleshipgame.domain.board
 
-import org.slf4j.event.SubstituteLoggingEvent
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.domain.ship.types.Ship
-
-enum class PanelType { WaterPanel, ShipPane }
 
 sealed class Panel(internal val isHit: Boolean) {
     abstract fun getPanelHit(): Panel
 }
 
+/**
+ * Class representing a panel of water
+ * @param isHit if true has been hit, else it has not
+ */
 class WaterPanel(isHit: Boolean = false) : Panel(isHit) {
     override fun getPanelHit() = WaterPanel(true)
 
@@ -17,6 +17,12 @@ class WaterPanel(isHit: Boolean = false) : Panel(isHit) {
         return if (isHit) "x" else "  "
     }
 }
+
+/**
+ * Class representing a panel with a Ship
+ * @param shipType is the type of the ship
+ * @param isHit if true the ship has been hit, else it has not
+ */
 class ShipPanel(val shipType: ShipType, isHit: Boolean = false) : Panel(isHit) {
     override fun getPanelHit() = ShipPanel(shipType, true)
 
