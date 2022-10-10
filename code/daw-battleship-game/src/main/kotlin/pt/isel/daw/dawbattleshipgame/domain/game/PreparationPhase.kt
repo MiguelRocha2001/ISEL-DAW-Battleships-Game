@@ -1,29 +1,54 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.game_state
+package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.ship.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.getOrientation
 import kotlin.collections.first
 
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 
-class Warmup: GameState {
+class PreparationPhase(
+    override val gameId: Int,
+    player1Id: String,
+    player2Id: String,
     override val configuration: Configuration
+) : Game() {
+
+    val player1PreparationPhase: PlayerPreparationPhase
+    val player2PreparationPhase: PlayerPreparationPhase
+
+    init {
+        this.player1PreparationPhase = PlayerPreparationPhase(gameId, configuration, player1Id)
+        this.player2PreparationPhase = PlayerPreparationPhase(gameId, configuration, player2Id)
+    }
+}
+
+class PlayerPreparationPhase {
+    val gameId: Int
+    val playerId: String
+
+    val configuration: Configuration
     private val coordinates: Coordinates
-    override val myBoard: Board
+    val board: Board
 
     /**
      * Creates a new Game.
      */
-    constructor(configuration: Configuration) {
+    constructor(gameId: Int, configuration: Configuration, playerId: String) {
         this.configuration = configuration
-        myBoard = Board(configuration.boardSize)
+        this.gameId = gameId
+        this.playerId = playerId
+        board = Board(configuration.boardSize)
         coordinates = Coordinates(configuration.boardSize)
     }
 
-    private constructor(newConfiguration: Configuration, newBoard: Board){
-        configuration = newConfiguration
-        myBoard = newBoard
+    private constructor(old: PlayerPreparationPhase, newBoard: Board){
+        this.configuration = old.configuration
+        this.gameId = old.gameId
+        this.playerId = old.playerId
+        board = newBoard
         coordinates = Coordinates(configuration.boardSize)
     }
 
@@ -31,11 +56,11 @@ class Warmup: GameState {
      * Places a ship on the board.
      * @throws Exception if is not possible to place the ship
      */
-    private fun buildGamePlaceShip(old: Warmup, shipType: ShipType, coordinate: Coordinate, orientation: Orientation): Warmup {
+    private fun buildGamePlaceShip(old: PlayerPreparationPhase, shipType: ShipType, coordinate: Coordinate, orientation: Orientation): PlayerPreparationPhase {
         if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = old.generateShipCoordinates(shipType, coordinate, orientation) ?: throw Exception()
-        return Warmup(old.configuration,
-            old.myBoard.placeShipPanel(shipCoordinates, shipType),
+        return PlayerPreparationPhase(this,
+            old.board.placeShipPanel(shipCoordinates, shipType),
         )
     }
 
@@ -43,34 +68,34 @@ class Warmup: GameState {
      * Builds a new Game object, with ship removed from [position]
      * @throws Exception if is not possible to place the ship
      */
-    private fun buildGameRemovedShip(old: Warmup, position: Coordinate): Warmup {
+    private fun buildGameRemovedShip(old: PlayerPreparationPhase, position: Coordinate): PlayerPreparationPhase {
         if(old.isNotShip(position)) throw Exception()
-        val ship = old.myBoard.getShips().getShip(position)
+        val ship = old.board.getShips().getShip(position)
         val shipCoordinates = ship.coordinates
-        return Warmup(
-            old.configuration,
-            old.myBoard.placeWaterPanel(shipCoordinates),
+        return PlayerPreparationPhase(
+            this,
+            old.board.placeWaterPanel(shipCoordinates),
         )
     }
 
-    private fun buildGameMoveShip(old : Warmup, coordinateS: CoordinateSet, shipType: ShipType): Warmup {
+    private fun buildGameMoveShip(old : PlayerPreparationPhase, coordinateS: CoordinateSet, shipType: ShipType): PlayerPreparationPhase {
         if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
-        return Warmup(
-            old.configuration,
-            old.myBoard.placeShipPanel(coordinateS, shipType)
+        return PlayerPreparationPhase(
+            this,
+            old.board.placeShipPanel(coordinateS, shipType)
         )
     }
 
     operator fun get(coordinate: Coordinate): Panel {
-        return myBoard[coordinate]
+        return board[coordinate]
     }
 
     override fun toString(): String {
-        return myBoard.toString()
+        return board.toString()
     }
 
-    private fun isShip(c: Coordinate) = myBoard.isShipPanel(c)
-    private fun isNotShip(c: Coordinate) = myBoard.isWaterPanel(c)
+    private fun isShip(c: Coordinate) = board.isShipPanel(c)
+    private fun isNotShip(c: Coordinate) = board.isWaterPanel(c)
 
     /**
      * Tries to place [shipType] on the Board, on give in [position].
@@ -80,7 +105,7 @@ class Warmup: GameState {
         shipType: ShipType,
         position: Coordinate,
         orientation: Orientation
-    ): Warmup? {
+    ): PlayerPreparationPhase? {
         if (isShipPlaced(shipType)) return null
         return try {
             buildGamePlaceShip(this, shipType, position, orientation)
@@ -95,7 +120,7 @@ class Warmup: GameState {
     private fun tryPlaceShipWithCoordinates(
         shipType: ShipType,
         coordinates: CoordinateSet,
-    ) : Warmup? {
+    ) : PlayerPreparationPhase? {
         return try {
             buildGameMoveShip(this, coordinates, shipType)
         }catch (e : Exception){
@@ -106,9 +131,9 @@ class Warmup: GameState {
     /**
      * Generates a new Warmup Board with a moved ship
      */
-    fun tryMoveShip(position: Coordinate, destination: Coordinate): Warmup? {
+    fun tryMoveShip(position: Coordinate, destination: Coordinate): PlayerPreparationPhase? {
         return try {
-            val ship = myBoard.getShips().getShip(position)
+            val ship = board.getShips().getShip(position)
             val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
             tryRemoveShip(position)?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
         }catch (e : Exception){
@@ -121,7 +146,7 @@ class Warmup: GameState {
      * @param position coordinate where the ship is located (some part of the ship)
      * @return new Game with ship removed or null if ship was not found, for [position]
      */
-    private fun tryRemoveShip(position: Coordinate): Warmup? {
+    private fun tryRemoveShip(position: Coordinate): PlayerPreparationPhase? {
         return try {
             buildGameRemovedShip(this, position)
         } catch (e: Exception) {
@@ -133,11 +158,11 @@ class Warmup: GameState {
      * Tries to rotate a ship, if possible.
      * @return newly created game, with ship rotated, or null if not possible
      */
-    fun tryRotateShip(position: Coordinate): Warmup? {
+    fun tryRotateShip(position: Coordinate): PlayerPreparationPhase? {
         return try {
-            val ship = myBoard.getShips().getShip(position)
+            val ship = board.getShips().getShip(position)
             val curOrientation = ship.getOrientation()
-            val shipPosOrigin = myBoard.getShips().getShip(position).coordinates.first()
+            val shipPosOrigin = board.getShips().getShip(position).coordinates.first()
             val tmpGame = tryRemoveShip(position)
             tmpGame?.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
         }catch (e : Exception){
@@ -156,7 +181,7 @@ class Warmup: GameState {
             getShipLength(ship), position, orientation
         ) ?: return null
 
-        if (isShipTouchingAnother(myBoard, shipCoordinates)) return null
+        if (isShipTouchingAnother(board, shipCoordinates)) return null
         return shipCoordinates
     }
 
@@ -196,5 +221,5 @@ class Warmup: GameState {
         configuration.fleet.first { it.first === shipType }.second
 
     private fun isShipPlaced(shipType: ShipType) =
-        myBoard.getShips().map { it.type }.any { it === shipType }
+        board.getShips().map { it.type }.any { it === shipType }
 }
