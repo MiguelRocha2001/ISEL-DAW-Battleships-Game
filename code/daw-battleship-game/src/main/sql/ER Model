@@ -1,41 +1,34 @@
-USER(id, username, passwordValidation)
-pk: id
+USER(int id, string username, pass_hash)
+Pk: id
 
-PLAYER(user, number)
-pk: user
-FK: user references USER(id)
+GAME(int id, )
+Pk: id
 
-GAME(id, state)
-pk: id
-FK: state references STATE(name)
+STATE(char name)
 
-STATE(name)
-pk: name
+PREPARATION(char name)
+Pk: name
+Fk: name references STATE(name)
 
-CONFIG(game, board_size, n_shots, timeout)
-pk: game
-FK: game references GAME(id)
+WAITING(char name)
+Fk: name references STATE(name)
 
-BOARD(game, is_player_1)
-pk: game
-fk: game references GAME(id)
+BATTLE(char name, player_turn)
+Fk: name references STATE(name)
 
-PANEL(game, type, hit)
-pk: game
-fk: game references GAME(id)
+END(char name)
+Fk: name references STATE(name)
 
-SHIPS(game, is_player_1)
-pk: game
-fk: game references GAME(id)
+BOARD(int game, string player)
+Pk: game, player
 
-SHIP_TYPE(name)
-pk: name
+PANEL(int game, string player, int idx, boolean isHit)
+Pk: game, player, idx
 
-SHIP(ships, type, orientation)
-pk: ships
-fk: ships references SHIPS(game)
+WATER_PANEL(int game, string player, int idx)
+Pk: game, player, idx
+Fk: game, player, idx references PANEL(game, player, idx)
 
-COORDINATE(row, column, ship, ship_type)
-pk: row, column
-fk: ship references SHIP(ships)
-fk: ship_type references SHIP(type)
+SHIP_PANEL(int game, string player, int idx, type)
+Pk: game, player, idx
+Fk: game, player, idx references PANEL(game, player, idx)

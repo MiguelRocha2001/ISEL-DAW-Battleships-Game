@@ -222,4 +222,6 @@ class PlayerPreparationPhase {
 
     private fun isShipPlaced(shipType: ShipType) =
         board.getShips().map { it.type }.any { it === shipType }
+
+    fun confirmFleet() = PlayerWaitingPhase(gameId, configuration, board, playerId)
 }
