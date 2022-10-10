@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.player.Player
 
 class BattlePhase: Game {
     override val gameId: Int
