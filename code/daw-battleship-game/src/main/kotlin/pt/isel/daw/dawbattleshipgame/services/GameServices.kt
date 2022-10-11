@@ -25,7 +25,7 @@ class GameServices(private val db: JdbiGamesRepository) {
         } else {
             val gameId: Int = generateGameId()
             db.removeUserFromQueue(userWaiting)
-            val preparationPhase = Game.getNewGame(gameId, userWaiting, token, configuration)
+            val preparationPhase = Game.newGame(gameId, userWaiting, token, configuration)
             db.savePreparationPhase(preparationPhase)
             return preparationPhase.player2PreparationPhase
         }

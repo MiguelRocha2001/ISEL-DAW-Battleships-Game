@@ -15,3 +15,7 @@ fun getGameTestConfiguration() = Configuration(
     nShotsPerRound = 10,
     roundTimeout = 10
 )
+
+fun generateGameId(): Int = (Math.random() * 100000).toInt()
+
+fun generateToken(): String = (Math.random() * 100000).toString()

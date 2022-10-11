@@ -10,6 +10,13 @@ class GameRepositoryTests {
     private val passwordEncoder = BCryptPasswordEncoder()
 
     @Test
+    fun testConnection() {
+        testWithHandleAndRollback { handle ->
+            JdbiUsersRepository(handle)
+        }
+    }
+
+    @Test
     fun `can create and retrieve`(): Unit = testWithHandleAndRollback { handle ->
         // given: repositories and logic
         val userRepo = JdbiUsersRepository(handle)

@@ -8,9 +8,12 @@ import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.tictactow.repository.Transaction
 import pt.isel.daw.tictactow.repository.TransactionManager
 
+// get from env
+private val url = System.getenv("DB_POSTGRES_CONNECTION")
+
 private val jdbi = Jdbi.create(
     PGSimpleDataSource().apply {
-        setURL("jdbc:postgresql://localhost:5432/dawmock?user=postgres&password=raedawn")
+        setURL(url)
     }
 ).configure()
 

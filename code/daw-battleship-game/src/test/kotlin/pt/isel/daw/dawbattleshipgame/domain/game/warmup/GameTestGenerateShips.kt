@@ -1,17 +1,22 @@
 package pt.isel.daw.dawbattleshipgame.domain.game.warmup
 
 import org.junit.jupiter.api.Test
-import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
 
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.generateGameId
 
 internal class GameTestGenerateShips {
 
     @Test
     fun generateShips() {
-        val game = Game.newGame(getGameTestConfiguration(), Player.Player1)
-        val g2 = game.generateShips()
-        println(g2.toString())
+        val gameId = generateGameId()
+        val player1 = generateToken()
+        val player2 = generateToken()
+        val configuration = getGameTestConfiguration()
+        val game = Game.newGame(gameId, player1, player2, configuration)
+        val player1PreparationPhase = game.player1PreparationPhase
+        val g2 = player1PreparationPhase // TODO
     }
 }
