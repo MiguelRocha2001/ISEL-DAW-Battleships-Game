@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.coordinate
+package domain.game.utils.board.coordinate
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -231,6 +231,25 @@ internal class CoordinateTest {
         assertNull(radius)
     }
 
+    @Test
+    fun move_coordinate_to_selected_place(){
+        val coordinate = Coordinate(1, 1)
+        val moved = Coordinates(10).move(coordinate,4,4)
+        val expected = Coordinate(5,5)
 
+        assertEquals(moved,expected)
+    }
+
+    @Test
+    fun move_coordinate_to_selected_invalid_place(){
+        val thrown: Exception = assertThrows(
+            Exception::class.java,
+
+            ) { val coordinate = Coordinate(1, 1)
+            Coordinates(10).move(coordinate,11,4)
+        }
+
+        assertTrue(thrown.message!! == "Unable to move vertically")
+    }
 
 }

@@ -1,4 +1,4 @@
-package domain.game.utils.board
+package domain.game.utils.board.coordinate
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -260,6 +260,7 @@ internal class CoordinatesSetTest {
         assertTrue(thrown.message!! == "Unable to move vertically")
     }
 
+
     @Test
     fun moveFromTo_test_from_invalid_origin() {
 
@@ -273,14 +274,15 @@ internal class CoordinatesSetTest {
                 Coordinate(1,4),
                 Coordinate(1,5),
             )
-            val origin = Coordinate(0,0)
-            val destination = Coordinate(2,2)
+            val origin = Coordinate(1,1)
+            val destination = Coordinate(1,3)
 
             testCoordinates.moveFromTo(origin, destination, 10)
 
 
         }
-        print(thrown.message)
-        assertTrue(thrown.message!! == "Coordinate cannot possess values inferior to zero")
+
+        assertTrue(thrown.message == "The origin coordinate is not included in the set of coordinates")
     }
+
 }

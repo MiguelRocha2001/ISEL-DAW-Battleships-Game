@@ -48,6 +48,7 @@ fun CoordinateSet.first() = sorted().first()
  * Moves all coordinates to a new position calculated using the [destination]
  */
 fun CoordinateSet.moveFromTo(origin : Coordinate, destination: Coordinate, gameDim : Int): CoordinateSet {
+    if(!this.contains(origin)) throw Exception("The origin coordinate is not included in the set of coordinates") //provisional
     val operator = Coordinates(gameDim)
     val horizontalAmount = destination.row - origin.row
     val verticalAmount = destination.column - origin.column
