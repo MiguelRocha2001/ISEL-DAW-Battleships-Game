@@ -15,15 +15,4 @@ class GameRepositoryTests {
             JdbiUsersRepository(handle)
         }
     }
-
-    @Test
-    fun `can create and retrieve`(): Unit = testWithHandleAndRollback { handle ->
-        // given: repositories and logic
-        val userRepo = JdbiUsersRepository(handle)
-        val username = "user1"
-        val passwordValidationInfo = PasswordValidationInfo(
-            passwordEncoder.encode("password1")
-        )
-        userRepo.storeUser(username, passwordValidationInfo)
-    }
 }

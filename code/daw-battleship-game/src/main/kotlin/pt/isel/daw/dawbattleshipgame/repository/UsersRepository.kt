@@ -7,8 +7,9 @@ import pt.isel.daw.dawbattleshipgame.domain.player.User
 interface UsersRepository {
 
     fun storeUser(
+        id: String,
         username: String,
-        passwordValidation: PasswordValidationInfo,
+        passwordValidation: String,
     ): Boolean
 
     fun getUserByUsername(username: String): User?

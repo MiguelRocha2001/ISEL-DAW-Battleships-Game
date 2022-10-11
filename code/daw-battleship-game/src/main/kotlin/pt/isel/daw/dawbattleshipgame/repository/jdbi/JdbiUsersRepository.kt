@@ -17,14 +17,15 @@ class JdbiUsersRepository(
             .mapTo<User>()
             .singleOrNull()
 
-    override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): Boolean =
+    override fun storeUser(id: String, username: String, passwordValidation: String): Boolean =
         handle.createUpdate(
             """
-            insert into _user (username, password_validation) values (:username, :passwordvalidation)
+            insert into _user (id, username, hashed_password) values (:id, :username, :hashed_password)
             """
         )
+            .bind("id", id)
             .bind("username", username)
-            .bind("password_validation", passwordValidation.validationInfo)
+            .bind("hashed_password", passwordValidation)
             .execute() == 1
 
     override fun isUserStoredByUsername(username: String): Boolean =

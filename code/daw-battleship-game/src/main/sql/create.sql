@@ -1,7 +1,7 @@
 create table _USER(
     id varchar(20) not null primary key,
     username varchar(20) not null,
-    passwordValidation varchar(32)
+    hashed_password varchar(32)
 );
 
 create table GAME(
@@ -20,30 +20,18 @@ create table CONFIGURATION(
     foreign key (game) references GAME(id)
 );
 
-create table PREPARATION(
+create table OTHER(
     game int primary key,
-    name varchar(20) not null,
-    foreign key (game) references GAME(id)
-);
-
-create table WAITING(
-    game int primary key,
-    name varchar(20) not null,
+    name varchar(20) not null check ( name in ('preparation', 'waiting', 'end') ),
     foreign key (game) references GAME(id)
 );
 
 create table BATTLE(
     game int primary key,
-    name varchar(20) not null,
+    name varchar(20) not null check ( name in ('battle') ),
     player_turn varchar(20) not null,
     foreign key (game) references GAME(id),
     foreign key (player_turn) references _USER(id)
-);
-
-create table _END(
-    game int primary key,
-    name varchar(20) not null,
-    foreign key (game) references GAME(id)
 );
 
 create table BOARD(

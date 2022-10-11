@@ -1,5 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
+import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.springframework.boot.jdbc.DataSourceBuilder
 import pt.isel.daw.dawbattleshipgame.domain.game.*
@@ -10,7 +11,9 @@ data class DbWaitingPhase(val waitingPhase: WaitingPhase) : DbGameResponse()
 data class DbPlayerPreparationPhase(val playerPreparationPhase: PlayerPreparationPhase) : DbGameResponse()
 data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
 
-class JdbiGamesRepository {
+class JdbiGamesRepository(
+    private val handle: Handle,
+) {
     private val jdbi: Jdbi
 
     init {
@@ -25,7 +28,22 @@ class JdbiGamesRepository {
     }
 
     internal fun saveGame(game: Game) {
-        TODO("Not yet implemented")
+        // TODO -> fill GAME on DB
+        when (game) {
+            is PreparationPhase -> {
+                handle.createUpdate(
+                    """
+                    insert into dbo.OTHER(game, name)
+                    values(:game, :name)
+                """
+                )
+                    .bind("id", game.gameId)
+                    .bind("name", "preparation")
+            }
+            is WaitingPhase -> State.WAITING
+            is BattlePhase -> State.BATTLE
+            is EndPhase -> State.END
+        }
     }
 
     internal fun savePreparationPhase(preparationPhase: PreparationPhase) {
