@@ -1,23 +1,27 @@
 USER(int id, string username, pass_hash)
 Pk: id
 
-GAME(int id, )
-Pk: id
+PREPARATION(int game, string name)
+PK: game
+FK: game references GAME(id)
 
-STATE(char name)
+WAITING(int game, string name)
+PK: game
+FK: game references GAME(id)
 
-PREPARATION(char name)
-Pk: name
-Fk: name references STATE(name)
+BATTLE(int game, string name, player_turn)
+PK: game
+FK: game references GAME(id)
+FK: player_turn references USER(id)
 
-WAITING(char name)
-Fk: name references STATE(name)
+END(int game, string name)
+PK: game
+FK: game references GAME(id)
 
-BATTLE(char name, player_turn)
-Fk: name references STATE(name)
+GAME(int id, user1, user2)
+PK: id
+FK: {user1, user2} references USER(id)
 
-END(char name)
-Fk: name references STATE(name)
 
 BOARD(int game, string player)
 Pk: game, player
@@ -32,3 +36,11 @@ Fk: game, player, idx references PANEL(game, player, idx)
 SHIP_PANEL(int game, string player, int idx, type)
 Pk: game, player, idx
 Fk: game, player, idx references PANEL(game, player, idx)
+
+CONFIGURATION(int game, int board_size, int n_shots, int timeout)
+Pk: game
+Fk: game references GAME(id)
+
+SHIP_TYPE(string char name, int length, configuration)
+Pk: name
+Fk: configuration references CONFIGURATION(game)

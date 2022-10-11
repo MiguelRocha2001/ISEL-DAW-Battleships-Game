@@ -1,21 +1,18 @@
 create table _USER(
-    id int primary key,
+    id varchar(20) not null primary key,
     username varchar(20) not null,
     passwordValidation varchar(32)
 );
 
-create table PLAYER(
-    _user int primary key,
-    number int,
-    foreign key (_user) references _USER(id)
-);
-
 create table GAME(
     id int primary key,
-    state varchar(32)
+    user1 varchar(20) not null,
+    user2 varchar(20) not null,
+    foreign key (user1) references _USER(id),
+    foreign key (user2) references _USER(id)
 );
 
-create table CONFIG(
+create table CONFIGURATION(
     game int primary key,
     board_size int,
     n_shots int,
@@ -23,43 +20,65 @@ create table CONFIG(
     foreign key (game) references GAME(id)
 );
 
-create table BOARD(
+create table PREPARATION(
     game int primary key,
-    is_player_1 boolean,
+    name varchar(20) not null,
     foreign key (game) references GAME(id)
 );
 
-create table PANEL(
+create table WAITING(
     game int primary key,
-    type varchar(32),
-    hit boolean,
+    name varchar(20) not null,
     foreign key (game) references GAME(id)
+);
+
+create table BATTLE(
+    game int primary key,
+    name varchar(20) not null,
+    player_turn varchar(20) not null,
+    foreign key (game) references GAME(id),
+    foreign key (player_turn) references _USER(id)
+);
+
+create table _END(
+    game int primary key,
+    name varchar(20) not null,
+    foreign key (game) references GAME(id)
+);
+
+create table BOARD(
+    game int,
+    _user varchar(20) not null,
+    primary key (game, _user),
+    foreign key (game) references GAME(id),
+    foreign key (_user) references _USER(id)
+);
+
+create table WATER_PANEL(
+    game int,
+    _user varchar(20) not null,
+    idx int,
+    is_hit boolean,
+    primary key (game, _user, idx),
+    foreign key (game) references GAME(id),
+    foreign key (_user) references _USER(id)
+);
+
+create table SHIP_PANEL(
+    game int,
+    _user varchar(20) not null,
+    idx int,
+    is_hit boolean,
+    type varchar(20) not null,
+    primary key (game, _user, idx),
+    foreign key (game) references GAME(id),
+    foreign key (_user) references _USER(id)
 );
 
 create table SHIP_TYPE(
-    name varchar(32) primary key
-);
-
-create table SHIPS(
-    game int,
-    type varchar(32),
-    horizontal boolean,
-    foreign key (game) references GAME(id),
-    foreign key (type) references SHIP_TYPE(name)
-);
-
-create table SHIP(
-    game int primary key,
-    type varchar(32),
-    horizontal boolean,
-    foreign key (game) references GAME(id),
-    foreign key (type) references SHIP_TYPE(name)
-);
-
-create table COORDINATE(
-    row int,
-    _column int,
-    ship int,
-    primary key (row, _column, ship),
-    foreign key (ship) references SHIP(game)
+    name varchar(20) not null,
+    length int,
+    configuration int,
+    primary key (name, length),
+    foreign key (configuration) references CONFIGURATION(game)
 );
