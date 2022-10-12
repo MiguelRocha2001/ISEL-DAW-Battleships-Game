@@ -8,6 +8,8 @@ create table GAME(
     id int primary key,
     user1 varchar(20) not null,
     user2 varchar(20) not null,
+    state varchar(20) check ( state in ('waiting', 'playing', 'finished') ),
+    player_turn
     foreign key (user1) references _USER(id),
     foreign key (user2) references _USER(id)
 );

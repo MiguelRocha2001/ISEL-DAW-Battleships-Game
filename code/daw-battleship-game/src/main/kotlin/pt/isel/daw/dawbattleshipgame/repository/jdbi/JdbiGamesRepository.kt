@@ -1,8 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.Jdbi
-import org.springframework.boot.jdbc.DataSourceBuilder
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 
 sealed class DbGameResponse
@@ -15,27 +13,48 @@ class JdbiGamesRepository(
     private val handle: Handle,
 ) {
     internal fun saveGame(game: Game) {
-        // TODO -> fill GAME on DB
+        insertGame(game)
+        insertState(game)
+        insertBoard(game)
+    }
+
+    private fun insertBoard(game: Game) {
         handle.createUpdate(
             """
-                    insert into dbo.GAME(id, user1, user2)
-                    values(:id, :user1, :user2)
-                """
+                        insert into dbo.BOARD(id, user1, user2)
+                        values(:id, :user1, :user2)
+                    """
         )
             .bind("id", game.gameId)
             .bind("user1", game.player1)
             .bind("user2", game.player2)
+    }
+
+    private fun insertGame(game: Game) {
+        handle.createUpdate(
+            """
+                        insert into dbo.GAME(id, user1, user2)
+                        values(:id, :user1, :user2)
+                    """
+        )
+            .bind("id", game.gameId)
+            .bind("user1", game.player1)
+            .bind("user2", game.player2)
+    }
+
+    private fun insertState(game: Game) {
         when (game) {
             is PreparationPhase -> {
                 handle.createUpdate(
                     """
-                    insert into dbo.OTHER(game, name)
-                    values(:game, :name)
-                """
+                        insert into dbo.OTHER(game, name)
+                        values(:game, :name)
+                    """
                 )
                     .bind("id", game.gameId)
                     .bind("name", "preparation")
             }
+
             is WaitingPhase -> State.WAITING
             is BattlePhase -> State.BATTLE
             is EndPhase -> State.END
