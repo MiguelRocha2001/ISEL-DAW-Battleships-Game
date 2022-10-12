@@ -14,21 +14,17 @@ data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
 class JdbiGamesRepository(
     private val handle: Handle,
 ) {
-    private val jdbi: Jdbi
-
-    init {
-        val dbPassword = System.getenv("DB_POSTGRES_PASSWORD")
-        val dataSource = DataSourceBuilder.create()
-            .url("jdbc:postgresql://localhost:5432/postgres")
-            .username("postgres")
-            .password(dbPassword)
-            .build()
-        jdbi = Jdbi.create(dataSource)
-        // TODO
-    }
-
     internal fun saveGame(game: Game) {
         // TODO -> fill GAME on DB
+        handle.createUpdate(
+            """
+                    insert into dbo.GAME(id, user1, user2)
+                    values(:id, :user1, :user2)
+                """
+        )
+            .bind("id", game.gameId)
+            .bind("user1", game.player1)
+            .bind("user2", game.player2)
         when (game) {
             is PreparationPhase -> {
                 handle.createUpdate(

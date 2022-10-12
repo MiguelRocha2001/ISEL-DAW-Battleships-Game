@@ -7,8 +7,8 @@ class BattlePhase: Game {
     override val gameId: Int
     override val configuration: Configuration
 
-    private val player1: String // user1 Id
-    private val player2: String // user2 Id
+    override val player1: String // user1 Id
+    override val player2: String // user2 Id
 
     private val player1Board: Board
     private val player2Board: Board

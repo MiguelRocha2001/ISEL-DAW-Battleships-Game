@@ -11,17 +11,17 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 
 class PreparationPhase(
     override val gameId: Int,
-    player1Id: String,
-    player2Id: String,
-    override val configuration: Configuration
+    override val configuration: Configuration,
+    override val player1: String,
+    override val player2: String,
 ) : Game() {
 
     val player1PreparationPhase: PlayerPreparationPhase
     val player2PreparationPhase: PlayerPreparationPhase
 
     init {
-        this.player1PreparationPhase = PlayerPreparationPhase(gameId, configuration, player1Id)
-        this.player2PreparationPhase = PlayerPreparationPhase(gameId, configuration, player2Id)
+        this.player1PreparationPhase = PlayerPreparationPhase(gameId, configuration, player1)
+        this.player2PreparationPhase = PlayerPreparationPhase(gameId, configuration, player2)
     }
 }
 

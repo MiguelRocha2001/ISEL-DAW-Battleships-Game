@@ -20,15 +20,14 @@ create table CONFIGURATION(
     foreign key (game) references GAME(id)
 );
 
-create table OTHER(
+create table STATE(
     game int primary key,
-    name varchar(20) not null check ( name in ('preparation', 'waiting', 'end') ),
+    name varchar(20) not null check ( name in ('preparation', 'waiting', 'battle', 'end') ),
     foreign key (game) references GAME(id)
 );
 
 create table BATTLE(
     game int primary key,
-    name varchar(20) not null check ( name in ('battle') ),
     player_turn varchar(20) not null,
     foreign key (game) references GAME(id),
     foreign key (player_turn) references _USER(id)
