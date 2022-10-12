@@ -8,8 +8,8 @@ create table GAME(
     id int primary key,
     user1 varchar(20) not null,
     user2 varchar(20) not null,
-    state varchar(20) not null check ( state in ('preparation', 'waiting', 'battle', 'end') ),
-    player_turn varchar(20) null,
+    state varchar(20) check ( state in ('waiting', 'playing', 'finished') ),
+    player_turn
     foreign key (user1) references _USER(id),
     foreign key (user2) references _USER(id)
 );
@@ -22,6 +22,18 @@ create table CONFIGURATION(
     foreign key (game) references GAME(id)
 );
 
+create table STATE(
+    game int primary key,
+    name varchar(20) not null check ( name in ('preparation', 'waiting', 'battle', 'end') ),
+    foreign key (game) references GAME(id)
+);
+
+create table BATTLE(
+    game int primary key,
+    player_turn varchar(20) not null,
+    foreign key (game) references GAME(id),
+    foreign key (player_turn) references _USER(id)
+);
 
 create table BOARD(
     game int,
