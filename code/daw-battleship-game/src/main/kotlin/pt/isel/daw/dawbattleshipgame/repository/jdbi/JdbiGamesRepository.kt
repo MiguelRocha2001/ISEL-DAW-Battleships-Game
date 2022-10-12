@@ -1,8 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.Jdbi
-import org.springframework.boot.jdbc.DataSourceBuilder
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 
 sealed class DbGameResponse
@@ -43,7 +41,7 @@ class JdbiGamesRepository(
     }
 
     internal fun savePreparationPhase(preparationPhase: PreparationPhase) {
-        TODO("Not yet implemented")
+
     }
 
     internal fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
