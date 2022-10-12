@@ -6,7 +6,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.generateShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.*
 
 class Board {
-    private val board: List<Panel>
+    val board: List<Panel>
     private val _coordinates: Coordinates
     val coordinates: List<Coordinate>
         get() = _coordinates.values()

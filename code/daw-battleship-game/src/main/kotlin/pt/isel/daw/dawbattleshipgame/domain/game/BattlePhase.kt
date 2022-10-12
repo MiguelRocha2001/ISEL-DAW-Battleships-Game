@@ -10,10 +10,10 @@ class BattlePhase: Game {
     override val player1: String // user1 Id
     override val player2: String // user2 Id
 
-    private val player1Board: Board
-    private val player2Board: Board
+    val player1Board: Board
+    val player2Board: Board
 
-    private val playersTurn: String
+    val playersTurn: String
 
     constructor(
         configuration: Configuration,

@@ -2,6 +2,8 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoards
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertGame
 
 sealed class DbGameResponse
 data class DbPreparationPhase(val preparationPhase: PreparationPhase) : DbGameResponse()
@@ -13,56 +15,12 @@ class JdbiGamesRepository(
     private val handle: Handle,
 ) {
     internal fun saveGame(game: Game) {
-        insertGame(game)
-        insertState(game)
-        insertBoard(game)
-    }
-
-    private fun insertBoard(game: Game) {
-        handle.createUpdate(
-            """
-                        insert into dbo.BOARD(id, user1, user2)
-                        values(:id, :user1, :user2)
-                    """
-        )
-            .bind("id", game.gameId)
-            .bind("user1", game.player1)
-            .bind("user2", game.player2)
-    }
-
-    private fun insertGame(game: Game) {
-        handle.createUpdate(
-            """
-                        insert into dbo.GAME(id, user1, user2)
-                        values(:id, :user1, :user2)
-                    """
-        )
-            .bind("id", game.gameId)
-            .bind("user1", game.player1)
-            .bind("user2", game.player2)
-    }
-
-    private fun insertState(game: Game) {
-        when (game) {
-            is PreparationPhase -> {
-                handle.createUpdate(
-                    """
-                        insert into dbo.OTHER(game, name)
-                        values(:game, :name)
-                    """
-                )
-                    .bind("id", game.gameId)
-                    .bind("name", "preparation")
-            }
-
-            is WaitingPhase -> State.WAITING
-            is BattlePhase -> State.BATTLE
-            is EndPhase -> State.END
-        }
+        insertGame(handle, game)
+        insertBoards(handle, game)
     }
 
     internal fun savePreparationPhase(preparationPhase: PreparationPhase) {
-
+        TODO("Not yet implemented")
     }
 
     internal fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {

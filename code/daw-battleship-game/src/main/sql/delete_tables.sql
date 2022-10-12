@@ -1,9 +1,7 @@
 drop table if exists ship_type;
-drop table if exists ship_panel;
-drop table if exists water_panel;
+drop table if exists panel;
 drop table if exists board;
 drop table if exists battle;
-drop table if exists state;
 drop table if exists preparation;
 drop table if exists configuration;
 drop table if exists game;
