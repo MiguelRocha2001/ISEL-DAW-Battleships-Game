@@ -2,6 +2,8 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.*
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoard
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoards
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertGame
 
@@ -15,20 +17,22 @@ class JdbiGamesRepository(
     private val handle: Handle,
 ) {
     internal fun saveGame(game: Game) {
+        deleteGame(handle, game.gameId)
         insertGame(handle, game)
         insertBoards(handle, game)
+        insertConfiguration(handle, game.gameId, game.configuration)
     }
 
     internal fun savePreparationPhase(preparationPhase: PreparationPhase) {
-        TODO("Not yet implemented")
+        saveGame(preparationPhase)
     }
 
     internal fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
-        TODO("Not yet implemented")
+        insertBoard(handle, playerPreparationPhase.gameId, playerPreparationPhase.playerId, playerPreparationPhase.board)
     }
 
     internal fun savePlayerWaitingPhase(playerWaitingPhase: PlayerWaitingPhase) {
-        TODO("Not yet implemented")
+        confirmBoard(handle, playerWaitingPhase.gameId, playerWaitingPhase.playerId)
     }
 
     internal fun getPreparationPhase(gameId: Int): PreparationPhase? {

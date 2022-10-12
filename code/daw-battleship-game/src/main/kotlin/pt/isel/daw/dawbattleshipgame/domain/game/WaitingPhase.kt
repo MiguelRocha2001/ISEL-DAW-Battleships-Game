@@ -6,8 +6,8 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Game
 
 class WaitingPhase(
     override val gameId: Int,
-    player1Id: String,
-    player2Id: String,
+    override val player1: String,
+    override val player2: String,
     player1Board: Board,
     player2Board: Board,
     override val configuration: Configuration
@@ -17,8 +17,8 @@ class WaitingPhase(
     val player2WaitingPhase: PlayerWaitingPhase
 
     init {
-        this.player1WaitingPhase = PlayerWaitingPhase(gameId, configuration, player1Board, player1Id)
-        this.player2WaitingPhase = PlayerWaitingPhase(gameId, configuration, player2Board, player2Id)
+        this.player1WaitingPhase = PlayerWaitingPhase(gameId, configuration, player1Board, player1)
+        this.player2WaitingPhase = PlayerWaitingPhase(gameId, configuration, player2Board, player2)
     }
 }
 

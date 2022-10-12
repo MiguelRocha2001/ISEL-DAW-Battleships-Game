@@ -1,4 +1,4 @@
-drop table if exists ship_type;
+drop table if exists ship;
 drop table if exists panel;
 drop table if exists board;
 drop table if exists battle;

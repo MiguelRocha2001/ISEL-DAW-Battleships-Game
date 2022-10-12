@@ -60,7 +60,7 @@ class BattlePhase: Game {
         return try {
             val gameResult = BattlePhase(this, token, shot)
             if (gameResult.player1Board.isGameOver() || gameResult.player2Board.isGameOver()) {
-                EndPhase(gameId, configuration)
+                EndPhase(gameId, configuration, player1, player2, player1Board, player2Board)
             } else {
                 gameResult
             }

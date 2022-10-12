@@ -4,7 +4,6 @@ import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 import pt.isel.daw.dawbattleshipgame.domain.board.ShipPanel
-import pt.isel.daw.dawbattleshipgame.domain.board.WaterPanel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
@@ -35,6 +34,7 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: String, board: Board
     )
         .bind("game", gameId)
         .bind("_user", user)
+        .execute()
     insertPanel(handle, gameId, user, board.board)
 }
 
@@ -60,45 +60,75 @@ fun insertPanel(handle: Handle, gameId: Int, user: String, board: List<Panel>) {
             .bind("idx", idx)
             .bind("is_hit", panel.isHit)
             .bind("type", type)
+            .execute()
     }
 }
 
 internal fun insertGame(handle: Handle, game: Game) {
+    val finished = game is EndPhase
+    val playerTurn = if (game is BattlePhase) game.playersTurn else null
     handle.createUpdate(
         """
-                        insert into dbo.GAME(id, user1, user2)
-                        values(:id, :user1, :user2)
+                        insert into dbo.GAME(id, user1, user2, finished, player_turn)
+                        values(:id, :user1, :user2, :finished, :player_turn)
                     """
     )
         .bind("id", game.gameId)
         .bind("user1", game.player1)
         .bind("user2", game.player2)
-    insertState(handle, game)
-    if (game is BattlePhase) insertPlayerTurn(handle, game.playersTurn)
+        .bind("user2", finished)
+        .bind("finished", finished)
+        .bind("player_turn", playerTurn)
+        .execute()
 }
 
-internal fun insertPlayerTurn(handle: Handle, playersTurn: String) {
+fun insertConfiguration(handle: Handle, gameId: Int, configuration: Configuration) {
     handle.createUpdate(
         """
-                        insert into dbo.GAME(player_turn)
-                        values(:player_turn)
+                        insert into dbo.CONFIGURATION(game, board_size, n_shots, timeout)
+                        values(:game, :board_size, :n_shots, :timeout)
                     """
     )
-        .bind("player_turn", playersTurn)
+        .bind("game", gameId)
+        .bind("board_size", configuration.boardSize)
+        .bind("n_shots", configuration.nShotsPerRound)
+        .bind("timeout", configuration.roundTimeout)
+        .execute()
+    insertConfigurationShips(handle, gameId, configuration.fleet)
 }
 
-internal fun insertState(handle: Handle, game: Game) {
-    val state = when (game) {
-        is PreparationPhase -> "preparation"
-        is WaitingPhase -> "waiting"
-        is BattlePhase -> "battle"
-        is EndPhase -> "finished"
+fun insertConfigurationShips(handle: Handle, gameId: Int, ships: Set<Pair<ShipType, Int>>) {
+    ships.forEach { (shipType, length) ->
+        handle.createUpdate(
+            """
+                        insert into dbo.SHIP(configuration, name, length)
+                        values(:configuration, :name, :length)
+                    """
+        )
+            .bind("configuration", gameId)
+            .bind("ship_type", shipType.name.lowercase())
+            .bind("length", length)
+            .execute()
     }
+}
+
+fun confirmBoard(handle: Handle, gameId: Int, playerId: String) {
     handle.createUpdate(
         """
-                        insert into dbo.GAME(state)
-                        values(:state)
+                update dbo.BOARD
+                set is_confirmed = true
+                where game = :game and user = :_user
                     """
     )
-        .bind("state", state)
+        .bind("game", gameId)
+        .bind("user", playerId)
+        .execute()
+}
+
+fun deleteGame(handle: Handle, gameId: Int) {
+    handle.createUpdate("""delete from dbo.SHIP where configuration = :configuration""").bind("configuration", gameId).execute()
+    handle.createUpdate("""delete from dbo.CONFIGURATION where game = :game""").bind("game", gameId).execute()
+    handle.createUpdate("""delete from dbo.PANEL where game = :game""").bind("game", gameId).execute()
+    handle.createUpdate("""delete from dbo.BOARD where game = :game""").bind("game", gameId).execute()
+    handle.createUpdate("""delete from dbo.GAME where id = :id""").bind("id", gameId)
 }

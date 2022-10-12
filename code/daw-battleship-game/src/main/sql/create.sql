@@ -8,7 +8,7 @@ create table GAME(
     id int primary key,
     user1 varchar(20) not null,
     user2 varchar(20) not null,
-    state varchar(20) check ( state in ('waiting', 'waiting', 'battle', 'finished') ),
+    finished boolean,
     player_turn varchar(20) null,
     foreign key (user1) references _USER(id),
     foreign key (user2) references _USER(id)
@@ -22,16 +22,10 @@ create table CONFIGURATION(
     foreign key (game) references GAME(id)
 );
 
-create table BATTLE(
-    game int primary key,
-    player_turn varchar(20) not null,
-    foreign key (game) references GAME(id),
-    foreign key (player_turn) references _USER(id)
-);
-
 create table BOARD(
     game int,
     _user varchar(20) not null,
+    confirmed boolean,
     primary key (game, _user),
     foreign key (game) references GAME(id),
     foreign key (_user) references _USER(id)
@@ -48,10 +42,9 @@ create table PANEL(
     foreign key (_user) references _USER(id)
 );
 
-create table SHIP_TYPE(
+create table SHIP(
+    configuration int primary key,
     name varchar(20) not null,
     length int,
-    configuration int,
-    primary key (name, length),
     foreign key (configuration) references CONFIGURATION(game)
 );
