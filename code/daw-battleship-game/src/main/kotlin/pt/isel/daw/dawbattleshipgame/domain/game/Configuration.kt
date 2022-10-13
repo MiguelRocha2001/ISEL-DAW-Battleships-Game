@@ -5,7 +5,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 /**
  * Represents the game configuration
  */
-class Configuration(
+data class Configuration(
     val boardSize: Int,
     val fleet: Set<Pair<ShipType, Int>>, // List<Ship:Occupation>
     val nShotsPerRound: Int,

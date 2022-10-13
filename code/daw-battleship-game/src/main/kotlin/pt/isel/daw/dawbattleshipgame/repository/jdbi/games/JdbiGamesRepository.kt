@@ -18,8 +18,8 @@ class JdbiGamesRepository(
     private val handle: Handle,
 ): GamesRepository {
 
-    override fun getGame(gameId: Int) {
-        fetchGameInternal(handle, gameId)
+    override fun getGame(gameId: Int): Game? {
+        return fetchGameInternal(handle, gameId)
     }
 
     override fun saveGame(game: Game) {

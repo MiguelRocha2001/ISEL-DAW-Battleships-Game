@@ -4,6 +4,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipSet
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.generateShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.*
+import kotlin.math.sqrt
 
 class Board {
     val board: List<Panel>
@@ -23,8 +24,8 @@ class Board {
 
     constructor(board: List<Panel>) {
         // TODO: Maybe do some validation
-        _coordinates = Coordinates(board.size)
-        dimension = board.size
+        dimension = sqrt(board.size.toDouble()).toInt()
+        _coordinates = Coordinates(dimension)
         this.board = board
     }
 

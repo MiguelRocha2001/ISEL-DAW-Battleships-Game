@@ -64,6 +64,7 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
                 )
         }
     }
+    throw NotImplementedError("Other states still not supported")
 }
 
 private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>): Board {
@@ -78,7 +79,7 @@ private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>): Board {
 
 private fun buildConfiguration(dbConfigurationMapper: DbConfigurationMapper, dbShipMapperList: List<DbShipMapper>): Configuration {
     return Configuration(
-        dbConfigurationMapper.game,
+        dbConfigurationMapper.board_size,
         dbShipMapperList.map { it.name.toShipType() to it.length }.toSet(),
         dbConfigurationMapper.n_shots,
         dbConfigurationMapper.timeout

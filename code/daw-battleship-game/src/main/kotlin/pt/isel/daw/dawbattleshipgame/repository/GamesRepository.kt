@@ -25,5 +25,5 @@ interface GamesRepository {
     fun removeUserFromQueue(userWating: String)
     fun removeGame(gameId: Int)
     fun emptyRepository()
-    fun getGame(gameId: Int)
+    fun getGame(gameId: Int): Game?
 }
