@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.*
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoard
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoards
@@ -15,71 +16,75 @@ data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
 
 class JdbiGamesRepository(
     private val handle: Handle,
-) {
-    internal fun saveGame(game: Game) {
+): GamesRepository {
+    override fun saveGame(game: Game) {
         deleteGame(handle, game.gameId)
         insertGame(handle, game)
         insertBoards(handle, game)
         insertConfiguration(handle, game.gameId, game.configuration)
     }
 
-    internal fun savePreparationPhase(preparationPhase: PreparationPhase) {
+    override fun savePreparationPhase(preparationPhase: PreparationPhase) {
         saveGame(preparationPhase)
     }
 
-    internal fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
+    override fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
         insertBoard(handle, playerPreparationPhase.gameId, playerPreparationPhase.playerId, playerPreparationPhase.board)
     }
 
-    internal fun savePlayerWaitingPhase(playerWaitingPhase: PlayerWaitingPhase) {
+    override fun savePlayerWaitingPhase(playerWaitingPhase: PlayerWaitingPhase) {
         confirmBoard(handle, playerWaitingPhase.gameId, playerWaitingPhase.playerId)
     }
 
-    internal fun getPreparationPhase(gameId: Int): PreparationPhase? {
+    override fun getPreparationPhase(gameId: Int): PreparationPhase? {
         TODO("Not yet implemented")
     }
 
     /**
      * Returns the game if both players have confirmed their fleets.
      */
-    internal fun getWaitingPhase(gameId: Int): DbWaitingPhase? {
+    override fun getWaitingPhase(gameId: Int): DbWaitingPhase? {
         TODO("Not yet implemented")
     }
 
-    internal fun getPlayerPreparationPhase(token: String): DbPlayerPreparationPhase? {
+    override fun getPlayerPreparationPhase(token: String): DbPlayerPreparationPhase? {
         TODO("Not yet implemented")
     }
 
-    internal fun getGame(): DbGameResponse? {
+    override fun getGame(): DbGameResponse? {
         TODO("Not yet implemented")
     }
 
 
-    fun createUser(username: String, password: String) {
+    override fun createUser(username: String, password: String) {
         TODO("Not yet implemented")
     }
 
-    fun saveConfiguration(configuration: Configuration) {
+    override fun saveConfiguration(configuration: Configuration) {
         TODO("Not yet implemented")
     }
 
-    fun login(username: String, password: String): Boolean {
+    override fun login(username: String, password: String): Boolean {
         TODO("Not yet implemented")
     }
 
-    fun getWaitingUser(configuration: Configuration): String? {
+    override fun getWaitingUser(configuration: Configuration): String? {
         TODO("Not yet implemented")
     }
 
-    fun joinGameQueue(token: String, configuration: Configuration) {
+    override fun joinGameQueue(token: String, configuration: Configuration) {
         TODO("Not yet implemented")
     }
 
-    fun removeUserFromQueue(userWating: String) {
+    override fun removeUserFromQueue(userWating: String) {
         TODO("Not yet implemented")
     }
 
-    fun removeGame(gameId: Int) {
+    override fun removeGame(gameId: Int) {
         TODO("Not yet implemented")
+    }
+
+    override fun emptyDatabase() {
+        emptyAllTables(handle)
     }
 }

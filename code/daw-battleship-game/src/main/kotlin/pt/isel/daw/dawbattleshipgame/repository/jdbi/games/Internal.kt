@@ -28,7 +28,7 @@ internal fun insertBoards(handle: Handle, game: Game) {
 internal fun insertBoard(handle: Handle, gameId: Int, user: String, board: Board) {
     handle.createUpdate(
         """
-                        insert into dbo.BOARD(game, user)
+                        insert into BOARD(game, user)
                         values(:game, :user)
                     """
     )
@@ -51,7 +51,7 @@ fun insertPanel(handle: Handle, gameId: Int, user: String, board: List<Panel>) {
         } else "water"
         handle.createUpdate(
             """
-                        insert into dbo.PANEL(game, user, idx, is_hit, type)
+                        insert into PANEL(game, user, idx, is_hit, type)
                         values(:game, :user, :idx, :is_hit, :type)
                     """
         )
@@ -69,7 +69,7 @@ internal fun insertGame(handle: Handle, game: Game) {
     val playerTurn = if (game is BattlePhase) game.playersTurn else null
     handle.createUpdate(
         """
-                        insert into dbo.GAME(id, user1, user2, finished, player_turn)
+                        insert into GAME(id, user1, user2, finished, player_turn)
                         values(:id, :user1, :user2, :finished, :player_turn)
                     """
     )
@@ -85,7 +85,7 @@ internal fun insertGame(handle: Handle, game: Game) {
 fun insertConfiguration(handle: Handle, gameId: Int, configuration: Configuration) {
     handle.createUpdate(
         """
-                        insert into dbo.CONFIGURATION(game, board_size, n_shots, timeout)
+                        insert into CONFIGURATION(game, board_size, n_shots, timeout)
                         values(:game, :board_size, :n_shots, :timeout)
                     """
     )
@@ -101,7 +101,7 @@ fun insertConfigurationShips(handle: Handle, gameId: Int, ships: Set<Pair<ShipTy
     ships.forEach { (shipType, length) ->
         handle.createUpdate(
             """
-                        insert into dbo.SHIP(configuration, name, length)
+                        insert into SHIP(configuration, name, length)
                         values(:configuration, :name, :length)
                     """
         )
@@ -115,7 +115,7 @@ fun insertConfigurationShips(handle: Handle, gameId: Int, ships: Set<Pair<ShipTy
 fun confirmBoard(handle: Handle, gameId: Int, playerId: String) {
     handle.createUpdate(
         """
-                update dbo.BOARD
+                update BOARD
                 set is_confirmed = true
                 where game = :game and user = :_user
                     """
@@ -126,9 +126,18 @@ fun confirmBoard(handle: Handle, gameId: Int, playerId: String) {
 }
 
 fun deleteGame(handle: Handle, gameId: Int) {
-    handle.createUpdate("""delete from dbo.SHIP where configuration = :configuration""").bind("configuration", gameId).execute()
-    handle.createUpdate("""delete from dbo.CONFIGURATION where game = :game""").bind("game", gameId).execute()
-    handle.createUpdate("""delete from dbo.PANEL where game = :game""").bind("game", gameId).execute()
-    handle.createUpdate("""delete from dbo.BOARD where game = :game""").bind("game", gameId).execute()
-    handle.createUpdate("""delete from dbo.GAME where id = :id""").bind("id", gameId)
+    handle.createUpdate("""delete from SHIP where configuration = :configuration""").bind("configuration", gameId).execute()
+    handle.createUpdate("""delete from CONFIGURATION where game = :game""").bind("game", gameId).execute()
+    handle.createUpdate("""delete from PANEL where game = :game""").bind("game", gameId).execute()
+    handle.createUpdate("""delete from BOARD where game = :game""").bind("game", gameId).execute()
+    handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId)
+}
+
+fun emptyAllTables(handle: Handle) {
+    handle.createUpdate("""delete from SHIP""").execute()
+    handle.createUpdate("""delete from PANEL""").execute()
+    handle.createUpdate("""delete from BOARD""").execute()
+    handle.createUpdate("""delete from CONFIGURATION""").execute()
+    handle.createUpdate("""delete from GAME""").execute()
+    handle.createUpdate("""delete from _USER""").execute()
 }

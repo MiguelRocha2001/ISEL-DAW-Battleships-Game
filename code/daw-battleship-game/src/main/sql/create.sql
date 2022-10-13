@@ -1,7 +1,7 @@
 create table _USER(
     id varchar(20) not null primary key,
     username varchar(20) not null,
-    hashed_password varchar(32)
+    hashed_password varchar(200) not null
 );
 
 create table GAME(
