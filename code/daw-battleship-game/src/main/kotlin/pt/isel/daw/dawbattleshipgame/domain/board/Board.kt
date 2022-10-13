@@ -21,6 +21,13 @@ class Board {
         board = List(dim * dim) { WaterPanel(false) }
     }
 
+    constructor(board: List<Panel>) {
+        // TODO: Maybe do some validation
+        _coordinates = Coordinates(board.size)
+        dimension = board.size
+        this.board = board
+    }
+
     /**
      * Use this constructor to restore the board.
      * @param positions map with coordinates and correspondent panels

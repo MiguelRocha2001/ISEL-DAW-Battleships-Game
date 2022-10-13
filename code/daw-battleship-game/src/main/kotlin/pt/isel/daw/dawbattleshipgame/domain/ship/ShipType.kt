@@ -11,6 +11,17 @@ enum class ShipType {
     DESTROYER
 }
 
+fun String.toShipType(): ShipType {
+    return when (this.lowercase()) {
+        "carrier" -> ShipType.CARRIER
+        "battleship" -> ShipType.BATTLESHIP
+        "cruiser" -> ShipType.CRUISER
+        "submarine" -> ShipType.SUBMARINE
+        "destroyer" -> ShipType.DESTROYER
+        else -> throw IllegalArgumentException("Invalid ship type")
+    }
+}
+
 fun ShipType.generateShip(coordinateSet: CoordinateSet) = when (this) {
         ShipType.CARRIER -> Carrier(coordinateSet)
         ShipType.BATTLESHIP -> Battleship(coordinateSet)

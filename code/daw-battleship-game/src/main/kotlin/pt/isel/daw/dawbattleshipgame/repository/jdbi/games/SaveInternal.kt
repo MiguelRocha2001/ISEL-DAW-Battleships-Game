@@ -8,45 +8,6 @@ import pt.isel.daw.dawbattleshipgame.domain.board.ShipPanel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
-fun fetchGameInternal(handle: Handle, gameId: Int): Game {
-    val dbGameMapper = getDbGameMapper(handle, gameId)
-    val boards = getDbBoardMapperMappers(handle, gameId)
-    val (player1Panels, player2Panels) = getDbPanelMapperMappers(handle, gameId)
-    throw UnsupportedOperationException()
-}
-
-private fun getDbGameMapper(handle: Handle, gameId: Int): DbGameMapper? {
-    return handle.createQuery("select * from GAME where id = :id")
-        .bind("id", gameId)
-        .mapTo<DbGameMapper>()
-        .singleOrNull()
-}
-
-private fun getDbBoardMapperMappers(handle: Handle, gameId: Int): Pair<DbBoardMapper, DbBoardMapper> {
-    val boards = handle.createQuery("select * from BOARD where game = :game")
-        .bind("game", gameId)
-        .mapTo<DbBoardMapper>()
-        .toList()
-    if (boards.size != 2) {
-        throw IllegalStateException("Game $gameId has ${boards.size} boards")
-    }
-    return Pair(boards[0], boards[1])
-}
-
-private fun getDbPanelMapperMappers(handle: Handle, gameId: Int): Pair<List<DbPanelMapper>, List<DbPanelMapper>> {
-    val user1Panels = handle.createQuery("select * from PANEL where game = :game and _user = :user")
-        .bind("game", gameId)
-        .bind("user", "user1")
-        .mapTo<DbPanelMapper>()
-        .toList()
-    val user2Panels = handle.createQuery("select * from PANEL where game = :game and _user = :user")
-        .bind("game", gameId)
-        .bind("user", "user2")
-        .mapTo<DbPanelMapper>()
-        .toList()
-    return Pair(user1Panels, user2Panels)
-}
-
 internal fun insertGame(handle: Handle, game: Game) {
     val finished = game is EndPhase
     val playerTurn = if (game is BattlePhase) game.playersTurn else null

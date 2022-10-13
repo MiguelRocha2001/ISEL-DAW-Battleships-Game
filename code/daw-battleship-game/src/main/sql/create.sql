@@ -37,7 +37,7 @@ create table PANEL(
     _user varchar(20) not null,
     idx int,
     is_hit boolean,
-    type varchar(20) not null,
+    type varchar(20) not null check ( type in ('water', 'carrier', 'battleship', 'cruiser', 'submarine', 'destroyer') ),
     primary key (game, _user, idx),
     foreign key (game) references GAME(id),
     foreign key (_user) references _USER(id)

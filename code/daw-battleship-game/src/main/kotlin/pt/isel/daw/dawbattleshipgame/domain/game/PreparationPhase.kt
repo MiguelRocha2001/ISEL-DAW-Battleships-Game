@@ -14,14 +14,15 @@ class PreparationPhase(
     override val configuration: Configuration,
     override val player1: String,
     override val player2: String,
+    player1PreparationPhase: PlayerPreparationPhase? = null,
+    player2PreparationPhase: PlayerPreparationPhase? = null
 ) : Game() {
-
     val player1PreparationPhase: PlayerPreparationPhase
     val player2PreparationPhase: PlayerPreparationPhase
 
     init {
-        this.player1PreparationPhase = PlayerPreparationPhase(gameId, configuration, player1)
-        this.player2PreparationPhase = PlayerPreparationPhase(gameId, configuration, player2)
+        this.player1PreparationPhase = player1PreparationPhase ?: PlayerPreparationPhase(gameId, configuration, player1)
+        this.player2PreparationPhase = player2PreparationPhase ?: PlayerPreparationPhase(gameId, configuration, player2)
     }
 }
 
@@ -32,6 +33,14 @@ class PlayerPreparationPhase {
     val configuration: Configuration
     private val coordinates: Coordinates
     val board: Board
+
+    constructor(gameId: Int, configuration: Configuration, playerId: String, board: Board) {
+        this.gameId = gameId
+        this.configuration = configuration
+        this.playerId = playerId
+        this.coordinates = Coordinates(configuration.boardSize)
+        this.board = board
+    }
 
     /**
      * Creates a new Game.
