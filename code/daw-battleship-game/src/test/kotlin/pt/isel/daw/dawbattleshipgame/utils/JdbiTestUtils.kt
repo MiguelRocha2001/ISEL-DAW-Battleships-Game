@@ -6,7 +6,7 @@ import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.tictactow.repository.Transaction
-import pt.isel.daw.tictactow.repository.TransactionManager
+import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
 // get from env
 private val url = System.getenv("DB_POSTGRES_CONNECTION")
@@ -39,8 +39,16 @@ fun testWithTransactionManager(block: (TransactionManager) -> Unit) = jdbi.useTr
 
 fun testWithTransactionManagerAndRollback(block: (TransactionManager) -> Unit) = jdbi.useTransaction<Exception>
 { handle ->
-    testWithTransactionManager { transactionManager ->
-        block(transactionManager)
-        handle.rollback()
+
+    val transaction = JdbiTransaction(handle)
+
+    // a test TransactionManager that never commits
+    val transactionManager = object : TransactionManager {
+        override fun <R> run(block: (Transaction) -> R): R {
+            return block(transaction)
+            // n.b. no commit happens
+        }
     }
+    block(transactionManager)
+    handle.rollback()
 }

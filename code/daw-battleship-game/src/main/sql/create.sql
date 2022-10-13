@@ -11,7 +11,8 @@ create table GAME(
     finished boolean,
     player_turn varchar(20) null,
     foreign key (user1) references _USER(id),
-    foreign key (user2) references _USER(id)
+    foreign key (user2) references _USER(id),
+    foreign key (player_turn) references _USER(id)
 );
 
 create table CONFIGURATION(
@@ -43,8 +44,9 @@ create table PANEL(
 );
 
 create table SHIP(
-    configuration int primary key,
+    configuration int,
     name varchar(20) not null,
     length int,
+    primary key (configuration, name),
     foreign key (configuration) references CONFIGURATION(game)
 );

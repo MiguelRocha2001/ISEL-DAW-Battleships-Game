@@ -2,7 +2,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Jdbi
 import pt.isel.daw.tictactow.repository.Transaction
-import pt.isel.daw.tictactow.repository.TransactionManager
+import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
 class JdbiTransactionManager(
     private val jdbi: Jdbi

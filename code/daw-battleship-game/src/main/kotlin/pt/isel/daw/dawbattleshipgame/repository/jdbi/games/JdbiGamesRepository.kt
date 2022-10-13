@@ -17,6 +17,11 @@ data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
 class JdbiGamesRepository(
     private val handle: Handle,
 ): GamesRepository {
+
+    override fun getGame(gameId: Int) {
+        fetchGameInternal(handle, gameId)
+    }
+
     override fun saveGame(game: Game) {
         deleteGame(handle, game.gameId)
         insertGame(handle, game)
@@ -84,7 +89,7 @@ class JdbiGamesRepository(
         TODO("Not yet implemented")
     }
 
-    override fun emptyDatabase() {
-        emptyAllTables(handle)
+    override fun emptyRepository() {
+        clearAllTables(handle)
     }
 }

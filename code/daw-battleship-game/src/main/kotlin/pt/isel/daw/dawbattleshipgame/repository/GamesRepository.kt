@@ -24,5 +24,6 @@ interface GamesRepository {
     fun joinGameQueue(token: String, configuration: Configuration)
     fun removeUserFromQueue(userWating: String)
     fun removeGame(gameId: Int)
-    fun emptyDatabase()
+    fun emptyRepository()
+    fun getGame(gameId: Int)
 }

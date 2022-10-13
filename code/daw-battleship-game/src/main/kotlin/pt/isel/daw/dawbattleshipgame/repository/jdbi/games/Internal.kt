@@ -1,11 +1,68 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 import pt.isel.daw.dawbattleshipgame.domain.board.ShipPanel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+
+fun fetchGameInternal(handle: Handle, gameId: Int): Game {
+    val dbGameMapper = getDbGameMapper(handle, gameId)
+    val boards = getDbBoardMapperMappers(handle, gameId)
+    val (player1Panels, player2Panels) = getDbPanelMapperMappers(handle, gameId)
+    throw UnsupportedOperationException()
+}
+
+private fun getDbGameMapper(handle: Handle, gameId: Int): DbGameMapper? {
+    return handle.createQuery("select * from GAME where id = :id")
+        .bind("id", gameId)
+        .mapTo<DbGameMapper>()
+        .singleOrNull()
+}
+
+private fun getDbBoardMapperMappers(handle: Handle, gameId: Int): Pair<DbBoardMapper, DbBoardMapper> {
+    val boards = handle.createQuery("select * from BOARD where game = :game")
+        .bind("game", gameId)
+        .mapTo<DbBoardMapper>()
+        .toList()
+    if (boards.size != 2) {
+        throw IllegalStateException("Game $gameId has ${boards.size} boards")
+    }
+    return Pair(boards[0], boards[1])
+}
+
+private fun getDbPanelMapperMappers(handle: Handle, gameId: Int): Pair<List<DbPanelMapper>, List<DbPanelMapper>> {
+    val user1Panels = handle.createQuery("select * from PANEL where game = :game and _user = :user")
+        .bind("game", gameId)
+        .bind("user", "user1")
+        .mapTo<DbPanelMapper>()
+        .toList()
+    val user2Panels = handle.createQuery("select * from PANEL where game = :game and _user = :user")
+        .bind("game", gameId)
+        .bind("user", "user2")
+        .mapTo<DbPanelMapper>()
+        .toList()
+    return Pair(user1Panels, user2Panels)
+}
+
+internal fun insertGame(handle: Handle, game: Game) {
+    val finished = game is EndPhase
+    val playerTurn = if (game is BattlePhase) game.playersTurn else null
+    handle.createUpdate(
+        """
+                insert into GAME(id, user1, user2, finished, player_turn)
+                values(:id, :user1, :user2, :finished, :player_turn)
+            """
+    )
+        .bind("id", game.gameId)
+        .bind("user1", game.player1)
+        .bind("user2", game.player2)
+        .bind("finished", finished)
+        .bind("player_turn", playerTurn)
+        .execute()
+}
 
 internal fun insertBoards(handle: Handle, game: Game) {
     val player1Board = when (game) {
@@ -28,8 +85,8 @@ internal fun insertBoards(handle: Handle, game: Game) {
 internal fun insertBoard(handle: Handle, gameId: Int, user: String, board: Board) {
     handle.createUpdate(
         """
-                        insert into BOARD(game, user)
-                        values(:game, :user)
+                        insert into BOARD(game, _user)
+                        values(:game, :_user)
                     """
     )
         .bind("game", gameId)
@@ -51,8 +108,8 @@ fun insertPanel(handle: Handle, gameId: Int, user: String, board: List<Panel>) {
         } else "water"
         handle.createUpdate(
             """
-                        insert into PANEL(game, user, idx, is_hit, type)
-                        values(:game, :user, :idx, :is_hit, :type)
+                        insert into PANEL(game, _user, idx, is_hit, type)
+                        values(:game, :_user, :idx, :is_hit, :type)
                     """
         )
             .bind("game", gameId)
@@ -62,24 +119,6 @@ fun insertPanel(handle: Handle, gameId: Int, user: String, board: List<Panel>) {
             .bind("type", type)
             .execute()
     }
-}
-
-internal fun insertGame(handle: Handle, game: Game) {
-    val finished = game is EndPhase
-    val playerTurn = if (game is BattlePhase) game.playersTurn else null
-    handle.createUpdate(
-        """
-                        insert into GAME(id, user1, user2, finished, player_turn)
-                        values(:id, :user1, :user2, :finished, :player_turn)
-                    """
-    )
-        .bind("id", game.gameId)
-        .bind("user1", game.player1)
-        .bind("user2", game.player2)
-        .bind("user2", finished)
-        .bind("finished", finished)
-        .bind("player_turn", playerTurn)
-        .execute()
 }
 
 fun insertConfiguration(handle: Handle, gameId: Int, configuration: Configuration) {
@@ -106,7 +145,7 @@ fun insertConfigurationShips(handle: Handle, gameId: Int, ships: Set<Pair<ShipTy
                     """
         )
             .bind("configuration", gameId)
-            .bind("ship_type", shipType.name.lowercase())
+            .bind("name", shipType.name.lowercase())
             .bind("length", length)
             .execute()
     }
@@ -133,11 +172,10 @@ fun deleteGame(handle: Handle, gameId: Int) {
     handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId)
 }
 
-fun emptyAllTables(handle: Handle) {
+fun clearAllTables(handle: Handle) {
     handle.createUpdate("""delete from SHIP""").execute()
     handle.createUpdate("""delete from PANEL""").execute()
     handle.createUpdate("""delete from BOARD""").execute()
     handle.createUpdate("""delete from CONFIGURATION""").execute()
     handle.createUpdate("""delete from GAME""").execute()
-    handle.createUpdate("""delete from _USER""").execute()
 }
