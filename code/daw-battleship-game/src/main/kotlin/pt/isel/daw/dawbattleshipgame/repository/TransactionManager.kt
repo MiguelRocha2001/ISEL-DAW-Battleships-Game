@@ -1,7 +1,8 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
-import pt.isel.daw.tictactow.repository.Transaction
+import org.springframework.stereotype.Component
 
+@Component
 interface TransactionManager {
     fun <R> run(block: (Transaction) -> R): R
 }

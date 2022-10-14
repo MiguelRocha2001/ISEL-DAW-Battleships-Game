@@ -5,7 +5,7 @@ import org.jdbi.v3.core.Jdbi
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
-import pt.isel.daw.tictactow.repository.Transaction
+import pt.isel.daw.dawbattleshipgame.repository.Transaction
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
 // get from env

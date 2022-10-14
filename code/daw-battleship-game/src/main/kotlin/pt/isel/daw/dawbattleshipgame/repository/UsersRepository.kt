@@ -10,7 +10,7 @@ interface UsersRepository {
         id: String,
         username: String,
         passwordValidation: String,
-    ): Boolean
+    ): String
 
     fun getUserByUsername(username: String): User?
 

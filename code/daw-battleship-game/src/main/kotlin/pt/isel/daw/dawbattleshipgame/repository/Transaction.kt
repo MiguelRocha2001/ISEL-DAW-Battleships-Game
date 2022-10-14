@@ -1,7 +1,4 @@
-package pt.isel.daw.tictactow.repository
-
-import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
-import pt.isel.daw.dawbattleshipgame.repository.UsersRepository
+package pt.isel.daw.dawbattleshipgame.repository
 
 interface Transaction {
     val usersRepository: UsersRepository

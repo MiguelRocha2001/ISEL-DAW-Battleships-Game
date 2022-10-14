@@ -132,6 +132,7 @@ class GameTestMultipleActions {
         gameResult = gameResult?.tryMoveShip("A7".toCoordinate(),"B6".toCoordinate())
         gameResult = gameResult?.tryRotateShip("F3".toCoordinate())
         gameResult = gameResult?.tryRotateShip("A2".toCoordinate())
+        assertNull(gameResult)
 
         println(gameResult)
 
