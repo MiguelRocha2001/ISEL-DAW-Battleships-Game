@@ -44,7 +44,7 @@ class GameTestPlacingSameShip {
     }
 
     @Test
-    fun `Placing battleship ship, then Submarine and then battleship, apon previous one`() {
+    fun `Placing battleship ship, then Submarine and then battleship, upon previous one`() {
         val game = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase
         val gameResult1 = game.tryPlaceShip(ShipType.BATTLESHIP, "C2".toCoordinate(), Orientation.HORIZONTAL)
         val gameResult2 = gameResult1?.tryPlaceShip(ShipType.SUBMARINE, "B4".toCoordinate(), Orientation.HORIZONTAL)
@@ -53,11 +53,12 @@ class GameTestPlacingSameShip {
     }
 
     @Test
-    fun `Placing battleship ship, then Submarine and then battleship, apon previous one, but different orientation`() {
+    fun `Placing battleship ship, then Submarine and then battleship, upon previous one, but different orientation`() {
         val game = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase
         val gameResult1 = game.tryPlaceShip(ShipType.BATTLESHIP, "C2".toCoordinate(), Orientation.HORIZONTAL)
         val gameResult2 = gameResult1?.tryPlaceShip(ShipType.SUBMARINE, "B4".toCoordinate(), Orientation.HORIZONTAL)
         val gameResult3 = gameResult2?.tryPlaceShip(ShipType.BATTLESHIP, "C2".toCoordinate(), Orientation.VERTICAL)
         assertNull(gameResult3)
     }
+
 }

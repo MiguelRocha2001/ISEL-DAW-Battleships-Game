@@ -10,7 +10,7 @@ import pt.isel.daw.dawbattleshipgame.generateGameId
 internal class GameTestGenerateShips {
 
     @Test
-    fun generateShips() {
+    fun generateShips() {//FIXME
         val gameId = generateGameId()
         val player1 = generateToken()
         val player2 = generateToken()

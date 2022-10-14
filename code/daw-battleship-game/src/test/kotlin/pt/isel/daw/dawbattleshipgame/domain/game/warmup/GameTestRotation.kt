@@ -135,10 +135,12 @@ class GameTestRotation {
     }
 
     @Test
-fun rotating_ship_and_colliding_with_wall() {
-        val game1 = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase
-        val game2 = game1.tryPlaceShip(ShipType.DESTROYER, "A10".toCoordinate(), Orientation.HORIZONTAL)
-        val game3 = game2?.tryRotateShip("A10".toCoordinate())
-        assertNull(game3)
-    }
+    fun rotating_ship_and_colliding_with_wall() {
+            val game1 = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase
+            val game2 = game1.tryPlaceShip(ShipType.DESTROYER, "A10".toCoordinate(), Orientation.HORIZONTAL)
+            val game3 = game2?.tryRotateShip("A10".toCoordinate())
+            assertNull(game3)
+        }
+
+
 }

@@ -96,6 +96,7 @@ class GameTestPlacing {
         )
     }
 
+
     @Test
     fun placing_ship_on_invalid_location_1() {
         val game = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase

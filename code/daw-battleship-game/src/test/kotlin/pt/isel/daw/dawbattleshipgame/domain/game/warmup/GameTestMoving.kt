@@ -145,10 +145,18 @@ class GameTestMoving {
     }
 
     @Test
-    fun invalid_ship_move() {
+    fun invalid_ship_move_1() {
         val game = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase
         var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "A1".toCoordinate(), Orientation.HORIZONTAL)
         gameResult = gameResult?.tryMoveShip("B1".toCoordinate(), "A1".toCoordinate())
+        assertEquals(null, gameResult)
+    }
+
+    @Test
+    fun invalid_ship_move_2() {
+        val game = Game.newGame(gameId, player1, player2, configuration).player1PreparationPhase
+        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "A1".toCoordinate(), Orientation.HORIZONTAL)
+        gameResult = gameResult?.tryMoveShip("A1".toCoordinate(), "J8".toCoordinate())
         assertEquals(null, gameResult)
     }
 }
