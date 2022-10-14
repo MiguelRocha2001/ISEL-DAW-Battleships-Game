@@ -144,6 +144,7 @@ class PlayerPreparationPhase {
         return try {
             val ship = board.getShips().getShip(position)
             val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
+            if (isShipTouchingAnother(board, newCoordinates)) return null
             tryRemoveShip(position)?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
         }catch (e : Exception){
             null

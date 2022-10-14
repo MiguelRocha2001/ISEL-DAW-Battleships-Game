@@ -133,6 +133,8 @@ class GameTestMultipleActions {
         gameResult = gameResult?.tryRotateShip("F3".toCoordinate())
         gameResult = gameResult?.tryRotateShip("A2".toCoordinate())
 
+        println(gameResult)
+
     }
 
 }

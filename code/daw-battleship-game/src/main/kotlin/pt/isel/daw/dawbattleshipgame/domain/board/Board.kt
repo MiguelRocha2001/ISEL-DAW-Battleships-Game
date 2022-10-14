@@ -149,11 +149,10 @@ class Board {
         val shipSet = mutableSetOf<Ship>()
         ShipType.values().forEach {
             val s = getShipFromBoard(it)
-            if(s != null) shipSet.add(s)
+            if (s != null) shipSet.add(s)
         }
         return shipSet
     }
-
 
     /**
      * Returns a ship from the board, given a specific ShipType

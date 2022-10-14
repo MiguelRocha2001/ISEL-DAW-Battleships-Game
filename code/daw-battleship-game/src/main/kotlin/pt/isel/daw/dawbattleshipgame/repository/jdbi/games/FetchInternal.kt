@@ -71,9 +71,10 @@ private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>): Board {
     val panels = dbPanelMapperList
         .sortedBy { it.idx }
         .map { dbPanelMapper ->
-        val isHit = dbPanelMapper.is_hit
-        if (dbPanelMapper.type == "water") WaterPanel(isHit) else ShipPanel(dbPanelMapper.type.toShipType(), isHit)
-    }
+            val isHit = dbPanelMapper.is_hit
+            if (dbPanelMapper.type == "water") WaterPanel(isHit)
+            else ShipPanel(dbPanelMapper.type.toShipType(), isHit)
+        }
     return Board(panels)
 }
 
