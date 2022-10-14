@@ -2,31 +2,27 @@ package pt.isel.daw.dawbattleshipgame.domain.board
 
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
-sealed class Panel(internal val isHit: Boolean) {
-    abstract fun getPanelHit(): Panel
-}
+class Panel(
+    val coordinate: Coordinate,
+    val shipType: ShipType? = null,
+    val isHit: Boolean = false,
+){
+    fun hit() = if(!isHit) Panel(coordinate, shipType, true) else this
 
-/**
- * Class representing a panel of water
- * @param isHit if true has been hit, else it has not
- */
-class WaterPanel(isHit: Boolean = false) : Panel(isHit) {
-    override fun getPanelHit() = WaterPanel(true)
+    fun isShip() = shipType != null
 
     override fun toString(): String {
-        return if (isHit) "x" else "  "
+        return if (isShip()) if (isHit) "X" else "[]"
+        else if (isHit) "x" else "  "
     }
-}
 
-/**
- * Class representing a panel with a Ship
- * @param shipType is the type of the ship
- * @param isHit if true the ship has been hit, else it has not
- */
-class ShipPanel(val shipType: ShipType, isHit: Boolean = false) : Panel(isHit) {
-    override fun getPanelHit() = ShipPanel(shipType, true)
+    fun getType() = when(shipType){
+            ShipType.CRUISER -> "cruiser"
+            ShipType.CARRIER -> "carrier"
+            ShipType.BATTLESHIP -> "battleship"
+            ShipType.SUBMARINE -> "submarine"
+            ShipType.DESTROYER -> "destroyer"
+            else -> "water"
+        }
 
-    override fun toString(): String {
-        return if (isHit) "X" else "[]"
-    }
 }

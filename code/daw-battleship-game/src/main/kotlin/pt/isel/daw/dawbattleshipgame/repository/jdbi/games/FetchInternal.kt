@@ -3,21 +3,19 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.board.ShipPanel
-import pt.isel.daw.dawbattleshipgame.domain.board.WaterPanel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
 
 internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val dbGameMapper = getDbGameMapper(handle, gameId) ?: return null
-    val (player1DbBoardMapper, player2DbBoardMapper) = getDbBoardMapperMappers(handle, gameId) ?: throw IllegalStateException("Game $gameId has no boards")
-    val (player1DbPanelMapperList, player2DbPanelMapperList) = getDbPanelMapperMappers(handle, gameId) ?: throw IllegalStateException("Game $gameId has no panels")
+    val (player1DbBoardMapper, player2DbBoardMapper) = getDbBoardMapperMappers(handle, gameId)
+    val (player1DbPanelMapperList, player2DbPanelMapperList) = getDbPanelMapperMappers(handle, gameId)
     val dbConfigurationMapper = getDbConfigurationMapper(handle, gameId) ?: throw IllegalStateException("Game $gameId has no configuration")
-    val dbShipMapperList = getDbShipMapper(handle, gameId) ?: throw IllegalStateException("Configuration associated with Game $gameId has no ships")
+    val dbShipMapperList = getDbShipMapper(handle, gameId)
 
     val configuration = buildConfiguration(dbConfigurationMapper, dbShipMapperList)
-    val player1Board = buildBoard(player1DbPanelMapperList)
-    val player2Board = buildBoard(player2DbPanelMapperList)
+    val player1Board = buildBoard(player1DbPanelMapperList, dbConfigurationMapper.board_size)
+    val player2Board = buildBoard(player2DbPanelMapperList, dbConfigurationMapper.board_size)
 
     // if game is finished, return it
     if (dbGameMapper.finished) {
@@ -65,15 +63,8 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     throw NotImplementedError("Other states still not supported")
 }
 
-private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>): Board {
-    val panels = dbPanelMapperList
-        .sortedBy { it.idx }
-        .map { dbPanelMapper ->
-            val isHit = dbPanelMapper.is_hit
-            if (dbPanelMapper.type == "water") WaterPanel(isHit)
-            else ShipPanel(dbPanelMapper.type.toShipType(), isHit)
-        }
-    return Board(panels)
+private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>, gameDim : Int): Board {
+    return Board(gameDim).placePanels(dbPanelMapperList.map { it.toPanel() })
 }
 
 private fun buildConfiguration(dbConfigurationMapper: DbConfigurationMapper, dbShipMapperList: List<DbShipMapper>): Configuration {
@@ -116,7 +107,6 @@ private fun getDbPanelMapperMappers(handle: Handle, gameId: Int): Pair<List<DbPa
         .toList()
     return Pair(user1Panels, user2Panels)
 }
-
 private fun getDbConfigurationMapper(handle: Handle, gameId: Int): DbConfigurationMapper? {
     return handle.createQuery("select * from CONFIGURATION where game = :game")
         .bind("game", gameId)

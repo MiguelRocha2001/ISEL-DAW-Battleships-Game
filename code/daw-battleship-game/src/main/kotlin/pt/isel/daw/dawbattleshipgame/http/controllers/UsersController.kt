@@ -12,8 +12,8 @@ import pt.isel.daw.dawbattleshipgame.services.UserServices
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.services.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.UserCreationError
-import pt.isel.daw.tictactow.http.model.UserCreateInputModel
-import pt.isel.daw.tictactow.http.model.UserCreateTokenInputModel
+import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
+import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserHomeOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserTokenCreateOutputModel
 

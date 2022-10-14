@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiGamesRepository
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
@@ -11,7 +10,6 @@ import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.DbBattlePhase
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.DbPlayerPreparationPhase
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
-import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 
 @Component
 class GameServices(

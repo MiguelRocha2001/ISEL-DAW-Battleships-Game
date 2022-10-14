@@ -43,9 +43,9 @@ class BattlePhase: Game {
 
         if (player == player1) {
             player1Board = old.player1Board
-            player2Board = old.player2Board.hitPanel(shot) ?: throw Exception("Invalid shot")
+            player2Board = old.player2Board.placeShot(shot)
         } else {
-            player1Board = old.player1Board.hitPanel(shot) ?: throw Exception("Invalid shot")
+            player1Board = old.player1Board.placeShot(shot)
             player2Board = old.player2Board
         }
         playersTurn = if (old.playersTurn == player1) player2
@@ -69,9 +69,6 @@ class BattlePhase: Game {
         }
     }
 
-    private fun Board.isGameOver(): Boolean {
-        val hitPanels = this.getHitCoordinates()
-        val shipPanels = this.getShipCoordinates()
-        return hitPanels.containsAll(shipPanels)
-    }
+    private fun Board.isGameOver() = this.getShips().all { it.isSunk }
+
 }

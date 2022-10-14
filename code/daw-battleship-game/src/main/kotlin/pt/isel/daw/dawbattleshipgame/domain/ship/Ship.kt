@@ -1,13 +1,7 @@
-package pt.isel.daw.dawbattleshipgame.domain.ship.types
+package pt.isel.daw.dawbattleshipgame.domain.ship
 
 import pt.isel.daw.dawbattleshipgame.domain.board.CoordinateSet
-import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-
-sealed class Ship {
-    abstract val coordinates : CoordinateSet
-    abstract val type : ShipType
-}
+data class Ship(val coordinates : CoordinateSet, val type : ShipType, val isSunk : Boolean)
 
 fun Ship.getOrientation(): Orientation {
     if (coordinates.isEmpty()) {

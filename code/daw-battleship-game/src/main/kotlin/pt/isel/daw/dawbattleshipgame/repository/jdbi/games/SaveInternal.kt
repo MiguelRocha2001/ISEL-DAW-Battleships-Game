@@ -1,10 +1,8 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
-import pt.isel.daw.dawbattleshipgame.domain.board.ShipPanel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
@@ -57,27 +55,19 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
 }
 
 fun insertPanel(handle: Handle, gameId: Int, user: Int, board: List<Panel>) {
-    board.forEachIndexed { idx, panel ->
-        val type = if (panel is ShipPanel) {
-            when (panel.shipType) {
-                ShipType.BATTLESHIP -> "battleship"
-                ShipType.CARRIER -> "carrier"
-                ShipType.DESTROYER -> "destroyer"
-                ShipType.SUBMARINE -> "submarine"
-                ShipType.CRUISER -> "cruiser"
-            }
-        } else "water"
+    board.forEach{ panel ->
         handle.createUpdate(
             """
-                        insert into PANEL(game, _user, idx, is_hit, type)
-                        values(:game, :_user, :idx, :is_hit, :type)
+                        insert into PANEL(game, _user, x, y, is_hit, type)
+                        values(:game, :_user, :x, :y, :is_hit, :type)
                     """
         )
             .bind("game", gameId)
             .bind("_user", user)
-            .bind("idx", idx)
+            .bind("x", panel.coordinate.row)
+            .bind("y", panel.coordinate.column)
             .bind("is_hit", panel.isHit)
-            .bind("type", type)
+            .bind("type", panel.getType())
             .execute()
     }
 }
@@ -116,7 +106,7 @@ fun confirmBoard(handle: Handle, gameId: Int, playerId: Int) {
     handle.createUpdate(
         """
                 update BOARD
-                set is_confirmed = true
+                set confirmed = true
                 where game = :game and user = :_user
                     """
     )

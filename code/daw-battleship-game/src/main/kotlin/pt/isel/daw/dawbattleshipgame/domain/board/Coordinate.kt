@@ -27,7 +27,7 @@ fun String.toCoordinateOrNull(): Coordinate? {
 fun String.toCoordinate(): Coordinate {
     val regex = Regex("^[a-zA-Z]\\d\\d?\$")
     if(!regex.matches(this))
-        throw IllegalArgumentException()
+        throw IllegalArgumentException("Invalid coordinate string format")
 
     val row = Regex("\\d\\d?")
         .find(this)?.value ?: throw IllegalStateException()
@@ -64,15 +64,6 @@ fun CoordinateSet.moveFromTo(origin : Coordinate, destination: Coordinate, gameD
  * @param dim number of the tiles on the side of the board, ensures the creation of all valid coordinates
  */
 class Coordinates(private val dim: Int) {
-    /**
-     * Check if value equals one (1)
-     */
-    private fun Int.isOne() = this == ONE
-
-    /**
-     * Check if value equals game dimension
-     */
-    private fun Int.isGameDim() = this == dim
 
     /**
      * Generates a random valid Coordinate
@@ -160,8 +151,8 @@ class Coordinates(private val dim: Int) {
      * being '{}' as the instance coordinate
      * amd '[]' the adjacent coordinates
      */
-    fun radius(c: Coordinate): List<Coordinate>? {
-        if(c.row > dim || c.column > dim) return null
+    fun radius(c: Coordinate): List<Coordinate> {
+        c.checkValid(dim)
         val left = left(c)
         val right = right(c)
         return listOfNotNull(
@@ -178,13 +169,21 @@ class Coordinates(private val dim: Int) {
 
 class Coordinate(val row: Int, val column: Int) {
     init {
-    check(row > 0 && column > 0) { "Coordinate cannot possess values inferior to zero"}
+        check(row > 0 && column > 0) {
+            "Row or Column cannot be lower than 1"
+        }
     }
     override fun equals(other: Any?): Boolean {
         return if (other is Coordinate) {
             return row == other.row && column == other.column
         }
         else false
+    }
+
+    fun checkValid(dimension : Int) {
+        if(!(this.column <= dimension && this.row <= dimension)){
+            throw IllegalArgumentException("Invalid coordinate")
+        }
     }
 
     override fun toString() = "(column = ${('A' + column) - ONE }, row = $row)"

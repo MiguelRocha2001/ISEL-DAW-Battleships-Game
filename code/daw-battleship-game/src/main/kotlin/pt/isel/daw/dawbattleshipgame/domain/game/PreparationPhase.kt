@@ -1,11 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
-import pt.isel.daw.dawbattleshipgame.domain.ship.types.getOrientation
 import kotlin.collections.first
-
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.ship.getOrientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 
 class PreparationPhase(
@@ -68,7 +67,7 @@ class PlayerPreparationPhase {
         if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = old.generateShipCoordinates(shipType, coordinate, orientation) ?: throw Exception()
         return PlayerPreparationPhase(this,
-            old.board.placeShipPanel(shipCoordinates, shipType),
+            old.board.placeShip(shipCoordinates, shipType),
         )
     }
 
@@ -90,7 +89,7 @@ class PlayerPreparationPhase {
         if (!old.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         return PlayerPreparationPhase(
             this,
-            old.board.placeShipPanel(coordinateS, shipType)
+            old.board.placeShip(coordinateS, shipType)
         )
     }
 
@@ -102,8 +101,8 @@ class PlayerPreparationPhase {
         return board.toString()
     }
 
-    private fun isShip(c: Coordinate) = board.isShipPanel(c)
-    private fun isNotShip(c: Coordinate) = board.isWaterPanel(c)
+    private fun isShip(c: Coordinate) = board.isShip(c)
+    private fun isNotShip(c: Coordinate) = !board.isShip(c)
 
     /**
      * Tries to place [shipType] on the Board, on give in [position].
@@ -141,7 +140,7 @@ class PlayerPreparationPhase {
      */
     fun tryMoveShip(position: Coordinate, destination: Coordinate): PlayerPreparationPhase? {
         return try {
-            val ship = board.getShips().getShip(position)
+            val ship = board.getShipFromCoordinate(position)
             val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
             if (isShipTouchingAnother(board, newCoordinates)) return null
             tryRemoveShip(position)?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
@@ -204,7 +203,7 @@ class PlayerPreparationPhase {
      * Check if any ship from the player is near the coordinate
      */
     private fun isShipNearCoordinate(c: Coordinate, board: Board) =
-        coordinates.radius(c)!!.any { board.isShipPanel(it) }
+        coordinates.radius(c).any { board.isShip(it) && board[it].shipType != board[c].shipType }
 
 
     /**

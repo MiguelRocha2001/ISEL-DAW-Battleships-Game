@@ -1,14 +1,11 @@
 package pt.isel.daw.dawbattleshipgame.domain.ship
 
-import pt.isel.daw.dawbattleshipgame.domain.board.CoordinateSet
-import pt.isel.daw.dawbattleshipgame.domain.ship.types.*
-
 enum class ShipType {
     CARRIER,
     BATTLESHIP,
     CRUISER,
     SUBMARINE,
-    DESTROYER
+    DESTROYER;
 }
 
 fun String.toShipType(): ShipType {
@@ -22,10 +19,13 @@ fun String.toShipType(): ShipType {
     }
 }
 
-fun ShipType.generateShip(coordinateSet: CoordinateSet) = when (this) {
-        ShipType.CARRIER -> Carrier(coordinateSet)
-        ShipType.BATTLESHIP -> Battleship(coordinateSet)
-        ShipType.CRUISER -> Cruiser(coordinateSet)
-        ShipType.SUBMARINE -> Submarine(coordinateSet)
-        ShipType.DESTROYER -> Destroyer(coordinateSet)
+fun String.toShipTypeOrNull(): ShipType? {
+    return when (this.lowercase()) {
+        "carrier" -> ShipType.CARRIER
+        "battleship" -> ShipType.BATTLESHIP
+        "cruiser" -> ShipType.CRUISER
+        "submarine" -> ShipType.SUBMARINE
+        "destroyer" -> ShipType.DESTROYER
+        else -> null
+    }
 }

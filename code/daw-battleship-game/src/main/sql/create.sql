@@ -6,7 +6,7 @@ create table _USER(
 
 create table TOKEN(
    token_validation VARCHAR(256) primary key,
-   user_id int references dbo.Users(id)
+   user_id int references _USER(id)
 );
 
 create table GAME(
@@ -14,7 +14,7 @@ create table GAME(
     user1 int not null,
     user2 int not null,
     finished boolean,
-    player_turn varchar(20) null,
+    player_turn int null,
     foreign key (user1) references _USER(id),
     foreign key (user2) references _USER(id),
     foreign key (player_turn) references _USER(id)
@@ -40,13 +40,15 @@ create table BOARD(
 create table PANEL(
     game int,
     _user int not null,
-    idx int,
-    is_hit boolean,
+    x int not null,
+    y int not null,
+    is_hit boolean not null,
     type varchar(20) not null check ( type in ('water', 'carrier', 'battleship', 'cruiser', 'submarine', 'destroyer') ),
-    primary key (game, _user, idx),
+    primary key (game, _user, x, y),
     foreign key (game) references GAME(id),
     foreign key (_user) references _USER(id)
 );
+
 
 create table SHIP(
     configuration int,
