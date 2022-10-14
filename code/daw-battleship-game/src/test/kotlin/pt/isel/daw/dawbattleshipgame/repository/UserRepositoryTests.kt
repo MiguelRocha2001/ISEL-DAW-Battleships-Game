@@ -2,28 +2,28 @@ package pt.isel.daw.dawbattleshipgame.repository
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
+import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 
 class UserRepositoryTests {
-
+    private val passwordEncoder = BCryptPasswordEncoder()
     @Test
     fun `can create and retrieve`(): Unit = testWithTransactionManagerAndRollback { transactionManager ->
         transactionManager.run { transaction ->
             // given: repositories and logic
             val userRepo = transaction.usersRepository
-            val userId = generateToken()
-            val username = "user1"
-            val hashedPassword = "password1".hashCode().toString()
+            val username = "user"
+            val passwordValidationInfo = PasswordValidationInfo(passwordEncoder.encode("user1password"))
 
-            userRepo.storeUser(userId, username, hashedPassword)
+            userRepo.storeUser(username, passwordValidationInfo)
 
             val user = userRepo.getUserByUsername(username)
-            assertEquals(userId, user?.id)
             assertEquals(username, user?.username)
-            assertEquals(hashedPassword, user?.hashedPassword)
+            assertEquals(passwordValidationInfo, user?.passwordValidation)
         }
     }
 

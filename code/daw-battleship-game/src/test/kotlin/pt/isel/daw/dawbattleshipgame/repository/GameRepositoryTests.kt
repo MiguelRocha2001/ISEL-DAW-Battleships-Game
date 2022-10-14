@@ -6,8 +6,10 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.PreparationPhase
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateGameId
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiGamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiUsersRepository
+import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
@@ -26,15 +28,19 @@ class GameRepositoryTests {
     fun testCreateGame() {
         testWithTransactionManagerAndRollback { transactionManager ->
             transactionManager.run { transaction ->
+                val passwordValidationInfo1 = PasswordValidationInfo(passwordEncoder.encode("user1password"))
+                val passwordValidationInfo2 = PasswordValidationInfo(passwordEncoder.encode("user1password"))
                 val usersRepo = transaction.usersRepository
-                usersRepo.storeUser("user1", "user1", passwordEncoder.encode("password1"))
-                usersRepo.storeUser("user2", "user2", passwordEncoder.encode("password2"))
+                usersRepo.storeUser("user1", passwordValidationInfo1)
+                usersRepo.storeUser("user2", passwordValidationInfo2)
 
                 val gamesRepo = transaction.gamesRepository
                 resetGamesDatabase(gamesRepo) // clears all games
                 val gameId = generateGameId()
+                val player1Id = generateRandomId()
+                val player2Id = generateRandomId()
                 val configuration = getGameTestConfiguration()
-                val game = Game.newGame(gameId, "user1", "user2", configuration) // PreparationPhase
+                val game = Game.newGame(gameId, player1Id, player2Id, configuration) // PreparationPhase
 
                 gamesRepo.saveGame(game)
 
@@ -43,16 +49,16 @@ class GameRepositoryTests {
                 checkNotNull(gameFromDb)
                 assert(gameFromDb.gameId == gameId)
                 assert(gameFromDb.configuration == configuration)
-                assert(gameFromDb.player1 == "user1")
-                assert(gameFromDb.player2 == "user2")
+                assert(gameFromDb.player1 == player1Id)
+                assert(gameFromDb.player2 == player2Id)
                 assert(gameFromDb is PreparationPhase)
                 (gameFromDb as PreparationPhase).let { preparationPhase ->
                     (preparationPhase.player1PreparationPhase).let { player1PreparationPhase ->
-                        assert(player1PreparationPhase.playerId == "user1")
+                        assert(player1PreparationPhase.playerId == player1Id)
                         assert(player1PreparationPhase.board.toString() ==  game.player1PreparationPhase.board.toString())
                     }
                     (preparationPhase.player2PreparationPhase).let { player2PreparationPhase ->
-                        assert(player2PreparationPhase.playerId == "user2")
+                        assert(player2PreparationPhase.playerId == player2Id)
                         assert(player2PreparationPhase.board.toString() == game.player2PreparationPhase.board.toString())
                     }
                 }

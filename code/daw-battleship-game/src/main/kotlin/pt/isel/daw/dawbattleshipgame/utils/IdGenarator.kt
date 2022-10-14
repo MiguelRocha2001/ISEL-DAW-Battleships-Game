@@ -1,5 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.utils
 
-fun generateGameId(): Int {
+fun generateRandomId(): Int {
     return (0..999999999).random()
 }

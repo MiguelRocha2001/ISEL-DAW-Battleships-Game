@@ -77,7 +77,7 @@ class JdbiGamesRepository(
         TODO("Not yet implemented")
     }
 
-    override fun joinGameQueue(token: String, configuration: Configuration) {
+    override fun joinGameQueue(userId: Int, configuration: Configuration) {
         TODO("Not yet implemented")
     }
 

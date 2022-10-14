@@ -7,14 +7,13 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
-import pt.isel.daw.dawbattleshipgame.utils.generateGameId
+import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 
 
 class GameTestMoving {
-    private val gameId = generateGameId()
-    private val player1 = generateToken()
-    private val player2 = generateToken()
+    private val gameId = generateRandomId()
+    private val player1 = generateRandomId()
+    private val player2 = generateRandomId()
     private val configuration = getGameTestConfiguration()
 
     @Test
