@@ -9,7 +9,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
-import pt.isel.daw.dawbattleshipgame.generateGameId
+import pt.isel.daw.dawbattleshipgame.utils.generateGameId
 
 
 class GameTestRotation {

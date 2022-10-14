@@ -17,16 +17,18 @@ class JdbiUsersRepository(
             .mapTo<User>()
             .singleOrNull()
 
-    override fun storeUser(id: String, username: String, passwordValidation: String): Boolean =
+    override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): String =
         handle.createUpdate(
             """
-            insert into _user (id, username, hashed_password) values (:id, :username, :hashed_password)
+            insert into USER (username, password_validation) values (:username, :password_validation)
             """
         )
-            .bind("id", id)
             .bind("username", username)
-            .bind("hashed_password", passwordValidation)
-            .execute() == 1
+            .bind("password_validation", passwordValidation.validationInfo)
+            .executeAndReturnGeneratedKeys()
+            .mapTo<Int>()
+            .one()
+            .toString()
 
     override fun isUserStoredByUsername(username: String): Boolean =
         handle.createQuery("select count(*) from dbo.Users where username = :username")

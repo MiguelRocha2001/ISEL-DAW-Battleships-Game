@@ -7,8 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.daw.dawbattleshipgame.Either
+import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.services.UserServices
+import pt.isel.daw.dawbattleshipgame.http.model.Problem
+import pt.isel.daw.dawbattleshipgame.services.TokenCreationError
+import pt.isel.daw.dawbattleshipgame.services.UserCreationError
 import pt.isel.daw.tictactow.http.model.UserCreateInputModel
+import pt.isel.daw.tictactow.http.model.UserCreateTokenInputModel
+import pt.isel.daw.dawbattleshipgame.http.model.UserHomeOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.UserTokenCreateOutputModel
 
 @RestController
 class UsersController(

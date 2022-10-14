@@ -3,11 +3,9 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 import pt.isel.daw.dawbattleshipgame.domain.board.ShipPanel
 import pt.isel.daw.dawbattleshipgame.domain.board.WaterPanel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
 
 internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {

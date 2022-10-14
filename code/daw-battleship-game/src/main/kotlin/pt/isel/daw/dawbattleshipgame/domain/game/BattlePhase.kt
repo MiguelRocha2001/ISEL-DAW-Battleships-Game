@@ -7,19 +7,19 @@ class BattlePhase: Game {
     override val gameId: Int
     override val configuration: Configuration
 
-    override val player1: String // user1 Id
-    override val player2: String // user2 Id
+    override val player1: Int // user1 Id
+    override val player2: Int // user2 Id
 
     val player1Board: Board
     val player2Board: Board
 
-    val playersTurn: String
+    val playersTurn: Int //user ID
 
     constructor(
         configuration: Configuration,
         gameId: Int,
-        playerA: String,
-        playerB: String,
+        playerA: Int,
+        playerB: Int,
         boardA: Board,
         boardB: Board
     ) {
@@ -35,7 +35,7 @@ class BattlePhase: Game {
     /**
      * Builds a new Game object, with place shot on [shot], in opponent board.
      */
-    private constructor(old: BattlePhase, player: String, shot: Coordinate) {
+    private constructor(old: BattlePhase, player: Int, shot: Coordinate) {
         gameId = old.gameId
         configuration = old.configuration
         player1 = old.player1
@@ -56,9 +56,9 @@ class BattlePhase: Game {
      * Builds a new Game object, with place shot on [shot], in opponent board.
      * If this shot sinks all enemy fleet, the game is over. In this case, End object is returned.
      */
-    fun tryPlaceShot(token: String, shot: Coordinate): Game? {
+    fun tryPlaceShot(userId: Int, shot: Coordinate): Game? {
         return try {
-            val gameResult = BattlePhase(this, token, shot)
+            val gameResult = BattlePhase(this, userId, shot)
             if (gameResult.player1Board.isGameOver() || gameResult.player2Board.isGameOver()) {
                 EndPhase(gameId, configuration, player1, player2, player1Board, player2Board)
             } else {

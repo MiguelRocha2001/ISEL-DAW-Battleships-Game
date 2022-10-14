@@ -1,6 +1,6 @@
-package pt.isel.daw.tictactow.http.model
+package pt.isel.daw.dawbattleshipgame.http.model
 
-import pt.isel.daw.tictactow.http.LinkRelation
+import pt.isel.daw.dawbattleshipgame.http.LinkRelation
 import java.net.URI
 
 data class LinkOutputModel(

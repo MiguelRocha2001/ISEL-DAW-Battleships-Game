@@ -1,4 +1,4 @@
-package pt.isel.daw.tictactow.http.model
+package pt.isel.daw.dawbattleshipgame.http.model
 
 import org.springframework.http.ResponseEntity
 import java.net.URI

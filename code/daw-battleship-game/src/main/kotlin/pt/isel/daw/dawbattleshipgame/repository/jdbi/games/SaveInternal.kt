@@ -43,7 +43,7 @@ internal fun insertBoards(handle: Handle, game: Game) {
     insertBoard(handle, game.gameId, game.player2, player2Board)
 }
 
-internal fun insertBoard(handle: Handle, gameId: Int, user: String, board: Board) {
+internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
     handle.createUpdate(
         """
                         insert into BOARD(game, _user)
@@ -56,7 +56,7 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: String, board: Board
     insertPanel(handle, gameId, user, board.board)
 }
 
-fun insertPanel(handle: Handle, gameId: Int, user: String, board: List<Panel>) {
+fun insertPanel(handle: Handle, gameId: Int, user: Int, board: List<Panel>) {
     board.forEachIndexed { idx, panel ->
         val type = if (panel is ShipPanel) {
             when (panel.shipType) {
@@ -112,7 +112,7 @@ fun insertConfigurationShips(handle: Handle, gameId: Int, ships: Set<Pair<ShipTy
     }
 }
 
-fun confirmBoard(handle: Handle, gameId: Int, playerId: String) {
+fun confirmBoard(handle: Handle, gameId: Int, playerId: Int) {
     handle.createUpdate(
         """
                 update BOARD

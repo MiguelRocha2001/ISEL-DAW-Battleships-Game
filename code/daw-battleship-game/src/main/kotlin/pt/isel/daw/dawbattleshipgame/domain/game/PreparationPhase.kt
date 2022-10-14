@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
-import pt.isel.daw.dawbattleshipgame.domain.ship.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.types.getOrientation
 import kotlin.collections.first
 
@@ -12,8 +11,8 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 class PreparationPhase(
     override val gameId: Int,
     override val configuration: Configuration,
-    override val player1: String,
-    override val player2: String,
+    override val player1: Int,
+    override val player2: Int,
     player1PreparationPhase: PlayerPreparationPhase? = null,
     player2PreparationPhase: PlayerPreparationPhase? = null
 ) : Game() {
@@ -28,13 +27,13 @@ class PreparationPhase(
 
 class PlayerPreparationPhase {
     val gameId: Int
-    val playerId: String
+    val playerId: Int
 
     val configuration: Configuration
     private val coordinates: Coordinates
     val board: Board
 
-    constructor(gameId: Int, configuration: Configuration, playerId: String, board: Board) {
+    constructor(gameId: Int, configuration: Configuration, playerId: Int, board: Board) {
         this.gameId = gameId
         this.configuration = configuration
         this.playerId = playerId
@@ -45,7 +44,7 @@ class PlayerPreparationPhase {
     /**
      * Creates a new Game.
      */
-    constructor(gameId: Int, configuration: Configuration, playerId: String) {
+    constructor(gameId: Int, configuration: Configuration, playerId: Int) {
         this.configuration = configuration
         this.gameId = gameId
         this.playerId = playerId

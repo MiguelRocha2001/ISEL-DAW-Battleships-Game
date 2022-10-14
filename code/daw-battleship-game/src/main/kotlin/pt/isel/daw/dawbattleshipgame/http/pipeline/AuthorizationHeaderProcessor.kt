@@ -2,12 +2,13 @@ package pt.isel.daw.dawbattleshipgame.http.pipeline
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import pt.isel.daw.tictactow.domain.User
-import pt.isel.daw.tictactow.service.UsersService
+import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.services.UserServices
+
 
 @Component
 class AuthorizationHeaderProcessor(
-    val usersService: UsersService
+    val usersService: UserServices
 ) {
 
     fun process(authorizationValue: String?): User? {

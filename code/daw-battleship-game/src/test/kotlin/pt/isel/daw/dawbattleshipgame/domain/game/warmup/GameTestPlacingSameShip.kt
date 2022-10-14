@@ -1,6 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.domain.game.warmup
 
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
@@ -9,7 +8,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
-import pt.isel.daw.dawbattleshipgame.generateGameId
+import pt.isel.daw.dawbattleshipgame.utils.generateGameId
 
 
 class GameTestPlacingSameShip {

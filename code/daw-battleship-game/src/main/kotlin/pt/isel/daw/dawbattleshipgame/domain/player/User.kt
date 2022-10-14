@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.domain.player
 
 data class User(
-    val id: String,
+    val id: Int,
     val username: String,
-    val hashedPassword: String,
+    val passwordValidation: PasswordValidationInfo,
 )

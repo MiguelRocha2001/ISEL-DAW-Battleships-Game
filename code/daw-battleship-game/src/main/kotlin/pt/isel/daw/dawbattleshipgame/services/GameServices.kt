@@ -7,37 +7,47 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.generateGameId
+import pt.isel.daw.dawbattleshipgame.utils.generateGameId
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.DbBattlePhase
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.DbPlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
 
 @Component
-class GameServices(private val db: JdbiGamesRepository) {
+class GameServices(
+    private val userServices: UserServices,
+    private val transaction: JdbiTransaction
+    ) {
 
     /**
      * Initiates a new game with some other user, awaiting. If there's none,
      * joins a queue and waits for another user to join.
      */
-    private fun startGame(token: String, configuration: Configuration): PlayerPreparationPhase? {
-        val userWaiting: String? = db.getWaitingUser(configuration)
-        if (userWaiting == null) {
-            db.joinGameQueue(token, configuration)
-        } else {
-            val gameId: Int = generateGameId()
-            db.removeUserFromQueue(userWaiting)
-            val preparationPhase = Game.newGame(gameId, userWaiting, token, configuration)
-            db.savePreparationPhase(preparationPhase)
-            return preparationPhase.player2PreparationPhase
+    private fun startGame(userId: Int, configuration: Configuration): PlayerPreparationPhase? {
+        transaction.run {
+            val db = this.gamesRepository
+            val userWaiting: Int? = db.getWaitingUser(configuration)
+            if (userWaiting == null) {
+                db.joinGameQueue(userId, configuration)
+            } else {
+                val gameId: Int = generateGameId()
+                db.removeUserFromQueue(userWaiting)
+                val preparationPhase = Game.newGame(gameId, userWaiting, userId, configuration)
+                db.savePreparationPhase(preparationPhase)
+                return preparationPhase.player2PreparationPhase
+            }
+            return null // but the user is now on the waiting queue
         }
-        return null // but the user is now on the waiting queue
     }
 
     private fun placeShip(token: String, ship: ShipType, position: Coordinate, orientation: Orientation) {
-        val dbGameResponse = db.getPlayerPreparationPhase(token)
-        if (dbGameResponse is DbPlayerPreparationPhase) {
-            val playerPreparationPhase = dbGameResponse.playerPreparationPhase
-            val result = playerPreparationPhase.tryPlaceShip(ship, position, orientation) ?: return
-            db.savePlayerPreparationPhase(result)
+        transaction.run {
+            val db = this.gamesRepository
+            val dbGameResponse = db.getPlayerPreparationPhase(token)
+            if (dbGameResponse is DbPlayerPreparationPhase) {
+                val playerPreparationPhase = dbGameResponse.playerPreparationPhase
+                val result = playerPreparationPhase.tryPlaceShip(ship, position, orientation) ?: return
+                db.savePlayerPreparationPhase(result)
+            }
         }
     }
 

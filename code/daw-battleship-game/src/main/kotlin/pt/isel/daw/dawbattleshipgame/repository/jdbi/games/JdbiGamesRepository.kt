@@ -73,7 +73,7 @@ class JdbiGamesRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getWaitingUser(configuration: Configuration): String? {
+    override fun getWaitingUser(configuration: Configuration): Int? {
         TODO("Not yet implemented")
     }
 
@@ -81,7 +81,7 @@ class JdbiGamesRepository(
         TODO("Not yet implemented")
     }
 
-    override fun removeUserFromQueue(userWating: String) {
+    override fun removeUserFromQueue(userWating: Int) {
         TODO("Not yet implemented")
     }
 

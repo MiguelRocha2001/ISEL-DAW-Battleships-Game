@@ -1,13 +1,11 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
 
 class WaitingPhase(
     override val gameId: Int,
-    override val player1: String,
-    override val player2: String,
+    override val player1: Int,
+    override val player2: Int,
     player1Board: Board,
     player2Board: Board,
     override val configuration: Configuration
@@ -22,4 +20,4 @@ class WaitingPhase(
     }
 }
 
-class PlayerWaitingPhase(val gameId: Int, val configuration: Configuration, val board: Board, val playerId: String)
+class PlayerWaitingPhase(val gameId: Int, val configuration: Configuration, val board: Board, val playerId: Int)

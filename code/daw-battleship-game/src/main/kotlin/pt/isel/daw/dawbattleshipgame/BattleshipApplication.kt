@@ -12,13 +12,15 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import pt.isel.daw.dawbattleshipgame.http.pipeline.AuthenticationInterceptor
 import pt.isel.daw.dawbattleshipgame.http.pipeline.UserArgumentResolver
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
+import pt.isel.daw.dawbattleshipgame.utils.Sha256TokenEncoder
 
 @SpringBootApplication
 class BattleshipApplication {
     @Bean
     fun jdbi() = Jdbi.create(
         PGSimpleDataSource().apply {
-            setURL("jdbc:postgresql://localhost:5432/db?user=dbuser&password=changeit")
+            setURL(System.getenv("TODO"))
         }
     ).configure()
 

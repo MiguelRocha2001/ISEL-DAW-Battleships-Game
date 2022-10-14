@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.web.util.UriTemplate
-import pt.isel.daw.tictactow.domain.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import java.net.URI
 
 object Uris {
@@ -16,7 +16,7 @@ object Uris {
 
     fun home(): URI = URI(HOME)
     fun userHome(): URI = URI(USER_HOME)
-    fun gameById(game: Game) = UriTemplate(GAME_BY_ID).expand(game.id)
+    fun gameById(game: Game) = UriTemplate(GAME_BY_ID).expand(game.gameId)
 
     fun userById(id: String) = UriTemplate(USERS_GET_BY_ID).expand(id)
 }

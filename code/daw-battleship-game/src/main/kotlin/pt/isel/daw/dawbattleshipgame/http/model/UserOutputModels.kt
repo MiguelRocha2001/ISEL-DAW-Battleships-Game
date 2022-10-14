@@ -1,4 +1,4 @@
-package pt.isel.daw.tictactow.http.model
+package pt.isel.daw.dawbattleshipgame.http.model
 
 class UserTokenCreateOutputModel(
     val token: String
