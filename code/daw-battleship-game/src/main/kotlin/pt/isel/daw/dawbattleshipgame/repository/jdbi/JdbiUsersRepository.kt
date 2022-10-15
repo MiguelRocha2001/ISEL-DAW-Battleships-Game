@@ -20,7 +20,7 @@ class JdbiUsersRepository(
     override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): String =
         handle.createUpdate(
             """
-            insert into USER (username, password_validation) values (:username, :password_validation)
+            insert into _USER (username, password_validation) values (:username, :password_validation)
             """
         )
             .bind("username", username)
@@ -31,13 +31,13 @@ class JdbiUsersRepository(
             .toString()
 
     override fun isUserStoredByUsername(username: String): Boolean =
-        handle.createQuery("select count(*) from dbo.Users where username = :username")
+        handle.createQuery("select count(*) from _USER where username = :username")
             .bind("username", username)
             .mapTo<Int>()
             .single() == 1
 
     override fun createToken(userId: Int, token: TokenValidationInfo) {
-        handle.createUpdate("insert into dbo.Tokens(user_id, token_validation) values (:user_id, :token_validation)")
+        handle.createUpdate("insert into TOKEN(user_id, token_validation) values (:user_id, :token_validation)")
             .bind("user_id", userId)
             .bind("token_validation", token.validationInfo)
             .execute()
@@ -47,8 +47,8 @@ class JdbiUsersRepository(
         handle.createQuery(
             """
             select id, username, password_validation 
-            from dbo.Users as users 
-            inner join dbo.Tokens as tokens 
+            from _USER as users 
+            inner join TOKEN as tokens 
             on users.id = tokens.user_id
             where token_validation = :validation_information
             """
