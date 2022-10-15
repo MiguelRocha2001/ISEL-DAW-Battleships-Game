@@ -1,5 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
+
 enum class State { WARMUP, WAITING, BATTLE, END }
 
 sealed class Game {
@@ -10,6 +12,13 @@ sealed class Game {
 
     companion object {
         fun newGame(gameId: Int, player1: Int, player2: Int, configuration: Configuration) =
-            PreparationPhase(gameId, configuration, player1, player2)
+            SinglePhase(
+                gameId,
+                configuration,
+                player1,
+                player2,
+                PlayerPreparationPhase(gameId, configuration, player1),
+                PlayerPreparationPhase(gameId, configuration, player2)
+            )
     }
 }

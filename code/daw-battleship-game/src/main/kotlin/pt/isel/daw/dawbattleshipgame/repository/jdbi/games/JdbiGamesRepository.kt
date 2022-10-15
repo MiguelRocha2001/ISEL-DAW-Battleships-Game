@@ -2,17 +2,22 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerWaitingPhase
+import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.*
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoard
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoards
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertGame
 
+/*
 sealed class DbGameResponse
 data class DbPreparationPhase(val preparationPhase: PreparationPhase) : DbGameResponse()
 data class DbWaitingPhase(val waitingPhase: WaitingPhase) : DbGameResponse()
 data class DbPlayerPreparationPhase(val playerPreparationPhase: PlayerPreparationPhase) : DbGameResponse()
 data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
+ */
 
 class JdbiGamesRepository(
     private val handle: Handle,
@@ -22,6 +27,10 @@ class JdbiGamesRepository(
         return fetchGameInternal(handle, gameId)
     }
 
+    override fun getGameByUser(userId: Int): Game? {
+        return fetchGameByUser(handle, userId)
+    }
+
     override fun saveGame(game: Game) {
         deleteGame(handle, game.gameId)
         insertGame(handle, game)
@@ -29,8 +38,8 @@ class JdbiGamesRepository(
         insertConfiguration(handle, game.gameId, game.configuration)
     }
 
-    override fun savePreparationPhase(preparationPhase: PreparationPhase) {
-        saveGame(preparationPhase)
+    override fun savePreparationPhase(singlePhase: SinglePhase) {
+        saveGame(singlePhase)
     }
 
     override fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
@@ -41,22 +50,7 @@ class JdbiGamesRepository(
         confirmBoard(handle, playerWaitingPhase.gameId, playerWaitingPhase.playerId)
     }
 
-    override fun getPreparationPhase(gameId: Int): PreparationPhase? {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Returns the game if both players have confirmed their fleets.
-     */
-    override fun getWaitingPhase(gameId: Int): DbWaitingPhase? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getPlayerPreparationPhase(token: String): DbPlayerPreparationPhase? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getGame(): DbGameResponse? {
+    override fun getPreparationPhase(gameId: Int): SinglePhase? {
         TODO("Not yet implemented")
     }
 

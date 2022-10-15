@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 internal fun insertGame(handle: Handle, game: Game) {
@@ -25,14 +26,14 @@ internal fun insertGame(handle: Handle, game: Game) {
 
 internal fun insertBoards(handle: Handle, game: Game) {
     val player1Board = when (game) {
-        is PreparationPhase -> game.player1PreparationPhase.board
+        is SinglePhase -> game.player1PreparationPhase.board
         is WaitingPhase -> game.player1WaitingPhase.board
         is BattlePhase -> game.player1Board
         is EndPhase -> game.player1Board
     }
 
     val player2Board = when (game) {
-        is PreparationPhase -> game.player2PreparationPhase.board
+        is SinglePhase -> game.player2PreparationPhase.board
         is WaitingPhase -> game.player2WaitingPhase.board
         is BattlePhase -> game.player2Board
         is EndPhase -> game.player2Board

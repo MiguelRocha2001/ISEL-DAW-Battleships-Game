@@ -4,7 +4,15 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerWaitingPhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
+
+internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
+    val gameId = getGameIdBUser(handle, userId) ?: return null
+    return fetchGameInternal(handle, gameId)
+}
 
 internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val dbGameMapper = getDbGameMapper(handle, gameId) ?: return null
@@ -29,38 +37,43 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
         )
     }
     else {
-        when {
-            player1DbBoardMapper.confirmed && player2DbBoardMapper.confirmed ->
-                return WaitingPhase(
-                    gameId,
-                    dbGameMapper.user1,
-                    dbGameMapper.user2,
-                    player1Board,
-                    player2Board,
-                    configuration
-                )
-            !player1DbBoardMapper.confirmed && !player2DbBoardMapper.confirmed ->
-                return PreparationPhase(
-                    gameId,
-                    configuration,
-                    dbGameMapper.user1,
-                    dbGameMapper.user2,
-                    PlayerPreparationPhase(
-                        gameId,
-                        configuration,
-                        dbGameMapper.user1,
-                        player1Board
-                    ),
-                    PlayerPreparationPhase(
-                        gameId,
-                        configuration,
-                        dbGameMapper.user2,
-                        player2Board
-                    )
-                )
+        if (dbGameMapper.player_turn != null) {
+            return BattlePhase(
+                configuration,
+                gameId,
+                dbGameMapper.user1,
+                dbGameMapper.user2,
+                player1Board,
+                player2Board,
+            )
+        }
+        else {
+            val player1Game = if (player1DbBoardMapper.confirmed)
+                PlayerWaitingPhase(gameId, configuration, player1Board, dbGameMapper.user1)
+            else
+                PlayerPreparationPhase(gameId, configuration, dbGameMapper.user1, player1Board)
+
+            val player2Game = if (player2DbBoardMapper.confirmed)
+                    PlayerWaitingPhase(gameId, configuration, player2Board, dbGameMapper.user2)
+            else
+                PlayerPreparationPhase(gameId, configuration, dbGameMapper.user2, player2Board)
+
+            return SinglePhase(gameId, configuration, dbGameMapper.user1, dbGameMapper.user2, player1Game, player2Game)
         }
     }
-    throw NotImplementedError("Other states still not supported")
+}
+
+private fun getGameIdBUser(handle: Handle, userId: Int): Int? {
+    val dbGameMapper = handle.createQuery(
+        """
+            SELECT * FROM game
+            WHERE user1 = :userId OR user2 = :userId
+        """.trimIndent()
+    )
+        .bind("userId", userId)
+        .mapTo<DbGameMapper>()
+        .firstOrNull() ?: return null
+    return dbGameMapper.id
 }
 
 private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>, gameDim : Int): Board {

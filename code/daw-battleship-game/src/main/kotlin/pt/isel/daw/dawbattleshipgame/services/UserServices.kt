@@ -23,8 +23,8 @@ typealias TokenCreationResult = Either<TokenCreationError, String>
 
 @Component
 class UserServices(
-    private val userLogic: UserLogic,
     private val transactionManager: TransactionManager,
+    private val userLogic: UserLogic,
     private val passwordEncoder: PasswordEncoder,
     private val tokenEncoder: TokenEncoder,
 ) {

@@ -4,19 +4,18 @@ import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerWaitingPhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.DbBattlePhase
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.DbPlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
 
 @Component
 class GameServices(
     private val userServices: UserServices,
     private val transactionManager: TransactionManager
-    ) {
+) {
 
     /**
      * Initiates a new game with some other user, awaiting. If there's none,
@@ -30,70 +29,85 @@ class GameServices(
                 db.joinGameQueue(userId, configuration)
                 null
             } else {
-                val gameId: Int = generateRandomId()
+                val gameId = generateRandomId()
                 db.removeUserFromQueue(userWaiting)
-                val preparationPhase = Game.newGame(gameId, userWaiting, userId, configuration)
-                db.savePreparationPhase(preparationPhase)
-                preparationPhase.player2PreparationPhase
+                val newGame = Game.newGame(gameId, userWaiting, userId, configuration)
+                db.savePreparationPhase(newGame)
+                newGame.player1Game as PlayerPreparationPhase
             }
         }
     }
 
-    private fun placeShip(token: String, ship: ShipType, position: Coordinate, orientation: Orientation) {
+    private fun placeShip(userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation) {
         transactionManager.run {
             val db = it.gamesRepository
-            val dbGameResponse = db.getPlayerPreparationPhase(token)
-            if (dbGameResponse is DbPlayerPreparationPhase) {
-                val playerPreparationPhase = dbGameResponse.playerPreparationPhase
-                val result = playerPreparationPhase.tryPlaceShip(ship, position, orientation)
-                if (result != null)
-                    db.savePlayerPreparationPhase(result)
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (game is SinglePhase) {
+                val playerGame = if (game.player1 == userId) game.player1Game else game.player2Game
+                if (playerGame is PlayerPreparationPhase) {
+                    val newPlayerPreparationPhase = playerGame.tryPlaceShip(ship, position, orientation) ?: throw Exception("Invalid ship placement")
+                    val newGame = game.copy(player1Game = newPlayerPreparationPhase)
+                    db.savePreparationPhase(newGame)
+                } else {
+                    throw Exception("User not in preparation phase")
+                }
             }
         }
     }
 
-    private fun rotateShip(token: String, position: Coordinate) {
+    private fun rotateShip(userId: Int, position: Coordinate) {
         transactionManager.run {
             val db = it.gamesRepository
-            val dbGameResponse = db.getPlayerPreparationPhase(token)
-            if (dbGameResponse is DbPlayerPreparationPhase) {
-                val playerPreparationPhase = dbGameResponse.playerPreparationPhase
-                val result = playerPreparationPhase.tryRotateShip(position)
-                if (result != null)
-                    db.savePlayerPreparationPhase(result)
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (game is SinglePhase) {
+                val playerGame = if (game.player1 == userId) game.player1Game else game.player2Game
+                if (playerGame is PlayerPreparationPhase) {
+                    val newPlayerPreparationPhase = playerGame.tryRotateShip(position) ?: throw Exception("Invalid ship placement")
+                    val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
+                    else game.copy(player2Game = newPlayerPreparationPhase)
+                    db.savePreparationPhase(newGame)
+                } else {
+                    throw Exception("User not in preparation phase")
+                }
             }
         }
     }
 
-    private fun confirmFleet(token: String) {
+    private fun confirmFleet(userId: Int) {
         transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getPlayerPreparationPhase(token)
-            if (game != null) {
-                val newGameState = game.playerPreparationPhase.confirmFleet()
-                db.savePlayerWaitingPhase(newGameState)
-                updateBothGamesIfConfirmed(newGameState.gameId)
-            }
-        }
-    }
-
-    /**
-     * Updates the game, in database, if both players have confirmed their fleets.
-     */
-    private fun updateBothGamesIfConfirmed(gameId: Int) {
-        transactionManager.run {
-            val db = it.gamesRepository
-            val waitingPhase = db.getWaitingPhase(gameId)
-            if (waitingPhase != null) {
-                val configuration = waitingPhase.waitingPhase.configuration
-                val player1 = waitingPhase.waitingPhase.player1WaitingPhase.playerId
-                val player2 = waitingPhase.waitingPhase.player2WaitingPhase.playerId
-                val player1Board = waitingPhase.waitingPhase.player1WaitingPhase.board
-                val player2Board = waitingPhase.waitingPhase.player2WaitingPhase.board
-
-                db.removeGame(gameId) // removes both waiting phases
-                val newGamePhase = BattlePhase(configuration, gameId, player1, player2, player1Board, player2Board)
-                db.saveGame(newGamePhase)
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (game is SinglePhase) {
+                val player1Game = game.player1Game
+                val player2Game = game.player2Game
+                val newGame = if (game.player1 == userId) {
+                    if (player1Game is PlayerPreparationPhase) {
+                        if (player2Game is PlayerWaitingPhase) {
+                            BattlePhase(
+                                game.configuration,
+                                game.gameId,
+                                game.player1,
+                                game.player2,
+                                player1Game.board,
+                                player2Game.board
+                            )
+                        } else game.copy(player1Game = player1Game.confirmFleet())
+                    } else throw Exception("User not in preparation phase")
+                } else {
+                    if (player2Game is PlayerPreparationPhase) {
+                        if (player1Game is PlayerWaitingPhase) {
+                            BattlePhase(
+                                game.configuration,
+                                game.gameId,
+                                game.player1,
+                                game.player2,
+                                player1Game.board,
+                                player2Game.board
+                            )
+                        } else game.copy(player2Game = player2Game.confirmFleet())
+                    } else throw Exception("User not in preparation phase")
+                }
+                db.saveGame(newGame)
             }
         }
     }
@@ -101,9 +115,8 @@ class GameServices(
     private fun placeShot(userId: Int, c: Coordinate) {
         transactionManager.run {
             val db = it.gamesRepository
-            val dbGameResponse = db.getGame()
-            if (dbGameResponse is DbBattlePhase) {
-                val game = dbGameResponse.game
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (game is BattlePhase) {
                 val result = game.tryPlaceShot(userId, c)
                 if (result != null)
                     saveAndUpdateGameIfNecessary(result)

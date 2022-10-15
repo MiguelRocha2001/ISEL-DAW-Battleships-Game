@@ -1,30 +1,15 @@
-package pt.isel.daw.dawbattleshipgame.domain.game
+package pt.isel.daw.dawbattleshipgame.domain.game.single
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import kotlin.collections.first
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.getOrientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 
-class PreparationPhase(
-    override val gameId: Int,
-    override val configuration: Configuration,
-    override val player1: Int,
-    override val player2: Int,
-    player1PreparationPhase: PlayerPreparationPhase? = null,
-    player2PreparationPhase: PlayerPreparationPhase? = null
-) : Game() {
-    val player1PreparationPhase: PlayerPreparationPhase
-    val player2PreparationPhase: PlayerPreparationPhase
 
-    init {
-        this.player1PreparationPhase = player1PreparationPhase ?: PlayerPreparationPhase(gameId, configuration, player1)
-        this.player2PreparationPhase = player2PreparationPhase ?: PlayerPreparationPhase(gameId, configuration, player2)
-    }
-}
-
-class PlayerPreparationPhase {
+class PlayerPreparationPhase: Single {
     val gameId: Int
     val playerId: Int
 

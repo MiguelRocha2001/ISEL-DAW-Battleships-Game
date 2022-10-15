@@ -3,15 +3,13 @@ package pt.isel.daw.dawbattleshipgame.repository
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.PreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateGameId
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiGamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
-import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 
 class GameRepositoryTests {
@@ -51,8 +49,8 @@ class GameRepositoryTests {
                 assert(gameFromDb.configuration == configuration)
                 assert(gameFromDb.player1 == player1Id)
                 assert(gameFromDb.player2 == player2Id)
-                assert(gameFromDb is PreparationPhase)
-                (gameFromDb as PreparationPhase).let { preparationPhase ->
+                assert(gameFromDb is SinglePhase)
+                (gameFromDb as SinglePhase).let { preparationPhase ->
                     (preparationPhase.player1PreparationPhase).let { player1PreparationPhase ->
                         assert(player1PreparationPhase.playerId == player1Id)
                         assert(player1PreparationPhase.board.toString() ==  game.player1PreparationPhase.board.toString())
