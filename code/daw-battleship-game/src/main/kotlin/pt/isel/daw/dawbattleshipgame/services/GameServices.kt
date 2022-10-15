@@ -1,6 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
+import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
@@ -11,9 +12,10 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 
+// TODO -> define representations to return in functions bellow
+
 @Component
 class GameServices(
-    private val userServices: UserServices,
     private val transactionManager: TransactionManager
 ) {
 
@@ -21,8 +23,9 @@ class GameServices(
      * Initiates a new game with some other user, awaiting. If there's none,
      * joins a queue and waits for another user to join.
      */
-    private fun startGame(userId: Int, configuration: Configuration): PlayerPreparationPhase? {
+    fun startGame(userId: Int, configuration: Configuration): PlayerPreparationPhase? {
         return transactionManager.run {
+            // TODO: check if user is already in a game
             val db = it.gamesRepository
             val userWaiting: Int? = db.getWaitingUser(configuration)
             if (userWaiting == null) {
@@ -38,7 +41,14 @@ class GameServices(
         }
     }
 
-    private fun placeShip(userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation) {
+    fun getGame(gameId: Int): Game? {
+        return transactionManager.run {
+            it.gamesRepository.getGame(gameId)
+        }
+    }
+
+
+    fun placeShip(userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation) {
         transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
@@ -55,7 +65,7 @@ class GameServices(
         }
     }
 
-    private fun rotateShip(userId: Int, position: Coordinate) {
+    fun rotateShip(userId: Int, position: Coordinate) {
         transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
@@ -73,7 +83,7 @@ class GameServices(
         }
     }
 
-    private fun confirmFleet(userId: Int) {
+    fun confirmFleet(userId: Int) {
         transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
@@ -112,34 +122,27 @@ class GameServices(
         }
     }
 
-    private fun placeShot(userId: Int, c: Coordinate) {
+    fun placeShot(userId: Int, c: Coordinate) {
         transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
             if (game is BattlePhase) {
                 val result = game.tryPlaceShot(userId, c)
                 if (result != null)
-                    saveAndUpdateGameIfNecessary(result)
+                    db.saveGame(game)
             }
         }
     }
 
-    private fun getMyFleetLayout(token: String?): Board? {
+    fun getMyFleetLayout(token: String?): Board? {
         TODO("Not yet implemented")
     }
 
-    private fun getEnemyFleetLayout(token: String?): Board? {
+    fun getEnemyFleetLayout(token: String?): Board? {
         TODO("Not yet implemented")
     }
 
-    private fun getGameState(token: String?): State? {
+    fun getGameState(token: String?): State? {
         TODO("Not yet implemented")
-    }
-
-    private fun saveAndUpdateGameIfNecessary(game: Game?) {
-        transactionManager.run {
-            val db = it.gamesRepository
-            if (game != null) db.saveGame(game)
-        }
     }
 }

@@ -27,7 +27,7 @@ class UserServiceTests {
             )
 
             // when: creating a user
-            val createUserResult = userService.createUser("bob", "changeit")
+            val createUserResult = userService.createUser("bob", "password1")
 
             // then: the creation is successful
             when (createUserResult) {
@@ -36,7 +36,7 @@ class UserServiceTests {
             }
 
             // when: creating a token
-            val createTokenResult = userService.createToken("bob", "changeit")
+            val createTokenResult = userService.createToken("bob", "password2")
 
             // then: the creation is successful
             val token = when (createTokenResult) {
