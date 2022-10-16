@@ -24,9 +24,11 @@ class GameServices(
      */
     fun startGame(userId: Int, configuration: Configuration): PlayerPreparationPhase? {
         return transactionManager.run {
-            // TODO: check if user is already in a game
             val gameDb = it.gamesRepository
             val userDb = it.usersRepository
+            if (userDb.isAlreadyInQueue(userId)) {
+                return@run null
+            }
             val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
                 gameDb.joinGameQueue(userId, configuration)

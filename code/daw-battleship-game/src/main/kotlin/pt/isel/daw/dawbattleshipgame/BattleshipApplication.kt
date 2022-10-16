@@ -32,7 +32,6 @@ class BattleshipApplication {
     fun tokenEncoder() = Sha256TokenEncoder()
 }
 
-// QUESTION: why cannot this be in TicTacTowApplication
 @Configuration
 class PipelineConfigurer(
     val authenticationInterceptor: AuthenticationInterceptor,

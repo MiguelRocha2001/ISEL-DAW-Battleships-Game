@@ -14,9 +14,15 @@ object Uris {
     const val USERS_TOKEN = "/users/token"
     const val USERS_GET_BY_ID = "/users/{id}"
 
+    const val SERVER_INFO = "/server-info"
+    const val BATTLESHIPS_STATISTICS = "/battleships-statistics"
+
     fun home(): URI = URI(HOME)
     fun userHome(): URI = URI(USER_HOME)
     fun gameById(game: Game) = UriTemplate(GAME_BY_ID).expand(game.gameId)
 
     fun userById(id: String) = UriTemplate(USERS_GET_BY_ID).expand(id)
+
+    fun serverInfo(): URI = URI(SERVER_INFO)
+    fun battleshipsStatistics(): URI = URI(BATTLESHIPS_STATISTICS)
 }

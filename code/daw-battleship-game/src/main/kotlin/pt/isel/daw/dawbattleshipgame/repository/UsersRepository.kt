@@ -20,4 +20,5 @@ interface UsersRepository {
     fun createToken(userId: Int, token: TokenValidationInfo)
     fun getFirstUserInQueue(): Int?
     fun removeUserFromQueue(userWaiting: Int)
+    fun isAlreadyInQueue(userId: Int): Boolean
 }
