@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.repository.jdbi
+package pt.isel.daw.dawbattleshipgame.repository.jdbi.users
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
@@ -56,4 +56,16 @@ class JdbiUsersRepository(
             .bind("validation_information", tokenValidationInfo.validationInfo)
             .mapTo<User>()
             .singleOrNull()
+
+    override fun getFirstUserInQueue(): Int? {
+        return handle.createQuery("select user from USER_QUEUE order by priority limit 1")
+            .mapTo<Int>()
+            .firstOrNull()
+    }
+
+    override fun removeUserFromQueue(userWaiting: Int) {
+        handle.createUpdate("delete from USER_QUEUE where user = :user")
+            .bind("user", userWaiting)
+            .execute()
+    }
 }

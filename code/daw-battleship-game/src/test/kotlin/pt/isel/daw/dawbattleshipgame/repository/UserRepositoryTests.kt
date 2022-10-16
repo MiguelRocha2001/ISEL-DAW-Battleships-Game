@@ -3,10 +3,7 @@ package pt.isel.daw.dawbattleshipgame.repository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiUsersRepository
-import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 
 class UserRepositoryTests {

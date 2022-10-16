@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
-import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
@@ -26,16 +25,17 @@ class GameServices(
     fun startGame(userId: Int, configuration: Configuration): PlayerPreparationPhase? {
         return transactionManager.run {
             // TODO: check if user is already in a game
-            val db = it.gamesRepository
-            val userWaiting: Int? = db.getWaitingUser(configuration)
+            val gameDb = it.gamesRepository
+            val userDb = it.usersRepository
+            val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
-                db.joinGameQueue(userId, configuration)
+                gameDb.joinGameQueue(userId, configuration)
                 null
             } else {
                 val gameId = generateRandomId()
-                db.removeUserFromQueue(userWaiting)
+                userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.newGame(gameId, userWaiting, userId, configuration)
-                db.savePreparationPhase(newGame)
+                gameDb.savePreparationPhase(newGame)
                 newGame.player1Game as PlayerPreparationPhase
             }
         }

@@ -1,3 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.domain.game.single
 
-sealed class Single
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
+
+sealed class Single {
+    abstract val board: Board
+}

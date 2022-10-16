@@ -18,4 +18,6 @@ interface UsersRepository {
     fun isUserStoredByUsername(username: String): Boolean
 
     fun createToken(userId: Int, token: TokenValidationInfo)
+    fun getFirstUserInQueue(): Int?
+    fun removeUserFromQueue(userWaiting: Int)
 }

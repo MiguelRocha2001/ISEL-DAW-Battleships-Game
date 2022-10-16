@@ -26,15 +26,13 @@ internal fun insertGame(handle: Handle, game: Game) {
 
 internal fun insertBoards(handle: Handle, game: Game) {
     val player1Board = when (game) {
-        is SinglePhase -> game.player1PreparationPhase.board
-        is WaitingPhase -> game.player1WaitingPhase.board
+        is SinglePhase -> game.player1Game.board
         is BattlePhase -> game.player1Board
         is EndPhase -> game.player1Board
     }
 
     val player2Board = when (game) {
-        is SinglePhase -> game.player2PreparationPhase.board
-        is WaitingPhase -> game.player2WaitingPhase.board
+        is SinglePhase -> game.player2Game.board
         is BattlePhase -> game.player2Board
         is EndPhase -> game.player2Board
     }

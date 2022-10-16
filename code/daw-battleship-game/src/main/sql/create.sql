@@ -4,6 +4,11 @@ create table _USER(
     password_validation VARCHAR(256) not null
 );
 
+create table USER_QUEUE(
+    priority serial,
+    _user int references _USER(id) primary key
+);
+
 create table TOKEN(
    token_validation VARCHAR(256) primary key,
    user_id int references _USER(id)

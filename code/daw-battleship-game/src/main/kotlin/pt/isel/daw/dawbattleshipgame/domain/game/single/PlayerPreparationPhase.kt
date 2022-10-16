@@ -15,7 +15,7 @@ class PlayerPreparationPhase: Single {
 
     val configuration: Configuration
     private val coordinates: Coordinates
-    val board: Board
+    override val board: Board
 
     constructor(gameId: Int, configuration: Configuration, playerId: Int, board: Board) {
         this.gameId = gameId

@@ -1,10 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.Transaction
 import pt.isel.daw.dawbattleshipgame.repository.UsersRepository
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
 
 
 class JdbiTransaction(

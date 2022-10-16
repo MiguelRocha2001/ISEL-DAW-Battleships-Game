@@ -4,10 +4,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateGameId
 import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiUsersRepository
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
@@ -51,13 +52,15 @@ class GameRepositoryTests {
                 assert(gameFromDb.player2 == player2Id)
                 assert(gameFromDb is SinglePhase)
                 (gameFromDb as SinglePhase).let { preparationPhase ->
-                    (preparationPhase.player1PreparationPhase).let { player1PreparationPhase ->
+                    (preparationPhase.player1Game).let {
+                        val player1PreparationPhase = it as PlayerPreparationPhase
                         assert(player1PreparationPhase.playerId == player1Id)
-                        assert(player1PreparationPhase.board.toString() ==  game.player1PreparationPhase.board.toString())
+                        assert(player1PreparationPhase.board.toString() ==  player1PreparationPhase.board.toString())
                     }
-                    (preparationPhase.player2PreparationPhase).let { player2PreparationPhase ->
+                    (preparationPhase.player2Game).let {
+                        val player2PreparationPhase = it as PlayerPreparationPhase
                         assert(player2PreparationPhase.playerId == player2Id)
-                        assert(player2PreparationPhase.board.toString() == game.player2PreparationPhase.board.toString())
+                        assert(player2PreparationPhase.board.toString() == player2PreparationPhase.board.toString())
                     }
                 }
             }

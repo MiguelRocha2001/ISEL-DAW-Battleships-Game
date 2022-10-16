@@ -15,7 +15,7 @@ internal class GameTestGenerateShips {
         val player2 = generateRandomId()
         val configuration = getGameTestConfiguration()
         val game = Game.newGame(gameId, player1, player2, configuration)
-        val player1PreparationPhase = game.player1PreparationPhase
+        val player1PreparationPhase = game.player1Game
         val g2 = player1PreparationPhase
     }
 }
