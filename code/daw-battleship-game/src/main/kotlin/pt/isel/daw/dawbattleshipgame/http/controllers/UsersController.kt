@@ -14,8 +14,8 @@ import pt.isel.daw.dawbattleshipgame.services.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.UserCreationError
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
-import pt.isel.daw.dawbattleshipgame.http.model.UserHomeOutputModel
-import pt.isel.daw.dawbattleshipgame.http.model.UserTokenCreateOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenCreateOutputModel
 
 @RestController
 class UsersController(

@@ -1,6 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
+import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.state.*
@@ -11,7 +12,11 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 
-// TODO -> define representations to return in functions bellow
+sealed class GameCreationError {
+    object UserAlreadyInGame : GameCreationError()
+}
+typealias GameCreationResult = Either<GameCreationError, String>
+
 
 @Component
 class GameServices(
@@ -155,11 +160,19 @@ class GameServices(
     }
 
     fun getMyFleetLayout(userId: Int): Board? {
-        TODO("Not yet implemented")
+        return transactionManager.run {
+            val db = it.gamesRepository
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (userId == game.player1) // TODO
+        }
     }
 
-    fun getEnemyFleetLayout(userId: Int): Board? {
-        TODO("Not yet implemented")
+    fun getOpponentFleet(userId: Int): Board? {
+        return transactionManager.run {
+            val db = it.gamesRepository
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (userId == game.player2) // TODO
+        }
     }
 
     fun getGameState(userId: Int): State? {

@@ -18,6 +18,10 @@ object Uris {
     const val GAMES_PLACE_SHIP = "/games/place-ship"
     const val GAMES_MOVE_SHIP = "/games/move-ship"
     const val GAMES_ROTATE_SHIP = "/games/rotate-ship"
+    const val GAMES_PLACE_SHOT = "/games/shoot"
+    const val GAMES_GET_MY_FLEET = "/games/my-fleet"
+    const val GAMES_GET_OPPONENT_FLEET = "/games/opponent-fleet"
+    const val GAMES_STATE = "/games/state"
 
     const val SERVER_INFO = "/server-info"
     const val BATTLESHIPS_STATISTICS = "/battleships-statistics"

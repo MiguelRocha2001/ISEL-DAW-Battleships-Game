@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.http.controllers
+package pt.isel.daw.dawbattleshipgame.http.model.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
