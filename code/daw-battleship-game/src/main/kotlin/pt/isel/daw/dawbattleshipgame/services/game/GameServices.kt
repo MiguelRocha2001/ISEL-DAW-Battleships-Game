@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.services
+package pt.isel.daw.dawbattleshipgame.services.game
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.Either
@@ -11,60 +11,6 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
-
-sealed class GameCreationError {
-    object UserAlreadyInGame : GameCreationError()
-    object UserAlreadyInQueue : GameCreationError()
-}
-typealias GameCreationResult = Either<GameCreationError, Unit>
-
-sealed class PlaceShipError {
-    object UserNotInGame : PlaceShipError()
-    object ActionNotPermitted : PlaceShipError()
-    object InvalidMove: PlaceShipError()
-}
-typealias PlaceShipResult = Either<PlaceShipError, Unit>
-
-sealed class MoveShipError {
-    object UserNotInGame : MoveShipError()
-    object ActionNotPermitted : PlaceShipError()
-    object InvalidMove: PlaceShipError()
-}
-typealias MoveShipResult = Either<MoveShipError, Unit>
-
-sealed class RotateShipError {
-    object UserNotInGame : RotateShipError()
-    object ActionNotPermitted : PlaceShipError()
-    object InvalidMove: PlaceShipError()
-}
-typealias RotateShipResult = Either<RotateShipError, Unit>
-
-sealed class FleetConfirmationError {
-    object UserNotInGame : FleetConfirmationError()
-    object ActionNotPermitted : PlaceShipError()
-    object InvalidMove: PlaceShipError()
-}
-typealias FleetConfirmationResult = Either<FleetConfirmationError, Unit>
-
-sealed class PlaceShotError {
-    object UserNotInGame : PlaceShotError()
-    object MoveNotPermitted : PlaceShipError()
-    object InvalidMove: PlaceShipError()
-}
-typealias PlaceShotResult = Either<PlaceShotError, Unit>
-
-sealed class GameSearchError {
-    object UserNotInGame : GameSearchError()
-    object GameNotFound : GameSearchError()
-}
-typealias GameSearchResult = Either<GameSearchError, Board>
-
-sealed class GameStateError {
-    object UserNotInGame : GameStateError()
-    object GameNotFound : GameStateError()
-}
-typealias GameStateResult = Either<GameStateError, String>
-
 
 @Component
 class GameServices(
@@ -98,9 +44,9 @@ class GameServices(
     }
 
     fun placeShip(userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation): PlaceShipResult {
-        transactionManager.run {
+        return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: Either.Left()
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShipError.GameNotFound)
             if (game is SinglePhase) {
                 val playerGame = if (game.player1 == userId) game.player1Game else game.player2Game
                 if (playerGame is PlayerPreparationPhase) {
@@ -108,17 +54,17 @@ class GameServices(
                         ?: return@run Either.Left(PlaceShipError.InvalidMove)
                     val newGame = game.copy(player1Game = newPlayerPreparationPhase)
                     db.savePreparationPhase(newGame)
-                } else {
-                    throw Exception("User not in preparation phase")
+                    return@run Either.Right(Unit)
                 }
             }
+            return@run Either.Left(PlaceShipError.ActionNotPermitted)
         }
     }
 
-    fun rotateShip(userId: Int, position: Coordinate) {
-        transactionManager.run {
+    fun rotateShip(userId: Int, position: Coordinate): RotateShipResult {
+        return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left()
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(RotateShipError.GameNotFound)
             if (game is SinglePhase) {
                 val playerGame = if (game.player1 == userId) game.player1Game else game.player2Game
                 if (playerGame is PlayerPreparationPhase) {
@@ -128,17 +74,16 @@ class GameServices(
                     else game.copy(player2Game = newPlayerPreparationPhase)
                     db.savePreparationPhase(newGame)
                     return@run Either.Right(Unit)
-                } else {
-                    return@run Either.Left(MoveShipError.ActionNotPermitted)
                 }
             }
+            return@run Either.Left(RotateShipError.ActionNotPermitted)
         }
     }
 
     fun moveShip(userId: Int, origin: Coordinate, destination: Coordinate): MoveShipResult {
-        transactionManager.run {
+        return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: Either.Left(GameNotFound.GameNotFound)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(MoveShipError.GameNotFound)
             if (game is SinglePhase) {
                 val playerGame = if (game.player1 == userId) game.player1Game else game.player2Game
                 if (playerGame is PlayerPreparationPhase) {
@@ -148,17 +93,16 @@ class GameServices(
                     else game.copy(player2Game = newPlayerPreparationPhase)
                     db.savePreparationPhase(newGame)
                     return@run Either.Right(Unit)
-                } else {
-                    return@run Either.Left(MoveShipError.ActionNotPermitted)
                 }
             }
+            return@run Either.Left(MoveShipError.ActionNotPermitted)
         }
     }
 
-    fun confirmFleet(userId: Int) {
-        transactionManager.run {
+    fun confirmFleet(userId: Int): FleetConfirmationResult {
+        return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(FleetConfirmationError.GameNotFound)
             if (game is SinglePhase) {
                 val player1Game = game.player1Game
                 val player2Game = game.player2Game
@@ -174,7 +118,7 @@ class GameServices(
                                 player2Game.board
                             )
                         } else game.copy(player1Game = player1Game.confirmFleet())
-                    } else throw Exception("User not in preparation phase")
+                    } else return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
                 } else {
                     if (player2Game is PlayerPreparationPhase) {
                         if (player1Game is PlayerWaitingPhase) {
@@ -190,28 +134,30 @@ class GameServices(
                     } else throw Exception("User not in preparation phase")
                 }
                 db.saveGame(newGame)
+                return@run Either.Right(Unit)
             } else {
-                return@run Either.Left(MoveShipError.ActionNotPermitted)
+                return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
             }
         }
     }
 
-    fun placeShot(userId: Int, c: Coordinate) {
-        transactionManager.run {
+    fun placeShot(userId: Int, c: Coordinate): PlaceShotResult {
+        return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
             if (game is BattlePhase) {
-                val result = game.tryPlaceShot(userId, c)
-                if (result != null)
-                    db.saveGame(game)
+                val result = game.tryPlaceShot(userId, c) ?: return@run Either.Left(PlaceShotError.InvalidMove)
+                db.saveGame(result)
+                return@run Either.Right(Unit)
             }
+            return@run Either.Left(PlaceShotError.ActionNotPermitted)
         }
     }
 
     fun getMyFleetLayout(userId: Int): GameSearchResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameNotFound.GameNotFound)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
             return@run when (game) {
                 is SinglePhase -> {
                     if (game.player1 == userId) Either.Right(game.player1Game.board)
@@ -232,7 +178,7 @@ class GameServices(
     fun getOpponentFleet(userId: Int): GameSearchResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameNotFound.GameNotFound)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
             return@run when (game) {
                 is SinglePhase -> {
                     if (game.player1 == userId) Either.Right(game.player2Game.board)

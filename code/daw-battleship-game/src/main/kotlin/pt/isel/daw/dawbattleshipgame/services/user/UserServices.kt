@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.services
+package pt.isel.daw.dawbattleshipgame.services.user
 
 
 import pt.isel.daw.dawbattleshipgame.utils.TokenEncoder
@@ -10,16 +10,6 @@ import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
-sealed class UserCreationError {
-    object UserAlreadyExists : UserCreationError()
-    object InsecurePassword : UserCreationError()
-}
-typealias UserCreationResult = Either<UserCreationError, String>
-
-sealed class TokenCreationError {
-    object UserOrPasswordAreInvalid : TokenCreationError()
-}
-typealias TokenCreationResult = Either<TokenCreationError, String>
 
 @Component
 class UserServices(

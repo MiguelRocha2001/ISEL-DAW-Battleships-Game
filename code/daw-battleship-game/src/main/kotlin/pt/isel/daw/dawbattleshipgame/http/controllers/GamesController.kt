@@ -9,12 +9,13 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.services.TokenCreationError
+import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenCreateOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.game.CreateGameInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.game.MoveShipInputModel
+import pt.isel.daw.dawbattleshipgame.http.model.game.BoardOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.game.PlaceShipInputModel
-import pt.isel.daw.dawbattleshipgame.services.GameServices
+import pt.isel.daw.dawbattleshipgame.services.game.*
 
 @RestController
 class GamesController(
@@ -24,10 +25,14 @@ class GamesController(
     fun create(user: User, @RequestBody createGameInputModel: CreateGameInputModel): ResponseEntity<*> {
         val res = gameServices.startGame(user.id, createGameInputModel.configuration)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+            is Either.Right -> ResponseEntity.status(201)
+                .header(
+                    "Location",
+                ).build<Unit>()
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                GameCreationError.GameNotFound -> Problem.response(404)
+                GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userOrPasswordAreInvalid)
+                GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userOrPasswordAreInvalid)
             }
         }
     }
@@ -37,9 +42,13 @@ class GamesController(
         val res = gameServices.placeShip(user.id, placeShipInputModel.shipType, placeShipInputModel.position, placeShipInputModel.orientation)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .header(
+                    "Location",
+                ).build<Unit>()
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                PlaceShipError.GameNotFound -> Problem.response(404)
+                PlaceShipError.ActionNotPermitted -> Problem.response(405)
+                PlaceShipError.InvalidMove -> Problem.response(405)
             }
         }
     }
@@ -49,9 +58,13 @@ class GamesController(
         val res = gameServices.moveShip(user.id, moveShipInputModel.origin, moveShipInputModel.destination)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .header(
+                    "Location",
+                ).build<Unit>()
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                MoveShipError.GameNotFound -> Problem.response(404)
+                MoveShipError.ActionNotPermitted -> Problem.response(405)
+                MoveShipError.InvalidMove -> Problem.response(405)
             }
         }
     }
@@ -61,9 +74,13 @@ class GamesController(
         val res = gameServices.rotateShip(user.id, coordinate)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .header(
+                    "Location",
+                ).build<Unit>()
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                RotateShipError.GameNotFound -> Problem.response(404)
+                RotateShipError.ActionNotPermitted -> Problem.response(405)
+                RotateShipError.InvalidMove -> Problem.response(405)
             }
         }
     }
@@ -73,9 +90,12 @@ class GamesController(
         val res = gameServices.confirmFleet(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .header(
+                    "Location",
+                ).build<Unit>()
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                FleetConfirmationError.GameNotFound -> Problem.response(404)
+                FleetConfirmationError.ActionNotPermitted -> Problem.response(405)
             }
         }
     }
@@ -85,45 +105,49 @@ class GamesController(
         val res = gameServices.placeShot(user.id, coordinate)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .header(
+                    "Location",
+                ).build<Unit>()
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                PlaceShotError.GameNotFound -> Problem.response(404)
+                PlaceShotError.ActionNotPermitted -> Problem.response(405)
+                PlaceShotError.InvalidMove -> Problem.response(405)
             }
         }
     }
 
     @GetMapping(Uris.GAMES_GET_MY_FLEET)
-    fun getMyFleet(user: User) {
+    fun getMyFleet(user: User): ResponseEntity<*> {
         val res = gameServices.getMyFleetLayout(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .body(BoardOutputModel(res.value))
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                GameSearchError.GameNotFound -> Problem.response(404)
             }
         }
     }
 
     @GetMapping(Uris.GAMES_GET_OPPONENT_FLEET)
-    fun getOpponentFleet(user: User) {
+    fun getOpponentFleet(user: User): ResponseEntity<*> {
         val res = gameServices.getOpponentFleet(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .body(BoardOutputModel(res.value))
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                GameSearchError.GameNotFound -> Problem.response(404)
             }
         }
     }
 
     @GetMapping(Uris.GAMES_STATE)
-    fun getGameState(user: User) {
+    fun getGameState(user: User): ResponseEntity<*> {
         val res = gameServices.getGameState(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(UserTokenCreateOutputModel(res.value))
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                GameStateError.GameNotFound -> Problem.response(404)
             }
         }
     }

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.services.UserServices
+import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.services.TokenCreationError
-import pt.isel.daw.dawbattleshipgame.services.UserCreationError
+import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
+import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel

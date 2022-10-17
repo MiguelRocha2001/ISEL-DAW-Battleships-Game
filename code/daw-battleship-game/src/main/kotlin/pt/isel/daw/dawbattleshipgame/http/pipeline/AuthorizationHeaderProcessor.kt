@@ -3,7 +3,7 @@ package pt.isel.daw.dawbattleshipgame.http.pipeline
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.services.UserServices
+import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 
 @Component
