@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
+import java.lang.IllegalArgumentException
 
 internal class CoordinateTest {
 
@@ -14,7 +15,7 @@ internal class CoordinateTest {
 
             ) { Coordinate(-2, 4) }
 
-        assertTrue(thrown.message!! == "Coordinate cannot possess values inferior to zero")
+        assertTrue(thrown.message!! == "Row or Column cannot be lower than 1")
 
     }
 
@@ -179,7 +180,7 @@ internal class CoordinateTest {
             Coordinate(6, 2),
         )
 
-        assertTrue(radius!!.containsAll(expected))
+        assertTrue(radius.containsAll(expected))
         assertEquals(radius.size, expected.size)
     }
 
@@ -225,10 +226,18 @@ internal class CoordinateTest {
 
     @Test
     fun radius_of_invalid_big_coordinate() {
-        val coordinate = Coordinate(100, 100)
-        val radius = Coordinates(10).radius(coordinate)
+            val thrown: IllegalArgumentException = assertThrows(
+                IllegalArgumentException::class.java,
 
-        assertNull(radius)
+                ) {
+
+                val coordinate = Coordinate(100, 100)
+                Coordinates(10).radius(coordinate)
+            }
+
+            assertTrue(thrown.message!! == "Invalid coordinate")
+
+
     }
 
     @Test
