@@ -30,9 +30,9 @@ class GamesController(
                     "Location",
                 ).build<Unit>()
             is Either.Left -> when (res.value) {
-                GameCreationError.GameNotFound -> Problem.response(404)
-                GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userOrPasswordAreInvalid)
-                GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userOrPasswordAreInvalid)
+                GameCreationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.toBeChanged)
+                GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.toBeChanged)
             }
         }
     }
@@ -46,9 +46,9 @@ class GamesController(
                     "Location",
                 ).build<Unit>()
             is Either.Left -> when (res.value) {
-                PlaceShipError.GameNotFound -> Problem.response(404)
-                PlaceShipError.ActionNotPermitted -> Problem.response(405)
-                PlaceShipError.InvalidMove -> Problem.response(405)
+                PlaceShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
+                PlaceShipError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
             }
         }
     }
@@ -62,9 +62,9 @@ class GamesController(
                     "Location",
                 ).build<Unit>()
             is Either.Left -> when (res.value) {
-                MoveShipError.GameNotFound -> Problem.response(404)
-                MoveShipError.ActionNotPermitted -> Problem.response(405)
-                MoveShipError.InvalidMove -> Problem.response(405)
+                MoveShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
+                MoveShipError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
             }
         }
     }
@@ -78,14 +78,14 @@ class GamesController(
                     "Location",
                 ).build<Unit>()
             is Either.Left -> when (res.value) {
-                RotateShipError.GameNotFound -> Problem.response(404)
-                RotateShipError.ActionNotPermitted -> Problem.response(405)
-                RotateShipError.InvalidMove -> Problem.response(405)
+                RotateShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
+                RotateShipError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
             }
         }
     }
 
-    @PostMapping(Uris.GAMES_ROTATE_SHIP)
+    @PostMapping(Uris.GAMES_CONFIRM_FLEET)
     fun confirmFleet(user: User): ResponseEntity<*> {
         val res = gameServices.confirmFleet(user.id)
         return when (res) {
@@ -94,8 +94,8 @@ class GamesController(
                     "Location",
                 ).build<Unit>()
             is Either.Left -> when (res.value) {
-                FleetConfirmationError.GameNotFound -> Problem.response(404)
-                FleetConfirmationError.ActionNotPermitted -> Problem.response(405)
+                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
             }
         }
     }
@@ -109,9 +109,9 @@ class GamesController(
                     "Location",
                 ).build<Unit>()
             is Either.Left -> when (res.value) {
-                PlaceShotError.GameNotFound -> Problem.response(404)
-                PlaceShotError.ActionNotPermitted -> Problem.response(405)
-                PlaceShotError.InvalidMove -> Problem.response(405)
+                PlaceShotError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                PlaceShotError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
+                PlaceShotError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
             }
         }
     }
@@ -123,7 +123,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(BoardOutputModel(res.value))
             is Either.Left -> when (res.value) {
-                GameSearchError.GameNotFound -> Problem.response(404)
+                GameSearchError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
         }
     }
@@ -135,7 +135,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(BoardOutputModel(res.value))
             is Either.Left -> when (res.value) {
-                GameSearchError.GameNotFound -> Problem.response(404)
+                GameSearchError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
         }
     }
@@ -147,7 +147,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(UserTokenCreateOutputModel(res.value))
             is Either.Left -> when (res.value) {
-                GameStateError.GameNotFound -> Problem.response(404)
+                GameStateError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
         }
     }
