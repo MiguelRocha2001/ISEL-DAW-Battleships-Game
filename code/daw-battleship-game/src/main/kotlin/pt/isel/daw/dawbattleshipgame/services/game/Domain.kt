@@ -53,3 +53,8 @@ sealed class GameStateError {
     object GameNotFound: GameStateError()
 }
 typealias GameStateResult = Either<GameStateError, String>
+
+sealed class GameIdError {
+    object GameNotFound: GameIdError()
+}
+typealias GameIdResult = Either<GameIdError, Int>

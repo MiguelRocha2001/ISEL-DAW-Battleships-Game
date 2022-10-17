@@ -17,7 +17,10 @@ internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
 internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val dbGameMapper = getDbGameMapper(handle, gameId) ?: return null
     val (player1DbBoardMapper, player2DbBoardMapper) = getDbBoardMapperMappers(handle, gameId)
-    val (player1DbPanelMapperList, player2DbPanelMapperList) = getDbPanelMapperMappers(handle, gameId)
+
+    val player1DbPanelMapperList = getDbPanelMapperMappers(handle, gameId, dbGameMapper.player1)
+    val player2DbPanelMapperList = getDbPanelMapperMappers(handle, gameId, dbGameMapper.player2)
+
     val dbConfigurationMapper = getDbConfigurationMapper(handle, gameId) ?: throw IllegalStateException("Game $gameId has no configuration")
     val dbShipMapperList = getDbShipMapper(handle, gameId)
 
@@ -30,8 +33,8 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
         return EndPhase(
             dbGameMapper.id,
             configuration,
-            dbGameMapper.user1,
-            dbGameMapper.user2,
+            dbGameMapper.player1,
+            dbGameMapper.player2,
             player1Board,
             player2Board,
             dbGameMapper.winner
@@ -42,24 +45,24 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
             return BattlePhase(
                 configuration,
                 gameId,
-                dbGameMapper.user1,
-                dbGameMapper.user2,
+                dbGameMapper.player1,
+                dbGameMapper.player2,
                 player1Board,
                 player2Board,
             )
         }
         else {
             val player1Game = if (player1DbBoardMapper.confirmed)
-                PlayerWaitingPhase(gameId, configuration, player1Board, dbGameMapper.user1)
+                PlayerWaitingPhase(gameId, configuration, player1Board, dbGameMapper.player1)
             else
-                PlayerPreparationPhase(gameId, configuration, dbGameMapper.user1, player1Board)
+                PlayerPreparationPhase(gameId, configuration, dbGameMapper.player1, player1Board)
 
             val player2Game = if (player2DbBoardMapper.confirmed)
-                    PlayerWaitingPhase(gameId, configuration, player2Board, dbGameMapper.user2)
+                    PlayerWaitingPhase(gameId, configuration, player2Board, dbGameMapper.player2)
             else
-                PlayerPreparationPhase(gameId, configuration, dbGameMapper.user2, player2Board)
+                PlayerPreparationPhase(gameId, configuration, dbGameMapper.player2, player2Board)
 
-            return SinglePhase(gameId, configuration, dbGameMapper.user1, dbGameMapper.user2, player1Game, player2Game)
+            return SinglePhase(gameId, configuration, dbGameMapper.player1, dbGameMapper.player2, player1Game, player2Game)
         }
     }
 }
@@ -68,7 +71,7 @@ private fun getGameIdBUser(handle: Handle, userId: Int): Int? {
     val dbGameMapper = handle.createQuery(
         """
             SELECT * FROM game
-            WHERE user1 = :userId OR user2 = :userId
+            WHERE player1 = :userId OR player2 = :userId
         """.trimIndent()
     )
         .bind("userId", userId)
@@ -108,18 +111,12 @@ private fun getDbBoardMapperMappers(handle: Handle, gameId: Int): Pair<DbBoardMa
     return Pair(boards[0], boards[1])
 }
 
-private fun getDbPanelMapperMappers(handle: Handle, gameId: Int): Pair<List<DbPanelMapper>, List<DbPanelMapper>> {
-    val user1Panels = handle.createQuery("select * from PANEL where game = :game and _user = :user")
+private fun getDbPanelMapperMappers(handle: Handle, gameId: Int, userId: Int): List<DbPanelMapper> {
+    return handle.createQuery("select * from PANEL where game = :game and _user = :_user")
         .bind("game", gameId)
-        .bind("user", "user1")
+        .bind("_user", userId)
         .mapTo<DbPanelMapper>()
         .toList()
-    val user2Panels = handle.createQuery("select * from PANEL where game = :game and _user = :user")
-        .bind("game", gameId)
-        .bind("user", "user2")
-        .mapTo<DbPanelMapper>()
-        .toList()
-    return Pair(user1Panels, user2Panels)
 }
 private fun getDbConfigurationMapper(handle: Handle, gameId: Int): DbConfigurationMapper? {
     return handle.createQuery("select * from CONFIGURATION where game = :game")

@@ -12,13 +12,13 @@ internal fun insertGame(handle: Handle, game: Game) {
     val playerTurn = if (game is BattlePhase) game.playersTurn else null
     handle.createUpdate(
         """
-                insert into GAME(id, user1, user2, finished, player_turn)
-                values(:id, :user1, :user2, :finished, :player_turn)
+                insert into GAME(id, player1, player2, winner, player_turn)
+                values(:id, :player1, :player2, :winner, :player_turn)
             """
     )
         .bind("id", game.gameId)
-        .bind("user1", game.player1)
-        .bind("user2", game.player2)
+        .bind("player1", game.player1)
+        .bind("player2", game.player2)
         .bind("winner", winner)
         .bind("player_turn", playerTurn)
         .execute()

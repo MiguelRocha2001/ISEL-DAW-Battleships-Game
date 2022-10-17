@@ -16,7 +16,6 @@ import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 class GameServices(
     private val transactionManager: TransactionManager
 ) {
-
     /**
      * Initiates a new game with some other user, awaiting. If there's none,
      * joins a queue and waits for another user to join.
@@ -26,20 +25,27 @@ class GameServices(
             val gameDb = it.gamesRepository
             val userDb = it.usersRepository
             if (userDb.isAlreadyInQueue(userId)) {
-                return@run Either.Left(GameCreationError.UserAlreadyInQueue)
+                Either.Left(GameCreationError.UserAlreadyInQueue)
             }
             val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
-                gameDb.joinGameQueue(userId, configuration)
-                return@run Either.Right(Unit)
+                userDb.insertInGameQueue(userId)
+                Either.Right(Unit)
             } else {
                 val gameId = generateRandomId()
                 userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.newGame(gameId, userWaiting, userId, configuration)
                 gameDb.savePreparationPhase(newGame)
-                newGame.player1Game as PlayerPreparationPhase
-                return@run Either.Right(Unit)
+                Either.Right(Unit)
             }
+        }
+    }
+
+    fun getGameIdByUser(userId: Int): GameIdResult {
+        return transactionManager.run {
+            val db = it.gamesRepository
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameIdError.GameNotFound)
+            Either.Right(game.gameId)
         }
     }
 
@@ -54,10 +60,10 @@ class GameServices(
                         ?: return@run Either.Left(PlaceShipError.InvalidMove)
                     val newGame = game.copy(player1Game = newPlayerPreparationPhase)
                     db.savePreparationPhase(newGame)
-                    return@run Either.Right(Unit)
+                    Either.Right(Unit)
                 }
             }
-            return@run Either.Left(PlaceShipError.ActionNotPermitted)
+            Either.Left(PlaceShipError.ActionNotPermitted)
         }
     }
 
@@ -73,10 +79,10 @@ class GameServices(
                     val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
                     else game.copy(player2Game = newPlayerPreparationPhase)
                     db.savePreparationPhase(newGame)
-                    return@run Either.Right(Unit)
+                    Either.Right(Unit)
                 }
             }
-            return@run Either.Left(RotateShipError.ActionNotPermitted)
+            Either.Left(RotateShipError.ActionNotPermitted)
         }
     }
 
@@ -92,10 +98,10 @@ class GameServices(
                     val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
                     else game.copy(player2Game = newPlayerPreparationPhase)
                     db.savePreparationPhase(newGame)
-                    return@run Either.Right(Unit)
+                    Either.Right(Unit)
                 }
             }
-            return@run Either.Left(MoveShipError.ActionNotPermitted)
+            Either.Left(MoveShipError.ActionNotPermitted)
         }
     }
 
@@ -134,9 +140,9 @@ class GameServices(
                     } else throw Exception("User not in preparation phase")
                 }
                 db.saveGame(newGame)
-                return@run Either.Right(Unit)
+                Either.Right(Unit)
             } else {
-                return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
+                Either.Left(FleetConfirmationError.ActionNotPermitted)
             }
         }
     }
@@ -148,9 +154,9 @@ class GameServices(
             if (game is BattlePhase) {
                 val result = game.tryPlaceShot(userId, c) ?: return@run Either.Left(PlaceShotError.InvalidMove)
                 db.saveGame(result)
-                return@run Either.Right(Unit)
+                Either.Right(Unit)
             }
-            return@run Either.Left(PlaceShotError.ActionNotPermitted)
+            Either.Left(PlaceShotError.ActionNotPermitted)
         }
     }
 
@@ -158,7 +164,7 @@ class GameServices(
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
-            return@run when (game) {
+            when (game) {
                 is SinglePhase -> {
                     if (game.player1 == userId) Either.Right(game.player1Game.board)
                     else Either.Right(game.player2Game.board)

@@ -58,21 +58,31 @@ class JdbiUsersRepository(
             .singleOrNull()
 
     override fun getFirstUserInQueue(): Int? {
-        return handle.createQuery("select user from USER_QUEUE order by priority limit 1")
+        return handle.createQuery("select _user from USER_QUEUE order by priority limit 1")
             .mapTo<Int>()
             .firstOrNull()
     }
 
     override fun removeUserFromQueue(userWaiting: Int) {
-        handle.createUpdate("delete from USER_QUEUE where user = :user")
-            .bind("user", userWaiting)
+        handle.createUpdate("delete from USER_QUEUE where _user = :_user")
+            .bind("_user", userWaiting)
             .execute()
     }
 
     override fun isAlreadyInQueue(userId: Int): Boolean {
-        return handle.createQuery("select count(*) from USER_QUEUE where user = :user")
-            .bind("user", userId)
+        return handle.createQuery("select count(*) from USER_QUEUE where _user = :_user")
+            .bind("_user", userId)
             .mapTo<Int>()
             .single() == 1
+    }
+
+    override fun insertInGameQueue(userId: Int): Boolean {
+        if (!isAlreadyInQueue(userId)) {
+            handle.createUpdate("insert into USER_QUEUE(_user) values (:_user)")
+                .bind("_user", userId)
+                .execute()
+            return true
+        }
+        return false
     }
 }

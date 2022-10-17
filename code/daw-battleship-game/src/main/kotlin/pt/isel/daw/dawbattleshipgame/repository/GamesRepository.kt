@@ -17,7 +17,6 @@ interface GamesRepository {
     fun createUser(username: String, password: String)
     fun saveConfiguration(configuration: Configuration)
     fun login(username: String, password: String): Boolean
-    fun joinGameQueue(userId: Int, configuration: Configuration)
     fun removeGame(gameId: Int)
     fun emptyRepository()
     fun getGame(gameId: Int): Game?

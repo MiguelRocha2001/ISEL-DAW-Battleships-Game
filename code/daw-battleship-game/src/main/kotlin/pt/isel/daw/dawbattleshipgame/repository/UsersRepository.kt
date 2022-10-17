@@ -21,4 +21,5 @@ interface UsersRepository {
     fun getFirstUserInQueue(): Int?
     fun removeUserFromQueue(userWaiting: Int)
     fun isAlreadyInQueue(userId: Int): Boolean
+    fun insertInGameQueue(userId: Int): Boolean
 }

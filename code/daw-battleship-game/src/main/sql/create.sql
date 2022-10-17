@@ -16,12 +16,12 @@ create table TOKEN(
 
 create table GAME(
     id int primary key,
-    user1 int not null,
-    user2 int not null,
+    player1 int not null,
+    player2 int not null,
     winner int,
     player_turn int null,
-    foreign key (user1) references _USER(id),
-    foreign key (user2) references _USER(id),
+    foreign key (player1) references _USER(id),
+    foreign key (player2) references _USER(id),
     foreign key (player_turn) references _USER(id),
     foreign key (winner) references _USER(id)
 );

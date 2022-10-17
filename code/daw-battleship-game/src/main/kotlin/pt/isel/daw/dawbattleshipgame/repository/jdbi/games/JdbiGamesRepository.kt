@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.repository.jdbi
+package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.state.*
@@ -64,10 +64,6 @@ class JdbiGamesRepository(
     }
 
     override fun login(username: String, password: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun joinGameQueue(userId: Int, configuration: Configuration) {
         TODO("Not yet implemented")
     }
 

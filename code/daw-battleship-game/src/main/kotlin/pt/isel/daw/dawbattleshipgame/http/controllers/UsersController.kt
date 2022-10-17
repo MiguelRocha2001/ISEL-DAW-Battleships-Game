@@ -21,7 +21,7 @@ import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenCreateOutputModel
 class UsersController(
     private val userService: UserServices
 ) {
-    @PostMapping(Uris.USERS_CREATE)// "/users"
+    @PostMapping(Uris.USERS_CREATE)
     fun create(@RequestBody input: UserCreateInputModel): ResponseEntity<*> {
         val res = userService.createUser(input.username, input.password)
         return when (res) {
