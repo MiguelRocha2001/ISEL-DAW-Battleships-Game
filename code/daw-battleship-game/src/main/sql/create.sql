@@ -18,11 +18,12 @@ create table GAME(
     id int primary key,
     user1 int not null,
     user2 int not null,
-    finished boolean,
+    winner int,
     player_turn int null,
     foreign key (user1) references _USER(id),
     foreign key (user2) references _USER(id),
-    foreign key (player_turn) references _USER(id)
+    foreign key (player_turn) references _USER(id),
+    foreign key (winner) references _USER(id)
 );
 
 create table CONFIGURATION(

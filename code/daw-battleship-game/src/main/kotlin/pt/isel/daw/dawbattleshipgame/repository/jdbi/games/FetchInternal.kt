@@ -26,14 +26,15 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val player2Board = buildBoard(player2DbPanelMapperList, dbConfigurationMapper.board_size)
 
     // if game is finished, return it
-    if (dbGameMapper.finished) {
+    if (dbGameMapper.winner != null) {
         return EndPhase(
             dbGameMapper.id,
             configuration,
             dbGameMapper.user1,
             dbGameMapper.user2,
             player1Board,
-            player2Board
+            player2Board,
+            dbGameMapper.winner
         )
     }
     else {

@@ -14,6 +14,11 @@ object Uris {
     const val USERS_TOKEN = "/users/token"
     const val USERS_GET_BY_ID = "/users/{id}"
 
+    const val GAMES_CREATE = "/games"
+    const val GAMES_PLACE_SHIP = "/games/place-ship"
+    const val GAMES_MOVE_SHIP = "/games/move-ship"
+    const val GAMES_ROTATE_SHIP = "/games/rotate-ship"
+
     const val SERVER_INFO = "/server-info"
     const val BATTLESHIPS_STATISTICS = "/battleships-statistics"
 

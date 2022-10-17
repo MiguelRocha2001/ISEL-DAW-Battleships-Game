@@ -85,6 +85,24 @@ class GameServices(
         }
     }
 
+    fun moveShip(userId: Int, origin: Coordinate, destination: Coordinate) {
+        transactionManager.run {
+            val db = it.gamesRepository
+            val game = db.getGameByUser(userId) ?: throw Exception("User not in a game")
+            if (game is SinglePhase) {
+                val playerGame = if (game.player1 == userId) game.player1Game else game.player2Game
+                if (playerGame is PlayerPreparationPhase) {
+                    val newPlayerPreparationPhase = playerGame.tryMoveShip(origin, destination) ?: throw Exception("Invalid ship placement")
+                    val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
+                    else game.copy(player2Game = newPlayerPreparationPhase)
+                    db.savePreparationPhase(newGame)
+                } else {
+                    throw Exception("User not in preparation phase")
+                }
+            }
+        }
+    }
+
     fun confirmFleet(userId: Int) {
         transactionManager.run {
             val db = it.gamesRepository
@@ -136,15 +154,15 @@ class GameServices(
         }
     }
 
-    fun getMyFleetLayout(token: String?): Board? {
+    fun getMyFleetLayout(userId: Int): Board? {
         TODO("Not yet implemented")
     }
 
-    fun getEnemyFleetLayout(token: String?): Board? {
+    fun getEnemyFleetLayout(userId: Int): Board? {
         TODO("Not yet implemented")
     }
 
-    fun getGameState(token: String?): State? {
+    fun getGameState(userId: Int): State? {
         TODO("Not yet implemented")
     }
 }
