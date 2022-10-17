@@ -1,10 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.daw.dawbattleshipgame.domain.game.*
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerWaitingPhase
-import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.state.*
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.*
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoard

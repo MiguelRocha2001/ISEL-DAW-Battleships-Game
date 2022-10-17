@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.web.util.UriTemplate
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.state.Game
 import java.net.URI
 
 object Uris {

@@ -1,12 +1,11 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.warmup
+package pt.isel.daw.dawbattleshipgame.domain.state.warmup
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateToken
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.domain.state.Game
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId

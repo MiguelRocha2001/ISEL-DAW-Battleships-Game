@@ -1,6 +1,6 @@
-package pt.isel.daw.dawbattleshipgame.domain.game
+package pt.isel.daw.dawbattleshipgame.domain.state
 
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
 
 enum class State { WARMUP, WAITING, BATTLE, END }
 

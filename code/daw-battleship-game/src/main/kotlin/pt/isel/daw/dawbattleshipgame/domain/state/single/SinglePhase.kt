@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.single
+package pt.isel.daw.dawbattleshipgame.domain.state.single
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 

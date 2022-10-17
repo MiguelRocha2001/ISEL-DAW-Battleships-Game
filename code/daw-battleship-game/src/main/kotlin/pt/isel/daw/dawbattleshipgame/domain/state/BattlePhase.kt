@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.game
+package pt.isel.daw.dawbattleshipgame.domain.state
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
@@ -60,7 +60,7 @@ class BattlePhase: Game {
         return try {
             val gameResult = BattlePhase(this, userId, shot)
             if (gameResult.player1Board.isGameOver() || gameResult.player2Board.isGameOver()) {
-                EndPhase(gameId, configuration, player1, player2, player1Board, player2Board)
+                EndPhase(gameId, configuration, player1, player2, player1Board, player2Board, userId)
             } else {
                 gameResult
             }

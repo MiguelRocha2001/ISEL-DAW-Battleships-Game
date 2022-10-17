@@ -3,9 +3,9 @@ package pt.isel.daw.dawbattleshipgame.services
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.*
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerWaitingPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.*
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager

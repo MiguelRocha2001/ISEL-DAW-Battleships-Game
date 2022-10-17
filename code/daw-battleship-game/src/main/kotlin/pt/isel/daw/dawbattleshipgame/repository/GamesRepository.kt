@@ -1,10 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerWaitingPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.state.Game
+import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
 
 interface GamesRepository {
     fun saveGame(game: Game)

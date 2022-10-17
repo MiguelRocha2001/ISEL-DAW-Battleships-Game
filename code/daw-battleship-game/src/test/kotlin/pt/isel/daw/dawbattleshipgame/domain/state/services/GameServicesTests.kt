@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.services
+package pt.isel.daw.dawbattleshipgame.domain.state.services
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.fail
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.services.GameServices
 import pt.isel.daw.dawbattleshipgame.services.UserServices
 import pt.isel.daw.dawbattleshipgame.utils.Sha256TokenEncoder

@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.http
+package pt.isel.daw.dawbattleshipgame.domain.state.http
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

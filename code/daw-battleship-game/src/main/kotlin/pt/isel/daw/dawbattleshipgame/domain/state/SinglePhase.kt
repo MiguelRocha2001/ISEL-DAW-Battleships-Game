@@ -1,6 +1,6 @@
-package pt.isel.daw.dawbattleshipgame.domain.game
+package pt.isel.daw.dawbattleshipgame.domain.state
 
-import pt.isel.daw.dawbattleshipgame.domain.game.single.Single
+import pt.isel.daw.dawbattleshipgame.domain.state.single.Single
 
 data class SinglePhase(
     override val gameId: Int,

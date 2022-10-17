@@ -1,7 +1,7 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.single
+package pt.isel.daw.dawbattleshipgame.domain.state.single
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import kotlin.collections.first
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType

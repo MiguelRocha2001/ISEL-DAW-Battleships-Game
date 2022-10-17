@@ -2,11 +2,11 @@ package pt.isel.daw.dawbattleshipgame.repository
 
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.SinglePhase
-import pt.isel.daw.dawbattleshipgame.domain.game.single.PlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.generateGameId
-import pt.isel.daw.dawbattleshipgame.domain.game.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.domain.state.Game
+import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.utils.generateGameId
+import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId

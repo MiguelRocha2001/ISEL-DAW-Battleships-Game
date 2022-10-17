@@ -1,6 +1,6 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.utils
+package pt.isel.daw.dawbattleshipgame.domain.state.utils
 
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 fun getGameTestConfiguration() = Configuration(
