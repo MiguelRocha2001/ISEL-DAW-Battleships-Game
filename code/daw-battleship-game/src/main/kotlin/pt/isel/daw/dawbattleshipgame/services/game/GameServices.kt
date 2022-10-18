@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.services.game
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.Either
-import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.state.*
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
@@ -208,13 +207,25 @@ class GameServices(
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameStateError.GameNotFound)
             return@run when (game) {
                 is SinglePhase -> {
-                    Either.Right("Preparation Phase")
+                    if (game.player1 == userId) {
+                        if (game.player1Game is PlayerPreparationPhase) {
+                            Either.Right(GameState.FLEET_SETUP)
+                        } else {
+                            Either.Right(GameState.WAITING)
+                        }
+                    } else {
+                        if (game.player2Game is PlayerPreparationPhase) {
+                            Either.Right(GameState.FLEET_SETUP)
+                        } else {
+                            Either.Right(GameState.WAITING)
+                        }
+                    }
                 }
                 is BattlePhase -> {
-                    Either.Right("Battle Phase")
+                    Either.Right(GameState.BATTLE)
                 }
                 is EndPhase -> {
-                    Either.Right("Finished Phase")
+                    Either.Right(GameState.FINISHED)
                 }
             }
         }

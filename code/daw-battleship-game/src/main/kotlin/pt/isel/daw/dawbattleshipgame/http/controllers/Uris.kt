@@ -36,4 +36,8 @@ object Uris {
 
     fun serverInfo(): URI = URI(SERVER_INFO)
     fun battleshipsStatistics(): URI = URI(BATTLESHIPS_STATISTICS)
+
+    fun login(): URI = URI(USERS_TOKEN)
+    fun logout(): URI = URI(USERS_TOKEN)
+    fun register(): URI = URI(USERS_CREATE)
 }

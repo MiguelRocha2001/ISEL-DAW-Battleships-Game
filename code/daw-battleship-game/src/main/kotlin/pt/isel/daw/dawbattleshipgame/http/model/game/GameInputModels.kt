@@ -16,7 +16,7 @@ data class PlaceShipInputModel(
 )
 
 data class CoordinateInputModel(val row: Int, val column: Int)
-enum class OrientationInputModel() {
+enum class OrientationInputModel {
     HORIZONTAL,
     VERTICAL;
 

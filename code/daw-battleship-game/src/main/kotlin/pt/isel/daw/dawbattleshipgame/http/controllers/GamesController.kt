@@ -1,15 +1,18 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
-import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenCreateOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModel
 import pt.isel.daw.dawbattleshipgame.services.game.*
+import java.net.URI
 
 @RestController
 class GamesController(
@@ -23,9 +26,15 @@ class GamesController(
         val res = gameServices.startGame(user.id, createGameInputModel.configuration)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .header(
-                    "Location"
-                ).build<Unit>()
+                .body(GameStartOutputModel(
+                    SirenAction(
+                        name = "get-game-id",
+                        title = "Get Game",
+                        method = HttpMethod.GET,
+                        href = URI(Uris.GAMES_GET_GAME_ID),
+                        type = MediaType.APPLICATION_JSON,
+                    )
+                ))
             is Either.Left -> when (res.value) {
                 GameCreationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
                 GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.toBeChanged)
@@ -39,7 +48,33 @@ class GamesController(
         val res = gameServices.getGameIdByUser(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(GameIdOutputModel(res.value))
+                .body(GameIdOutputModel(
+                    properties = listOf(
+                        "gameId" to res.value
+                    ),
+                    actions = listOf(
+                        SirenAction(
+                            name = "get-game",
+                            title = "Get Game",
+                            method = HttpMethod.POST,
+                            href = URI(Uris.GAMES_PLACE_SHIP),
+                            type = MediaType.APPLICATION_JSON,
+                            fields = listOf(
+                                SirenAction.Field(
+                                    name = "shipType",
+                                    type = "text",
+                                ),
+                                SirenAction.Field(
+                                    // TODO
+                                ),
+                                SirenAction.Field(
+                                    name = "orientation",
+                                    type = "text",
+                                )
+                            )
+                        )
+                    )
+                ))
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
@@ -187,7 +222,7 @@ class GamesController(
         val res = gameServices.getGameState(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+                .body(GameStateOutputModel.get(res.value))
             is Either.Left -> when (res.value) {
                 GameStateError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }

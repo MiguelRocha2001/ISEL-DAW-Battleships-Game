@@ -1,5 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
@@ -15,7 +18,8 @@ import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenCreateOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModel
+import java.net.URI
 
 @RestController
 class UsersController(
@@ -41,8 +45,35 @@ class UsersController(
     fun token(@RequestBody input: UserCreateTokenInputModel): ResponseEntity<*> {
         val res = userService.createToken(input.username, input.password)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
-                .body(UserTokenCreateOutputModel(res.value))
+            is Either.Right -> ResponseEntity.status(201)
+                .body(
+                    UserTokenOutputModel(
+                        properties = listOf(
+                            "token" to res.value
+                        ),
+                        actions = listOf(
+                            SirenAction(
+                                name = "create-user",
+                                title = "Create User",
+                                method = HttpMethod.POST,
+                                href = URI(Uris.USERS_CREATE),
+                                type = MediaType.APPLICATION_JSON,
+                                fields = listOf(
+                                    SirenAction.Field(
+                                        name = "username",
+                                        type = "text",
+                                        title = "Username"
+                                    ),
+                                    SirenAction.Field(
+                                        name = "password",
+                                        type = "hidden",
+                                        title = "Password"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             is Either.Left -> when (res.value) {
                 TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
             }

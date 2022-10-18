@@ -15,5 +15,11 @@ class LinkRelation(
         val SERVER_INFO = LinkRelation("server-info")
 
         val BATTLESHIPS_STATISTICS = LinkRelation("battleships-statistics")
+
+        val LOGIN = LinkRelation("login")
+
+        val LOGOUT = LinkRelation("logout")
+
+        val REGISTER = LinkRelation("register")
     }
 }
