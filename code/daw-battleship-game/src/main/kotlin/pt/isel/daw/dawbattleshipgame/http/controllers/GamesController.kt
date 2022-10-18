@@ -52,7 +52,12 @@ class GamesController(
         @PathVariable id: Int,
         @RequestBody placeShipInputModel: PlaceShipInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.placeShip(user.id, placeShipInputModel.shipType, placeShipInputModel.position, placeShipInputModel.orientation)
+        val res = gameServices.placeShip(
+            user.id,
+            placeShipInputModel.shipType.toShipType(),
+            Coordinate(placeShipInputModel.position.row, placeShipInputModel.position.column),
+            placeShipInputModel.orientation.toOrientation()
+        )
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .header(

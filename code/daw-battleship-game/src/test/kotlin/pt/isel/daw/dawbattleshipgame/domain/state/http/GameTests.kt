@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.domain.state.http
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -18,6 +17,10 @@ class GameTests {
     @LocalServerPort
     var port: Int = 0
 
+    /**
+     * Creates a User and returns the token.
+     * Also, asserts if the behavior is correct.
+     */
     private fun createUser(): String {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
@@ -58,8 +61,12 @@ class GameTests {
         return result.token
     }
 
-    @Test
-    fun `can create an game`() {
+    /**
+     * Creates two users and starts a game with them.
+     * Also, asserts if the behavior is correct.
+     * @return the game id along with the two tokens
+     */
+    private fun createGame(): Pair<Int, Pair<String, String>> {
         val configuration = getGameTestConfiguration()
         val player1Token = createUser()
         val player2Token = createUser()
@@ -102,7 +109,38 @@ class GameTests {
             .returnResult()
             .responseBody?.id
 
+        assertNotNull(gameId1)
         assertEquals(gameId1, gameId2)
+
+        return gameId1!! to (player1Token to player2Token)
+    }
+
+    @Test
+    fun `can create an game`() {
+        createGame()
+    }
+
+    @Test
+    fun `can place ship`() {
+        val (gameId, tokens) = createGame()
+        val (player1Token, player2Token) = tokens
+
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CARRIER",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 1
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isOk
     }
 
 }

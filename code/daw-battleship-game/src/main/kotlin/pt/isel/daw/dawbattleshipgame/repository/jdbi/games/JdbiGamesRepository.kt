@@ -11,13 +11,6 @@ import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoard
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoards
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertGame
 
-/*
-sealed class DbGameResponse
-data class DbPreparationPhase(val preparationPhase: PreparationPhase) : DbGameResponse()
-data class DbWaitingPhase(val waitingPhase: WaitingPhase) : DbGameResponse()
-data class DbPlayerPreparationPhase(val playerPreparationPhase: PlayerPreparationPhase) : DbGameResponse()
-data class DbBattlePhase(val game: BattlePhase) : DbGameResponse()
- */
 
 class JdbiGamesRepository(
     private val handle: Handle,
@@ -32,7 +25,6 @@ class JdbiGamesRepository(
     }
 
     override fun saveGame(game: Game) {
-        deleteGame(handle, game.gameId)
         insertGame(handle, game)
         insertBoards(handle, game)
         insertConfiguration(handle, game.gameId, game.configuration)
@@ -68,7 +60,7 @@ class JdbiGamesRepository(
     }
 
     override fun removeGame(gameId: Int) {
-        TODO("Not yet implemented")
+        deleteGame(handle, gameId)
     }
 
     override fun emptyRepository() {
