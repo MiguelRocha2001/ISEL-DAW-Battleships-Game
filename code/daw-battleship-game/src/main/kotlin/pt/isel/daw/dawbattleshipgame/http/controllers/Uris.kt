@@ -8,7 +8,7 @@ object Uris {
 
     const val HOME = "/"
     const val USER_HOME = "/me"
-    const val GAME_BY_ID = "/games/{gid}"
+    const val GAME_BY_ID = "/games/{igd}"
 
     const val USERS_CREATE = "/users"
     const val USERS_TOKEN = "/users/token"

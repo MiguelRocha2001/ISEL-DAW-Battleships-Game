@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.services.game
 
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.state.Game
 import pt.isel.daw.dawbattleshipgame.domain.state.GameState
 
 sealed class GameCreationError: Error() {
@@ -59,3 +60,8 @@ sealed class GameIdError {
     object GameNotFound: GameIdError()
 }
 typealias GameIdResult = Either<GameIdError, Int>
+
+sealed class GameError {
+    object GameNotFound: GameError()
+}
+typealias GameResult = Either<GameError, Game>

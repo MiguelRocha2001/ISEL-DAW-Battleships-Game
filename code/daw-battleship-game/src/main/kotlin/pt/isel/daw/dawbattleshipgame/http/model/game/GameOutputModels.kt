@@ -12,6 +12,7 @@ data class GameStartOutputModel(
 data class BoardOutputModel(val board: Board)
 
 data class GameIdOutputModel(
+    val clazz: String = "Game",
     val properties: List<Pair<String, String>>,
     val actions: List<SirenAction>,
 )
