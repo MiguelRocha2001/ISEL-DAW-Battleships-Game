@@ -17,6 +17,10 @@ class GameTests {
     @LocalServerPort
     var port: Int = 0
 
+<<<<<<< Updated upstream
+=======
+    /*
+>>>>>>> Stashed changes
     /**
      * Creates a User and returns the token.
      * Also, asserts if the behavior is correct.
@@ -98,7 +102,11 @@ class GameTests {
             .expectStatus().isOk
             .expectBody(GameIdOutputModel::class.java)
             .returnResult()
+<<<<<<< Updated upstream
             .responseBody?.id
+=======
+            .responseBody?.actions
+>>>>>>> Stashed changes
 
         // player 2 should be able to get the game
         val gameId2 = client.get().uri("/games/current")
@@ -107,7 +115,11 @@ class GameTests {
             .expectStatus().isOk
             .expectBody(GameIdOutputModel::class.java)
             .returnResult()
+<<<<<<< Updated upstream
             .responseBody?.id
+=======
+            .responseBody?
+>>>>>>> Stashed changes
 
         assertNotNull(gameId1)
         assertEquals(gameId1, gameId2)
@@ -143,4 +155,9 @@ class GameTests {
             .expectStatus().isOk
     }
 
+<<<<<<< Updated upstream
+=======
+     */
+
+>>>>>>> Stashed changes
 }

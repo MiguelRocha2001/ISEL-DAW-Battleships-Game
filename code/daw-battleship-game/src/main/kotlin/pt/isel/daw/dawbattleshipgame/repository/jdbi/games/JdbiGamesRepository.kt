@@ -2,9 +2,14 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.state.*
+<<<<<<< Updated upstream
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
 import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
+=======
+import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
+>>>>>>> Stashed changes
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.*
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertBoard
@@ -24,6 +29,17 @@ class JdbiGamesRepository(
         return fetchGameByUser(handle, userId)
     }
 
+<<<<<<< Updated upstream
+=======
+    override fun getGameIdByUser(userId: Int): Int? {
+        return fetchGameByUser(handle, userId)?.gameId
+    }
+
+    override fun createGame(configuration: Configuration, player1: Int, player2: Int): Int? {
+        TODO("Not yet implemented")
+    }
+
+>>>>>>> Stashed changes
     override fun saveGame(game: Game) {
         insertGame(handle, game)
         insertBoards(handle, game)
@@ -34,11 +50,19 @@ class JdbiGamesRepository(
         saveGame(singlePhase)
     }
 
+<<<<<<< Updated upstream
     override fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
         insertBoard(handle, playerPreparationPhase.gameId, playerPreparationPhase.playerId, playerPreparationPhase.board)
     }
 
     override fun savePlayerWaitingPhase(playerWaitingPhase: PlayerWaitingPhase) {
+=======
+    override fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPhase) {
+        insertBoard(handle, playerPreparationPhase.gameId, playerPreparationPhase.playerId, playerPreparationPhase.board)
+    }
+
+    override fun savePlayerWaitingPhase(playerWaitingPhase: PlayerPhase) {
+>>>>>>> Stashed changes
         confirmBoard(handle, playerWaitingPhase.gameId, playerWaitingPhase.playerId)
     }
 

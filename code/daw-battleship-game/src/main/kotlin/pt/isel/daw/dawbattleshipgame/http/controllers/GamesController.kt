@@ -53,7 +53,31 @@ class GamesController(
                         "gameId" to res.value.toString()
                     ),
                     actions = listOf(
+<<<<<<< Updated upstream
 
+=======
+                        SirenAction(
+                            name = "get-game",
+                            title = "Get Game",
+                            method = HttpMethod.POST,
+                            href = URI(Uris.GAMES_PLACE_SHIP),
+                            type = MediaType.APPLICATION_JSON,
+                            fields = listOf(
+                                SirenAction.Field(
+                                    name = "shipType",
+                                    type = "text",
+                                ),
+                                SirenAction.Field(
+                                    name = "",
+                                    type = "",
+                                ),
+                                SirenAction.Field(
+                                    name = "orientation",
+                                    type = "text",
+                                )
+                            )
+                        )
+>>>>>>> Stashed changes
                     )
                 ))
             is Either.Left -> when (res.value) {
@@ -209,6 +233,7 @@ class GamesController(
             }
         }
     }
+<<<<<<< Updated upstream
 
     /*
     @GetMapping(Uris.GAMES_STATE)
@@ -226,4 +251,6 @@ class GamesController(
         }
     }
      */
+=======
+>>>>>>> Stashed changes
 }

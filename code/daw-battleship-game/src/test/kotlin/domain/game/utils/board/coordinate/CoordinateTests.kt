@@ -15,7 +15,11 @@ internal class CoordinateTest {
 
             ) { Coordinate(-2, 4) }
 
+<<<<<<< Updated upstream
         assertTrue(thrown.message!! == "Row or Column cannot be lower than 1")
+=======
+        assertTrue(thrown.message == "Row or Column cannot be lower than 1")
+>>>>>>> Stashed changes
 
     }
 
@@ -150,7 +154,11 @@ internal class CoordinateTest {
             Coordinate(3, 3),
         )
 
+<<<<<<< Updated upstream
         assertTrue(radius!!.containsAll(expected))
+=======
+        assertTrue(radius.containsAll(expected))
+>>>>>>> Stashed changes
         assertEquals(radius.size, expected.size)
     }
 
@@ -164,7 +172,11 @@ internal class CoordinateTest {
             Coordinate(2, 2),
         )
 
+<<<<<<< Updated upstream
         assertTrue(radius!!.containsAll(expected))
+=======
+        assertTrue(radius.containsAll(expected))
+>>>>>>> Stashed changes
         assertEquals(radius.size, expected.size)
     }
 
@@ -196,7 +208,11 @@ internal class CoordinateTest {
             Coordinate(9, 6),
         )
 
+<<<<<<< Updated upstream
         assertTrue(radius!!.containsAll(expected))
+=======
+        assertTrue(radius.containsAll(expected))
+>>>>>>> Stashed changes
         assertEquals(radius.size, expected.size)
     }
 
@@ -210,7 +226,11 @@ internal class CoordinateTest {
             Coordinate(2, 1),
         )
 
+<<<<<<< Updated upstream
         assertTrue(radius!!.containsAll(expected))
+=======
+        assertTrue(radius.containsAll(expected))
+>>>>>>> Stashed changes
         assertEquals(radius.size, expected.size)
     }
 
@@ -220,7 +240,11 @@ internal class CoordinateTest {
         val radius = Coordinates(1).radius(coordinate)
         val expected = emptyList<Coordinate>()
 
+<<<<<<< Updated upstream
         assertTrue(radius!!.containsAll(expected))
+=======
+        assertTrue(radius.containsAll(expected))
+>>>>>>> Stashed changes
         assertEquals(radius.size, 0)
     }
 
@@ -235,7 +259,11 @@ internal class CoordinateTest {
                 Coordinates(10).radius(coordinate)
             }
 
+<<<<<<< Updated upstream
             assertTrue(thrown.message!! == "Invalid coordinate")
+=======
+            assertTrue(thrown.message == "Invalid coordinate")
+>>>>>>> Stashed changes
 
 
     }
@@ -258,7 +286,11 @@ internal class CoordinateTest {
             Coordinates(10).move(coordinate,11,4)
         }
 
+<<<<<<< Updated upstream
         assertTrue(thrown.message!! == "Unable to move vertically")
+=======
+        assertTrue(thrown.message == "Unable to move vertically")
+>>>>>>> Stashed changes
     }
 
 }

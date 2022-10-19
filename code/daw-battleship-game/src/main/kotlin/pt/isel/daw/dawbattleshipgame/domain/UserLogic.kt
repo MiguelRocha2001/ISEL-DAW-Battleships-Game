@@ -20,8 +20,12 @@ class UserLogic {
         false
     }
 
+<<<<<<< Updated upstream
     // TODO it could be better
     fun isSafePassword(password: String) = password.length > 4
+=======
+    fun isSafePassword(password: String) = password.length > 4 && password.any{it.isUpperCase()}
+>>>>>>> Stashed changes
 
     companion object {
         private const val TOKEN_BYTE_SIZE = 256 / 8

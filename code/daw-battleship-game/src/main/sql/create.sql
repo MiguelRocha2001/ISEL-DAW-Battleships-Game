@@ -1,7 +1,24 @@
 create table _USER(
+<<<<<<< Updated upstream
     id int generated always as identity primary key,
     username VARCHAR(64) unique not null,
     password_validation VARCHAR(256) not null
+=======
+<<<<<<< Updated upstream
+    id int primary key,
+    username varchar(20) not null,
+    passwordValidation varchar(32)
+=======
+    id serial primary key,
+    username VARCHAR(64) unique not null,
+    password_validation VARCHAR(256) not null
+);
+
+create table USER_QUEUE(
+    priority serial,
+    _user int references _USER(id) primary key
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 );
 
 create table USER_QUEUE(
@@ -15,7 +32,14 @@ create table TOKEN(
 );
 
 create table GAME(
+<<<<<<< Updated upstream
     id int primary key,
+<<<<<<< Updated upstream
+=======
+    state varchar(32)
+=======
+    id serial primary key,
+>>>>>>> Stashed changes
     player1 int not null,
     player2 int not null,
     winner int,
@@ -24,6 +48,10 @@ create table GAME(
     foreign key (player2) references _USER(id),
     foreign key (player_turn) references _USER(id),
     foreign key (winner) references _USER(id)
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 );
 
 create table CONFIGURATION(
