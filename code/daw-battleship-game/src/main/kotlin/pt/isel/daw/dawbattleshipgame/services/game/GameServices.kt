@@ -231,6 +231,10 @@ class GameServices(
         }
     }
 
+    fun getGame(gameId: Int) {
+        TODO()
+    }
+
     private fun replaceGame(game: Game) {
         return transactionManager.run {
             val db = it.gamesRepository

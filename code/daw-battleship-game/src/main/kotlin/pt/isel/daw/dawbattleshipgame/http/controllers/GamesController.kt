@@ -50,29 +50,10 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(GameIdOutputModel(
                     properties = listOf(
-                        "gameId" to res.value
+                        "gameId" to res.value.toString()
                     ),
                     actions = listOf(
-                        SirenAction(
-                            name = "get-game",
-                            title = "Get Game",
-                            method = HttpMethod.POST,
-                            href = URI(Uris.GAMES_PLACE_SHIP),
-                            type = MediaType.APPLICATION_JSON,
-                            fields = listOf(
-                                SirenAction.Field(
-                                    name = "shipType",
-                                    type = "text",
-                                ),
-                                SirenAction.Field(
-                                    // TODO
-                                ),
-                                SirenAction.Field(
-                                    name = "orientation",
-                                    type = "text",
-                                )
-                            )
-                        )
+
                     )
                 ))
             is Either.Left -> when (res.value) {
@@ -228,4 +209,21 @@ class GamesController(
             }
         }
     }
+
+    /*
+    @GetMapping(Uris.GAMES_STATE)
+    fun getGame(
+        user: User,
+        @PathVariable id: Int
+    ): ResponseEntity<*> {
+        val res = gameServices.getGame(user.id)
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(200)
+                .body(GameStateOutputModel.get(res.value))
+            is Either.Left -> when (res.value) {
+                GameStateError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+            }
+        }
+    }
+     */
 }

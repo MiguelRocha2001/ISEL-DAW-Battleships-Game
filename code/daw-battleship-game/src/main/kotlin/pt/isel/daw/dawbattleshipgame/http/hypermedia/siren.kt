@@ -22,6 +22,7 @@ data class SirenAction(
      */
     data class Field(
         val name: String,
+        val fields: List<Field>? = null,
         val type: String? = null,
         val value: String? = null,
         val title: String? = null
