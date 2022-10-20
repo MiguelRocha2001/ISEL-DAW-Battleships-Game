@@ -1,10 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.domain.state
 
-<<<<<<< Updated upstream
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
-=======
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
->>>>>>> Stashed changes
 
 enum class GameState { FLEET_SETUP, WAITING, BATTLE, FINISHED }
 
@@ -21,13 +17,8 @@ sealed class Game {
                 configuration,
                 player1,
                 player2,
-<<<<<<< Updated upstream
-                PlayerPreparationPhase(gameId, configuration, player1),
-                PlayerPreparationPhase(gameId, configuration, player2)
-=======
                 PlayerPhase(gameId, configuration, player1),
                 PlayerPhase(gameId, configuration, player2)
->>>>>>> Stashed changes
             )
     }
 }

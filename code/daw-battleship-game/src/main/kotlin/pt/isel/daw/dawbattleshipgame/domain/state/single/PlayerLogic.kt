@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.game.game_state
+package pt.isel.daw.dawbattleshipgame.domain.state.single
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
@@ -7,7 +7,6 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.getOrientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
 import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import kotlin.collections.first
-import kotlin.math.log
 
 
 enum class PlayerState {WAITING, PREPARATION}
@@ -43,7 +42,7 @@ class PlayerLogic(
      */
     private fun buildGameRemovedShip(old: PlayerLogic, position: Coordinate): PlayerPhase {
         if(old.isNotShip(position)) throw Exception()
-        val ship = old.myBoard.getShips().getShip(position)
+        val ship = old.board.getShips().getShip(position)
         val shipCoordinates = ship.coordinates
         return createGamePhase(board.placeWaterPanel(shipCoordinates))
     }
@@ -53,8 +52,8 @@ class PlayerLogic(
         return createGamePhase(board.placeShip(coordinateS, shipType))
     }
 
-    private fun isShip(c: Coordinate) = myBoard.isShipPanel(c)
-    private fun isNotShip(c: Coordinate) = myBoard.isWaterPanel(c)
+    private fun isShip(c: Coordinate) = board.isShip(c)
+    private fun isNotShip(c: Coordinate) = !board.isShip(c)
 
     /**
      * Tries to place [shipType] on the Board, on give in [position].
@@ -92,7 +91,7 @@ class PlayerLogic(
      */
     fun tryMoveShip(position: Coordinate, destination: Coordinate): PlayerPhase? {
         return try {
-            val ship = myBoard.getShips().getShip(position)
+            val ship = board.getShips().getShip(position)
             val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
             if (isShipTouchingAnother(board, newCoordinates)) return null
             tryRemoveShip(position)?.logic?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
@@ -120,9 +119,9 @@ class PlayerLogic(
      */
     fun tryRotateShip(position: Coordinate): PlayerPhase? {
         return try {
-            val ship = myBoard.getShips().getShip(position)
+            val ship = board.getShips().getShip(position)
             val curOrientation = ship.getOrientation()
-            val shipPosOrigin = myBoard.getShips().getShip(position).coordinates.first()
+            val shipPosOrigin = board.getShips().getShip(position).coordinates.first()
             val tmpGame = tryRemoveShip(position)
             tmpGame?.logic?.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
         }catch (e : Exception){
@@ -141,7 +140,7 @@ class PlayerLogic(
             getShipLength(ship), position, orientation
         ) ?: return null
 
-        if (isShipTouchingAnother(myBoard, shipCoordinates)) return null
+        if (isShipTouchingAnother(board, shipCoordinates)) return null
         return shipCoordinates
     }
 
@@ -155,7 +154,7 @@ class PlayerLogic(
      * Check if any ship from the player is near the coordinate
      */
     private fun isShipNearCoordinate(c: Coordinate, board: Board) =
-        coordinates.radius(c).any { board.isShipPanel(it) }
+        coordinates.radius(c).any { board.isShip(c) }
 
 
     /**

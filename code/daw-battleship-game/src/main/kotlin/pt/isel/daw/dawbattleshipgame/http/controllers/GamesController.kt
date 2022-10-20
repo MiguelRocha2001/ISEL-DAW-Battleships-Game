@@ -53,9 +53,6 @@ class GamesController(
                         "gameId" to res.value.toString()
                     ),
                     actions = listOf(
-<<<<<<< Updated upstream
-
-=======
                         SirenAction(
                             name = "get-game",
                             title = "Get Game",
@@ -77,7 +74,6 @@ class GamesController(
                                 )
                             )
                         )
->>>>>>> Stashed changes
                     )
                 ))
             is Either.Left -> when (res.value) {
@@ -233,7 +229,6 @@ class GamesController(
             }
         }
     }
-<<<<<<< Updated upstream
 
     /*
     @GetMapping(Uris.GAMES_STATE)
@@ -251,6 +246,4 @@ class GamesController(
         }
     }
      */
-=======
->>>>>>> Stashed changes
 }

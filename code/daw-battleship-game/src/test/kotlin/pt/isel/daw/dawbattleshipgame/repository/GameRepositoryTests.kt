@@ -4,10 +4,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.state.Game
 import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
-<<<<<<< Updated upstream
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
-=======
->>>>>>> Stashed changes
 import pt.isel.daw.dawbattleshipgame.domain.state.utils.generateGameId
 import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
@@ -56,20 +52,12 @@ class GameRepositoryTests {
                 assert(gameFromDb is SinglePhase)
                 (gameFromDb as SinglePhase).let { preparationPhase ->
                     (preparationPhase.player1Game).let {
-<<<<<<< Updated upstream
-                        val player1PreparationPhase = it as PlayerPreparationPhase
-=======
                         val player1PreparationPhase = it
->>>>>>> Stashed changes
                         assert(player1PreparationPhase.playerId == player1Id)
                         assert(player1PreparationPhase.board.toString() ==  player1PreparationPhase.board.toString())
                     }
                     (preparationPhase.player2Game).let {
-<<<<<<< Updated upstream
-                        val player2PreparationPhase = it as PlayerPreparationPhase
-=======
                         val player2PreparationPhase = it
->>>>>>> Stashed changes
                         assert(player2PreparationPhase.playerId == player2Id)
                         assert(player2PreparationPhase.board.toString() == player2PreparationPhase.board.toString())
                     }
