@@ -93,7 +93,6 @@ class PlayerLogic(
         return try {
             val ship = board.getShips().getShip(position)
             val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
-            val a = isShipTouchingAnother(board, newCoordinates)
             if (isShipTouchingAnother(board, newCoordinates)) return null
             tryRemoveShip(position)?.logic?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
         }catch (e : Exception){
