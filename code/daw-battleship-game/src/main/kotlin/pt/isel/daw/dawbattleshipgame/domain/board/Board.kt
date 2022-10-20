@@ -44,9 +44,10 @@ class Board {
 
     private operator fun List<Panel>.get(shipType: ShipType) =
         board.filter { it.shipType == shipType }
+
     operator fun get(coordinate: Coordinate) =
         coordinate.checkValid(dimension)
-        .let { board[coordinate] }
+        .let { board[getIdx(coordinate)] }
 
 
 

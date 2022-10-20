@@ -68,7 +68,7 @@ class PlayerLogic(
         return try {
             buildGamePlaceShip(this, shipType, position, orientation)
         } catch (e: Exception) {
-            throw e
+            null
         }
     }
 
@@ -93,10 +93,11 @@ class PlayerLogic(
         return try {
             val ship = board.getShips().getShip(position)
             val newCoordinates = ship.coordinates.moveFromTo(position, destination, configuration.boardSize)
+            val a = isShipTouchingAnother(board, newCoordinates)
             if (isShipTouchingAnother(board, newCoordinates)) return null
             tryRemoveShip(position)?.logic?.tryPlaceShipWithCoordinates(ship.type, newCoordinates)
         }catch (e : Exception){
-            throw e
+            null
         }
     }
 
@@ -109,7 +110,7 @@ class PlayerLogic(
         return try {
             buildGameRemovedShip(this, position)
         } catch (e: Exception) {
-            throw e
+            null
         }
     }
 
@@ -125,7 +126,7 @@ class PlayerLogic(
             val tmpGame = tryRemoveShip(position)
             tmpGame?.logic?.tryPlaceShip(ship.type, shipPosOrigin, curOrientation.other())
         }catch (e : Exception){
-            throw e
+            null
         }
     }
 
@@ -154,8 +155,7 @@ class PlayerLogic(
      * Check if any ship from the player is near the coordinate
      */
     private fun isShipNearCoordinate(c: Coordinate, board: Board) =
-        coordinates.radius(c).any { board.isShip(c) }
-
+        coordinates.radius(c).any { board.isShip(it) && (board[it].shipType != board[c].shipType) }
 
     /**
      * Generates the coordinates needed to make the ship
@@ -200,9 +200,9 @@ class PlayerPhase(
     }
 
     val logic: PlayerLogic
-    get()  = checkState().let {
-        PlayerLogic(state, gameId, playerId, configuration, board)
-    }
+        get()  = checkState().run {
+            PlayerLogic(state, gameId, playerId, configuration, board)
+        }
 
     fun isWaiting() = state == PlayerState.WAITING
     fun isNotWaiting() = !isWaiting()
