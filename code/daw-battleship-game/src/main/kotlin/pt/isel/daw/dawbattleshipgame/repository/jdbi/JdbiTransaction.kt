@@ -19,4 +19,8 @@ class JdbiTransaction(
     override fun rollback() {
         handle.rollback()
     }
+
+    override fun commit() {
+        handle.commit()
+    }
 }

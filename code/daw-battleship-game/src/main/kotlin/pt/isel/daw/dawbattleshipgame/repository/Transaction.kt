@@ -5,4 +5,5 @@ interface Transaction {
     val gamesRepository: GamesRepository
 
     fun rollback()
+    fun commit()
 }

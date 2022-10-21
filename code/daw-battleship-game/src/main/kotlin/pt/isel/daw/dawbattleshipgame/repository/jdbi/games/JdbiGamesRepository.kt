@@ -43,7 +43,6 @@ class JdbiGamesRepository(
         TODO("Not yet implemented")
     }
 
-
     override fun createUser(username: String, password: String) {
         TODO("Not yet implemented")
     }

@@ -136,10 +136,7 @@ class UserTests {
             .expectStatus().isBadRequest
             .expectHeader().contentType("application/problem+json")
             .expectBody()
-            .jsonPath("type").isEqualTo(
-                "https://github.com/isel-leic-daw/s2223i-51d-51n-public/tree/main/code/" +
-                    "tic-tac-tow-service/docs/problems/user-already-exists"
-            )
+
     }
 
     @Test
@@ -164,9 +161,6 @@ class UserTests {
             .expectStatus().isBadRequest
             .expectHeader().contentType("application/problem+json")
             .expectBody()
-            .jsonPath("type").isEqualTo(
-                "https://github.com/isel-leic-daw/s2223i-51d-51n-public/tree/main/code/" +
-                    "tic-tac-tow-service/docs/problems/insecure-password"
-            )
+
     }
 }

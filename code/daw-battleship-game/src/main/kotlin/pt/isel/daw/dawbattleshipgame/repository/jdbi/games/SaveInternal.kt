@@ -118,7 +118,7 @@ fun deleteGame(handle: Handle, gameId: Int) {
     handle.createUpdate("""delete from CONFIGURATION where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from PANEL where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from BOARD where game = :game""").bind("game", gameId).execute()
-    handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId)
+    handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId).execute()
 }
 
 fun clearAllTables(handle: Handle) {
