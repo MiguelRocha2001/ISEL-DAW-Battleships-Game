@@ -5,8 +5,6 @@ import pt.isel.daw.dawbattleshipgame.domain.state.*
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
 
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.*
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.insertGame
 
 
 class JdbiGamesRepository(

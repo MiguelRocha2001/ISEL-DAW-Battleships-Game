@@ -9,23 +9,21 @@ import pt.isel.daw.dawbattleshipgame.domain.state.*
 import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
-internal fun insertGame(handle: Handle, game: Game): Int? {
+internal fun insertGame(handle: Handle, game: Game) {
     val winner = if (game is EndPhase) game.winner else null
     val playerTurn = if (game is BattlePhase) game.playersTurn else null
     val resultBearing = handle.createUpdate(
         """
-                insert into GAME(player1, player2, winner, player_turn)
-                values(:player1, :player2, :winner, :player_turn) 
+                insert into GAME(id, player1, player2, winner, player_turn)
+                values(:id, :player1, :player2, :winner, :player_turn) 
                 returning id
             """
     )
+        .bind("id", game.gameId)
         .bind("player1", game.player1)
         .bind("player2", game.player2)
         .bind("winner", winner)
         .bind("player_turn", playerTurn)
-        .executeAndReturnGeneratedKeys("id")
-
-    return resultBearing.mapTo<Int>().firstOrNull()
 }
 
 internal fun createGame(handle : Handle, player1Id: Int, player2Id : Int){

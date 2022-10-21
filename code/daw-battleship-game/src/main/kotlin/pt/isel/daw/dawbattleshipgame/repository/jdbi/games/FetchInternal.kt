@@ -38,19 +38,13 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
             return getBattlePhase(dbGameMapper, configuration, player1Board, player2Board)
         }
         GameState.FLEET_SETUP -> {
-            val player1Game = if (player1DbBoardMapper.confirmed)
-                PlayerPhase(gameId, configuration, dbGameMapper.player1, player1Board, PlayerState.WAITING)
-            else PlayerPhase(gameId, configuration, dbGameMapper.player1, player1Board)
-            val player2Game = if (player2DbBoardMapper.confirmed)
-                PlayerPhase(gameId, configuration, dbGameMapper.player2, player2Board, PlayerState.WAITING)
-            else PlayerPhase(gameId, configuration, dbGameMapper.player2, player2Board)
-
+            val player1Game = getPlayerPhase(dbGameMapper, configuration, player1Board, player1DbBoardMapper)
+            val player2Game = getPlayerPhase(dbGameMapper, configuration, player2Board, player2DbBoardMapper)
             return SinglePhase(gameId, configuration,
                 dbGameMapper.player1, dbGameMapper.player2,
                 player1Game, player2Game
             )
         }
-
         else -> return null
     }
 }
@@ -133,7 +127,7 @@ private fun getGameState(g : DbGameMapper): GameState {
 private fun getEndPhase(
     dbGameMapper: DbGameMapper, configuration: Configuration,
     p1Board: Board, p2Board: Board
-) = requireNotNull(dbGameMapper.winner).let { EndPhase(
+) = requireNotNull(dbGameMapper.winner).run { EndPhase(
     dbGameMapper.id, configuration, dbGameMapper.player1,
     dbGameMapper.player2, p1Board, p2Board, dbGameMapper.winner
 ) }
@@ -141,7 +135,16 @@ private fun getEndPhase(
 private fun getBattlePhase(
     dbGameMapper: DbGameMapper, configuration: Configuration,
     p1Board: Board, p2Board: Board
-) = requireNotNull(dbGameMapper.player_turn).let { BattlePhase(
+) = requireNotNull(dbGameMapper.player_turn).run { BattlePhase(
     configuration, dbGameMapper.id, dbGameMapper.player1,
     dbGameMapper.player2, p1Board, p2Board
 ) }
+
+private fun getPlayerPhase(
+    dbGameMapper: DbGameMapper, configuration: Configuration,
+    pBoard: Board, boardMapper: DbBoardMapper
+) = PlayerPhase(
+    dbGameMapper.id,configuration, boardMapper._user, pBoard,
+        if(boardMapper.confirmed) PlayerState.WAITING
+        else PlayerState.PREPARATION
+)

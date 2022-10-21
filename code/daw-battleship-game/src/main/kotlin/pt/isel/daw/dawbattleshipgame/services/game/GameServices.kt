@@ -30,7 +30,7 @@ class GameServices(
                 Either.Right(Unit)
             } else {
                 userDb.removeUserFromQueue(userWaiting)
-                val newGame = Game.newGame(userWaiting, userId, 1, configuration)
+                val newGame = Game.newGame(generateRandomId(), userWaiting, userId, configuration)
                 gameDb.saveGame(newGame)
                 Either.Right(Unit)
             }
