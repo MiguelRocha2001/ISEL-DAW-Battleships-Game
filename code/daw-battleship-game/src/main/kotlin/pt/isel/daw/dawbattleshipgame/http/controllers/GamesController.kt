@@ -32,7 +32,7 @@ class GamesController(
                         title = "Get Game",
                         method = HttpMethod.GET,
                         href = URI(Uris.GAMES_GET_GAME_ID),
-                        type = MediaType.APPLICATION_JSON,
+                        type = "application/json",
                     )
                 ))
             is Either.Left -> when (res.value) {
@@ -208,7 +208,7 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.GAMES_STATE)
+    @GetMapping(Uris.GAME_BY_ID)
     fun getGame(
         user: User,
         @PathVariable id: Int

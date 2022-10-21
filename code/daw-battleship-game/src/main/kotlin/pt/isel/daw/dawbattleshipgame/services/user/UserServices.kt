@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.services.user
 
 
-import pt.isel.daw.dawbattleshipgame.utils.TokenEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.Either
@@ -9,6 +8,7 @@ import pt.isel.daw.dawbattleshipgame.domain.UserLogic
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
+import pt.isel.daw.dawbattleshipgame.utils.TokenEncoder
 
 
 @Component

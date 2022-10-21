@@ -31,7 +31,10 @@ class Problem(
             .body(problem)
 
         val userAlreadyExists = Problem(
-            URI("TODO"),
+            URI(
+                "https://github.com/isel-leic-daw/s2223i-51d-51n-public/tree/main/code/tic-tac-tow-service/" +
+                        "docs/problems/user-or-password-are-invalid"
+            )
             title = "User already exists",
             detail = "Try another name"
         )

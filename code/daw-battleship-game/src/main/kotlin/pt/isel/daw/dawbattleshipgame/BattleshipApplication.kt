@@ -12,7 +12,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import pt.isel.daw.dawbattleshipgame.http.pipeline.AuthenticationInterceptor
 import pt.isel.daw.dawbattleshipgame.http.pipeline.UserArgumentResolver
-import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.Sha256TokenEncoder
 

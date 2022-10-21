@@ -1,10 +1,11 @@
-package pt.isel.daw.dawbattleshipgame.domain.state.http
+package pt.isel.daw.dawbattleshipgame.http
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -73,15 +74,17 @@ class UserTests {
                 )
             )
             .exchange()
-            .expectStatus().isOk
-            .expectBody(TokenResponse::class.java)
+            .expectStatus().isCreated
+            .expectBody(UserTokenOutputModelSiren::class.java)
             .returnResult()
             .responseBody!!
+
+        val token = result.properties.token
 
         // when: getting the user home with a valid token
         // then: the response is a 200 with the proper representation
         client.get().uri("/me")
-            .header("Authorization", "Bearer ${result.token}")
+            .header("Authorization", "Bearer ${token}")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -90,15 +93,11 @@ class UserTests {
         // when: getting the user home with an invalid token
         // then: the response is a 4001 with the proper problem
         client.get().uri("/me")
-            .header("Authorization", "Bearer ${result.token}-invalid")
+            .header("Authorization", "Bearer ${token}-invalid")
             .exchange()
             .expectStatus().isUnauthorized
             .expectHeader().valueEquals("WWW-Authenticate", "bearer")
     }
-
-    class TokenResponse(
-        val token: String
-    )
 
     @Test
     fun `user creation produces an error if user already exists`() {

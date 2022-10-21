@@ -3,10 +3,10 @@ package pt.isel.daw.dawbattleshipgame.utils
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.postgresql.ds.PGSimpleDataSource
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.repository.Transaction
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.JdbiTransaction
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 
 // get from env
 private val url = System.getenv("DB_POSTGRES_CONNECTION")

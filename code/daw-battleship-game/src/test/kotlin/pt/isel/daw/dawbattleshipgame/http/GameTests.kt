@@ -1,12 +1,13 @@
-package pt.isel.daw.dawbattleshipgame.domain.state.http
+package pt.isel.daw.dawbattleshipgame.http
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.http.model.game.GameIdOutputSiren
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,12 +54,13 @@ class GameTests {
                 )
             )
             .exchange()
-            .expectStatus().isOk
-            .expectBody(UserTests.TokenResponse::class.java)
+            .expectStatus().isCreated
+            .expectBody(UserTokenOutputModelSiren::class.java)
             .returnResult()
             .responseBody!!
-        return result.token
-    }
+
+        return result.properties.token
+}
 
     /**
      * Creates two users and starts a game with them.

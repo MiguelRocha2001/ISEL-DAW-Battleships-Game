@@ -14,7 +14,7 @@ data class SirenAction(
     val title: String? = null,
     val clazz: List<String>? = null,
     val method: HttpMethod? = null,
-    val type: MediaType? = null,
+    val type: String? = null,
     val fields: List<Field>? = null
 ) {
     /**

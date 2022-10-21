@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.state.services
+package pt.isel.daw.dawbattleshipgame.services
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*

@@ -3,9 +3,8 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
-import pt.isel.daw.dawbattleshipgame.domain.state.*
-import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.state.*
 
 internal fun insertGame(handle: Handle, game: Game) {
     val winner = if (game is FinishedPhase) game.winner else null

@@ -21,7 +21,7 @@ class HomeController {
                 title = "Create User",
                 method = HttpMethod.POST,
                 href = URI(Uris.USERS_CREATE),
-                type = MediaType.APPLICATION_JSON,
+                type = "application/json",
                 fields = listOf(
                     SirenAction.Field(
                         name = "username",
@@ -40,7 +40,7 @@ class HomeController {
                 title = "Login",
                 method = HttpMethod.GET,
                 href = URI(Uris.USERS_TOKEN),
-                type = MediaType.APPLICATION_JSON,
+                type = "application/json",
                 fields = listOf(
                     SirenAction.Field(
                         name = "username",

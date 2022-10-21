@@ -11,7 +11,7 @@ val preparationActionsSiren = listOf(
         title = "Place Ship",
         method = HttpMethod.POST,
         href = URI(Uris.GAMES_PLACE_SHIP),
-        type = MediaType.APPLICATION_JSON,
+        type = "application/json",
         fields = listOf(
             SirenAction.Field(
                 name = "shipType",
@@ -41,7 +41,7 @@ val preparationActionsSiren = listOf(
         title = "Move Ship",
         method = HttpMethod.POST,
         href = URI(Uris.GAMES_MOVE_SHIP),
-        type = MediaType.APPLICATION_JSON,
+        type = "application/json",
         fields = listOf(
             SirenAction.Field(
                 name = "origin",
@@ -76,7 +76,7 @@ val preparationActionsSiren = listOf(
         title = "Rotate Ship",
         method = HttpMethod.POST,
         href = URI(Uris.GAMES_ROTATE_SHIP),
-        type = MediaType.APPLICATION_JSON,
+        type = "application/json",
         fields = listOf(
             SirenAction.Field(
                 name = "row",
@@ -93,7 +93,7 @@ val preparationActionsSiren = listOf(
         title = "Confirm Fleet",
         method = HttpMethod.POST,
         href = URI(Uris.GAMES_ROTATE_SHIP),
-        type = MediaType.APPLICATION_JSON,
+        type = "application/json",
         fields = listOf(
             SirenAction.Field(
                 name = "row",

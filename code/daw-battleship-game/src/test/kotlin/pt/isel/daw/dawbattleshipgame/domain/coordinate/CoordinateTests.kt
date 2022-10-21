@@ -1,19 +1,17 @@
-package domain.game.utils.board.coordinate
+package pt.isel.daw.dawbattleshipgame.domain.coordinate
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
-import java.lang.IllegalArgumentException
 
 internal class CoordinateTest {
 
     @Test
     fun creation_of_invalid_coordinate() {
-        val thrown: IllegalStateException = assertThrows(
-            IllegalStateException::class.java,
-
-            ) { Coordinate(-2, 4) }
+        val thrown: IllegalStateException = assertThrows(IllegalStateException::class.java) {
+            Coordinate(-2, 4)
+        }
 
         assertTrue(thrown.message!! == "Row or Column cannot be lower than 1")
 

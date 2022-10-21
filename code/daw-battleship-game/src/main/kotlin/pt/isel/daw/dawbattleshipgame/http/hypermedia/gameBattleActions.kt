@@ -11,7 +11,7 @@ val battleActionsSiren = listOf(
         title = "Place Shot",
         method = HttpMethod.POST,
         href = URI(Uris.GAMES_PLACE_SHOT),
-        type = MediaType.APPLICATION_JSON,
+        type = "application/json",
         fields = listOf(
             SirenAction.Field(
                 name = "row",

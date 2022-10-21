@@ -1,12 +1,12 @@
 package pt.isel.daw.dawbattleshipgame.domain.state.single
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
-import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
-import kotlin.collections.first
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.getOrientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
+import kotlin.collections.first
 
 
 class PlayerPreparationPhase: Single {
