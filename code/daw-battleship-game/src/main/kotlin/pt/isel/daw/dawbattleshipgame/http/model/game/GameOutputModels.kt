@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.http.model.game
 
 import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.state.GameState
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
 
@@ -9,13 +10,33 @@ data class GameStartOutputModel(
     val action: SirenAction
 )
 
-data class BoardOutputModel(val board: Board)
+data class BoardOutputModel(
+    val cells: Map<CoordinateModel, Pair<String, Boolean>>,
+    val nCells: Int
+)
 
-data class GameIdOutputModel(
-    val clazz: String = "Game",
-    val properties: List<Pair<String, String>>,
+fun Board.toBoardOutputModel(): BoardOutputModel {
+    val cells = mutableMapOf<CoordinateModel, Pair<String, Boolean>>()
+    this.board.forEach { panel ->
+        val coordinateModel = CoordinateModel(panel.coordinate.row, panel.coordinate.column)
+        val shipType = panel.shipType
+        val isHit = panel.isHit
+        cells[coordinateModel] = Pair(shipType.toString().lowercase(), isHit)
+    }
+    return BoardOutputModel(cells, this.board.size)
+}
+
+data class CoordinateModel(
+    val l: Int,
+    val c: Int
+)
+
+data class GameIdOutputSiren(
+    val `class`: String = "Game",
+    val properties: GameIdOutputModel,
     val actions: List<SirenAction>,
 )
+data class GameIdOutputModel(val gameId: Int)
 
 enum class GameStateOutputModel {
     FLEET_SETUP,
@@ -35,3 +56,19 @@ enum class GameStateOutputModel {
         }
     }
 }
+
+data class GameSirenOutputModel(
+    val `class`: String = "Game",
+    val properties: List<Pair<String, GameOutputModel>>,
+    val actions: List<SirenAction>,
+)
+
+data class GameOutputModel(
+    val gameId: Int,
+    val configuration: Configuration,
+    val player1: Int,
+    val player2: Int,
+    val state: GameStateOutputModel,
+    val board1: BoardOutputModel,
+    val board2: BoardOutputModel,
+)

@@ -30,14 +30,14 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
 
     // if game is finished, return it
     if (dbGameMapper.winner != null) {
-        return EndPhase(
+        return FinishedPhase(
             dbGameMapper.id,
             configuration,
             dbGameMapper.player1,
             dbGameMapper.player2,
             player1Board,
             player2Board,
-            dbGameMapper.winner
+            winner = dbGameMapper.winner
         )
     }
     else {

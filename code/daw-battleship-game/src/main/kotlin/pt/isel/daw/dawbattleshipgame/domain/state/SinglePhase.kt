@@ -10,4 +10,7 @@ data class SinglePhase(
     override val player2: Int,
     val player1Game: Single,
     val player2Game: Single,
+    override val board1: Board = player1Game.board,
+    override val board2: Board = player2Game.board,
+    override val state: GameState = GameState.FLEET_SETUP,
 ) : Game()

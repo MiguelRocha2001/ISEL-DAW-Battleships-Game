@@ -10,8 +10,10 @@ class BattlePhase: Game {
     override val player1: Int // user1 Id
     override val player2: Int // user2 Id
 
-    val player1Board: Board
-    val player2Board: Board
+    override val board1: Board
+    override val board2: Board
+
+    override val state: GameState = GameState.BATTLE
 
     val playersTurn: Int //user ID
 
@@ -27,8 +29,8 @@ class BattlePhase: Game {
         this.configuration = configuration
         this.player1 = playerA
         this.player2 = playerB
-        this.player1Board = boardA
-        this.player2Board = boardB
+        this.board1 = boardA
+        this.board2 = boardB
         this.playersTurn = player1 // always starts with player1
     }
 
@@ -42,11 +44,11 @@ class BattlePhase: Game {
         player2 = old.player2
 
         if (player == player1) {
-            player1Board = old.player1Board
-            player2Board = old.player2Board.placeShot(shot)
+            board1 = old.board1
+            board2 = old.board2.placeShot(shot)
         } else {
-            player1Board = old.player1Board.placeShot(shot)
-            player2Board = old.player2Board
+            board1 = old.board1.placeShot(shot)
+            board2 = old.board2
         }
         playersTurn = if (old.playersTurn == player1) player2
         else player1
@@ -59,8 +61,8 @@ class BattlePhase: Game {
     fun tryPlaceShot(userId: Int, shot: Coordinate): Game? {
         return try {
             val gameResult = BattlePhase(this, userId, shot)
-            if (gameResult.player1Board.isGameOver() || gameResult.player2Board.isGameOver()) {
-                EndPhase(gameId, configuration, player1, player2, player1Board, player2Board, userId)
+            if (gameResult.board1.isGameOver() || gameResult.board2.isGameOver()) {
+                FinishedPhase(gameId, configuration, player1, player2, board1, board2, winner = userId)
             } else {
                 gameResult
             }

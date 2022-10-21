@@ -49,7 +49,7 @@ typealias PlaceShotResult = Either<PlaceShotError, Unit>
 sealed class GameSearchError {
     object GameNotFound: GameSearchError()
 }
-typealias GameSearchResult = Either<GameSearchError, Board>
+typealias BoardResult = Either<GameSearchError, Board>
 
 sealed class GameStateError {
     object GameNotFound: GameStateError()

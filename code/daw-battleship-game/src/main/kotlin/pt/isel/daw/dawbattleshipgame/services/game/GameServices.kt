@@ -159,7 +159,7 @@ class GameServices(
         }
     }
 
-    fun getMyFleetLayout(userId: Int): GameSearchResult {
+    fun getMyFleetLayout(userId: Int): BoardResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
@@ -169,18 +169,18 @@ class GameServices(
                     else Either.Right(game.player2Game.board)
                 }
                 is BattlePhase -> {
-                    if (game.player1 == userId) Either.Right(game.player1Board)
-                    else Either.Right(game.player2Board)
+                    if (game.player1 == userId) Either.Right(game.board1)
+                    else Either.Right(game.board2)
                 }
-                is EndPhase -> {
-                    if (game.player1 == userId) Either.Right(game.player1Board)
-                    else Either.Right(game.player2Board)
+                is FinishedPhase -> {
+                    if (game.player1 == userId) Either.Right(game.board1)
+                    else Either.Right(game.board2)
                 }
             }
         }
     }
 
-    fun getOpponentFleet(userId: Int): GameSearchResult {
+    fun getOpponentFleet(userId: Int): BoardResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
@@ -190,12 +190,12 @@ class GameServices(
                     else Either.Right(game.player1Game.board)
                 }
                 is BattlePhase -> {
-                    if (game.player1 == userId) Either.Right(game.player2Board)
-                    else Either.Right(game.player1Board)
+                    if (game.player1 == userId) Either.Right(game.board2)
+                    else Either.Right(game.board1)
                 }
-                is EndPhase -> {
-                    if (game.player1 == userId) Either.Right(game.player2Board)
-                    else Either.Right(game.player1Board)
+                is FinishedPhase -> {
+                    if (game.player1 == userId) Either.Right(game.board1)
+                    else Either.Right(game.board1)
                 }
             }
         }
@@ -224,19 +224,23 @@ class GameServices(
                 is BattlePhase -> {
                     Either.Right(GameState.BATTLE)
                 }
-                is EndPhase -> {
+                is FinishedPhase -> {
                     Either.Right(GameState.FINISHED)
                 }
             }
         }
     }
 
-    fun getGame(gameId: Int) {
-        TODO()
+    fun getGame(gameId: Int): GameResult {
+        return transactionManager.run {
+            val db = it.gamesRepository
+            val game = db.getGame(gameId) ?: return@run Either.Left(GameError.GameNotFound)
+            Either.Right(game)
+        }
     }
 
     private fun replaceGame(game: Game) {
-        return transactionManager.run {
+        transactionManager.run {
             val db = it.gamesRepository
             db.removeGame(game.gameId)
             db.saveGame(game)

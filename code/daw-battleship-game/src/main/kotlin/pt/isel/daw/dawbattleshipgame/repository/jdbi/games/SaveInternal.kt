@@ -8,7 +8,7 @@ import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 internal fun insertGame(handle: Handle, game: Game) {
-    val winner = if (game is EndPhase) game.winner else null
+    val winner = if (game is FinishedPhase) game.winner else null
     val playerTurn = if (game is BattlePhase) game.playersTurn else null
     handle.createUpdate(
         """
@@ -27,14 +27,14 @@ internal fun insertGame(handle: Handle, game: Game) {
 internal fun insertBoards(handle: Handle, game: Game) {
     val player1Board = when (game) {
         is SinglePhase -> game.player1Game.board
-        is BattlePhase -> game.player1Board
-        is EndPhase -> game.player1Board
+        is BattlePhase -> game.board1
+        is FinishedPhase -> game.board1
     }
 
     val player2Board = when (game) {
         is SinglePhase -> game.player2Game.board
-        is BattlePhase -> game.player2Board
-        is EndPhase -> game.player2Board
+        is BattlePhase -> game.board2
+        is FinishedPhase -> game.board2
     }
     insertBoard(handle, game.gameId, game.player1, player1Board)
     insertBoard(handle, game.gameId, game.player2, player2Board)
