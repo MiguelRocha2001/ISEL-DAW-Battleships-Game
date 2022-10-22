@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.tokenRequestSirenActions
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
@@ -46,29 +47,9 @@ class UsersController(
                 .body(
                     UserTokenOutputModelSiren(
                         properties = TokenOutputModel(res.value),
-                        actions = listOf(
-                            SirenAction(
-                                name = "create-user",
-                                title = "Create User",
-                                method = HttpMethod.POST,
-                                href = URI(Uris.USERS_CREATE),
-                                type = "application/json",
-                                fields = listOf(
-                                    SirenAction.Field(
-                                        name = "username",
-                                        type = "text",
-                                        title = "Username"
-                                    ),
-                                    SirenAction.Field(
-                                        name = "password",
-                                        type = "hidden",
-                                        title = "Password"
-                                    )
-                                )
-                            )
+                        actions = tokenRequestSirenActions
                         )
                     )
-                )
             is Either.Left -> when (res.value) {
                 TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
             }

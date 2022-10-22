@@ -3,7 +3,7 @@ package pt.isel.daw.dawbattleshipgame.domain.state
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
 
-enum class GameState { FLEET_SETUP, WAITING, BATTLE, FINISHED }
+enum class GameState { NOT_STARTED, FLEET_SETUP, WAITING, BATTLE, FINISHED }
 
 sealed class Game {
     abstract val gameId: Int

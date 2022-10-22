@@ -1,11 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.http.hypermedia
 
 import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import java.net.URI
 
-val battleActionsSiren = listOf(
+val battleSirenActions = listOf(
     SirenAction(
         name = "place-shot",
         title = "Place Shot",

@@ -1,18 +1,15 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.preparationActionsSiren
+import pt.isel.daw.dawbattleshipgame.http.LinkRelation
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.services.game.*
-import java.net.URI
 
 @RestController
 class GamesController(
@@ -27,13 +24,8 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(GameStartOutputModel(
-                    SirenAction(
-                        name = "get-game-id",
-                        title = "Get Game",
-                        method = HttpMethod.GET,
-                        href = URI(Uris.GAMES_GET_GAME_ID),
-                        type = "application/json",
-                    )
+                    properties = GameProperties(GameStateOutputModel.get(res.value)),
+                    links = startGameLinks(user.id),
                 ))
             is Either.Left -> when (res.value) {
                 GameCreationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
@@ -50,9 +42,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(GameIdOutputSiren(
                     properties = GameIdOutputModel(res.value),
-                    actions = listOf(
-
-                    )
+                    links = gameInfoActions(res.value)
                 ))
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
@@ -74,9 +64,16 @@ class GamesController(
         )
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .header(
-                    "Location",
-                ).build<Unit>()
+                .body(GamePlaySirenOutputModel(
+                    properties = GameProperties(GameStateOutputModel.get(res.value)),
+                    links = listOf(
+                        LinkOutputModel(
+                            relation = LinkRelation.SELF,
+                            targetUri = Uris.placeShip(id)
+                        ),
+                        gameInfoLink(id)
+                    )
+                ))
             is Either.Left -> when (res.value) {
                 PlaceShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
                 PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
@@ -209,7 +206,7 @@ class GamesController(
     }
 
     @GetMapping(Uris.GAME_BY_ID)
-    fun getGame(
+    fun getGameInfo(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
@@ -228,7 +225,7 @@ class GamesController(
                             board2 = res.value.board2.toBoardOutputModel(),
                         )
                     ),
-                    actions = preparationActionsSiren
+                    actions = preparationSirenActions
                 ))
             is Either.Left -> when (res.value) {
                 GameError.GameNotFound -> Problem.response(404, Problem.toBeChanged)

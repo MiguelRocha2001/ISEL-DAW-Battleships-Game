@@ -30,13 +30,13 @@ class GameServices(
             val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
                 userDb.insertInGameQueue(userId)
-                Either.Right(Unit)
+                Either.Right(GameState.NOT_STARTED)
             } else {
                 val gameId = generateRandomId()
                 userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.newGame(gameId, userWaiting, userId, configuration)
                 gameDb.saveGame(newGame)
-                Either.Right(Unit)
+                Either.Right(newGame.state)
             }
         }
     }
@@ -60,7 +60,7 @@ class GameServices(
                         ?: return@run Either.Left(PlaceShipError.InvalidMove)
                     val newGame = game.copy(player1Game = newPlayerPreparationPhase)
                     replaceGame(db, newGame)
-                    return@run Either.Right(Unit)
+                    return@run Either.Right(newGame.state)
                 }
             }
             Either.Left(PlaceShipError.ActionNotPermitted)
@@ -79,7 +79,7 @@ class GameServices(
                     val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
                     else game.copy(player2Game = newPlayerPreparationPhase)
                     replaceGame(db, newGame)
-                    return@run Either.Right(Unit)
+                    return@run Either.Right(newGame.state)
                 }
             }
             Either.Left(RotateShipError.ActionNotPermitted)
@@ -98,7 +98,7 @@ class GameServices(
                     val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
                     else game.copy(player2Game = newPlayerPreparationPhase)
                     replaceGame(db, newGame)
-                    return@run Either.Right(Unit)
+                    return@run Either.Right(newGame.state)
                 }
             }
             Either.Left(MoveShipError.ActionNotPermitted)
@@ -140,7 +140,7 @@ class GameServices(
                     } else throw Exception("User not in preparation phase")
                 }
                 replaceGame(db, newGame)
-                Either.Right(Unit)
+                Either.Right(newGame.state)
             } else {
                 Either.Left(FleetConfirmationError.ActionNotPermitted)
             }
@@ -152,9 +152,9 @@ class GameServices(
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
             if (game is BattlePhase) {
-                val result = game.tryPlaceShot(userId, c) ?: return@run Either.Left(PlaceShotError.InvalidMove)
-                replaceGame(db, result)
-                return@run Either.Right(Unit)
+                val newGame = game.tryPlaceShot(userId, c) ?: return@run Either.Left(PlaceShotError.InvalidMove)
+                replaceGame(db, newGame)
+                return@run Either.Right(newGame.state)
             }
             Either.Left(PlaceShotError.ActionNotPermitted)
         }
