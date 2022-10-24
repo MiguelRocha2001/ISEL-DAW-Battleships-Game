@@ -1,14 +1,13 @@
-package pt.isel.daw.dawbattleshipgame.domain.warmup
+package pt.isel.daw.dawbattleshipgame.domain.state.warmup
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
+import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.state.Game
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 
 
 class GameTestPlacing {
@@ -19,7 +18,7 @@ class GameTestPlacing {
 
     @Test
     fun initializing_new_game() {
-        val game = Game.newGame(gameId, player1, player2, configuration).player1Game as PlayerPreparationPhase
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -38,8 +37,8 @@ class GameTestPlacing {
 
     @Test
     fun placing_ship_on_valid_location_1() {
-        val game = Game.newGame(gameId, player1, player2, configuration).player1Game as PlayerPreparationPhase
-        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "C2".toCoordinate(), Orientation.HORIZONTAL)
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game 
+        var gameResult = game.logic.tryPlaceShip(ShipType.DESTROYER, "C2".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -58,8 +57,8 @@ class GameTestPlacing {
 
     @Test
     fun placing_ship_on_valid_location_2() {
-        val game = Game.newGame(gameId, player1, player2, configuration).player1Game as PlayerPreparationPhase
-        var gameResult = game.tryPlaceShip(ShipType.DESTROYER, "A2".toCoordinate(), Orientation.HORIZONTAL)
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game 
+        var gameResult = game.logic.tryPlaceShip(ShipType.DESTROYER, "A2".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -78,8 +77,8 @@ class GameTestPlacing {
 
     @Test
     fun placing_ship_on_valid_location_3() {
-        val game = Game.newGame(gameId, player1, player2, configuration).player1Game as PlayerPreparationPhase
-        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "E8".toCoordinate(), Orientation.HORIZONTAL)
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game 
+        val gameResult = game.logic.tryPlaceShip(ShipType.DESTROYER, "E8".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(
             "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
                     "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
@@ -99,15 +98,15 @@ class GameTestPlacing {
 
     @Test
     fun placing_ship_on_invalid_location_1() {
-        val game = Game.newGame(gameId, player1, player2, configuration).player1Game as PlayerPreparationPhase
-        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "j1".toCoordinate(), Orientation.HORIZONTAL)
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game 
+        val gameResult = game.logic.tryPlaceShip(ShipType.DESTROYER, "j1".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(null, gameResult)
     }
 
     @Test
     fun placing_ship_on_invalid_location_2() {
-        val game = Game.newGame(gameId, player1, player2, configuration).player1Game as PlayerPreparationPhase
-        val gameResult = game.tryPlaceShip(ShipType.DESTROYER, "J10".toCoordinate(), Orientation.HORIZONTAL)
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game 
+        val gameResult = game.logic.tryPlaceShip(ShipType.DESTROYER, "J10".toCoordinate(), Orientation.HORIZONTAL)
         assertEquals(null, gameResult)
     }
 }
