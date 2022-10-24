@@ -24,20 +24,27 @@ object Uris {
     const val GAMES_GET_MY_FLEET = "/games/{id}/my-fleet"
     const val GAMES_GET_OPPONENT_FLEET = "/games/{id}/opponent-fleet"
     const val GAMES_STATE = "/games/{id}/state"
+    const val GAMES_GET_GAME_INFO = "/games/{id}/info"
 
     const val SERVER_INFO = "/server-info"
     const val BATTLESHIPS_STATISTICS = "/battleships-statistics"
 
     fun home(): URI = URI(HOME)
     fun userHome(): URI = URI(USER_HOME)
-    fun gameById(game: Game) = UriTemplate(GAME_BY_ID).expand(game.gameId)
 
+    // ------------------ USERS ------------------
     fun userById(id: String) = UriTemplate(USERS_GET_BY_ID).expand(id)
-
-    fun serverInfo(): URI = URI(SERVER_INFO)
-    fun battleshipsStatistics(): URI = URI(BATTLESHIPS_STATISTICS)
-
     fun login(): URI = URI(USERS_TOKEN)
     fun logout(): URI = URI(USERS_TOKEN)
     fun register(): URI = URI(USERS_CREATE)
+
+    // ------------------ SERVER ------------------
+    fun serverInfo(): URI = URI(SERVER_INFO)
+    fun battleshipsStatistics(): URI = URI(BATTLESHIPS_STATISTICS)
+
+    // ------------------ GAMES ------------------
+    fun gameCreate() = URI(GAMES_CREATE)
+    fun gameById(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
+    fun gameInfo(gameId: Int) = UriTemplate(GAMES_GET_GAME_INFO).expand(gameId)
+    fun placeShip(gameId: Int) = UriTemplate(GAMES_PLACE_SHIP).expand(gameId)
 }

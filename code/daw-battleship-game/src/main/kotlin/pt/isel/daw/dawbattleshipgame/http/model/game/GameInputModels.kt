@@ -1,6 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.http.model.game
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation

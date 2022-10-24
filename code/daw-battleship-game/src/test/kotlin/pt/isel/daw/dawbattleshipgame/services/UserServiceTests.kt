@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.state.services
+package pt.isel.daw.dawbattleshipgame.services
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
@@ -36,7 +36,7 @@ class UserServiceTests {
             }
 
             // when: creating a token
-            val createTokenResult = userService.createToken("bob", "password2")
+            val createTokenResult = userService.createToken("bob", "password1")
 
             // then: the creation is successful
             val token = when (createTokenResult) {

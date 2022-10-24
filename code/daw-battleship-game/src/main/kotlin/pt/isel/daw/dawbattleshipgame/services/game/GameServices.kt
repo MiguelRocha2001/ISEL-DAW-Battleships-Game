@@ -6,6 +6,12 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.state.*
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.state.*
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
+import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 
@@ -27,12 +33,13 @@ class GameServices(
             val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
                 userDb.insertInGameQueue(userId)
-                Either.Right(Unit)
+                Either.Right(GameState.NOT_STARTED)
             } else {
+                val gameId = generateRandomId()
                 userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.newGame(generateRandomId(), userWaiting, userId, configuration)
                 gameDb.saveGame(newGame)
-                Either.Right(Unit)
+                Either.Right(newGame.state)
             }
         }
     }
@@ -55,8 +62,8 @@ class GameServices(
                     val newPlayerPreparationPhase = playerGame.logic.tryPlaceShip(ship, position, orientation)
                         ?: return@run Either.Left(PlaceShipError.InvalidMove)
                     val newGame = game.copy(player1Game = newPlayerPreparationPhase)
-                    replaceGame(newGame)
-                    Either.Right(Unit)
+                    replaceGame(db, newGame)
+                    return@run Either.Right(newGame.state)
                 }
             }
             Either.Left(PlaceShipError.ActionNotPermitted)
@@ -74,8 +81,8 @@ class GameServices(
                         ?: return@run Either.Left(RotateShipError.InvalidMove)
                     val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
                     else game.copy(player2Game = newPlayerPreparationPhase)
-                    replaceGame(newGame)
-                    Either.Right(Unit)
+                    replaceGame(db, newGame)
+                    return@run Either.Right(newGame.state)
                 }
             }
             Either.Left(RotateShipError.ActionNotPermitted)
@@ -93,8 +100,8 @@ class GameServices(
                         ?: return@run Either.Left(MoveShipError.InvalidMove)
                     val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
                     else game.copy(player2Game = newPlayerPreparationPhase)
-                    replaceGame(newGame)
-                    Either.Right(Unit)
+                    replaceGame(db, newGame)
+                    return@run Either.Right(newGame.state)
                 }
             }
             Either.Left(MoveShipError.ActionNotPermitted)
@@ -135,8 +142,8 @@ class GameServices(
                         } else game.copy(player2Game = player2Game.logic.confirmFleet())
                     } else throw Exception("User not in preparation phase")
                 }
-                replaceGame(newGame)
-                Either.Right(Unit)
+                replaceGame(db, newGame)
+                Either.Right(newGame.state)
             } else {
                 Either.Left(FleetConfirmationError.ActionNotPermitted)
             }
@@ -148,15 +155,15 @@ class GameServices(
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
             if (game is BattlePhase) {
-                val result = game.tryPlaceShot(userId, c) ?: return@run Either.Left(PlaceShotError.InvalidMove)
-                replaceGame(result)
-                Either.Right(Unit)
+                val newGame = game.tryPlaceShot(userId, c) ?: return@run Either.Left(PlaceShotError.InvalidMove)
+                replaceGame(db, newGame)
+                return@run Either.Right(newGame.state)
             }
             Either.Left(PlaceShotError.ActionNotPermitted)
         }
     }
 
-    fun getMyFleetLayout(userId: Int): GameSearchResult {
+    fun getMyFleetLayout(userId: Int): BoardResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
@@ -166,18 +173,18 @@ class GameServices(
                     else Either.Right(game.player2Game.board)
                 }
                 is BattlePhase -> {
-                    if (game.player1 == userId) Either.Right(game.player1Board)
-                    else Either.Right(game.player2Board)
+                    if (game.player1 == userId) Either.Right(game.board1)
+                    else Either.Right(game.board2)
                 }
-                is EndPhase -> {
-                    if (game.player1 == userId) Either.Right(game.player1Board)
-                    else Either.Right(game.player2Board)
+                is FinishedPhase -> {
+                    if (game.player1 == userId) Either.Right(game.board1)
+                    else Either.Right(game.board2)
                 }
             }
         }
     }
 
-    fun getOpponentFleet(userId: Int): GameSearchResult {
+    fun getOpponentFleet(userId: Int): BoardResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
@@ -187,12 +194,12 @@ class GameServices(
                     else Either.Right(game.player1Game.board)
                 }
                 is BattlePhase -> {
-                    if (game.player1 == userId) Either.Right(game.player2Board)
-                    else Either.Right(game.player1Board)
+                    if (game.player1 == userId) Either.Right(game.board2)
+                    else Either.Right(game.board1)
                 }
-                is EndPhase -> {
-                    if (game.player1 == userId) Either.Right(game.player2Board)
-                    else Either.Right(game.player1Board)
+                is FinishedPhase -> {
+                    if (game.player1 == userId) Either.Right(game.board1)
+                    else Either.Right(game.board1)
                 }
             }
         }
@@ -221,18 +228,23 @@ class GameServices(
                 is BattlePhase -> {
                     Either.Right(GameState.BATTLE)
                 }
-                is EndPhase -> {
+                is FinishedPhase -> {
                     Either.Right(GameState.FINISHED)
                 }
             }
         }
     }
 
-    private fun replaceGame(game: Game) {
+    fun getGame(gameId: Int): GameResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            db.removeGame(game.gameId)
-            db.saveGame(game)
+            val game = db.getGame(gameId) ?: return@run Either.Left(GameError.GameNotFound)
+            Either.Right(game)
         }
+    }
+
+    private fun replaceGame(db: GamesRepository, game: Game) {
+        db.removeGame(game.gameId)
+        db.saveGame(game)
     }
 }

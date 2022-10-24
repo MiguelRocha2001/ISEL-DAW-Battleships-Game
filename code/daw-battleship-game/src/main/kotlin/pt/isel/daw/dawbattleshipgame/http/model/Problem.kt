@@ -31,7 +31,9 @@ class Problem(
             .body(problem)
 
         val userAlreadyExists = Problem(
-            URI("TODO"),
+            URI(
+                "TODO" //TODO Error documentation
+            ),
             title = "User already exists",
             detail = "Try another name"
         )

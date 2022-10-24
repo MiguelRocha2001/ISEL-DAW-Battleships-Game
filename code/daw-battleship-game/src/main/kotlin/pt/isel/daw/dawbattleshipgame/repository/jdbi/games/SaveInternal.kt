@@ -5,12 +5,11 @@ import org.jdbi.v3.core.kotlin.mapTo
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
-import pt.isel.daw.dawbattleshipgame.domain.state.*
-import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.state.*
 
 internal fun insertGame(handle: Handle, game: Game) {
-    val winner = if (game is EndPhase) game.winner else null
+    val winner = if (game is FinishedPhase) game.winner else null
     val playerTurn = if (game is BattlePhase) game.playersTurn else null
     val resultBearing = handle.createUpdate(
         """
@@ -33,14 +32,14 @@ internal fun createGame(handle : Handle, player1Id: Int, player2Id : Int){
 internal fun insertBoards(handle: Handle, game: Game) {
     val player1Board = when (game) {
         is SinglePhase -> game.player1Game.board
-        is BattlePhase -> game.player1Board
-        is EndPhase -> game.player1Board
+        is BattlePhase -> game.board1
+        is FinishedPhase -> game.board1
     }
 
     val player2Board = when (game) {
         is SinglePhase -> game.player2Game.board
-        is BattlePhase -> game.player2Board
-        is EndPhase -> game.player2Board
+        is BattlePhase -> game.board2
+        is FinishedPhase -> game.board2
     }
     insertBoard(handle, game.gameId, game.player1, player1Board)
     insertBoard(handle, game.gameId, game.player2, player2Board)
@@ -125,7 +124,7 @@ fun deleteGame(handle: Handle, gameId: Int) {
     handle.createUpdate("""delete from CONFIGURATION where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from PANEL where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from BOARD where game = :game""").bind("game", gameId).execute()
-    handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId)
+    handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId).execute()
 }
 
 fun clearAllTables(handle: Handle) {

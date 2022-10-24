@@ -10,46 +10,46 @@ sealed class GameCreationError: Error() {
     object UserAlreadyInGame : GameCreationError()
     object UserAlreadyInQueue : GameCreationError()
 }
-typealias GameCreationResult = Either<GameCreationError, Unit>
+typealias GameCreationResult = Either<GameCreationError, GameState>
 
 sealed class PlaceShipError {
     object GameNotFound: PlaceShipError()
     object ActionNotPermitted : PlaceShipError()
     object InvalidMove: PlaceShipError()
 }
-typealias PlaceShipResult = Either<PlaceShipError, Unit>
+typealias PlaceShipResult = Either<PlaceShipError, GameState>
 
 sealed class MoveShipError {
     object GameNotFound: MoveShipError()
     object ActionNotPermitted : MoveShipError()
     object InvalidMove: MoveShipError()
 }
-typealias MoveShipResult = Either<MoveShipError, Unit>
+typealias MoveShipResult = Either<MoveShipError, GameState>
 
 sealed class RotateShipError {
     object GameNotFound: RotateShipError()
     object ActionNotPermitted : RotateShipError()
     object InvalidMove: RotateShipError()
 }
-typealias RotateShipResult = Either<RotateShipError, Unit>
+typealias RotateShipResult = Either<RotateShipError, GameState>
 
 sealed class FleetConfirmationError {
     object GameNotFound: FleetConfirmationError()
     object ActionNotPermitted : FleetConfirmationError()
 }
-typealias FleetConfirmationResult = Either<FleetConfirmationError, Unit>
+typealias FleetConfirmationResult = Either<FleetConfirmationError, GameState>
 
 sealed class PlaceShotError {
     object GameNotFound: PlaceShotError()
     object ActionNotPermitted : PlaceShotError()
     object InvalidMove: PlaceShotError()
 }
-typealias PlaceShotResult = Either<PlaceShotError, Unit>
+typealias PlaceShotResult = Either<PlaceShotError, GameState>
 
 sealed class GameSearchError {
     object GameNotFound: GameSearchError()
 }
-typealias GameSearchResult = Either<GameSearchError, Board>
+typealias BoardResult = Either<GameSearchError, Board>
 
 sealed class GameStateError {
     object GameNotFound: GameStateError()

@@ -1,4 +1,4 @@
-package domain.game.utils.board.coordinate
+package pt.isel.daw.dawbattleshipgame.domain.coordinate
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals

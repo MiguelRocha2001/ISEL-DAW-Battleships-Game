@@ -1,18 +1,15 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
+import pt.isel.daw.dawbattleshipgame.http.LinkRelation
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModel
 import pt.isel.daw.dawbattleshipgame.services.game.*
-import java.net.URI
 
 @RestController
 class GamesController(
@@ -27,13 +24,8 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(GameStartOutputModel(
-                    SirenAction(
-                        name = "get-game-id",
-                        title = "Get Game",
-                        method = HttpMethod.GET,
-                        href = URI(Uris.GAMES_GET_GAME_ID),
-                        type = MediaType.APPLICATION_JSON,
-                    )
+                    properties = GameProperties(GameStateOutputModel.get(res.value)),
+                    links = startGameLinks(user.id),
                 ))
             is Either.Left -> when (res.value) {
                 GameCreationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
@@ -48,33 +40,9 @@ class GamesController(
         val res = gameServices.getGameIdByUser(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(GameIdOutputModel(
-                    properties = listOf(
-                        "gameId" to res.value.toString()
-                    ),
-                    actions = listOf(
-                        SirenAction(
-                            name = "get-game",
-                            title = "Get Game",
-                            method = HttpMethod.POST,
-                            href = URI(Uris.GAMES_PLACE_SHIP),
-                            type = MediaType.APPLICATION_JSON,
-                            fields = listOf(
-                                SirenAction.Field(
-                                    name = "shipType",
-                                    type = "text",
-                                ),
-                                SirenAction.Field(
-                                    name = "",
-                                    type = "",
-                                ),
-                                SirenAction.Field(
-                                    name = "orientation",
-                                    type = "text",
-                                )
-                            )
-                        )
-                    )
+                .body(GameIdOutputSiren(
+                    properties = GameIdOutputModel(res.value),
+                    links = gameInfoActions(res.value)
                 ))
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
@@ -96,9 +64,16 @@ class GamesController(
         )
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .header(
-                    "Location",
-                ).build<Unit>()
+                .body(GamePlaySirenOutputModel(
+                    properties = GameProperties(GameStateOutputModel.get(res.value)),
+                    links = listOf(
+                        LinkOutputModel(
+                            relation = LinkRelation.SELF,
+                            targetUri = Uris.placeShip(id)
+                        ),
+                        gameInfoLink(id)
+                    )
+                ))
             is Either.Left -> when (res.value) {
                 PlaceShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
                 PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
@@ -193,7 +168,7 @@ class GamesController(
         val res = gameServices.getMyFleetLayout(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(BoardOutputModel(res.value))
+                .body(res.value.toBoardOutputModel())
             is Either.Left -> when (res.value) {
                 GameSearchError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
@@ -208,7 +183,7 @@ class GamesController(
         val res = gameServices.getOpponentFleet(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(BoardOutputModel(res.value))
+                .body(res.value.toBoardOutputModel())
             is Either.Left -> when (res.value) {
                 GameSearchError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
@@ -230,20 +205,31 @@ class GamesController(
         }
     }
 
-    /*
-    @GetMapping(Uris.GAMES_STATE)
-    fun getGame(
+    @GetMapping(Uris.GAME_BY_ID)
+    fun getGameInfo(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
         val res = gameServices.getGame(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(GameStateOutputModel.get(res.value))
+                .body(GameSirenOutputModel(
+                    properties = listOf(
+                        "Game" to GameOutputModel(
+                            gameId = res.value.gameId,
+                            configuration = res.value.configuration,
+                            player1 = res.value.player1,
+                            player2 = res.value.player2,
+                            state = GameStateOutputModel.get(res.value.state),
+                            board1 = res.value.board1.toBoardOutputModel(),
+                            board2 = res.value.board2.toBoardOutputModel(),
+                        )
+                    ),
+                    actions = preparationSirenActions
+                ))
             is Either.Left -> when (res.value) {
-                GameStateError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
             }
         }
     }
-     */
 }

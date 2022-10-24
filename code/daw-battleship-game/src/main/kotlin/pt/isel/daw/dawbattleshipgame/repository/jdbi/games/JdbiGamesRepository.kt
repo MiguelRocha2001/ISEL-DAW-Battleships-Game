@@ -1,9 +1,11 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
-import pt.isel.daw.dawbattleshipgame.domain.state.*
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
-
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.state.Game
+import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
+import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 
 
@@ -19,14 +21,6 @@ class JdbiGamesRepository(
         return fetchGameByUser(handle, userId)
     }
 
-    override fun getGameIdByUser(userId: Int): Int? {
-        TODO("Not yet implemented")
-    }
-
-    override fun createGame(configuration: Configuration, player1: Int, player2: Int): Int? {
-        TODO("Not yet implemented")
-    }
-
     override fun saveGame(game: Game) {
         insertGame(handle, game)
         insertBoards(handle, game)
@@ -37,18 +31,17 @@ class JdbiGamesRepository(
         saveGame(singlePhase)
     }
 
-    override fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPhase) {
-        TODO("Not yet implemented")
+    override fun savePlayerPreparationPhase(playerPreparationPhase: PlayerPreparationPhase) {
+        insertBoard(handle, playerPreparationPhase.gameId, playerPreparationPhase.playerId, playerPreparationPhase.board)
     }
 
-    override fun savePlayerWaitingPhase(playerWaitingPhase: PlayerPhase) {
+    override fun savePlayerWaitingPhase(playerWaitingPhase: PlayerWaitingPhase) {
         confirmBoard(handle, playerWaitingPhase.gameId, playerWaitingPhase.playerId)
     }
 
     override fun getPreparationPhase(gameId: Int): SinglePhase? {
         TODO("Not yet implemented")
     }
-
 
     override fun createUser(username: String, password: String) {
         TODO("Not yet implemented")

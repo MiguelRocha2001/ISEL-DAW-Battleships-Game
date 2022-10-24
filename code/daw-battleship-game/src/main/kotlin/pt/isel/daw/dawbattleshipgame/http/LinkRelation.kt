@@ -12,14 +12,20 @@ class LinkRelation(
                 "rels/home"
         )
 
+        // ------------------- SERVER -------------------
         val SERVER_INFO = LinkRelation("server-info")
 
         val BATTLESHIPS_STATISTICS = LinkRelation("battleships-statistics")
 
+        // ------------------- USERS -------------------
         val LOGIN = LinkRelation("login")
 
         val LOGOUT = LinkRelation("logout")
 
         val REGISTER = LinkRelation("register")
+
+        // ------------------- GAMES -------------------
+        val GAME_ID = LinkRelation("game-id")
+        val GAME_CREATE = LinkRelation("game-create")
     }
 }

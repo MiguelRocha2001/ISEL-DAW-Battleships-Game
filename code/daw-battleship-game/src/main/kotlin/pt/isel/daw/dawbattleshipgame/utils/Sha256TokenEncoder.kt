@@ -2,7 +2,7 @@ package pt.isel.daw.dawbattleshipgame.utils
 
 import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
 import java.security.MessageDigest
-import java.util.Base64
+import java.util.*
 
 class Sha256TokenEncoder : TokenEncoder {
 

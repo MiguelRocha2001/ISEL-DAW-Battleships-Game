@@ -1,10 +1,9 @@
-package pt.isel.daw.dawbattleshipgame.domain.state.warmup
+package pt.isel.daw.dawbattleshipgame.domain.warmup
 
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.state.Game
-
-import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 
 internal class GameTestGenerateShips {
 
