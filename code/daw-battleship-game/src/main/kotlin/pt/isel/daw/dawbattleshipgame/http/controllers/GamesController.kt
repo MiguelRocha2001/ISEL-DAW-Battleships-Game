@@ -38,6 +38,13 @@ class GamesController(
     @GetMapping(Uris.GAMES_GET_GAME_ID)
     fun getCurrentGameId(user: User): ResponseEntity<*> {
         val res = gameServices.getGameIdByUser(user.id)
+
+        val te = res
+        val test = GameIdOutputSiren(
+            properties = GameIdOutputModel((te as Either.Right).value),
+            links = gameInfoActions(te.value)
+        )
+        
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(GameIdOutputSiren(

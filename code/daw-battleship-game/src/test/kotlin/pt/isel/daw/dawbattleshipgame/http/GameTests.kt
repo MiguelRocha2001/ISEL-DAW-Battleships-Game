@@ -1,13 +1,14 @@
-package pt.isel.daw.dawbattleshipgame.domain.state.http
+package pt.isel.daw.dawbattleshipgame.http
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.expectBody
-import pt.isel.daw.dawbattleshipgame.domain.state.utils.getGameTestConfiguration
-import pt.isel.daw.dawbattleshipgame.http.model.game.GameIdOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.game.GameIdOutputSiren
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -17,8 +18,6 @@ class GameTests {
     @LocalServerPort
     var port: Int = 0
 
-    /*
->>>>>>> Stashed changes
     /**
      * Creates a User and returns the token.
      * Also, asserts if the behavior is correct.
@@ -29,7 +28,7 @@ class GameTests {
 
         // and: a random user
         val username = UUID.randomUUID().toString()
-        val password = "changeit"
+        val password = getRandomPassword()
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header
@@ -56,12 +55,13 @@ class GameTests {
                 )
             )
             .exchange()
-            .expectStatus().isOk
-            .expectBody(UserTests.TokenResponse::class.java)
+            .expectStatus().isCreated
+            .expectBody(UserTokenOutputModelSiren::class.java)
             .returnResult()
             .responseBody!!
-        return result.token
-    }
+
+        return result.properties.token
+}
 
     /**
      * Creates two users and starts a game with them.
@@ -94,27 +94,30 @@ class GameTests {
             .expectStatus().isOk
 
         // player 1 should be able to get the game
-        val gameId1 = client.get().uri("/games/current")
+        val gameId1Siren = client.get().uri("/games/current")
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isOk
-            .expectBody(GameIdOutputModel::class.java)
+            .expectBody(GameIdOutputSiren::class.java)
             .returnResult()
-            .responseBody?.actions
+            .responseBody ?: fail("Game id is null")
+
+        assertEquals("Game", gameId1Siren.`class`)
+        val gameId = gameId1Siren.properties.gameId
 
         // player 2 should be able to get the game
-        val gameId2 = client.get().uri("/games/current")
+        val gameId2Siren = client.get().uri("/games/current")
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isOk
-            .expectBody(GameIdOutputModel::class.java)
+            .expectBody(GameIdOutputSiren::class.java)
             .returnResult()
-            .responseBody?
+            .responseBody ?: fail("Game id is null")
 
-        assertNotNull(gameId1)
-        assertEquals(gameId1, gameId2)
+        assertNotNull(gameId1Siren)
+        assertEquals(gameId1Siren, gameId2Siren)
 
-        return gameId1!! to (player1Token to player2Token)
+        return gameId to (player1Token to player2Token)
     }
 
     @Test
@@ -145,5 +148,4 @@ class GameTests {
             .expectStatus().isOk
     }
 
-     */
 }

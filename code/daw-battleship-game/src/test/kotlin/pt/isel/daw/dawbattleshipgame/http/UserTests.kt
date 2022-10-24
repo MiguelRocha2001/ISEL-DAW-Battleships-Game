@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
+import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,7 +23,7 @@ class UserTests {
 
         // and: a random user
         val username = UUID.randomUUID().toString()
-        val password = "changeit"
+        val password = getRandomPassword()
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header

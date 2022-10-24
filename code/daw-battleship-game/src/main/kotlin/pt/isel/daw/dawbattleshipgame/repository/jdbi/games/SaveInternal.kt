@@ -23,6 +23,7 @@ internal fun insertGame(handle: Handle, game: Game) {
         .bind("player2", game.player2)
         .bind("winner", winner)
         .bind("player_turn", playerTurn)
+        .execute()
 }
 
 internal fun createGame(handle : Handle, player1Id: Int, player2Id : Int){
