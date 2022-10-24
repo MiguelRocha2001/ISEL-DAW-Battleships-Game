@@ -127,7 +127,7 @@ private fun getGameState(g : DbGameMapper): GameState {
 private fun getEndPhase(
     dbGameMapper: DbGameMapper, configuration: Configuration,
     p1Board: Board, p2Board: Board
-) = requireNotNull(dbGameMapper.winner).run { EndPhase(
+) = requireNotNull(dbGameMapper.winner).run { FinishedPhase(
     dbGameMapper.id, configuration, dbGameMapper.player1,
     dbGameMapper.player2, p1Board, p2Board, dbGameMapper.winner
 ) }

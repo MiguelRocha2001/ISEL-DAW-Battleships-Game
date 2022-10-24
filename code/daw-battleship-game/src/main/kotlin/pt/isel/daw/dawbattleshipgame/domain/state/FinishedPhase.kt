@@ -9,6 +9,6 @@ class FinishedPhase(
     override val player2: Int,
     override val board1: Board,
     override val board2: Board,
+    val winner: Int,
     override val state: GameState = GameState.FINISHED,
-    val winner: Int
 ) : Game()

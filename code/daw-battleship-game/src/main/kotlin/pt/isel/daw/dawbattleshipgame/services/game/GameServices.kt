@@ -6,11 +6,6 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.state.*
-import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.domain.state.*
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPreparationPhase
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerWaitingPhase
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
@@ -35,7 +30,6 @@ class GameServices(
                 userDb.insertInGameQueue(userId)
                 Either.Right(GameState.NOT_STARTED)
             } else {
-                val gameId = generateRandomId()
                 userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.newGame(generateRandomId(), userWaiting, userId, configuration)
                 gameDb.saveGame(newGame)
