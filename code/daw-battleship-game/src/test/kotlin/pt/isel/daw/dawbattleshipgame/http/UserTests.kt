@@ -1,13 +1,14 @@
 package pt.isel.daw.dawbattleshipgame.http
 
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserTests {
@@ -76,11 +77,12 @@ class UserTests {
             )
             .exchange()
             .expectStatus().isCreated
-            .expectBody(UserTokenOutputModelSiren::class.java)
+            .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody!!
 
-        val token = result.properties.token
+        assertNotNull(result.properties)
+        val token = (result.properties as LinkedHashMap<String, String>)["token"]
 
         // when: getting the user home with a valid token
         // then: the response is a 200 with the proper representation

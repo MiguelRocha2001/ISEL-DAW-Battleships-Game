@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildHomeActions
 import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
-import pt.isel.daw.tictactow.infra.siren
+import pt.isel.daw.dawbattleshipgame.http.infra.siren
 
 @RestController
 class HomeController {

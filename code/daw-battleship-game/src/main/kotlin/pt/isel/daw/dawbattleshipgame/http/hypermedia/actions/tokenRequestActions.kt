@@ -3,7 +3,7 @@ package pt.isel.daw.dawbattleshipgame.http.hypermedia.actions
 import org.springframework.http.HttpMethod
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.model.user.TokenOutputModel
-import pt.isel.daw.tictactow.infra.SirenBuilderScope
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import java.net.URI
 
 fun buildTokenRequestActions(sirenBuilderScope: SirenBuilderScope<TokenOutputModel>) {

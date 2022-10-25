@@ -13,7 +13,7 @@ import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
-import pt.isel.daw.tictactow.infra.siren
+import pt.isel.daw.dawbattleshipgame.http.infra.siren
 
 @RestController
 class UsersController(

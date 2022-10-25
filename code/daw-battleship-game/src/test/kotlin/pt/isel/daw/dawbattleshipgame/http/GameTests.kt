@@ -7,7 +7,8 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
-import pt.isel.daw.tictactow.infra.SirenModel
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
+import pt.isel.daw.dawbattleshipgame.http.model.game.GameIdOutputModel
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,11 +56,11 @@ class GameTests {
             )
             .exchange()
             .expectStatus().isCreated
-            .expectBody(String::class.java)
+            .expectBody(SirenModel::class.java)
             .returnResult()
-            .responseBody!!
+            .responseBody ?: fail("No response body")
 
-        return result.properties.token
+        return (result.properties as LinkedHashMap<String, String>)["token"] ?: fail("No token")
 }
 
     /**
@@ -97,26 +98,28 @@ class GameTests {
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isOk
-            .expectBody(GameIdOutputSiren::class.java)
+            .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody ?: fail("Game id is null")
 
-        assertEquals("Game", gameId1Siren.`class`)
-        val gameId = gameId1Siren.properties.gameId
+        // assertEquals("Game", gameId1Siren.)
+        val gameId1 = (gameId1Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: fail("Game id is null")
 
         // player 2 should be able to get the game
         val gameId2Siren = client.get().uri("/games/current")
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isOk
-            .expectBody(GameIdOutputSiren::class.java)
+            .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody ?: fail("Game id is null")
 
         assertNotNull(gameId1Siren)
-        assertEquals(gameId1Siren, gameId2Siren)
+        val gameId2 = (gameId2Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: fail("Game id is null")
 
-        return gameId to (player1Token to player2Token)
+        assertEquals(gameId1, gameId2)
+
+        return gameId1 to (player1Token to player2Token)
     }
 
     @Test
@@ -146,5 +149,4 @@ class GameTests {
             .exchange()
             .expectStatus().isOk
     }
-
 }

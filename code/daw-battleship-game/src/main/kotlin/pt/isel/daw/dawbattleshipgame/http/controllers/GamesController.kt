@@ -11,7 +11,7 @@ import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationAct
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.services.game.*
-import pt.isel.daw.tictactow.infra.siren
+import pt.isel.daw.dawbattleshipgame.http.infra.siren
 
 @RestController
 class GamesController(
