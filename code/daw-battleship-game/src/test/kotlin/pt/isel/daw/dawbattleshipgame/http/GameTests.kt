@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.http.model.game.GameIdOutputSiren
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
+import pt.isel.daw.tictactow.infra.SirenModel
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -56,7 +55,7 @@ class GameTests {
             )
             .exchange()
             .expectStatus().isCreated
-            .expectBody(UserTokenOutputModelSiren::class.java)
+            .expectBody(String::class.java)
             .returnResult()
             .responseBody!!
 

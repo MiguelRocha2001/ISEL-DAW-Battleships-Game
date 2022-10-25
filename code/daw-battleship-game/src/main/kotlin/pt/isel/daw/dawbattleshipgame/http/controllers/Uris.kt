@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.web.util.UriTemplate
-import pt.isel.daw.dawbattleshipgame.domain.state.Game
 import java.net.URI
 
 object Uris {
@@ -46,5 +45,10 @@ object Uris {
     fun gameCreate() = URI(GAMES_CREATE)
     fun gameById(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
     fun gameInfo(gameId: Int) = UriTemplate(GAMES_GET_GAME_INFO).expand(gameId)
+
     fun placeShip(gameId: Int) = UriTemplate(GAMES_PLACE_SHIP).expand(gameId)
+    fun moveShip(gameId: Int) = UriTemplate(GAMES_MOVE_SHIP).expand(gameId)
+    fun rotateShip(gameId: Int) = UriTemplate(GAMES_ROTATE_SHIP).expand(gameId)
+    fun placeShot(gameId: Int) = UriTemplate(GAMES_PLACE_SHOT).expand(gameId)
+    fun confirmFleet(gameId: Int) = UriTemplate(GAMES_CONFIRM_FLEET).expand(gameId)
 }

@@ -48,7 +48,7 @@ class UserTests {
 
         // and: a random user
         val username = UUID.randomUUID().toString()
-        val password = "changeit"
+        val password = getRandomPassword()
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header
@@ -107,7 +107,7 @@ class UserTests {
 
         // and: a random user
         val username = UUID.randomUUID().toString()
-        val password = "changeit"
+        val password = getRandomPassword()
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header

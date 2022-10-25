@@ -1,23 +1,19 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.tokenRequestSirenActions
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildTokenRequestActions
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.user.TokenOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserTokenOutputModelSiren
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
-import java.net.URI
+import pt.isel.daw.tictactow.infra.siren
 
 @RestController
 class UsersController(
@@ -45,11 +41,9 @@ class UsersController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
                 .body(
-                    UserTokenOutputModelSiren(
-                        properties = TokenOutputModel(res.value),
-                        actions = tokenRequestSirenActions
-                        )
-                    )
+                    siren(TokenOutputModel(res.value)) {
+                        buildTokenRequestActions(this)
+                    })
             is Either.Left -> when (res.value) {
                 TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
             }

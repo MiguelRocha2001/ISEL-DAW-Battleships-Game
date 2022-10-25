@@ -4,13 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.state.GameState
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.LinkOutputModel
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.SirenAction
 
-data class GameStartOutputModel(
-    val properties: GameProperties,
-    val links : List<LinkOutputModel>,
-)
 data class GameProperties(val gameState: GameStateOutputModel)
 
 data class BoardOutputModel(
@@ -34,11 +28,6 @@ data class CoordinateModel(
     val c: Int
 )
 
-data class GameIdOutputSiren(
-    val `class`: String = "Game",
-    val properties: GameIdOutputModel,
-    val links: List<LinkOutputModel>
-)
 data class GameIdOutputModel(val gameId: Int)
 
 enum class GameStateOutputModel {
@@ -62,12 +51,6 @@ enum class GameStateOutputModel {
     }
 }
 
-data class GameSirenOutputModel(
-    val `class`: String = "Game",
-    val properties: List<Pair<String, GameOutputModel>>,
-    val actions: List<SirenAction>,
-)
-
 data class GameOutputModel(
     val gameId: Int,
     val configuration: Configuration,
@@ -76,12 +59,4 @@ data class GameOutputModel(
     val state: GameStateOutputModel,
     val board1: BoardOutputModel,
     val board2: BoardOutputModel,
-)
-
-/**
- * Representation sent after the client made an action on the game, like placing a ship or shooting.
- */
-data class GamePlaySirenOutputModel(
-    val properties: GameProperties,
-    val links : List<LinkOutputModel>,
 )

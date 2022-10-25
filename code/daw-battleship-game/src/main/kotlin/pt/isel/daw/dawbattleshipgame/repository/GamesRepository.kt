@@ -1,10 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
-import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.state.Game
 import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
-
 
 
 interface GamesRepository {
