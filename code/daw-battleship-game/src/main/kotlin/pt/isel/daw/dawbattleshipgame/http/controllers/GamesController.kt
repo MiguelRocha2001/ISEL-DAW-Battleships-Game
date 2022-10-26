@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
@@ -22,7 +23,15 @@ class GamesController(
         user: User,
         @RequestBody createGameInputModel: CreateGameInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.startGame(user.id, createGameInputModel.configuration)
+        val res = gameServices.startGame(
+            user.id,
+            Configuration(
+                createGameInputModel.configuration.boardSize,
+                createGameInputModel.configuration.fleet.map { it.first.toShipType() to it.second }.toSet(),
+                createGameInputModel.configuration.nShotsPerRound,
+                createGameInputModel.configuration.roundTimeout
+            )
+        )
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(
@@ -228,6 +237,20 @@ class GamesController(
                 })
             is Either.Left -> when (res.value) {
                 GameError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+            }
+        }
+    }
+
+    @GetMapping(Uris.BATTLESHIPS_STATISTICS)
+    fun getBattleshipsStatistics() {
+        val res = gameServices.getBattleshipsStatistics()
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(200)
+                .body(siren(BattleshipsStatisticsOutputModel()) {
+
+                })
+            is Either.Left -> when (res.value) {
+
             }
         }
     }
