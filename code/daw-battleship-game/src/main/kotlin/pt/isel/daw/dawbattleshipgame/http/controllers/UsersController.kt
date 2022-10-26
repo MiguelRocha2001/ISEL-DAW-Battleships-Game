@@ -6,8 +6,8 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildTokenRequestActions
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.http.model.UserCreateInputModel
-import pt.isel.daw.dawbattleshipgame.http.model.UserCreateTokenInputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserCreateInputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.UserCreateTokenInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.user.TokenOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError

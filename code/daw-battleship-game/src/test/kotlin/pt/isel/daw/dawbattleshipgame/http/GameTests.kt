@@ -3,16 +3,21 @@ package pt.isel.daw.dawbattleshipgame.http
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
-import pt.isel.daw.dawbattleshipgame.http.model.game.GameIdOutputModel
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GameTests {
+
+    @TestConfiguration
+    class GameTestConfiguration {
+
+    }
 
     // One of the very few places where we use property injection
     @LocalServerPort
@@ -30,7 +35,7 @@ class GameTests {
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
 
-        // when: creating an user
+        // when: creating a user
         // then: the response is a 201 with a proper Location header
         client.post().uri("/users")
             .bodyValue(
@@ -130,7 +135,7 @@ class GameTests {
     @Test
     fun `can place ship`() {
         val (gameId, tokens) = createGame()
-        val (player1Token, player2Token) = tokens
+        val player1Token = tokens.first
 
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 

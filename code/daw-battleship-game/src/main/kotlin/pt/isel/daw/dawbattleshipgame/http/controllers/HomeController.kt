@@ -10,7 +10,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.siren
 class HomeController {
 
     @GetMapping(Uris.HOME)
-    fun getHome() = siren(HomeOutputModel("Made for teaching purposes by P. Félix")) {
+    fun getHome() = siren(HomeOutputModel("Welcome to the Battleship Game API")) {
         link(Uris.home(), Rels.SELF)
         link(Uris.home(), Rels.HOME)
         buildHomeActions(this)

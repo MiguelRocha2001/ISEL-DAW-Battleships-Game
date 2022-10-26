@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.http.model
+package pt.isel.daw.dawbattleshipgame.http.model.user
 
 data class UserCreateInputModel(
     val username: String,
