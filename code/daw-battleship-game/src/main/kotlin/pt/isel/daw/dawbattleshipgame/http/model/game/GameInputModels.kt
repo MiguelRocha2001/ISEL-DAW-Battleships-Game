@@ -6,7 +6,14 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 
-data class CreateGameInputModel(val configuration: Configuration)
+data class CreateGameInputModel(val configuration: ConfigurationInputModel)
+
+data class ConfigurationInputModel(
+    val boardSize: Int,
+    val fleet: Set<Pair<ShipTypeInputModel, Int>>,
+    val nShotsPerRound: Int,
+    val roundTimeout: Int
+)
 
 data class PlaceShipInputModel(
     val shipType: ShipTypeInputModel,

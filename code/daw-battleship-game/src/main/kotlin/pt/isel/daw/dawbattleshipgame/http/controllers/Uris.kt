@@ -18,7 +18,7 @@ object Uris {
     const val GAMES_PLACE_SHIP = "/games/{id}/place-ship"
     const val GAMES_MOVE_SHIP = "/games/{id}/move-ship"
     const val GAMES_ROTATE_SHIP = "/games/{id}/rotate-ship"
-    const val GAMES_PLACE_SHOT = "/games/{id}/shoot"
+    const val GAMES_PLACE_SHOT = "/games/{id}/place-shot"
     const val GAMES_CONFIRM_FLEET = "/games/{id}/confirm-fleet"
     const val GAMES_GET_MY_FLEET = "/games/{id}/my-fleet"
     const val GAMES_GET_OPPONENT_FLEET = "/games/{id}/opponent-fleet"
@@ -29,6 +29,7 @@ object Uris {
     const val BATTLESHIPS_STATISTICS = "/battleships-statistics"
 
     fun home(): URI = URI(HOME)
+    fun info(): URI = URI(SERVER_INFO)
     fun userHome(): URI = URI(USER_HOME)
 
     // ------------------ USERS ------------------
