@@ -3,6 +3,7 @@ package pt.isel.daw.dawbattleshipgame.repository
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 
 interface UsersRepository {
 
@@ -10,6 +11,8 @@ interface UsersRepository {
         username: String,
         passwordValidation: PasswordValidationInfo,
     ): String
+
+    fun getUsersRanking() : List<UserRanking>
 
     fun getUserByUsername(username: String): User?
 

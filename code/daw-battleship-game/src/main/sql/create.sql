@@ -16,11 +16,11 @@ create table TOKEN(
 
 create table GAME(
     id int primary key,
-    state varchar(32),
+    state varchar(32) check (state in ('not_started', 'fleet_setup', 'waiting', 'battle' , 'finished')),
     player1 int not null,
     player2 int not null,
-    winner int,
-    player_turn int null,
+    winner int default null,
+    player_turn int default null,
     foreign key (player1) references _USER(id),
     foreign key (player2) references _USER(id),
     foreign key (player_turn) references _USER(id),
