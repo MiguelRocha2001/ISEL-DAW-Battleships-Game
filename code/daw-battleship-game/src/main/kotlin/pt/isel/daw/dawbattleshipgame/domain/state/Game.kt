@@ -1,9 +1,19 @@
 package pt.isel.daw.dawbattleshipgame.domain.state
 
+import org.jetbrains.annotations.TestOnly
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
+import java.util.*
 
-enum class GameState { NOT_STARTED, FLEET_SETUP, WAITING, BATTLE, FINISHED }
+enum class GameState {
+    NOT_STARTED,
+    FLEET_SETUP,
+    WAITING,
+    BATTLE,
+    FINISHED;
+
+    val dbName = this.name.lowercase(Locale.getDefault())
+}
 
 sealed class Game {
     abstract val gameId: Int

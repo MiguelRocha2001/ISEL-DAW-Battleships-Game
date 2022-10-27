@@ -9,15 +9,15 @@ import pt.isel.daw.dawbattleshipgame.domain.state.*
 internal fun insertGame(handle: Handle, game: Game) {
     val winner = if (game is FinishedPhase) game.winner else null
     val playerTurn = if (game is BattlePhase) game.playersTurn else null
-    val resultBearing = handle.createUpdate(
+    handle.createUpdate(
         """
-                insert into GAME(id, player1, player2, winner, player_turn)
-                values(:id, :player1, :player2, :winner, :player_turn) 
-                returning id
+                insert into GAME(id, player1, player2, state, winner, player_turn)
+                values(:id, :player1, :player2, :state, :winner, :player_turn) 
             """
     )
         .bind("id", game.gameId)
         .bind("player1", game.player1)
+        .bind("state", game.state.dbName)
         .bind("player2", game.player2)
         .bind("winner", winner)
         .bind("player_turn", playerTurn)
@@ -29,26 +29,15 @@ internal fun createGame(handle : Handle, player1Id: Int, player2Id : Int){
 }
 
 internal fun insertBoards(handle: Handle, game: Game) {
-    val player1Board = when (game) {
-        is SinglePhase -> game.player1Game.board
-        is BattlePhase -> game.board1
-        is FinishedPhase -> game.board1
-    }
-
-    val player2Board = when (game) {
-        is SinglePhase -> game.player2Game.board
-        is BattlePhase -> game.board2
-        is FinishedPhase -> game.board2
-    }
-    insertBoard(handle, game.gameId, game.player1, player1Board)
-    insertBoard(handle, game.gameId, game.player2, player2Board)
+    insertBoard(handle, game.gameId, game.player1, game.board1)
+    insertBoard(handle, game.gameId, game.player2, game.board2)
 }
 
 internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
     handle.createUpdate(
         """
-                        insert into BOARD(game, _user)
-                        values(:game, :_user)
+                     insert into BOARD(game, _user)
+                     values(:game, :_user)
                     """
     )
         .bind("game", gameId)

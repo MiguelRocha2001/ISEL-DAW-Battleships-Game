@@ -174,6 +174,7 @@ class GameServices(
                     if (game.player1 == userId) Either.Right(game.board1)
                     else Either.Right(game.board2)
                 }
+                else -> TODO()
             }
         }
     }
@@ -195,6 +196,7 @@ class GameServices(
                     if (game.player1 == userId) Either.Right(game.board1)
                     else Either.Right(game.board1)
                 }
+                else -> TODO()
             }
         }
     }
@@ -225,6 +227,7 @@ class GameServices(
                 is FinishedPhase -> {
                     Either.Right(GameState.FINISHED)
                 }
+                else -> TODO()
             }
         }
     }

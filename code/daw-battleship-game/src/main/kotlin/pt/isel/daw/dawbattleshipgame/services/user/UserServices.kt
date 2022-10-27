@@ -7,6 +7,7 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.TokenEncoder
 
@@ -51,6 +52,13 @@ class UserServices(
             val token = userLogic.generateToken()
             usersRepository.createToken(user.id, tokenEncoder.createValidationInformation(token))
             Either.Right(token)
+        }
+    }
+
+    fun getUserRanking() : UserRankingResult {
+        return transactionManager.run {
+            val usersRepository = it.usersRepository
+            Either.Right(usersRepository.getUsersRanking())
         }
     }
 

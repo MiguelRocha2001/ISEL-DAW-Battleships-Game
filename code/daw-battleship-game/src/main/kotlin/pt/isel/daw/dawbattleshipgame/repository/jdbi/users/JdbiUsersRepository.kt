@@ -5,6 +5,7 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 import pt.isel.daw.dawbattleshipgame.repository.UsersRepository
 
 class JdbiUsersRepository(
@@ -29,6 +30,16 @@ class JdbiUsersRepository(
             .mapTo<Int>()
             .one()
             .toString()
+
+    override fun getUsersRanking(): List<UserRanking> {
+        return handle.createQuery(
+            """
+                select count(_user.id), count(winner = _user.id) from game
+                join _user on game.player1 = _user.id or game.player2 = _user.id
+                order by _user.id
+            """.trimIndent()
+        ).mapTo<UserRanking>().toList()
+    }
 
     override fun isUserStoredByUsername(username: String): Boolean =
         handle.createQuery("select count(*) from _USER where username = :username")
