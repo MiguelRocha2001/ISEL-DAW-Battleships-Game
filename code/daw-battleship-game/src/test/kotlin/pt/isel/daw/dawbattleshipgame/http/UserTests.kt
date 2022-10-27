@@ -111,7 +111,7 @@ class UserTests {
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
 
-        // when: creating an user
+        // when: creating a user
         // then: the response is a 201 with a proper Location header
         client.post().uri("/users")
             .bodyValue(
