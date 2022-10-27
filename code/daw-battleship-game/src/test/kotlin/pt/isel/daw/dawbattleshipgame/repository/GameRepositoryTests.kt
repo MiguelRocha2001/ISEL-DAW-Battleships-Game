@@ -22,17 +22,15 @@ class GameRepositoryTests {
     fun testCreateGame() {
         testWithTransactionManagerAndRollback { transactionManager ->
             transactionManager.run { transaction ->
-                val passwordValidationInfo1 = PasswordValidationInfo(passwordEncoder.encode("user1password"))
-                val passwordValidationInfo2 = PasswordValidationInfo(passwordEncoder.encode("user1password"))
+                val passwordValidationInfo1 = PasswordValidationInfo(passwordEncoder.encode("User1password"))
+                val passwordValidationInfo2 = PasswordValidationInfo(passwordEncoder.encode("User2password"))
                 val usersRepo = transaction.usersRepository
-                usersRepo.storeUser("user1", passwordValidationInfo1)
-                usersRepo.storeUser("user2", passwordValidationInfo2)
+                val player1Id = usersRepo.storeUser("user1", passwordValidationInfo1).toInt()
+                val player2Id = usersRepo.storeUser("user2", passwordValidationInfo2).toInt()
 
                 val gamesRepo = transaction.gamesRepository
                 resetGamesDatabase(gamesRepo) // clears all games
                 val gameId = generateGameId()
-                val player1Id = generateRandomId()
-                val player2Id = generateRandomId()
                 val configuration = getGameTestConfiguration()
                 val game = Game.newGame(gameId, player1Id, player2Id, configuration) // PreparationPhase
 

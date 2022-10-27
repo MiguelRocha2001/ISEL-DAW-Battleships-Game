@@ -55,7 +55,8 @@ class GameServices(
                 if (playerGame.isNotWaiting()) {
                     val newPlayerPreparationPhase = playerGame.logic.tryPlaceShip(ship, position, orientation)
                         ?: return@run Either.Left(PlaceShipError.InvalidMove)
-                    val newGame = game.copy(player1Game = newPlayerPreparationPhase)
+                    val newGame = if (game.player1 == userId) game.copy(player1Game = newPlayerPreparationPhase)
+                    else game.copy(player2Game = newPlayerPreparationPhase)
                     replaceGame(db, newGame)
                     return@run Either.Right(newGame.state)
                 }

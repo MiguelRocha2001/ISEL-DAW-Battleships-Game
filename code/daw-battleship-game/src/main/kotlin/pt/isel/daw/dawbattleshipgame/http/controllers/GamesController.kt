@@ -241,6 +241,7 @@ class GamesController(
         }
     }
 
+    /*
     @GetMapping(Uris.BATTLESHIPS_STATISTICS)
     fun getBattleshipsStatistics() {
         val res = gameServices.getBattleshipsStatistics()
@@ -254,4 +255,6 @@ class GamesController(
             }
         }
     }
+
+     */
 }

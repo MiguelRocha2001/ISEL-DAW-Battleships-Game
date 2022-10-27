@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.domain.warmup
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
@@ -133,6 +134,39 @@ class GameTestMultipleActions {
         assertNull(gameResult)
 
         println(gameResult)
+
+    }
+
+    @Test
+    fun place_rotate_ship_and_move() {
+        val game = Game.newGame(gameId, player1, player2, configuration).player1Game
+        val game1Result = game.logic.tryPlaceShip(ShipType.BATTLESHIP, Coordinate(2,3), Orientation.VERTICAL) ?: fail("Should have placed ship")
+        val game2Result = game1Result?.logic?.tryRotateShip(Coordinate(2,3)) ?: fail("Should have rotated ship")
+        assertEquals(
+            "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n" +
+                    "| 1 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 2 |    |    | [] | [] | [] | [] |    |    |    |    |\n" +
+                    "| 3 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 4 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 5 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 6 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 7 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 8 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 9 |    |    |    |    |    |    |    |    |    |    |\n" +
+                    "| 10|    |    |    |    |    |    |    |    |    |    |\n",
+            game2Result.toString()
+        )
+
+        game2Result.board.isShip(Coordinate(2,3))
+        game2Result.board.isShip(Coordinate(2,4))
+        game2Result.board.isShip(Coordinate(2,5))
+        game2Result.board.isShip(Coordinate(2,6))
+
+        val game3Result = game2Result.logic.tryMoveShip(Coordinate(2,3), Coordinate(3,3)) ?: fail("Should have moved ship")
+        game3Result.board.isShip(Coordinate(3,3))
+        game3Result.board.isShip(Coordinate(3,4))
+        game3Result.board.isShip(Coordinate(3,5))
+        game3Result.board.isShip(Coordinate(3,6))
 
     }
 

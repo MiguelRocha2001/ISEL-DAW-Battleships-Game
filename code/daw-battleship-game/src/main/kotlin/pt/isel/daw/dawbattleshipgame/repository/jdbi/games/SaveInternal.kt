@@ -47,7 +47,7 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
 }
 
 fun insertPanel(handle: Handle, gameId: Int, user: Int, board: List<Panel>) {
-    board.forEach{ panel ->
+    board.forEach { panel ->
         handle.createUpdate(
             """
                         insert into PANEL(game, _user, x, y, is_hit, type)
