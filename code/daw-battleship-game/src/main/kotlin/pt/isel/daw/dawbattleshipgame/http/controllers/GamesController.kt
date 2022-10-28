@@ -26,10 +26,10 @@ class GamesController(
         val res = gameServices.startGame(
             user.id,
             Configuration(
-                createGameInputModel.configuration.boardSize,
-                createGameInputModel.configuration.fleet.map { it.first.toShipType() to it.second }.toSet(),
-                createGameInputModel.configuration.nShotsPerRound,
-                createGameInputModel.configuration.roundTimeout
+                createGameInputModel.boardSize,
+                createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
+                createGameInputModel.nShotsPerRound,
+                createGameInputModel.roundTimeout
             )
         )
         return when (res) {

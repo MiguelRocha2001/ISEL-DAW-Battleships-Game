@@ -22,10 +22,10 @@ class AuthenticationInterceptor(
             return if (user == null) {
                 response.status = 401
                 response.addHeader(NAME_WWW_AUTHENTICATE_HEADER, AuthorizationHeaderProcessor.SCHEME)
-                false
+                false.also { logger.info("Request: ${request.method} ${request.requestURI} - Unauthorized") }
             } else {
                 UserArgumentResolver.addUserTo(user, request)
-                true
+                true.also { logger.info("Request: ${request.method} ${request.requestURI} - Authorized") }
             }
         }
 

@@ -18,7 +18,7 @@ class JdbiUsersRepository(
             .mapTo<User>()
             .singleOrNull()
 
-    override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): String =
+    override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): Int =
         handle.createUpdate(
             """
             insert into _USER (username, password_validation) values (:username, :password_validation)
@@ -29,7 +29,6 @@ class JdbiUsersRepository(
             .executeAndReturnGeneratedKeys()
             .mapTo<Int>()
             .one()
-            .toString()
 
     override fun getUsersRanking(): List<UserRanking> {
         return handle.createQuery(

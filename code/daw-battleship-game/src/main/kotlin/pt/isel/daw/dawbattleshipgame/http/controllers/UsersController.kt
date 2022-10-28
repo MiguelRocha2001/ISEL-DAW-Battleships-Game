@@ -6,14 +6,11 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildTokenRequestActions
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserCreateInputModel
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserCreateTokenInputModel
-import pt.isel.daw.dawbattleshipgame.http.model.user.TokenOutputModel
-import pt.isel.daw.dawbattleshipgame.http.model.user.UserHomeOutputModel
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
+import pt.isel.daw.dawbattleshipgame.http.model.user.*
 
 @RestController
 class UsersController(
@@ -24,10 +21,10 @@ class UsersController(
         val res = userService.createUser(input.username, input.password)
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
-                .header(
-                    "Location",
-                    Uris.userById(res.value).toASCIIString()
-                ).build<Unit>()
+                .body(siren(UserCreateOutputModel(res.value)) {
+                    link(Uris.userCreate(), Rels.SELF)
+                    link(Uris.createToken(), Rels.TOKEN)
+                })
             is Either.Left -> when (res.value) {
                 UserCreationError.InsecurePassword -> Problem.response(400, Problem.insecurePassword)
                 UserCreationError.UserAlreadyExists -> Problem.response(400, Problem.userAlreadyExists)

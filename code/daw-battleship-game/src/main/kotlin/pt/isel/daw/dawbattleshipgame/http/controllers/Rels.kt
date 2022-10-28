@@ -17,10 +17,7 @@ object Rels {
     val BATTLESHIPS_STATISTICS = LinkRelation("battleships-statistics")
 
     // ------------------- USERS -------------------
-    val LOGIN = LinkRelation("login")
-
-    val LOGOUT = LinkRelation("logout")
-
+    val TOKEN = LinkRelation("token")
     val REGISTER = LinkRelation("register")
 
     // ------------------- GAMES -------------------

@@ -7,7 +7,7 @@ sealed class UserCreationError {
     object UserAlreadyExists : UserCreationError()
     object InsecurePassword : UserCreationError()
 }
-typealias UserCreationResult = Either<UserCreationError, String>
+typealias UserCreationResult = Either<UserCreationError, Int>
 
 
 sealed class UserRankingError {

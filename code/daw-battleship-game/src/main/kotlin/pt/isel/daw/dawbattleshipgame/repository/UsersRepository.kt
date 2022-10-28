@@ -10,7 +10,7 @@ interface UsersRepository {
     fun storeUser(
         username: String,
         passwordValidation: PasswordValidationInfo,
-    ): String
+    ): Int
 
     fun getUsersRanking() : List<UserRanking>
 

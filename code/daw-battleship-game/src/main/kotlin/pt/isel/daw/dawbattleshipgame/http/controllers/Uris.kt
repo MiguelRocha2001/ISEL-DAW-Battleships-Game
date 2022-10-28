@@ -33,8 +33,9 @@ object Uris {
     fun userHome(): URI = URI(USER_HOME)
 
     // ------------------ USERS ------------------
+    fun userCreate() = URI(USERS_CREATE)
     fun userById(id: String) = UriTemplate(USERS_GET_BY_ID).expand(id)
-    fun login(): URI = URI(USERS_TOKEN)
+    fun createToken(): URI = URI(USERS_TOKEN)
     fun logout(): URI = URI(USERS_TOKEN)
     fun register(): URI = URI(USERS_CREATE)
 

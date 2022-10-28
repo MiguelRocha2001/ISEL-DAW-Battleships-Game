@@ -7,7 +7,7 @@ fun homeLinks() = listOf(
     Uris.home() to Rels.SELF,
     Uris.serverInfo() to Rels.SERVER_INFO,
     Uris.battleshipsStatistics() to Rels.BATTLESHIPS_STATISTICS,
-    Uris.login() to Rels.LOGIN,
+    Uris.createToken() to Rels.TOKEN,
     Uris.register() to Rels.REGISTER,
 )
 
