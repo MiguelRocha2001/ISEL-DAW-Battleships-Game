@@ -1,0 +1,2 @@
+This error happens when the client tries to perform a game action in an invalid state.
+For example, the fleet is still not confirmed, but the client tries to place a shot.

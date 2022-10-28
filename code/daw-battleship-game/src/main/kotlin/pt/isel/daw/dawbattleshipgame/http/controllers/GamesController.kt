@@ -40,9 +40,9 @@ class GamesController(
                     }
                 )
             is Either.Left -> when (res.value) {
-                GameCreationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
-                GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.toBeChanged)
-                GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.toBeChanged)
+                GameCreationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userAlreadyInQueue)
+                GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userAlreadyInGame)
             }
         }
     }
@@ -56,7 +56,7 @@ class GamesController(
                     links(gameByIdLinks(user.id))
                 })
             is Either.Left -> when (res.value) {
-                GameIdError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameIdError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }
@@ -79,9 +79,9 @@ class GamesController(
                     links(placeShipLinks(user.id))
                 })
             is Either.Left -> when (res.value) {
-                PlaceShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
-                PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
-                PlaceShipError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
+                PlaceShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                PlaceShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }
@@ -99,9 +99,9 @@ class GamesController(
                     links(moveShipLinks(user.id))
                 })
             is Either.Left -> when (res.value) {
-                MoveShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
-                MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
-                MoveShipError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
+                MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }
@@ -119,9 +119,9 @@ class GamesController(
                     links(rotateShipLinks(user.id))
                 })
             is Either.Left -> when (res.value) {
-                RotateShipError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
-                RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
-                RotateShipError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
+                RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }
@@ -138,8 +138,8 @@ class GamesController(
                     links(confirmFleet(user.id))
                 })
             is Either.Left -> when (res.value) {
-                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
-                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
+                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
             }
         }
     }
@@ -157,9 +157,9 @@ class GamesController(
                     links(placeShotLinks(user.id))
                 })
             is Either.Left -> when (res.value) {
-                PlaceShotError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
-                PlaceShotError.ActionNotPermitted -> Problem.response(405, Problem.toBeChanged)
-                PlaceShotError.InvalidMove -> Problem.response(405, Problem.toBeChanged)
+                PlaceShotError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                PlaceShotError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                PlaceShotError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }
@@ -176,7 +176,7 @@ class GamesController(
 
                 })
             is Either.Left -> when (res.value) {
-                GameSearchError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameSearchError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }
@@ -193,7 +193,7 @@ class GamesController(
 
                 })
             is Either.Left -> when (res.value) {
-                GameSearchError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameSearchError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }
@@ -210,7 +210,7 @@ class GamesController(
 
                 })
             is Either.Left -> when (res.value) {
-                GameStateError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameStateError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }
@@ -236,7 +236,7 @@ class GamesController(
                     buildBattleActions(this)
                 })
             is Either.Left -> when (res.value) {
-                GameError.GameNotFound -> Problem.response(404, Problem.toBeChanged)
+                GameError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }

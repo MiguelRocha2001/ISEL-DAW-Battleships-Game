@@ -1,0 +1,2 @@
+This error happens when the client requests to perform an action that is invalid.
+For example, the client tries to place a ship on top of other one.

@@ -21,7 +21,7 @@ import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 class GameServicesTests {
     val configuration = getGameTestConfiguration()
 
-    fun createUserPair(transactionManager: TransactionManager): Pair<Int, Int> {
+    private fun createUserPair(transactionManager: TransactionManager): Pair<Int, Int> {
 
         val userService = UserServices(
             transactionManager,
@@ -142,36 +142,36 @@ class GameServicesTests {
                 }
             }
         }
+    }
 
-        @Test
-        fun rotateAndMoveShip() {
-            testWithTransactionManagerAndRollback { transactionManager ->
+    @Test
+    fun rotateAndMoveShip() {
+        testWithTransactionManagerAndRollback { transactionManager ->
 
-                val userPair = createUserPair(transactionManager)
-                val gameServices = GameServices(transactionManager)
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
 
-                // Create Game
-                val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            // Create Game
+            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
-                // apply some actions with player_1
-                gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-                gameServices.rotateShip(userPair.first, Coordinate(2, 3))
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.rotateShip(userPair.first, Coordinate(2, 3))
 
-                when (val foundGame = gameServices.getGame(gameId)) {
-                    is Either.Left -> fail("Unexpected $foundGame")
-                    is Either.Right -> {
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(2, 3)))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(2, 4)))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(2, 5)))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(2, 6)))
-                        gameServices.moveShip(userPair.first, Coordinate(2, 3), Coordinate(3, 3))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(3, 3)))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(3, 4)))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(3, 5)))
-                        assertTrue(foundGame.value.board1.isShip(Coordinate(3, 6)))
-                    }
-                    //  assertTrue(foundGame.value.board1.isShip(Coordinate(2,3)))
+            when (val foundGame = gameServices.getGame(gameId)) {
+                is Either.Left -> fail("Unexpected $foundGame")
+                is Either.Right -> {
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(2, 3)))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(2, 4)))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(2, 5)))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(2, 6)))
+                    gameServices.moveShip(userPair.first, Coordinate(2, 3), Coordinate(3, 3))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 3)))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 4)))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 5)))
+                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 6)))
                 }
+                //  assertTrue(foundGame.value.board1.isShip(Coordinate(2,3)))
             }
         }
     }

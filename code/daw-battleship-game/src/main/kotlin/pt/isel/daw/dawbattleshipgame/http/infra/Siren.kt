@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.http.infra
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.http.HttpMethod
-import pt.isel.daw.tictactow.infra.LinkRelation
 import java.net.URI
 
 data class SirenModel<T>(

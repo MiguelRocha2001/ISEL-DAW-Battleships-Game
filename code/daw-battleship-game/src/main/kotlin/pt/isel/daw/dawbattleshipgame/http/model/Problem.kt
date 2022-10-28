@@ -31,24 +31,50 @@ class Problem(
             .body(problem)
 
         val userAlreadyExists = Problem(
-            URI("TODO"),
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-exists"),
             title = "User already exists",
             detail = "Try another name"
         )
         val insecurePassword = Problem(
-            URI("TODO"),
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/insecure-password"),
             title = "Insecure Password",
             detail = "Password needs at least 4 characters including one uppercase letter"
         )
 
         val userOrPasswordAreInvalid = Problem(
-            URI("TODO"),
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-or-password-are-invalid"),
             title = "Invalid credentials",
             detail = "Invalid name or password"
         )
 
-        val toBeChanged = Problem(
-            URI("TODO")
+        val userAlreadyInQueue = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-queue"),
+            title = "Invalid credentials",
+            detail = "Invalid name or password"
+        )
+
+        val userAlreadyInGame = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/game-not-found"),
+            title = "Invalid credentials",
+            detail = "Invalid name or password"
+        )
+
+        val gameNotFound = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/game-not-found"),
+            title = "Invalid credentials",
+            detail = "Invalid name or password"
+        )
+
+        val actionNotPermitted = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/action-not-permitted"),
+            title = "Invalid credentials",
+            detail = "Invalid name or password"
+        )
+
+        val invalidMove = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/action-not-permitted"),
+            title = "Invalid credentials",
+            detail = "Invalid name or password"
         )
     }
 }

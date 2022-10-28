@@ -1,6 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
-import pt.isel.daw.tictactow.infra.LinkRelation
+import pt.isel.daw.dawbattleshipgame.http.infra.LinkRelation
 
 object Rels {
 

@@ -1,0 +1,1 @@
+This error happens when the client requests to create a new user, but the credentials are already in use.

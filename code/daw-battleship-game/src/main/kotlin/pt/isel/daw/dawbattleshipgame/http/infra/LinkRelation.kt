@@ -1,4 +1,4 @@
-package pt.isel.daw.tictactow.infra
+package pt.isel.daw.dawbattleshipgame.http.infra
 
 @JvmInline
 value class LinkRelation(
