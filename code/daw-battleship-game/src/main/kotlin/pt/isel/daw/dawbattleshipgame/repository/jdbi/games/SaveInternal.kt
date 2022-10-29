@@ -2,13 +2,10 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.state.*
 
 internal fun insertGame(handle: Handle, game: Game) {
-    val winner = if (game is FinishedPhase) game.winner else null
-    val playerTurn = if (game is BattlePhase) game.playersTurn else null
     handle.createUpdate(
         """
                 insert into GAME(id, player1, player2, state, winner, player_turn)
@@ -19,8 +16,8 @@ internal fun insertGame(handle: Handle, game: Game) {
         .bind("player1", game.player1)
         .bind("state", game.state.dbName)
         .bind("player2", game.player2)
-        .bind("winner", winner)
-        .bind("player_turn", playerTurn)
+        .bind("winner", game.winner)
+        .bind("player_turn", game.playerTurn)
         .execute()
 }
 

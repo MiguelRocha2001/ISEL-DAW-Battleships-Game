@@ -5,7 +5,14 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipTypeOrNull
 
 
-data class DbGameMapper(val id: Int, val player1: Int, val player2: Int, val winner: Int?, val player_turn: Int?)
+data class DbGameMapper(
+    val id: Int,
+    val state: String,
+    val player1: Int,
+    val player2: Int,
+    val winner: Int?,
+    val player_turn: Int?
+    )
 
 data class DbBoardMapper(val game: Int, val _user: Int, val confirmed: Boolean, val grid : String)
 

@@ -5,8 +5,6 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
 import pt.isel.daw.dawbattleshipgame.domain.state.*
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
-import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerState
 
 
 internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
@@ -22,26 +20,16 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
         throw IllegalStateException("Game $gameId has no configuration")
 
     val configuration = buildConfiguration(dbConfigurationMapper, getDbShipMapper(handle, gameId))
-    val player1Board = Board(player1DbBoardMapper.grid)
-    val player2Board = Board(player2DbBoardMapper.grid)
+    val player1Board = Board(player1DbBoardMapper.grid, player1DbBoardMapper.confirmed)
+    val player2Board = Board(player2DbBoardMapper.grid, player2DbBoardMapper.confirmed)
 
-    when(getGameState(dbGameMapper)){
-        GameState.FINISHED -> {
-            return getEndPhase(dbGameMapper, configuration, player1Board, player2Board)
-        }
-        GameState.BATTLE -> {
-            return getBattlePhase(dbGameMapper, configuration, player1Board, player2Board)
-        }
-        GameState.FLEET_SETUP -> {
-            val player1Game = getPlayerPhase(dbGameMapper, configuration, player1Board, player1DbBoardMapper)
-            val player2Game = getPlayerPhase(dbGameMapper, configuration, player2Board, player2DbBoardMapper)
-            return SinglePhase(gameId, configuration,
-                dbGameMapper.player1, dbGameMapper.player2,
-                player1Game, player2Game
-            )
-        }
-        else -> return null
-    }
+    return Game(gameId, configuration,
+        dbGameMapper.player1, dbGameMapper.player2,
+        player1Board, player2Board,
+        dbGameMapper.state.getDbState(),
+        dbGameMapper.player_turn,
+        dbGameMapper.winner
+    )
 }
 
 private fun getGameIdBUser(handle: Handle, userId: Int): Int? {
@@ -100,34 +88,3 @@ private fun getDbShipMapper(handle: Handle, gameId: Int): List<DbShipMapper> {
         .mapTo<DbShipMapper>()
         .toList()
 }
-
-private fun getGameState(g : DbGameMapper): GameState {
-    return if(g.winner != null) GameState.FINISHED
-    else if(g.player_turn != null) GameState.BATTLE
-    else GameState.FLEET_SETUP
-}
-
-private fun getEndPhase(
-    dbGameMapper: DbGameMapper, configuration: Configuration,
-    p1Board: Board, p2Board: Board
-) = requireNotNull(dbGameMapper.winner).run { FinishedPhase(
-    dbGameMapper.id, configuration, dbGameMapper.player1,
-    dbGameMapper.player2, p1Board, p2Board, dbGameMapper.winner
-) }
-
-private fun getBattlePhase(
-    dbGameMapper: DbGameMapper, configuration: Configuration,
-    p1Board: Board, p2Board: Board
-) = requireNotNull(dbGameMapper.player_turn).run { BattlePhase(
-    configuration, dbGameMapper.id, dbGameMapper.player1,
-    dbGameMapper.player2, p1Board, p2Board
-) }
-
-private fun getPlayerPhase(
-    dbGameMapper: DbGameMapper, configuration: Configuration,
-    pBoard: Board, boardMapper: DbBoardMapper
-) = PlayerPhase(
-    dbGameMapper.id,configuration, boardMapper._user, pBoard,
-        if(boardMapper.confirmed) PlayerState.WAITING
-        else PlayerState.PREPARATION
-)

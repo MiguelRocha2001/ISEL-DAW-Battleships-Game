@@ -8,8 +8,8 @@ import kotlin.math.sqrt
 class Board {
     private val dimension : Int
     val board : List<Panel>
-    private val coordinates : Coordinates
-
+    val coordinates : Coordinates
+    private val confirmed : Boolean
 
     /**
      * Initiates the board with empty panels (Water Panels)
@@ -18,24 +18,31 @@ class Board {
         dimension = dim
         coordinates = Coordinates(dimension)
         board = coordinates.values().map { Panel(it) }
+        confirmed = false
     }
+
+    internal fun confirm() = Board(board, confirmed)
+
+    fun isConfirmed() = confirmed
 
     fun getDbString() = board.joinToString("") {
         it.getDbIcon().toString()
     }
 
-    constructor(board: List<Panel>) {
+    private constructor(board: List<Panel>, confirm: Boolean) {
         dimension = sqrt(board.size.toDouble()).toInt()
         coordinates = Coordinates(dimension)
         this.board = board
+        this.confirmed = confirm
     }
 
-    constructor(string: String){
+    constructor(string: String, confirm : Boolean = false){
         dimension = sqrt(string.length.toDouble()).toInt()
         coordinates = Coordinates(dimension)
         this.board = string.mapIndexed{ idx, char ->
             char.getPanel(coordinates.values()[idx])
         }
+        this.confirmed =  confirm
     }
 
     private operator fun List<Panel>.get(c: Coordinate): Panel {
@@ -68,7 +75,6 @@ class Board {
         coordinate.checkValid(dimension)
         .let { board[getIdx(coordinate)] }
 
-    private fun Coordinate.toIdx(){}
 
     /**
      * Check if list of panel is sunk in case every panel is hit
@@ -85,7 +91,7 @@ class Board {
             cs.forEach {
                 this[getIdx(it)] = Panel(it, shipType)
             }
-        })
+        }, confirmed)
 
     /**
      * Places a list of panels in the board
@@ -96,7 +102,7 @@ class Board {
             panel.forEach {
                 this[getIdx(it.coordinate)] = it
             }
-        })
+        }, confirmed)
 
     /**
      * Places a set of coordinates as water panels
@@ -107,7 +113,7 @@ class Board {
             cs.forEach {
                 this[getIdx(it)] = Panel(it, null, this[it].isHit)
             }
-        })
+        }, confirmed)
 
     /**
      * Check if coordinate is a ship
@@ -121,7 +127,9 @@ class Board {
     fun placeShot(c : Coordinate) =
         Board(board.toMutableList().apply {
             this[getIdx(c)] = this[c].hit()
-        })
+        }, confirmed)
+
+    fun allShipsSunk() = this.getShips().all { it.isSunk }
 
 
     /**

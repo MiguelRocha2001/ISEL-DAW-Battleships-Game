@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.state.Game
-import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 
 
@@ -21,10 +20,6 @@ class JdbiGamesRepository(
         insertGame(handle, game)
         insertBoards(handle, game)
         insertConfiguration(handle, game.gameId, game.configuration)
-    }
-
-    override fun savePreparationPhase(singlePhase: SinglePhase) {
-        saveGame(singlePhase)
     }
 
     override fun removeGame(gameId: Int) {
