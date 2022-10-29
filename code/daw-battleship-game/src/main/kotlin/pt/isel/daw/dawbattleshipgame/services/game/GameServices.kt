@@ -23,17 +23,17 @@ class GameServices(
             val gameDb = it.gamesRepository
             val userDb = it.usersRepository
             if (userDb.isAlreadyInQueue(userId)) {
-                Either.Left(GameCreationError.UserAlreadyInQueue)
+                return@run Either.Left(GameCreationError.UserAlreadyInQueue)
             }
             val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
                 userDb.insertInGameQueue(userId)
-                Either.Right(GameState.NOT_STARTED)
+                Either.Right(GameState.NOT_STARTED to null)
             } else {
                 userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.newGame(generateRandomId(), userWaiting, userId, configuration)
                 gameDb.saveGame(newGame)
-                Either.Right(newGame.state)
+                Either.Right(newGame.state to newGame.gameId)
             }
         }
     }

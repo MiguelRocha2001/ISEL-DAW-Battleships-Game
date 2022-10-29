@@ -10,28 +10,30 @@ import pt.isel.daw.dawbattleshipgame.domain.state.GameState
  */
 data class BattleshipsStatisticsOutputModel(val userStatus: List<Pair<String, Pair<Int, Int>>>)
 
-data class GameProperties(val gameState: GameStateOutputModel)
-
-data class BoardOutputModel(
-    val cells: Map<CoordinateModel, Pair<String, Boolean>>,
-    val nCells: Int
-)
+data class GameActionOutputModel(val state: GameStateOutputModel, val gameId: Int?)
 
 fun Board.toBoardOutputModel(): BoardOutputModel {
-    val cells = mutableMapOf<CoordinateModel, Pair<String, Boolean>>()
+    val cells = mutableMapOf<CoordinateModel, CoordinateContentOutputModel>()
     this.board.forEach { panel ->
         val coordinateModel = CoordinateModel(panel.coordinate.row, panel.coordinate.column)
         val shipType = panel.shipType
         val isHit = panel.isHit
-        cells[coordinateModel] = Pair(shipType.toString().lowercase(), isHit)
+        cells[coordinateModel] = CoordinateContentOutputModel(shipType.toString().lowercase(), isHit)
     }
     return BoardOutputModel(cells, this.board.size)
 }
+
+data class BoardOutputModel(
+    val cells: Map<CoordinateModel, CoordinateContentOutputModel>,
+    val nCells: Int
+)
 
 data class CoordinateModel(
     val l: Int,
     val c: Int
 )
+
+data class CoordinateContentOutputModel(val shipType: String, val isHit: Boolean)
 
 data class GameIdOutputModel(val gameId: Int)
 

@@ -11,9 +11,11 @@ fun homeLinks() = listOf(
     Uris.register() to Rels.REGISTER,
 )
 
-fun startGameLinks(userId: Int) = listOf(
+fun startGameLinks(gameId: Int?) = listOfNotNull(
     Uris.gameCreate() to Rels.SELF,
-    Uris.gameById(userId) to Rels.GAME_ID
+    if (gameId != null)
+        Uris.gameById(gameId) to Rels.GAME_ID
+    else null
 )
 
 fun gameByIdLinks(gameId: Int) = listOf(
@@ -41,7 +43,7 @@ fun placeShotLinks(gameId: Int) = listOf(
     Uris.gameInfo(gameId) to Rels.GAME_INFO,
 )
 
-fun confirmFleet(gameId: Int) = listOf(
+fun confirmFleetLinks(gameId: Int) = listOf(
     Uris.confirmFleet(gameId) to Rels.SELF,
     Uris.gameInfo(gameId) to Rels.GAME_INFO
 )

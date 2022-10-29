@@ -35,8 +35,8 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(
-                    siren(GameProperties(GameStateOutputModel.get(res.value))) {
-                        links(startGameLinks(user.id))
+                    siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
+                        links(startGameLinks(res.value.second))
                     }
                 )
             is Either.Left -> when (res.value) {
@@ -75,8 +75,8 @@ class GamesController(
         )
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameProperties(GameStateOutputModel.get(res.value))) {
-                    links(placeShipLinks(user.id))
+                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                    links(placeShipLinks(id))
                 })
             is Either.Left -> when (res.value) {
                 PlaceShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -95,8 +95,8 @@ class GamesController(
         val res = gameServices.moveShip(user.id, moveShipInputModel.origin, moveShipInputModel.destination)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameProperties(GameStateOutputModel.get(res.value))) {
-                    links(moveShipLinks(user.id))
+                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                    links(moveShipLinks(id))
                 })
             is Either.Left -> when (res.value) {
                 MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -115,8 +115,8 @@ class GamesController(
         val res = gameServices.rotateShip(user.id, coordinate)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameProperties(GameStateOutputModel.get(res.value))) {
-                    links(rotateShipLinks(user.id))
+                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                    links(rotateShipLinks(id))
                 })
             is Either.Left -> when (res.value) {
                 RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -134,8 +134,8 @@ class GamesController(
         val res = gameServices.confirmFleet(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameProperties(GameStateOutputModel.get(res.value))) {
-                    links(confirmFleet(user.id))
+                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                    links(confirmFleetLinks(id))
                 })
             is Either.Left -> when (res.value) {
                 FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -153,8 +153,8 @@ class GamesController(
         val res = gameServices.placeShot(user.id, coordinate)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameProperties(GameStateOutputModel.get(res.value))) {
-                    links(placeShotLinks(user.id))
+                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                    links(placeShotLinks(id))
                 })
             is Either.Left -> when (res.value) {
                 PlaceShotError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -218,9 +218,9 @@ class GamesController(
     @GetMapping(Uris.GAME_BY_ID)
     fun getGameInfo(
         user: User,
-        @PathVariable gameId: Int
+        @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getGame(gameId)
+        val res = gameServices.getGame(id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameOutputModel(

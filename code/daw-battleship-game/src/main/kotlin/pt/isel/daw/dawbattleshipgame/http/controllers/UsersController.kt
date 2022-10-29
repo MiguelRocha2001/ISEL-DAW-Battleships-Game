@@ -21,6 +21,10 @@ class UsersController(
         val res = userService.createUser(input.username, input.password)
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
+                .header(
+                    "Location",
+                    Uris.userById(res.value).toASCIIString()
+                )
                 .body(siren(UserCreateOutputModel(res.value)) {
                     link(Uris.userCreate(), Rels.SELF)
                     link(Uris.createToken(), Rels.TOKEN)

@@ -35,9 +35,9 @@ class GameServicesTests {
         // then: the creation is successful
         when (createUserResult) {
             is Either.Left -> fail("Unexpected $createUserResult")
-            is Either.Right -> assertTrue(createUserResult.value.isNotEmpty())
+            is Either.Right -> requireNotNull(createUserResult.value)
         }
-        val player1Test = createUserResult.value.toInt()
+        val player1Test = createUserResult.value
 
         // Create User
         val player2 = "user2"
@@ -45,7 +45,7 @@ class GameServicesTests {
         // then: the creation is successful
         when (createUserResult) {
             is Either.Left -> fail("Unexpected $createUserResult")
-            is Either.Right -> assertTrue(createUserResult.value.isNotEmpty())
+            is Either.Right -> requireNotNull(createUserResult.value)
         }
         val player2Test = createUserResult.value.toInt()
         return Pair(player1Test, player2Test)

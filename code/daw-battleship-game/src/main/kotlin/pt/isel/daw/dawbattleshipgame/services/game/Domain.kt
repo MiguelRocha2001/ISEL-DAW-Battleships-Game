@@ -10,7 +10,7 @@ sealed class GameCreationError: Error() {
     object UserAlreadyInGame : GameCreationError()
     object UserAlreadyInQueue : GameCreationError()
 }
-typealias GameCreationResult = Either<GameCreationError, GameState>
+typealias GameCreationResult = Either<GameCreationError, Pair<GameState, Int?>>
 
 sealed class PlaceShipError {
     object GameNotFound: PlaceShipError()
