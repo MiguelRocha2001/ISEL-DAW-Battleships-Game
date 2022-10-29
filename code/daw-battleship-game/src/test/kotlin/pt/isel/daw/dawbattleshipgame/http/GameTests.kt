@@ -13,25 +13,23 @@ import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GameTests {
+    // One of the very few places where we use property injection
+    @LocalServerPort
+    var port: Int = 0
+    // given: an HTTP client
+    val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
     @TestConfiguration
     class GameTestConfiguration {
 
     }
 
-    // One of the very few places where we use property injection
-    @LocalServerPort
-    var port: Int = 0
-
     /**
      * Creates a User and returns the token.
      * Also, asserts if the behavior is correct.
      */
     private fun createUser(): String {
-        // given: an HTTP client
-        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-
-        // and: a random user
+        // a random user
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
 
@@ -77,8 +75,6 @@ class GameTests {
         val configuration = getGameTestConfiguration()
         val player1Token = createUser()
         val player2Token = createUser()
-
-        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
@@ -130,6 +126,27 @@ class GameTests {
     @Test
     fun `can create an game`() {
         createGame()
+    }
+
+    @Test
+    fun `single user tries to create two games in a row`() {
+        val player1Token = createGame().second.first
+        val gameConfig = getGameTestConfiguration()
+
+        // player 1 will try to create a game, and will be put in the waiting list
+        client.post().uri("/games")
+            .bodyValue(
+                mapOf("configuration" to gameConfig)
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+            .jsonPath("type").isEqualTo(
+                "https://github.com/isel-leic-daw/s2223i-51d-51n-public/tree/main/code/" +
+                        "tic-tac-tow-service/docs/problems/user-already-exists"
+            )
     }
 
     @Test
