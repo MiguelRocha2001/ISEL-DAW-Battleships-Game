@@ -16,8 +16,6 @@ class GameTests {
     // One of the very few places where we use property injection
     @LocalServerPort
     var port: Int = 0
-    // given: an HTTP client
-    val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
     @TestConfiguration
     class GameTestConfiguration {
@@ -29,6 +27,9 @@ class GameTests {
      * Also, asserts if the behavior is correct.
      */
     private fun createUser(): String {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
         // a random user
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
@@ -71,7 +72,7 @@ class GameTests {
      * Also, asserts if the behavior is correct.
      * @return the game id along with the two tokens
      */
-    private fun createGame(): Pair<Int, Pair<String, String>> {
+    private fun createGame(client: WebTestClient): Pair<Int, Pair<String, String>> {
         val configuration = getGameTestConfiguration()
         val player1Token = createUser()
         val player2Token = createUser()
@@ -79,7 +80,18 @@ class GameTests {
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
             .bodyValue(
-                mapOf("configuration" to configuration)
+                "{\n" +
+                        "    \"boardSize\": 10,\n" +
+                        "    \"fleet\": {\n" +
+                        "        \"CARRIER\": 5,\n" +
+                        "        \"BATTLESHIP\": 4,\n" +
+                        "        \"CRUISER\": 3,\n" +
+                        "        \"SUBMARINE\": 3,\n" +
+                        "        \"DESTROYER\": 2\n" +
+                        "    },\n" +
+                        "    \"nShotsPerRound\": 10,\n" +
+                        "    \"roundTimeout\": 10\n" +
+                        "}"
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -88,7 +100,18 @@ class GameTests {
         // player 2 should be able to create a game
         client.post().uri("/games")
             .bodyValue(
-                mapOf("configuration" to configuration)
+                "{\n" +
+                        "    \"boardSize\": 10,\n" +
+                        "    \"fleet\": {\n" +
+                        "        \"CARRIER\": 5,\n" +
+                        "        \"BATTLESHIP\": 4,\n" +
+                        "        \"CRUISER\": 3,\n" +
+                        "        \"SUBMARINE\": 3,\n" +
+                        "        \"DESTROYER\": 2\n" +
+                        "    },\n" +
+                        "    \"nShotsPerRound\": 10,\n" +
+                        "    \"roundTimeout\": 10\n" +
+                        "}"
             )
             .header("Authorization", "Bearer $player2Token")
             .exchange()
@@ -125,12 +148,18 @@ class GameTests {
 
     @Test
     fun `can create an game`() {
-        createGame()
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        createGame(client)
     }
 
     @Test
     fun `single user tries to create two games in a row`() {
-        val player1Token = createGame().second.first
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val player1Token = createGame(client).second.first
         val gameConfig = getGameTestConfiguration()
 
         // player 1 will try to create a game, and will be put in the waiting list
@@ -151,10 +180,11 @@ class GameTests {
 
     @Test
     fun `can place ship`() {
-        val (gameId, tokens) = createGame()
-        val player1Token = tokens.first
-
+        // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val (gameId, tokens) = createGame(client)
+        val player1Token = tokens.first
 
         client.post().uri("/games/{id}/place-ship", gameId)
             .bodyValue(
