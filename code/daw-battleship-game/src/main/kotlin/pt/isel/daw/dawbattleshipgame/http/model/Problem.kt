@@ -24,7 +24,7 @@ class Problem(
     val type = type.toASCIIString()
 
     companion object {
-        const val MEDIA_TYPE = "application/problem+json"
+        private const val MEDIA_TYPE = "application/problem+json"
         fun response(status: Int, problem: Problem) = ResponseEntity
             .status(status)
             .header("Content-Type", MEDIA_TYPE)
@@ -54,7 +54,7 @@ class Problem(
         )
 
         val userAlreadyInGame = Problem(
-            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/game-not-found"),
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game"),
             title = "Invalid credentials",
             detail = "Invalid name or password"
         )

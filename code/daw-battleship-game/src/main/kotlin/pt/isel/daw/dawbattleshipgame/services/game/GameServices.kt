@@ -25,6 +25,9 @@ class GameServices(
             if (userDb.isAlreadyInQueue(userId)) {
                 return@run Either.Left(GameCreationError.UserAlreadyInQueue)
             }
+            if (gameDb.isInGame(userId)) {
+                return@run Either.Left(GameCreationError.UserAlreadyInGame)
+            }
             val userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
                 userDb.insertInGameQueue(userId)

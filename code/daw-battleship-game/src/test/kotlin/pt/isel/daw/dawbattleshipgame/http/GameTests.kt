@@ -6,9 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
+import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -73,46 +73,20 @@ class GameTests {
      * @return the game id along with the two tokens
      */
     private fun createGame(client: WebTestClient): Pair<Int, Pair<String, String>> {
-        val configuration = getGameTestConfiguration()
+        val gameConfig = getCreateGameInputModel()
         val player1Token = createUser()
         val player2Token = createUser()
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
-            .bodyValue(
-                "{\n" +
-                        "    \"boardSize\": 10,\n" +
-                        "    \"fleet\": {\n" +
-                        "        \"CARRIER\": 5,\n" +
-                        "        \"BATTLESHIP\": 4,\n" +
-                        "        \"CRUISER\": 3,\n" +
-                        "        \"SUBMARINE\": 3,\n" +
-                        "        \"DESTROYER\": 2\n" +
-                        "    },\n" +
-                        "    \"nShotsPerRound\": 10,\n" +
-                        "    \"roundTimeout\": 10\n" +
-                        "}"
-            )
+            .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isOk
 
         // player 2 should be able to create a game
         client.post().uri("/games")
-            .bodyValue(
-                "{\n" +
-                        "    \"boardSize\": 10,\n" +
-                        "    \"fleet\": {\n" +
-                        "        \"CARRIER\": 5,\n" +
-                        "        \"BATTLESHIP\": 4,\n" +
-                        "        \"CRUISER\": 3,\n" +
-                        "        \"SUBMARINE\": 3,\n" +
-                        "        \"DESTROYER\": 2\n" +
-                        "    },\n" +
-                        "    \"nShotsPerRound\": 10,\n" +
-                        "    \"roundTimeout\": 10\n" +
-                        "}"
-            )
+            .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isOk
@@ -155,27 +129,64 @@ class GameTests {
     }
 
     @Test
-    fun `single user tries to create two games in a row`() {
+    fun `user starts game correctly and then tries to start another one`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        val player1Token = createGame(client).second.first
-        val gameConfig = getGameTestConfiguration()
+        val users = createGame(client).second
+        val player1Token = users.first
+        val player2Token = users.second
+
+        val gameConfig = getCreateGameInputModel()
+
+        // player 1 tries to create another game
+        client.post().uri("/games")
+            .bodyValue(gameConfig)
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+            .jsonPath("type")
+            .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
+
+        // player 2 tries to create another game
+        client.post().uri("/games")
+            .bodyValue(gameConfig)
+            .header("Authorization", "Bearer $player2Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+            .jsonPath("type")
+            .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
+    }
+
+    @Test
+    fun `user requests to start game two times `() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val player1Token = createUser()
+        val gameConfig = getCreateGameInputModel()
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
-            .bodyValue(
-                mapOf("configuration" to gameConfig)
-            )
+            .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
-            .expectStatus().isBadRequest
+            .expectStatus().isOk
+
+        // player 1 will try to create a game, and will be put in the waiting list
+        client.post().uri("/games")
+            .bodyValue(gameConfig)
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
             .expectHeader().contentType("application/problem+json")
             .expectBody()
-            .jsonPath("type").isEqualTo(
-                "https://github.com/isel-leic-daw/s2223i-51d-51n-public/tree/main/code/" +
-                        "tic-tac-tow-service/docs/problems/user-already-exists"
-            )
+            .jsonPath("type")
+            .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-queue")
     }
 
     @Test
