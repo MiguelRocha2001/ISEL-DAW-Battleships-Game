@@ -7,11 +7,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.toShipTypeOrNull
 
 data class DbGameMapper(val id: Int, val player1: Int, val player2: Int, val winner: Int?, val player_turn: Int?)
 
-data class DbBoardMapper(val game: Int, val _user: Int, val confirmed: Boolean)
-
-data class DbPanelMapper(val game: Int, val _user: Int, val x: Int, val y:Int, val isHit : Boolean, val type : String) {
-    fun toPanel() = Panel(Coordinate(x,y), type.toShipTypeOrNull(), isHit)
-}
+data class DbBoardMapper(val game: Int, val _user: Int, val confirmed: Boolean, val grid : String)
 
 data class DbConfigurationMapper(val game: Int, val board_size: Int, val n_shots: Int, val timeout: Int)
 

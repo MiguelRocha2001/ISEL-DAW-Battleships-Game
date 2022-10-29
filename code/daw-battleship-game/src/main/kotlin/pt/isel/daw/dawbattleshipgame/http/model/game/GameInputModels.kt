@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
 
 data class CreateGameInputModel(
     val boardSize: Int,
@@ -46,7 +45,7 @@ enum class ShipTypeInputModel {
 fun ShipTypeInputModel.toShipType() = when (this) {
     ShipTypeInputModel.CARRIER -> ShipType.CARRIER
     ShipTypeInputModel.BATTLESHIP -> ShipType.BATTLESHIP
-    ShipTypeInputModel.CRUISER -> ShipType.CRUISER
+    ShipTypeInputModel.CRUISER -> ShipType.KRUISER
     ShipTypeInputModel.SUBMARINE -> ShipType.SUBMARINE
     ShipTypeInputModel.DESTROYER -> ShipType.DESTROYER
 }

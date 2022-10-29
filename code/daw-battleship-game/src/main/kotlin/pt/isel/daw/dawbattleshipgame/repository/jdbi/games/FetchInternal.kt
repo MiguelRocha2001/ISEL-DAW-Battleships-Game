@@ -18,15 +18,12 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val dbGameMapper = getDbGameMapper(handle, gameId) ?: return null
     val (player1DbBoardMapper, player2DbBoardMapper) = getDbBoardMapperMappers(handle, gameId)
 
-    val player1DbPanelMapperList = getDbPanelMapperMappers(handle, gameId, dbGameMapper.player1)
-    val player2DbPanelMapperList = getDbPanelMapperMappers(handle, gameId, dbGameMapper.player2)
-
     val dbConfigurationMapper = getDbConfigurationMapper(handle, gameId) ?:
         throw IllegalStateException("Game $gameId has no configuration")
 
     val configuration = buildConfiguration(dbConfigurationMapper, getDbShipMapper(handle, gameId))
-    val player1Board = buildBoard(player1DbPanelMapperList, dbConfigurationMapper.board_size)
-    val player2Board = buildBoard(player2DbPanelMapperList, dbConfigurationMapper.board_size)
+    val player1Board = Board(player1DbBoardMapper.grid)
+    val player2Board = Board(player2DbBoardMapper.grid)
 
     when(getGameState(dbGameMapper)){
         GameState.FINISHED -> {
@@ -60,10 +57,6 @@ private fun getGameIdBUser(handle: Handle, userId: Int): Int? {
     return dbGameMapper.id
 }
 
-private fun buildBoard(dbPanelMapperList: List<DbPanelMapper>, gameDim : Int): Board {
-    return Board(gameDim).placePanels(dbPanelMapperList.map { it.toPanel() })
-}
-
 private fun buildConfiguration(
     dbConfigurationMapper: DbConfigurationMapper,
     dbShipMapperList: List<DbShipMapper>
@@ -92,14 +85,6 @@ private fun getDbBoardMapperMappers(handle: Handle, gameId: Int): Pair<DbBoardMa
         throw IllegalStateException("Game $gameId has ${boards.size} boards")
     }
     return Pair(boards[0], boards[1])
-}
-
-private fun getDbPanelMapperMappers(handle: Handle, gameId: Int, userId: Int): List<DbPanelMapper> {
-    return handle.createQuery("select * from PANEL where game = :game and _user = :_user")
-        .bind("game", gameId)
-        .bind("_user", userId)
-        .mapTo<DbPanelMapper>()
-        .toList()
 }
 
 private fun getDbConfigurationMapper(handle: Handle, gameId: Int): DbConfigurationMapper? {

@@ -1,9 +1,13 @@
 package pt.isel.daw.dawbattleshipgame.domain.state
 
-import org.jetbrains.annotations.TestOnly
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
+import pt.isel.daw.dawbattleshipgame.domain.player.Player.*
+import pt.isel.daw.dawbattleshipgame.domain.state.GameState.*
 import pt.isel.daw.dawbattleshipgame.domain.state.single.PlayerPhase
 import java.util.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 enum class GameState {
     NOT_STARTED,

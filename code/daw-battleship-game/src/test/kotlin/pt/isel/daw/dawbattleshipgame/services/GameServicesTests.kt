@@ -35,9 +35,9 @@ class GameServicesTests {
         // then: the creation is successful
         when (createUserResult) {
             is Either.Left -> fail("Unexpected $createUserResult")
-            is Either.Right -> assertTrue(createUserResult.value.isNotEmpty())
+            is Either.Right -> requireNotNull(createUserResult.value)
         }
-        val player1Test = createUserResult.value.toInt()
+        val player1Test = createUserResult.value
 
         // Create User
         val player2 = "user2"
@@ -45,9 +45,9 @@ class GameServicesTests {
         // then: the creation is successful
         when (createUserResult) {
             is Either.Left -> fail("Unexpected $createUserResult")
-            is Either.Right -> assertTrue(createUserResult.value.isNotEmpty())
+            is Either.Right -> requireNotNull(createUserResult.value)
         }
-        val player2Test = createUserResult.value.toInt()
+        val player2Test = createUserResult.value
         return Pair(player1Test, player2Test)
     }
 
@@ -156,7 +156,12 @@ class GameServicesTests {
 
             // apply some actions with player_1
             gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            var game = gameServices.getGame(gameId) as Either.Right
+
+            println(game.value.board1.toString())
             gameServices.rotateShip(userPair.first, Coordinate(2, 3))
+            game = gameServices.getGame(gameId) as Either.Right
+            println(game.value.board1.toString())
 
             when (val foundGame = gameServices.getGame(gameId)) {
                 is Either.Left -> fail("Unexpected $foundGame")
@@ -166,10 +171,10 @@ class GameServicesTests {
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 5)))
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 6)))
                     gameServices.moveShip(userPair.first, Coordinate(2, 3), Coordinate(3, 3))
-                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 3)))
-                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 4)))
-                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 5)))
-                    assertTrue(foundGame.value.board1.isShip(Coordinate(3, 6)))
+                    assertFalse(foundGame.value.board1.isShip(Coordinate(3, 3)))
+                    assertFalse(foundGame.value.board1.isShip(Coordinate(3, 4)))
+                    assertFalse(foundGame.value.board1.isShip(Coordinate(3, 5)))
+                    assertFalse(foundGame.value.board1.isShip(Coordinate(3, 6)))
                 }
                 //  assertTrue(foundGame.value.board1.isShip(Coordinate(2,3)))
             }

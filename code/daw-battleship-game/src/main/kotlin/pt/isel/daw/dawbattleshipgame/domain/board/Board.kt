@@ -2,28 +2,47 @@ package pt.isel.daw.dawbattleshipgame.domain.board
 
 import pt.isel.daw.dawbattleshipgame.domain.ship.Ship
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.domain.ship.getPanel
 import kotlin.math.sqrt
 
 class Board {
     private val dimension : Int
     val board : List<Panel>
+    private val coordinates : Coordinates
+
 
     /**
      * Initiates the board with empty panels (Water Panels)
      */
     constructor(dim: Int) {
         dimension = dim
-        board = Coordinates(dim).values().map { Panel(it) }
+        coordinates = Coordinates(dimension)
+        board = coordinates.values().map { Panel(it) }
+    }
+
+    fun getDbString() = board.joinToString("") {
+        it.getDbIcon().toString()
     }
 
     constructor(board: List<Panel>) {
         dimension = sqrt(board.size.toDouble()).toInt()
+        coordinates = Coordinates(dimension)
         this.board = board
     }
 
-    internal operator fun List<Panel>.get(c: Coordinate): Panel {
+    constructor(string: String){
+        dimension = sqrt(string.length.toDouble()).toInt()
+        coordinates = Coordinates(dimension)
+        this.board = string.mapIndexed{ idx, char ->
+            char.getPanel(coordinates.values()[idx])
+        }
+    }
+
+    private operator fun List<Panel>.get(c: Coordinate): Panel {
         return board[getIdx(c)]
     }
+
+    operator fun get(i : Int) = board[i]
 
     private fun getIdx(c: Coordinate) = c.checkValid(dimension).let {
         (c.row - 1) * dimension + (c.column - 1)
@@ -49,7 +68,7 @@ class Board {
         coordinate.checkValid(dimension)
         .let { board[getIdx(coordinate)] }
 
-
+    private fun Coordinate.toIdx(){}
 
     /**
      * Check if list of panel is sunk in case every panel is hit
