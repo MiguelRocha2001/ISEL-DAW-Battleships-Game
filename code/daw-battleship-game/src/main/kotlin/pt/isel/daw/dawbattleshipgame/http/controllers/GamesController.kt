@@ -241,6 +241,22 @@ class GamesController(
         }
     }
 
+    @DeleteMapping(Uris.GAMES_DELETE)
+    fun deleteGame(
+        @PathVariable id: Int
+    ): ResponseEntity<*> {
+        val res = gameServices.deleteGame(id)
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(200)
+                .body(siren(res.value) {
+
+                })
+            is Either.Left -> when (res.value) {
+                DeleteGameError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+            }
+        }
+    }
+
     /*
     @GetMapping(Uris.BATTLESHIPS_STATISTICS)
     fun getBattleshipsStatistics() {

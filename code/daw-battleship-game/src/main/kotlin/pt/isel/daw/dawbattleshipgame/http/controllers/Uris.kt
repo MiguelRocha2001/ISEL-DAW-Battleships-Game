@@ -23,6 +23,7 @@ object Uris {
     const val GAMES_GET_MY_FLEET = "/games/{id}/my-fleet"
     const val GAMES_GET_OPPONENT_FLEET = "/games/{id}/opponent-fleet"
     const val GAMES_STATE = "/games/{id}/state"
+    const val GAMES_DELETE = "/games/{id}"
 
     const val SERVER_INFO = "/server-info"
     const val BATTLESHIPS_STATISTICS = "/battleships-statistics"

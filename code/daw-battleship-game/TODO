@@ -1,1 +1,1 @@
-Empty databases before tests
+Remove users after each integration/http test

@@ -125,7 +125,14 @@ class GameTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        createGame(client)
+        val gameId = createGame(client).first
+        deleteGame(client, gameId)
+    }
+
+    private fun deleteGame(client: WebTestClient, gameId: Int) {
+        client.delete().uri("/games/$gameId")
+            .exchange()
+            .expectStatus().isOk
     }
 
     @Test
@@ -133,7 +140,9 @@ class GameTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        val users = createGame(client).second
+        val game = createGame(client)
+        val gameId = game.first
+        val users = game.second
         val player1Token = users.first
         val player2Token = users.second
 
@@ -160,6 +169,8 @@ class GameTests {
             .expectBody()
             .jsonPath("type")
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
+
+        deleteGame(client, gameId)
     }
 
     @Test

@@ -162,4 +162,13 @@ class GameServices(
         db.removeGame(game.gameId)
         db.saveGame(game)
     }
+
+    fun deleteGame(id: Int): DeleteGameResult {
+        return transactionManager.run {
+            val db = it.gamesRepository
+            db.getGame(id) ?: return@run Either.Left(DeleteGameError.GameNotFound)
+            db.removeGame(id)
+            return@run Either.Right(Unit)
+        }
+    }
 }

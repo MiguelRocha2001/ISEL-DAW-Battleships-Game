@@ -65,3 +65,8 @@ sealed class GameError {
     object GameNotFound: GameError()
 }
 typealias GameResult = Either<GameError, Game>
+
+sealed class DeleteGameError {
+    object GameNotFound: DeleteGameError()
+}
+typealias DeleteGameResult = Either<DeleteGameError, Unit>
