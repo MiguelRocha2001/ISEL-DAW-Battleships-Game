@@ -127,6 +127,7 @@ class GameTests {
 
         val gameId = createGame(client).first
         deleteGame(client, gameId)
+        // TODO -> delete user
     }
 
     private fun deleteGame(client: WebTestClient, gameId: Int) {
@@ -171,6 +172,7 @@ class GameTests {
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
 
         deleteGame(client, gameId)
+        // TODO -> delete user
     }
 
     @Test
@@ -198,6 +200,8 @@ class GameTests {
             .expectBody()
             .jsonPath("type")
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-queue")
+
+        // TODO -> delete user
     }
 
     @Test
@@ -222,5 +226,8 @@ class GameTests {
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isOk
+
+        deleteGame(client, gameId)
+        // TODO -> delete user
     }
 }

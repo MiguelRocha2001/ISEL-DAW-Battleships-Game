@@ -1,1 +1,8 @@
-Remove users after each integration/http test
+- Usar DB especifica para testes;
+- Remove users after each integration/http test;
+- Fazer relatório;
+- Usar Docker;
+- Fazer testes ao Battle;
+- Fazer pedido de Rankigs;
+- Fazer pedido de Info so Server;
+- Implementar temporização nos pedidos.
