@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.state.Game
-import pt.isel.daw.dawbattleshipgame.domain.state.SinglePhase
+import pt.isel.daw.dawbattleshipgame.domain.state.GameState
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.*
 
@@ -43,19 +43,7 @@ class GameRepositoryTests {
                 assert(gameFromDb.configuration == configuration)
                 assert(gameFromDb.player1 == player1Id)
                 assert(gameFromDb.player2 == player2Id)
-                assert(gameFromDb is SinglePhase)
-                (gameFromDb as SinglePhase).let { preparationPhase ->
-                    (preparationPhase.player1Game).let {
-                        val player1PreparationPhase = it
-                        assert(player1PreparationPhase.playerId == player1Id)
-                        assert(player1PreparationPhase.board.toString() ==  player1PreparationPhase.board.toString())
-                    }
-                    (preparationPhase.player2Game).let {
-                        val player2PreparationPhase = it
-                        assert(player2PreparationPhase.playerId == player2Id)
-                        assert(player2PreparationPhase.board.toString() == player2PreparationPhase.board.toString())
-                    }
-                }
+                assert(gameFromDb.state == GameState.FLEET_SETUP)
             }
         }
     }

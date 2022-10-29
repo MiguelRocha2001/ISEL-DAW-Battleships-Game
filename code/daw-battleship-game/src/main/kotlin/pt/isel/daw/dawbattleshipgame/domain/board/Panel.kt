@@ -27,13 +27,4 @@ class Panel(
         else if (isHit) "x" else "  "
     }
 
-    fun getType() = when(shipType){
-            ShipType.KRUISER -> "cruiser"
-            ShipType.CARRIER -> "carrier"
-            ShipType.BATTLESHIP -> "battleship"
-            ShipType.SUBMARINE -> "submarine"
-            ShipType.DESTROYER -> "destroyer"
-            else -> "water"
-        }
-
 }
