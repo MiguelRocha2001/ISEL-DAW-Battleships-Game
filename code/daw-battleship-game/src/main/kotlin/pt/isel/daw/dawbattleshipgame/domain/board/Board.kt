@@ -21,10 +21,19 @@ class Board {
         confirmed = false
     }
 
-    internal fun confirm() = Board(board, confirmed)
+    /**
+     * Return new board confirmed
+     */
+    internal fun confirm() = Board(board, true)
 
+    /**
+     * Check whether board is confirmed or not (Player is waiting or Not)
+     */
     fun isConfirmed() = confirmed
 
+    /**
+     * Returns a string for the database representation
+     */
     fun getDbString() = board.joinToString("") {
         it.getDbIcon().toString()
     }
@@ -36,6 +45,9 @@ class Board {
         this.confirmed = confirm
     }
 
+    /**
+     * Initialize a board with a string from DB
+     */
     constructor(string: String, confirm : Boolean = false){
         dimension = sqrt(string.length.toDouble()).toInt()
         coordinates = Coordinates(dimension)
@@ -129,6 +141,10 @@ class Board {
             this[getIdx(c)] = this[c].hit()
         }, confirmed)
 
+
+    /**
+     * Check if all ships are sunk
+     */
     fun allShipsSunk() = this.getShips().all { it.isSunk }
 
 

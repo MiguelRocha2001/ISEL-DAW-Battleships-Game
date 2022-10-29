@@ -8,6 +8,18 @@ class Panel(
     val shipType: ShipType? = null,
     val isHit: Boolean = false,
 ){
+    /**
+     * Gets panel database representation conforming to this table:
+     * |----------------------------------|
+     * |-TYPE-     -IS_NOT_HIT-   -I_SHIT-|
+     * | null           ' '         'x'   |
+     * | CARRIER        'C'         'c'   |
+     * | BATTLESHIP     'B'         'b'   |
+     * | KRUISER        'K'         'k'   |
+     * | SUBMARINE      'S'         's'   |
+     * | DESTROYER      'D'         'd'   |
+     * |----------------------------------|
+     */
     fun getDbIcon(): Char {
         return shipType?.getIcon(isHit) ?:
         if(isHit) HIT else WATER
