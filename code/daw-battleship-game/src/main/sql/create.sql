@@ -29,7 +29,7 @@ create table GAME(
 
 create table CONFIGURATION(
     game int primary key,
-    board_size int not null,
+    board_size int not null check (board_size > 8 and board_size <= 15),
     n_shots int not null,
     timeout int not null,
     foreign key (game) references GAME(id)

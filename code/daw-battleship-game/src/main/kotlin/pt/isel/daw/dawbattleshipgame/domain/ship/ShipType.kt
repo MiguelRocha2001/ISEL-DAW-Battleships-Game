@@ -1,6 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.domain.ship
 
-import org.jetbrains.annotations.TestOnly
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 

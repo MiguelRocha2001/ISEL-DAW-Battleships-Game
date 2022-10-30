@@ -118,7 +118,10 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
 
 
 fun Game.confirmFleet(player: Player) =
-    this.updateBoard(getBoard(player).confirm(), player, GameState.BATTLE)
+    this.updateBoard(getBoard(player).confirm(), player,
+        if(getBoard(player.other()).isConfirmed()) GameState.BATTLE
+        else GameState.FLEET_SETUP
+    )
 
 /** ------------------------------------------ Auxiliary functions ---------------------------------------**/
 
