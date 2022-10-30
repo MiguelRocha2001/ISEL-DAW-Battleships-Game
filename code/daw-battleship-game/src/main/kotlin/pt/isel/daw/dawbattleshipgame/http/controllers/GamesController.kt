@@ -33,14 +33,15 @@ class GamesController(
             )
         )
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
+            is Either.Right ->
+                ResponseEntity.status(if (res.value.second != null) 201 else 202) // depends if the game was created
                 .body(
                     siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
                         links(startGameLinks(res.value.second))
                     }
                 )
             is Either.Left -> when (res.value) {
-                GameCreationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                GameCreationError.GameNotFound -> Problem.response(404, Problem.gameNotFound) // TODO: check if this is the correct error
                 GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userAlreadyInQueue)
                 GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userAlreadyInGame)
             }
@@ -74,7 +75,7 @@ class GamesController(
             placeShipInputModel.orientation.toOrientation()
         )
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
+            is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(placeShipLinks(id))
                 })
@@ -94,7 +95,7 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.moveShip(user.id, moveShipInputModel.origin, moveShipInputModel.destination)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
+            is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(moveShipLinks(id))
                 })
@@ -114,7 +115,7 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.rotateShip(user.id, coordinate)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
+            is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(rotateShipLinks(id))
                 })
@@ -133,7 +134,7 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.confirmFleet(user.id)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
+            is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(confirmFleetLinks(id))
                 })
@@ -152,7 +153,7 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.placeShot(user.id, coordinate)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
+            is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(placeShotLinks(id))
                 })
