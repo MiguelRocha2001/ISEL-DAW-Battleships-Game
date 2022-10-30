@@ -106,17 +106,6 @@ class Board {
         }, confirmed)
 
     /**
-     * Places a list of panels in the board
-     * @return a new Board with the panels affected
-     */
-    fun placePanels(panel : List<Panel>) =
-        Board(board.toMutableList().apply {
-            panel.forEach {
-                this[getIdx(it.coordinate)] = it
-            }
-        }, confirmed)
-
-    /**
      * Places a set of coordinates as water panels
      * @return a new Board with the panels affected
      */
@@ -165,17 +154,5 @@ class Board {
             it.coordinate
         }.toSet(), type, coordinates.checkSunk())
     }
-
-
-    /**
-     * Get ship from a coordinate
-     * @return a Ship
-     * @throws IllegalArgumentException if no ship is found
-     */
-    fun getShipFromCoordinate(c : Coordinate) : Ship{
-        val type = board[c].shipType ?: throw IllegalArgumentException("No ship found")
-        return getShipFromBoard(type) ?: throw IllegalArgumentException("No ship found")
-    }
-
 
 }

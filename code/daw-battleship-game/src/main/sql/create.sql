@@ -29,16 +29,17 @@ create table GAME(
 
 create table CONFIGURATION(
     game int primary key,
-    board_size int not null check (board_size > 8 and board_size <= 15),
-    n_shots int not null,
-    timeout int not null,
+    board_size int not null check (board_size >= 8 and board_size <= 15) default 10,
+    n_shots int not null default 1,
+    timeout int not null default 0,
     foreign key (game) references GAME(id)
+
 );
 
 create table BOARD(
     game int,
-    _user int not null,
-    confirmed boolean,
+    _user int,
+    confirmed boolean default false,
     grid varchar(225) not null,
     primary key (game, _user),
     foreign key (game) references GAME(id),
@@ -47,8 +48,11 @@ create table BOARD(
 
 create table SHIP(
     configuration int,
-    name varchar(20) not null,
+    name varchar(20) not null check (name in ('carrier', 'battleship', 'kruiser', 'submarine', 'destroyer')),
     length int,
     primary key (configuration, name),
     foreign key (configuration) references CONFIGURATION(game)
 );
+
+
+

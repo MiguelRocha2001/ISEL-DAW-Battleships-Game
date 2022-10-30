@@ -1,9 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
-import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.board.Panel
-import pt.isel.daw.dawbattleshipgame.domain.ship.toShipTypeOrNull
-
 
 data class DbGameMapper(
     val id: Int,

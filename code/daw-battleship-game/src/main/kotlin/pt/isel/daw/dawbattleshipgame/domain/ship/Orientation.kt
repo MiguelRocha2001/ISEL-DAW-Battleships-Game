@@ -7,7 +7,6 @@ enum class Orientation {
     companion object{
         fun random() = Orientation.values().random()
     }
-
     fun other() = if (this === HORIZONTAL) VERTICAL else HORIZONTAL
     fun isVertical() = this == VERTICAL
     fun isHorizontal() = this == HORIZONTAL

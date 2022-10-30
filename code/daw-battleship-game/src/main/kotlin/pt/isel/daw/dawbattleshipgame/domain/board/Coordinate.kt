@@ -7,21 +7,6 @@ const val ONE = 1
 
 /**
  * Converts, for example, "f4" to Coordinates(row: 4, column: 6).
- */
-fun String.toCoordinateOrNull(): Coordinate? {
-    val regex = Regex("^[a-zA-Z]\\d\\d?\$")
-    if(!regex.matches(this)) return null
-
-    val row = Regex("\\d\\d?")
-        .find(this)?.value ?: return null
-
-    val column = this.first().lowercaseChar() - 'a' + ONE
-
-    return Coordinate(row.toInt(), column)
-}
-
-/**
- * Converts, for example, "f4" to Coordinates(row: 4, column: 6).
  * @throws IllegalArgumentException if [this] is of wrong format
  */
 fun String.toCoordinate(): Coordinate {
