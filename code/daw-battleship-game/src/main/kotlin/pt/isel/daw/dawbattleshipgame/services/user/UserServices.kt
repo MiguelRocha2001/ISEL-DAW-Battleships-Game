@@ -77,4 +77,19 @@ class UserServices(
         passwordEncoder.encode("changeit")
         return Either.Left(TokenCreationError.UserOrPasswordAreInvalid)
     }
+
+    fun deleteUser(userId: Int): UserDeletionResult {
+        return transactionManager.run {
+            val usersRepository = it.usersRepository
+            val gamesRepository = it.gamesRepository
+            if (usersRepository.isUserStoredById(userId)) {
+                gamesRepository.removeUserFromGame(userId)
+                usersRepository.deleteToken(userId)
+                usersRepository.deleteUser(userId)
+                Either.Right(Unit)
+            } else {
+                Either.Left(UserDeletionError.UserDoesNotExist)
+            }
+        }
+    }
 }

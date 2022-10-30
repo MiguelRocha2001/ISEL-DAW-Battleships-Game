@@ -38,4 +38,12 @@ class JdbiGamesRepository(
     override fun emptyRepository() {
         clearAllTables(handle)
     }
+
+    override fun removeUserFromGame(userId: Int) {
+        handle.createUpdate("delete from user_queue where _user = :_user")
+            .bind("_user", userId)
+            .execute()
+        val game = getGameByUser(userId) ?: return
+        deleteGame(handle, game.gameId)
+    }
 }

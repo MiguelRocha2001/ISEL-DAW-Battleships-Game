@@ -26,7 +26,7 @@ class GameTests {
      * Creates a User and returns the token.
      * Also, asserts if the behavior is correct.
      */
-    private fun createUser(): String {
+    private fun createUser(): Pair<Int, String> {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
@@ -36,7 +36,7 @@ class GameTests {
 
         // when: creating a user
         // then: the response is a 201 with a proper Location header
-        client.post().uri("/users")
+        val siren = client.post().uri("/users")
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -48,6 +48,12 @@ class GameTests {
             .expectHeader().value("location") {
                 assertTrue(it.startsWith("/users/"))
             }
+            .expectBody(SirenModel::class.java)
+            .returnResult()
+            .responseBody ?: fail("Game id is null")
+
+        assertNotNull(siren)
+        val userId = (siren.properties as java.util.LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
 
         // when: creating a token
         // then: the response is a 200
@@ -64,18 +70,27 @@ class GameTests {
             .returnResult()
             .responseBody ?: fail("No response body")
 
-        return (result.properties as LinkedHashMap<String, String>)["token"] ?: fail("No token")
+        val token = (result.properties as LinkedHashMap<String, String>)["token"] ?: fail("No token")
+        return userId to token
 }
+
+    private data class GameInfo(val gameId: Int, val player1Id : Int, val player1Token: String, val player2Id : Int, val player2Token: String)
 
     /**
      * Creates two users and starts a game with them.
      * Also, asserts if the behavior is correct.
      * @return the game id along with the two tokens
      */
-    private fun createGame(client: WebTestClient): Pair<Int, Pair<String, String>> {
+    private fun createGame(client: WebTestClient): GameInfo {
         val gameConfig = getCreateGameInputModel()
-        val player1Token = createUser()
-        val player2Token = createUser()
+
+        val player1 = createUser()
+        val player1Id = player1.first
+        val player1Token = player1.second
+
+        val player2 = createUser()
+        val player2Id = player2.first
+        val player2Token = player2.second
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
@@ -117,7 +132,7 @@ class GameTests {
 
         assertEquals(gameId1, gameId2)
 
-        return gameId1 to (player1Token to player2Token)
+        return GameInfo(gameId1, player1Id, player1Token, player2Id, player2Token)
     }
 
     @Test
@@ -125,9 +140,14 @@ class GameTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        val gameId = createGame(client).first
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+
         deleteGame(client, gameId)
-        // TODO -> delete user
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
     }
 
     private fun deleteGame(client: WebTestClient, gameId: Int) {
@@ -141,11 +161,12 @@ class GameTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        val game = createGame(client)
-        val gameId = game.first
-        val users = game.second
-        val player1Token = users.first
-        val player2Token = users.second
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+        val player2Token = gameInfo.player2Token
 
         val gameConfig = getCreateGameInputModel()
 
@@ -172,7 +193,8 @@ class GameTests {
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
 
         deleteGame(client, gameId)
-        // TODO -> delete user
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
     }
 
     @Test
@@ -180,20 +202,22 @@ class GameTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        val player1Token = createUser()
+        val user = createUser()
+        val userId = user.first
+        val userToken = user.second
         val gameConfig = getCreateGameInputModel()
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $player1Token")
+            .header("Authorization", "Bearer $userToken")
             .exchange()
             .expectStatus().isOk
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $player1Token")
+            .header("Authorization", "Bearer $userToken")
             .exchange()
             .expectStatus().isEqualTo(405)
             .expectHeader().contentType("application/problem+json")
@@ -201,7 +225,7 @@ class GameTests {
             .jsonPath("type")
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-queue")
 
-        // TODO -> delete user
+        deleteUser(client, userId)
     }
 
     @Test
@@ -209,8 +233,11 @@ class GameTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        val (gameId, tokens) = createGame(client)
-        val player1Token = tokens.first
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
 
         client.post().uri("/games/{id}/place-ship", gameId)
             .bodyValue(
@@ -228,6 +255,7 @@ class GameTests {
             .expectStatus().isOk
 
         deleteGame(client, gameId)
-        // TODO -> delete user
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
     }
 }

@@ -19,3 +19,8 @@ sealed class TokenCreationError {
     object UserOrPasswordAreInvalid : TokenCreationError()
 }
 typealias TokenCreationResult = Either<TokenCreationError, String>
+
+sealed class UserDeletionError {
+    object UserDoesNotExist : UserDeletionError()
+}
+typealias UserDeletionResult = Either<UserDeletionError, Unit>

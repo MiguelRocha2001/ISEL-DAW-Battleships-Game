@@ -28,7 +28,7 @@ class UserTests {
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header
-        client.post().uri("/users")
+        val siren = client.post().uri("/users")
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -40,6 +40,15 @@ class UserTests {
             .expectHeader().value("location") {
                 assertTrue(it.startsWith("/users/"))
             }
+            .expectHeader().contentType("application/json")
+            .expectBody(SirenModel::class.java)
+            .returnResult()
+            .responseBody ?: fail("Game id is null")
+
+        assertNotNull(siren)
+        val userId = (siren.properties as java.util.LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
+
+        deleteUser(client, userId)
     }
 
     @Test
@@ -53,7 +62,7 @@ class UserTests {
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header
-        client.post().uri("/users")
+        val siren = client.post().uri("/users")
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -65,6 +74,13 @@ class UserTests {
             .expectHeader().value("location") {
                 assertTrue(it.startsWith("/users/"))
             }
+            .expectHeader().contentType("application/json")
+            .expectBody(SirenModel::class.java)
+            .returnResult()
+            .responseBody ?: fail("Game id is null")
+
+        assertNotNull(siren)
+        val userId = (siren.properties as java.util.LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
 
         // when: creating a token
         // then: the response is a 200
@@ -100,6 +116,8 @@ class UserTests {
             .exchange()
             .expectStatus().isUnauthorized
             .expectHeader().valueEquals("WWW-Authenticate", "bearer")
+
+        deleteUser(client, userId)
     }
 
     @Test
@@ -162,8 +180,5 @@ class UserTests {
             )
             .exchange()
             .expectStatus().isBadRequest
-            .expectHeader().contentType("application/problem+json")
-            .expectBody()
-
     }
 }

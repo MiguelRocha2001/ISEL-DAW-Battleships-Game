@@ -99,4 +99,23 @@ class JdbiUsersRepository(
         }
         return false
     }
+
+    override fun deleteUser(userId: Int) {
+        handle.createUpdate("delete from _USER where id = :id")
+            .bind("id", userId)
+            .execute()
+    }
+
+    override fun isUserStoredById(userId: Int): Boolean {
+        return handle.createQuery("select count(*) from _USER where id = :id")
+            .bind("id", userId)
+            .mapTo<Int>()
+            .single() != 0
+    }
+
+    override fun deleteToken(userId: Int) {
+        handle.createUpdate("delete from TOKEN where user_id = :user_id")
+            .bind("user_id", userId)
+            .execute()
+    }
 }

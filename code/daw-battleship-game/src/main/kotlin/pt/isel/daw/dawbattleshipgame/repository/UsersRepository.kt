@@ -25,4 +25,7 @@ interface UsersRepository {
     fun removeUserFromQueue(userWaiting: Int)
     fun isAlreadyInQueue(userId: Int): Boolean
     fun insertInGameQueue(userId: Int): Boolean
+    fun deleteUser(userId: Int)
+    fun isUserStoredById(userId: Int): Boolean
+    fun deleteToken(userId: Int)
 }

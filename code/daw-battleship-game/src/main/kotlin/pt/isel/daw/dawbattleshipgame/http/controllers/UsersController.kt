@@ -11,6 +11,7 @@ import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.user.*
+import pt.isel.daw.dawbattleshipgame.services.user.UserDeletionError
 
 @RestController
 class UsersController(
@@ -51,7 +52,7 @@ class UsersController(
         }
     }
 
-    @GetMapping(Uris.USERS_GET_BY_ID)
+    @GetMapping(Uris.USERS_BY_ID)
     fun getById(@PathVariable id: String) {
         TODO("TODO")
     }
@@ -62,5 +63,19 @@ class UsersController(
             id = user.id.toString(),
             username = user.username,
         )
+    }
+
+    @DeleteMapping(Uris.USERS_BY_ID)
+    fun deleteUser(@PathVariable id: Int): ResponseEntity<*> {
+        val res = userService.deleteUser(id)
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(204)
+                .body(siren(res.value) {
+
+                })
+            is Either.Left -> when (res.value) {
+                UserDeletionError.UserDoesNotExist -> Problem.response(400, Problem.userNotFound)
+            }
+        }
     }
 }
