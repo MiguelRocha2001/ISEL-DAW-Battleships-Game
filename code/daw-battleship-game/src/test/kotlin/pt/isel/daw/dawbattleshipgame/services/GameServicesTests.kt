@@ -63,12 +63,19 @@ class GameServicesTests {
         val gameCreationResult1 = gameService.startGame(player1, configuration)
         when (gameCreationResult1) {
             is Either.Left -> fail("Unexpected $gameCreationResult1")
-            is Either.Right -> assertEquals(gameCreationResult1.value, GameState.NOT_STARTED)
+            is Either.Right -> {
+                assertEquals(gameCreationResult1.value.first, GameState.NOT_STARTED)
+                assertNull(gameCreationResult1.value.second)
+            }
         }
         val gameCreationResult2 = gameService.startGame(player2, configuration)
         when (gameCreationResult2) {
             is Either.Left -> fail("Unexpected $gameCreationResult2")
-            is Either.Right -> assertEquals(gameCreationResult2.value, GameState.FLEET_SETUP)
+            is Either.Right -> {
+                assertEquals(gameCreationResult2.value.first, GameState.FLEET_SETUP)
+                assertNotNull(gameCreationResult2.value.second)
+            }
+
         }
         val user1GameIdResult = gameService.getGameIdByUser(player1)
         when (user1GameIdResult) {
@@ -181,10 +188,71 @@ class GameServicesTests {
         }
     }
 
-    fun confirmFleet(){//TODO
+    @Test
+    fun confirmFleet(){ //fixme corrigir teste
+        testWithTransactionManagerAndRollback { transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
+
+            // Create Game
+            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.HORIZONTAL)
+            gameServices.placeShip(userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.KRUISER, Coordinate(5, 9), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.first, ShipType.CARRIER, Coordinate(1, 5), Orientation.HORIZONTAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+
+
+            var game = gameServices.getGame(gameId) as Either.Right
+            assertEquals(game.value.state, GameState.FLEET_SETUP)
+
+            gameServices.confirmFleet(userPair.first) //TODO ESTE ESTADO NÃO DEVERIA SER  BATTLE,MAS SIM AINDA FLEET_SETUP(SO QUANDO O OUTRO CONFIRMAR É QUE MUDA)
+            game = gameServices.getGame(gameId) as Either.Right
+            assertEquals(game.value.state, GameState.FLEET_SETUP)
+
+
+            gameServices.confirmFleet(userPair.second)
+            game = gameServices.getGame(gameId) as Either.Right
+            assertEquals(game.value.state, GameState.BATTLE)
+
+
+        }
     }
 
-    fun placeShot(){//TODO
+    @Test
+    fun placeShot(){
+        testWithTransactionManagerAndRollback { transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
+
+            // Create Game
+            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+
+
+            //var game = gameServices.getGame(gameId) as Either.Right
+            gameServices.confirmFleet(userPair.first)
+            gameServices.confirmFleet(userPair.second)
+            var game = gameServices.getGame(gameId) as Either.Right
+
+            var x = gameServices.placeShot(userPair.first, Coordinate(1,1)) //fixme, se fizer place shot tenho obrigatoriamente de meter state == battle!!
+            x = gameServices.placeShot(userPair.second, Coordinate(2,2))
+            x = gameServices.placeShot(userPair.first, Coordinate(1,2))
+            x = gameServices.placeShot(userPair.second, Coordinate(4,1))
+            x = gameServices.placeShot(userPair.first, Coordinate(1,3))
+            x = gameServices.placeShot(userPair.second, Coordinate(5,1))
+            x = gameServices.placeShot(userPair.first, Coordinate(1,4))
+            x = gameServices.placeShot(userPair.second, Coordinate(1,4))
+            x = gameServices.placeShot(userPair.first, Coordinate(1,5))
+            game = gameServices.getGame(gameId) as Either.Right
+            val r = 1+1
+        }
     }
 
 
