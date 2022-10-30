@@ -29,12 +29,13 @@ internal fun insertBoards(handle: Handle, game: Game) {
 internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
     handle.createUpdate(
         """
-                     insert into BOARD(game, _user, grid)
-                     values(:game, :_user, :grid)
+                     insert into BOARD(game, _user, confirmed, grid)
+                     values(:game, :_user, :confirmed, :grid)
                     """
     )
         .bind("game", gameId)
         .bind("_user", user)
+        .bind("confirmed", board.confirmed)
         .bind("grid", board.getDbString())
         .execute()
 }

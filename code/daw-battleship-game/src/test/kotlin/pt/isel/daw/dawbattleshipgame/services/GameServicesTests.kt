@@ -207,18 +207,15 @@ class GameServicesTests {
 
 
             var game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(game.value.state, GameState.FLEET_SETUP)
+            assertEquals(GameState.FLEET_SETUP, game.value.state)
 
             gameServices.confirmFleet(userPair.first) //TODO ESTE ESTADO NÃO DEVERIA SER  BATTLE,MAS SIM AINDA FLEET_SETUP(SO QUANDO O OUTRO CONFIRMAR É QUE MUDA)
             game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(game.value.state, GameState.FLEET_SETUP)
-
+            assertEquals(GameState.FLEET_SETUP, game.value.state)
 
             gameServices.confirmFleet(userPair.second)
             game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(game.value.state, GameState.BATTLE)
-
-
+            assertEquals(GameState.BATTLE, game.value.state)
         }
     }
 
