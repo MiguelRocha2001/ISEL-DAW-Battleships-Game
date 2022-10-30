@@ -209,7 +209,7 @@ class GameServicesTests {
             var game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
 
-            gameServices.confirmFleet(userPair.first) //TODO ESTE ESTADO NÃO DEVERIA SER  BATTLE,MAS SIM AINDA FLEET_SETUP(SO QUANDO O OUTRO CONFIRMAR É QUE MUDA)
+            gameServices.confirmFleet(userPair.first)
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
 
@@ -238,31 +238,100 @@ class GameServicesTests {
             gameServices.confirmFleet(userPair.second)
             var game = gameServices.getGame(gameId) as Either.Right
 
-            var x = gameServices.placeShot(userPair.first, Coordinate(1,1)) //fixme, se fizer place shot tenho obrigatoriamente de meter state == battle!!
-            x = gameServices.placeShot(userPair.second, Coordinate(2,2))
-            x = gameServices.placeShot(userPair.first, Coordinate(1,2))
-            x = gameServices.placeShot(userPair.second, Coordinate(4,1))
-            x = gameServices.placeShot(userPair.first, Coordinate(1,3))
-            x = gameServices.placeShot(userPair.second, Coordinate(5,1))
-            x = gameServices.placeShot(userPair.first, Coordinate(1,4))
-            x = gameServices.placeShot(userPair.second, Coordinate(1,4))
-            x = gameServices.placeShot(userPair.first, Coordinate(1,5))
+            var x = gameServices.placeShot(userPair.first, Coordinate(1,1))
+            gameServices.placeShot(userPair.second, Coordinate(2,2))
+            gameServices.placeShot(userPair.first, Coordinate(2,1))
+            gameServices.placeShot(userPair.second, Coordinate(4,1))
+            gameServices.placeShot(userPair.first, Coordinate(3,1))
+            gameServices.placeShot(userPair.second, Coordinate(5,1))
+            gameServices.placeShot(userPair.first, Coordinate(4,1))
+            gameServices.placeShot(userPair.second, Coordinate(1,4))
+            gameServices.placeShot(userPair.first, Coordinate(5,1))  //fixme tiros estão a ir contra proprios barcos
             game = gameServices.getGame(gameId) as Either.Right
-            val r = 1+1
+            assertEquals(GameState.FINISHED,game.value.state)
+            assertEquals(userPair.first ,game.value.winner)
         }
     }
 
+@Test
+    fun getMyAndOpponentFleetLayout() { //FIXME NEEDS FIXING TEST
+        testWithTransactionManagerAndRollback { transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
 
-    fun getMyFleetLayout(){//TODO
+            // Create Game
+            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+
+            val myGameFirst = gameServices.getMyFleetLayout(userPair.first)
+            val myGameSecond = gameServices.getOpponentFleet(userPair.first)
+            val x = gameServices.confirmFleet(userPair.first)
+        }
     }
 
-    fun getOpponentFleet(){//TODO
+    @Test
+    fun getGameState(){
+        testWithTransactionManagerAndRollback { transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
+
+            // Create Game
+            createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+
+            var gameStateFirst = gameServices.getGameState(userPair.first) as Either.Right
+            var gameStateSecond = gameServices.getGameState(userPair.first) as Either.Right
+            assertEquals(GameState.FLEET_SETUP, gameStateFirst.value)
+            assertEquals(GameState.FLEET_SETUP, gameStateSecond.value)
+
+            gameServices.confirmFleet(userPair.first)
+            gameServices.confirmFleet(userPair.second)
+
+            gameStateFirst = gameServices.getGameState(userPair.first) as Either.Right
+            gameStateSecond = gameServices.getGameState(userPair.first) as Either.Right
+            assertEquals(GameState.BATTLE, gameStateFirst.value)
+            assertEquals(GameState.BATTLE, gameStateSecond.value)
+
+
+        }
     }
 
-    fun getGameState(){//TODO
-    }
+    @Test
+    fun getGame(){
+        testWithTransactionManagerAndRollback { transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
 
-    fun getGame(){//TODO
+            // Create Game
+            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+
+            var game = gameServices.getGame(gameId) as Either.Right
+            assertEquals(GameState.FLEET_SETUP, game.value.state)
+            assertTrue(game.value.board1.isShip(Coordinate(2,3)))
+            assertEquals(ShipType.BATTLESHIP, game.value.board1.getShips().first().type)
+            assertEquals(userPair.first, game.value.player1)
+
+
+            assertTrue(game.value.board2.isShip(Coordinate(1,1)))
+            assertEquals(ShipType.CARRIER, game.value.board2.getShips().first().type)
+            assertEquals(userPair.second, game.value.player2)
+
+            gameServices.confirmFleet(userPair.first)
+            gameServices.confirmFleet(userPair.second)
+
+            game = gameServices.getGame(gameId) as Either.Right
+            assertEquals(GameState.BATTLE, game.value.state)
+        }
     }
 
 
