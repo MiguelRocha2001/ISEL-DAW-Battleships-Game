@@ -97,14 +97,14 @@ class GameTests {
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus().isAccepted
 
         // player 2 should be able to create a game
         client.post().uri("/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus().isCreated
 
         // player 1 should be able to get the game
         val gameId1Siren = client.get().uri("/games/current")
@@ -212,7 +212,7 @@ class GameTests {
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $userToken")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus().isAccepted
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri("/games")
@@ -252,7 +252,7 @@ class GameTests {
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
-            .expectStatus().isOk
+            .expectStatus().isCreated
 
         deleteGame(client, gameId)
         deleteUser(client, player1Id)
