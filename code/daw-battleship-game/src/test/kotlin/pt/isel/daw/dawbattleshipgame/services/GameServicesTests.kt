@@ -238,15 +238,23 @@ class GameServicesTests {
             gameServices.confirmFleet(userPair.second)
             var game = gameServices.getGame(gameId) as Either.Right
 
-            var x = gameServices.placeShot(userPair.first, Coordinate(1,1))
+            //place all the shots with the objective of sinking all player two ships
+            gameServices.placeShot(userPair.first, Coordinate(1,1))
             gameServices.placeShot(userPair.second, Coordinate(2,2))
             gameServices.placeShot(userPair.first, Coordinate(2,1))
             gameServices.placeShot(userPair.second, Coordinate(4,1))
             gameServices.placeShot(userPair.first, Coordinate(3,1))
-            gameServices.placeShot(userPair.second, Coordinate(5,1))
+            gameServices.placeShot(userPair.second, Coordinate(5,3))
             gameServices.placeShot(userPair.first, Coordinate(4,1))
             gameServices.placeShot(userPair.second, Coordinate(1,4))
-            gameServices.placeShot(userPair.first, Coordinate(5,1))  //fixme tiros estão a ir contra proprios barcos
+
+            //game before last shot
+            game = gameServices.getGame(gameId) as Either.Right
+
+            val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1))  as Either.Right //fixme O barco não morre,esta ultima posição continua a ser ship
+            assertEquals(GameState.FINISHED, gameResult.value)
+
+            //game after last shot
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FINISHED,game.value.state)
             assertEquals(userPair.first ,game.value.winner)
@@ -264,11 +272,28 @@ class GameServicesTests {
 
             // apply some actions with player_1
             gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.first, ShipType.KRUISER, Coordinate(5, 5), Orientation.VERTICAL)
             gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL)
 
-            val myGameFirst = gameServices.getMyFleetLayout(userPair.first)
-            val myGameSecond = gameServices.getOpponentFleet(userPair.first)
-            val x = gameServices.confirmFleet(userPair.first)
+            val boardGameSecond = gameServices.getOpponentFleet(userPair.first) as Either.Right
+
+            gameServices.confirmFleet(userPair.first)
+            val boardGameFirst = gameServices.getMyFleetLayout(userPair.first) as Either.Right
+            //check if the ships are in the right place
+            assertTrue(boardGameFirst.value.isShip(Coordinate(2, 3)))
+            assertTrue(boardGameFirst.value.isShip(Coordinate(5, 5)))
+            assertTrue(boardGameSecond.value.isShip(Coordinate(1, 1)))
+            assertTrue(boardGameSecond.value.isShip(Coordinate(5, 5)))
+
+            //check the confirmation of the fleet
+            assertTrue(boardGameFirst.value.confirmed)
+            assertFalse(boardGameSecond.value.confirmed)
+
+            //check if all the ships are included
+            assertTrue(boardGameFirst.value.getShips().size == 2)
+            assertTrue(boardGameSecond.value.getShips().size == 2)
+
         }
     }
 
