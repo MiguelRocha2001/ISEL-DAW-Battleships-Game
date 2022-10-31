@@ -1,8 +1,8 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState.*
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import java.util.*
 
 enum class GameState {

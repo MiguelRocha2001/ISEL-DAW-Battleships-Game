@@ -8,10 +8,10 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices

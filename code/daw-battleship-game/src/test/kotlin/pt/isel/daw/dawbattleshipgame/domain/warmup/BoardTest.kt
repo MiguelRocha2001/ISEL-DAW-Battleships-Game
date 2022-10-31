@@ -1,8 +1,8 @@
 package pt.isel.daw.dawbattleshipgame.domain.warmup
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import org.junit.jupiter.api.Assertions.assertEquals
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 

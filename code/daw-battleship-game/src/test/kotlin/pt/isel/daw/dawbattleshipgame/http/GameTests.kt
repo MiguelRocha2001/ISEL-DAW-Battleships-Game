@@ -6,9 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
+import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

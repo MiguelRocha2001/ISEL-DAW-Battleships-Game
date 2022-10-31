@@ -8,7 +8,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserTests {

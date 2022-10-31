@@ -4,15 +4,15 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
+import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.services.game.*
-import pt.isel.daw.dawbattleshipgame.http.infra.siren
 
 @RestController
 class GamesController(
@@ -262,20 +262,4 @@ class GamesController(
             }
         }
     }
-
-    /*
-    @GetMapping(Uris.BATTLESHIPS_STATISTICS)
-    fun getBattleshipsStatistics() {
-        val res = gameServices.getBattleshipsStatistics()
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
-                .body(siren(BattleshipsStatisticsOutputModel()) {
-
-                })
-            is Either.Left -> when (res.value) {
-
-            }
-        }
-    }
-     */
 }

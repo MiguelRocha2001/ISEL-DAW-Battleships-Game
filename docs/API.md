@@ -71,6 +71,17 @@ The server responds with a 204 No Content status code.
 Otherwise, the server could respond with a 400 User Not Found error code.
 </p><br>
 
+#### GET /user/statistics
+<p>
+
+Requests the server to return the user's statistics.
+The server responds with a 200 OK status code and the statistics in the body. This include a list of the user's games, with the following information:
+- username
+- wins
+- number of games
+</p><br>
+
+
 
 ### Games
 

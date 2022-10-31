@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
-import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
 data class ServerInfo(
@@ -13,13 +12,9 @@ data class ServerInfo(
     val systemVersion: String = "1.0.0",
 )
 
-sealed class ServerInfoError: Error() {
-}
-typealias ServerInfoResult = Either<ServerInfoError, ServerInfo>
-
 @Component
 class InfoServices(
     private val transactionManager: TransactionManager,
 ) {
-    fun getServerInfo(): ServerInfoResult = Either.Right(ServerInfo())
+    fun getServerInfo(): ServerInfo = ServerInfo()
 }

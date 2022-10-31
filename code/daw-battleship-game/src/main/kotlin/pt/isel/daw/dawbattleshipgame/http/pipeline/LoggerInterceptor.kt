@@ -4,8 +4,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
-import pt.isel.daw.dawbattleshipgame.domain.player.User
-
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
