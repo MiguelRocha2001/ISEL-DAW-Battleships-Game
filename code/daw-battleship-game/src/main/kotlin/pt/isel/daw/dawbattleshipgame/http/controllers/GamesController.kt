@@ -34,7 +34,7 @@ class GamesController(
         )
         return when (res) {
             is Either.Right ->
-                ResponseEntity.status(if (res.value.second != null) 201 else 202) // depends if the game was created
+                ResponseEntity.status(if (res.value.second != null) 201 else 202) // It depends if the game was created
                     .body(
                         siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
                             links(startGameLinks(res.value.second))
@@ -277,6 +277,5 @@ class GamesController(
             }
         }
     }
-
      */
 }

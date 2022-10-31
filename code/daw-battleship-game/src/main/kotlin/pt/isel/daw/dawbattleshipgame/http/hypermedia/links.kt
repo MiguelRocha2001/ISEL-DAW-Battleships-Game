@@ -15,7 +15,8 @@ fun startGameLinks(gameId: Int?) = listOfNotNull(
     Uris.gameCreate() to Rels.SELF,
     if (gameId != null)
         Uris.gameById(gameId) to Rels.GAME_ID
-    else null
+    else
+        Uris.currentGameId() to Rels.GAME_ID
 )
 
 fun gameByIdLinks(gameId: Int) = listOf(
