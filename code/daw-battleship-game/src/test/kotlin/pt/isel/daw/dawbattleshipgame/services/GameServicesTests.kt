@@ -13,6 +13,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
+import pt.isel.daw.dawbattleshipgame.services.game.GameError
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 import pt.isel.daw.dawbattleshipgame.utils.Sha256TokenEncoder
@@ -360,6 +361,28 @@ class GameServicesTests {
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.BATTLE, game.value.state)
         }
+    }
+
+    @Test
+    fun delete_game(){
+      testWithTransactionManagerAndRollback {
+        transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
+
+            // Create Game
+            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+
+            gameServices.deleteGame(gameId) as Either.Right
+
+            val game = gameServices.getGame(gameId) as Either.Left
+            assertEquals(GameError.GameNotFound, game.value)
+
+      }
     }
 
 

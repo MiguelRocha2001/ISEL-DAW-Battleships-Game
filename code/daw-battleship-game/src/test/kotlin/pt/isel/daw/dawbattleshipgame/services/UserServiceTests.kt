@@ -153,4 +153,24 @@ class UserServiceTests {
         }
     }
 
+    @Test //FIXME: This test is not working
+    fun rankings_of_users_with_no_games(){//TODO: Create a test for the ranking of users with games
+        testWithTransactionManagerAndRollback {
+            val userService = UserServices(
+                it,
+                UserLogic(),
+                BCryptPasswordEncoder(),
+                Sha256TokenEncoder(),
+            )
+            userService.createUser("user1", "Password1") as Either.Right
+            userService.createUser("user2", "Password2") as Either.Right
+            userService.createUser("user3", "Password3") as Either.Right
+
+            val rankings = userService.getUserRanking()
+            assertEquals(3, rankings.size)
+            assertEquals(0, rankings[0].wins)
+            assertTrue(rankings[0].username == "user1" || rankings[0].username == "user2" || rankings[0].username == "user3")
+        }
+    }
+
 }
