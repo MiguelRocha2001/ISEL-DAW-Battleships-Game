@@ -26,7 +26,7 @@ object Uris {
     const val GAMES_DELETE = "/games/{id}"
 
     const val SERVER_INFO = "/server-info"
-    const val BATTLESHIPS_STATISTICS = "/battleships-statistics"
+    const val USERS_STATS = "/user/statistics"
 
     fun home(): URI = URI(HOME)
     fun info(): URI = URI(SERVER_INFO)
@@ -38,15 +38,17 @@ object Uris {
     fun createToken(): URI = URI(USERS_TOKEN)
     fun logout(): URI = URI(USERS_TOKEN)
     fun register(): URI = URI(USERS_CREATE)
+    fun usersStats(): URI = URI(USERS_STATS)
 
     // ------------------ SERVER ------------------
     fun serverInfo(): URI = URI(SERVER_INFO)
-    fun battleshipsStatistics(): URI = URI(BATTLESHIPS_STATISTICS)
+    fun battleshipsStatistics(): URI = URI(USERS_STATS)
 
     // ------------------ GAMES ------------------
     fun gameCreate() = URI(GAMES_CREATE)
     fun gameById(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
     fun gameInfo(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
+    fun currentGameId(): URI = URI(GAMES_GET_GAME_ID)
 
     fun placeShip(gameId: Int) = UriTemplate(GAMES_PLACE_SHIP).expand(gameId)
     fun moveShip(gameId: Int) = UriTemplate(GAMES_MOVE_SHIP).expand(gameId)

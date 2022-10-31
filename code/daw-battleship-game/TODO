@@ -1,9 +1,9 @@
 - Usar DB especifica para testes;
-- Fazer relatório;
 - Usar Docker;
 - Fazer testes ao Battle;
 - Fazer pedido de Rankigs;
 - Fazer pedido de Info so Server;
 - Implementar temporização nos pedidos;
 - Nas funçoes de interaçao com o jogo, estamos a pedir o gameId mas nao estamos a usar. Rever isso;
-- Mesmo que os testes http falhem, apagar os users e games criados
+- Mesmo que os testes http falhem, apagar os users e games criados;
+- Rever uris;

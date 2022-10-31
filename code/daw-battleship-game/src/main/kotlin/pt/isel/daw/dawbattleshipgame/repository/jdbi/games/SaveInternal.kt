@@ -2,8 +2,9 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.domain.game.*
 
 internal fun insertGame(handle: Handle, game: Game) {
     handle.createUpdate(

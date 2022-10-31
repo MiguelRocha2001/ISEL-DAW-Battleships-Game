@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.utils
 
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.http.model.game.CreateGameInputModel
 import pt.isel.daw.dawbattleshipgame.http.model.game.ShipTypeInputModel
 

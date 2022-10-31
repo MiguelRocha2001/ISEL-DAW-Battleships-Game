@@ -1,12 +1,14 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
-import pt.isel.daw.dawbattleshipgame.domain.board.*
+import pt.isel.daw.dawbattleshipgame.domain.board.Board
+import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.board.CoordinateSet
+import pt.isel.daw.dawbattleshipgame.domain.board.moveFromTo
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.getOrientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
-import kotlin.collections.first
 
 /**
  * Tries to place [shipType] on the Board, on give in [position].

@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.moveShip
 import pt.isel.daw.dawbattleshipgame.domain.game.placeShip
 import pt.isel.daw.dawbattleshipgame.domain.game.rotateShip
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 

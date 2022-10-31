@@ -2,8 +2,8 @@ package pt.isel.daw.dawbattleshipgame.http.hypermedia.actions
 
 import org.springframework.http.HttpMethod
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
-import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
+import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
 import java.net.URI
 
 fun buildHomeActions(sirenBuilderScope: SirenBuilderScope<HomeOutputModel>) {

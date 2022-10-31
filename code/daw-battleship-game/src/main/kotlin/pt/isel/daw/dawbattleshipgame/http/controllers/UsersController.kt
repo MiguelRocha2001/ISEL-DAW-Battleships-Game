@@ -5,13 +5,15 @@ import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildTokenRequestActions
+import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
+import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatsOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.user.*
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
-import pt.isel.daw.dawbattleshipgame.services.user.UserServices
-import pt.isel.daw.dawbattleshipgame.http.infra.siren
-import pt.isel.daw.dawbattleshipgame.http.model.user.*
 import pt.isel.daw.dawbattleshipgame.services.user.UserDeletionError
+import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 @RestController
 class UsersController(
@@ -77,5 +79,15 @@ class UsersController(
                 UserDeletionError.UserDoesNotExist -> Problem.response(400, Problem.userNotFound)
             }
         }
+    }
+
+    @GetMapping(Uris.USERS_STATS)
+    fun getUserStatistics(): ResponseEntity<*> {
+        val res = userService.getUserRanking()
+        val userStats = res.map { UserStatOutputModel(it.username, it.wins, it.gamesPlayed) }
+        return ResponseEntity.status(200)
+            .body(siren(UserStatsOutputModel(userStats)) {
+                link(Uris.usersStats(), Rels.SELF)
+            })
     }
 }

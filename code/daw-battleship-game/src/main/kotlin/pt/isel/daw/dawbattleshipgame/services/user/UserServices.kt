@@ -55,10 +55,10 @@ class UserServices(
         }
     }
 
-    fun getUserRanking() : UserRankingResult {
+    fun getUserRanking() : List<UserRanking> {
         return transactionManager.run {
             val usersRepository = it.usersRepository
-            Either.Right(usersRepository.getUsersRanking())
+            usersRepository.getUsersRanking()
         }
     }
 

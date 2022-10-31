@@ -8,7 +8,9 @@ import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 /**
  * Represents a list of Users, with their respective number of games played and score
  */
-data class BattleshipsStatisticsOutputModel(val userStatus: List<Pair<String, Pair<Int, Int>>>)
+data class UserStatsOutputModel(val users: List<UserStatOutputModel>)
+data class UserStatOutputModel(val username: String, val wins: Int, val gamesPlayed: Int)
+
 
 data class GameActionOutputModel(val state: GameStateOutputModel, val gameId: Int?)
 

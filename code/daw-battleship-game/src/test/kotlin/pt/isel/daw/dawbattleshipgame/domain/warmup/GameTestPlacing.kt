@@ -3,10 +3,10 @@ package pt.isel.daw.dawbattleshipgame.domain.warmup
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.placeShip
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 
