@@ -7,4 +7,4 @@ data class User(
 )
 
 
-data class UserRanking(val username : String, val wins : Int, val gamesPlayed : Int)
+data class UserRanking(val username: String, val wins: Int, val gamesPlayed: Int)

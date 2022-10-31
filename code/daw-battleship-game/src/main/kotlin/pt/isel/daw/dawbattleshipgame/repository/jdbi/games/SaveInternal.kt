@@ -3,7 +3,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.domain.state.*
+import pt.isel.daw.dawbattleshipgame.domain.game.*
 
 internal fun insertGame(handle: Handle, game: Game) {
     handle.createUpdate(
@@ -35,7 +35,7 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
     )
         .bind("game", gameId)
         .bind("_user", user)
-        .bind("confirmed", board.confirmed)
+        .bind("confirmed", board.isConfirmed())
         .bind("grid", board.getDbString())
         .execute()
 }
@@ -85,7 +85,8 @@ fun confirmBoard(handle: Handle, gameId: Int, playerId: Int) {
 }
 
 fun deleteGame(handle: Handle, gameId: Int) {
-    handle.createUpdate("""delete from SHIP where configuration = :configuration""").bind("configuration", gameId).execute()
+    handle.createUpdate("""delete from SHIP where configuration = :configuration""").bind("configuration", gameId)
+        .execute()
     handle.createUpdate("""delete from CONFIGURATION where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from BOARD where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId).execute()

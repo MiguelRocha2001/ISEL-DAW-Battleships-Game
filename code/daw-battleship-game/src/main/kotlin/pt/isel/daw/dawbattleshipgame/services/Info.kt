@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.services
 
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.Either
-import pt.isel.daw.dawbattleshipgame.domain.state.GameState
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
 data class ServerInfo(

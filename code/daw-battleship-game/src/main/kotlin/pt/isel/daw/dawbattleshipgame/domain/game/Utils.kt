@@ -1,14 +1,14 @@
-package pt.isel.daw.dawbattleshipgame.domain.state
+package pt.isel.daw.dawbattleshipgame.domain.game
 
 
 fun requireNull(value: Int?) {
-    require(value == null){
+    require(value == null) {
         "Illegal game state"
     }
 }
 
 fun requireNotNull(value: Int?) {
-    require(value != null){
+    require(value != null) {
         "Illegal game state"
     }
 }

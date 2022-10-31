@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
@@ -35,13 +35,16 @@ class GamesController(
         return when (res) {
             is Either.Right ->
                 ResponseEntity.status(if (res.value.second != null) 201 else 202) // depends if the game was created
-                .body(
-                    siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
-                        links(startGameLinks(res.value.second))
-                    }
-                )
+                    .body(
+                        siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
+                            links(startGameLinks(res.value.second))
+                        }
+                    )
             is Either.Left -> when (res.value) {
-                GameCreationError.GameNotFound -> Problem.response(404, Problem.gameNotFound) // TODO: check if this is the correct error
+                GameCreationError.GameNotFound -> Problem.response(
+                    404,
+                    Problem.gameNotFound
+                ) // TODO: check if this is the correct error
                 GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userAlreadyInQueue)
                 GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userAlreadyInGame)
             }
@@ -173,7 +176,7 @@ class GamesController(
         val res = gameServices.getMyFleetLayout(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(res.value.toBoardOutputModel()){
+                .body(siren(res.value.toBoardOutputModel()) {
 
                 })
             is Either.Left -> when (res.value) {
@@ -190,7 +193,7 @@ class GamesController(
         val res = gameServices.getOpponentFleet(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(res.value.toBoardOutputModel()){
+                .body(siren(res.value.toBoardOutputModel()) {
 
                 })
             is Either.Left -> when (res.value) {
@@ -224,15 +227,17 @@ class GamesController(
         val res = gameServices.getGame(id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameOutputModel(
-                    gameId = res.value.gameId,
-                    configuration = res.value.configuration,
-                    player1 = res.value.player1,
-                    player2 = res.value.player2,
-                    state = GameStateOutputModel.get(res.value.state),
-                    board1 = res.value.board1.toBoardOutputModel(),
-                    board2 = res.value.board2.toBoardOutputModel(),
-                )) {
+                .body(siren(
+                    GameOutputModel(
+                        gameId = res.value.gameId,
+                        configuration = res.value.configuration,
+                        player1 = res.value.player1,
+                        player2 = res.value.player2,
+                        state = GameStateOutputModel.get(res.value.state),
+                        board1 = res.value.board1.toBoardOutputModel(),
+                        board2 = res.value.board2.toBoardOutputModel(),
+                    )
+                ) {
                     buildPreparationActions(this)
                     buildBattleActions(this)
                 })

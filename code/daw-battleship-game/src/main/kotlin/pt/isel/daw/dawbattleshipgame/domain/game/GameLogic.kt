@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.state
+package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.*
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
@@ -22,7 +22,7 @@ fun Game.placeShip(
     return try {
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = generateShipCoordinates(shipType, position, orientation, player) ?: throw Exception()
-        return when(player) {
+        return when (player) {
             Player.ONE -> this.updateBoard(board1.placeShip(shipCoordinates, shipType), Player.ONE)
             Player.TWO -> this.updateBoard(board2.placeShip(shipCoordinates, shipType), Player.TWO)
         }
@@ -37,12 +37,12 @@ fun Game.placeShip(
 private fun Game.placeShip(
     shipType: ShipType,
     coordinates: CoordinateSet,
-    player : Player = Player.ONE
-) : Game? {
+    player: Player = Player.ONE
+): Game? {
     return try {
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         return this.updateBoard(getBoard(player).placeShip(coordinates, shipType), player)
-    }catch (e : Exception){
+    } catch (e: Exception) {
         null
     }
 }
@@ -61,7 +61,7 @@ fun Game.moveShip(
         val newGame = this.removeShip(position, player)?.placeShip(ship.type, newCoordinates, player) ?: return null
         if (isShipTouchingAnother(player, newCoordinates, ship.type)) return null
         else newGame
-    } catch (e : Exception){
+    } catch (e: Exception) {
         null
     }
 }
@@ -73,7 +73,7 @@ fun Game.moveShip(
  */
 private fun Game.removeShip(p: Coordinate, player: Player = Player.ONE): Game? {
     return try {
-        if(!getBoard(player).isShip(p)) throw Exception()
+        if (!getBoard(player).isShip(p)) throw Exception()
         val ship = getBoard(player).getShips().getShip(p)
         val shipCoordinates = ship.coordinates
         return this.updateBoard(getBoard(player).placeWaterPanel(shipCoordinates), player)
@@ -93,7 +93,7 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
         val shipPosOrigin = getBoard(player).getShips().getShip(position).coordinates.first()
         val tmpGame = removeShip(position, player)
         return tmpGame?.placeShip(ship.type, shipPosOrigin, curOrientation.other(), player)
-    }catch (e : Exception){
+    } catch (e: Exception) {
         null
     }
 }
@@ -105,9 +105,10 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
  */
 fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): Game? {
     return try {
-        val gameResult = this.updateBoard(getBoard(player.other()).placeShot(shot), player.other(),GameState.BATTLE).switchTurn()
-        if (gameResult.board1.allShipsSunk() || gameResult.board2.allShipsSunk()) {
-            Game(gameId, configuration, player1, player2, board1, board2, GameState.FINISHED, winner = userId)
+        val gameResult =
+            this.updateBoard(getBoard(player.other()).placeShot(shot), player.other(), GameState.BATTLE).switchTurn()
+        if (gameResult.getBoard(player.other()).allShipsSunk()) {
+            gameResult.setWinner(userId)
         } else {
             gameResult
         }
@@ -118,8 +119,9 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
 
 
 fun Game.confirmFleet(player: Player) =
-    this.updateBoard(getBoard(player).confirm(), player,
-        if(getBoard(player.other()).isConfirmed()) GameState.BATTLE
+    this.updateBoard(
+        getBoard(player).confirm(), player,
+        if (getBoard(player.other()).isConfirmed()) GameState.BATTLE
         else GameState.FLEET_SETUP
     )
 
@@ -153,13 +155,18 @@ private fun Game.isShipTouchingAnother(player: Player, shipCoordinates: Coordina
  */
 private fun isShipNearCoordinate(c: Coordinate, board: Board, shipType: ShipType) =
     board.coordinates.radius(c).any {
-         board.isShip(it) && (board[it].shipType != shipType)
+        board.isShip(it) && (board[it].shipType != shipType)
     }
 
 /**
  * Generates the coordinates needed to make the ship
  */
-private fun Game.generateShipPanels(size: Int, coordinate: Coordinate, orientation: Orientation, player: Player): CoordinateSet? {
+private fun Game.generateShipPanels(
+    size: Int,
+    coordinate: Coordinate,
+    orientation: Orientation,
+    player: Player
+): CoordinateSet? {
     var auxCoordinate = coordinate
     val set = mutableSetOf(coordinate)
     repeat(size - 1) {
@@ -180,7 +187,6 @@ private fun Game.getShipLength(shipType: ShipType) =
 
 private fun Game.isShipPlaced(shipType: ShipType, player: Player) =
     getBoard(player).getShips().map { it.type }.any { it === shipType }
-
 
 
 /**-------------------------------------------------------------------------------------------------------------------------------**/

@@ -1,6 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
-import pt.isel.daw.dawbattleshipgame.domain.state.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
 
 
 interface GamesRepository {

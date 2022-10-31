@@ -9,7 +9,7 @@ class Board {
     private val dimension : Int
     val board : List<Panel>
     val coordinates : Coordinates
-    val confirmed : Boolean
+    private val confirmed : Boolean
 
     /**
      * Initiates the board with empty panels (Water Panels)

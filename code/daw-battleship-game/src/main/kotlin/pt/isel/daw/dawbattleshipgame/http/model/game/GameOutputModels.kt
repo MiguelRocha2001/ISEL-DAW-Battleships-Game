@@ -2,8 +2,8 @@ package pt.isel.daw.dawbattleshipgame.http.model.game
 
 import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.state.GameState
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 
 /**
  * Represents a list of Users, with their respective number of games played and score

@@ -2,8 +2,8 @@ package pt.isel.daw.dawbattleshipgame.services.game
 
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.state.Game
-import pt.isel.daw.dawbattleshipgame.domain.state.GameState
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 
 sealed class GameCreationError: Error() {
     object GameNotFound: GameCreationError()

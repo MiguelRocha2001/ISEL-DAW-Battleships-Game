@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.domain.state
+package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 

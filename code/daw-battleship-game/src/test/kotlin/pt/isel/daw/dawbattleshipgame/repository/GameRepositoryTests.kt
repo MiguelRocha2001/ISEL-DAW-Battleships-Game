@@ -3,8 +3,8 @@ package pt.isel.daw.dawbattleshipgame.repository
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.state.Game
-import pt.isel.daw.dawbattleshipgame.domain.state.GameState
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.*
 

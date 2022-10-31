@@ -4,7 +4,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
-import pt.isel.daw.dawbattleshipgame.domain.state.*
+import pt.isel.daw.dawbattleshipgame.domain.game.*
 
 
 internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {

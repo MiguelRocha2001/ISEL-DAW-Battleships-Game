@@ -7,7 +7,7 @@ class Panel(
     val coordinate: Coordinate,
     val shipType: ShipType? = null,
     val isHit: Boolean = false,
-){
+) {
     /**
      * Gets panel database representation conforming to this table:
      * |----------------------------------|
@@ -21,16 +21,15 @@ class Panel(
      * |----------------------------------|
      */
     fun getDbIcon(): Char {
-        return shipType?.getIcon(isHit) ?:
-        if(isHit) HIT else WATER
+        return shipType?.getIcon(isHit) ?: if (isHit) HIT else WATER
     }
 
-    companion object{
+    companion object {
         const val HIT = 'x'
         const val WATER = ' '
     }
 
-    fun hit() = if(!isHit) Panel(coordinate, shipType, true) else this
+    fun hit() = if (!isHit) Panel(coordinate, shipType, true) else this
 
     fun isShip() = shipType != null
 

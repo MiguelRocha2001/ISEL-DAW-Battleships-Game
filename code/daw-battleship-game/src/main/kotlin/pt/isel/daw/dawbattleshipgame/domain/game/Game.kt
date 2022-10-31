@@ -1,8 +1,8 @@
-package pt.isel.daw.dawbattleshipgame.domain.state
+package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
-import pt.isel.daw.dawbattleshipgame.domain.state.GameState.*
+import pt.isel.daw.dawbattleshipgame.domain.game.GameState.*
 import java.util.*
 
 enum class GameState {
@@ -11,6 +11,7 @@ enum class GameState {
     WAITING,
     BATTLE,
     FINISHED;
+
     val dbName = this.name.lowercase(Locale.getDefault())
 }
 
@@ -28,13 +29,13 @@ class Game(
     val state: GameState,
 
     val playerTurn: Int? =
-        if(state == NOT_STARTED || state == FLEET_SETUP)
+        if (state == NOT_STARTED || state == FLEET_SETUP)
             null else player1,
 
-    val winner : Int? = null
-){
+    val winner: Int? = null
+) {
     init {
-        when(state){
+        when (state) {
             NOT_STARTED -> {
                 requireNull(playerTurn); requireNull(winner)
             }
@@ -53,15 +54,23 @@ class Game(
         }
     }
 
+    internal fun setWinner(winner: Int) =
+        Game(
+            gameId, configuration, player1,
+            player2, board1, board2, FINISHED,
+            playerTurn, winner
+        )
+
     internal fun updateBoard(board: Board, player: Player, state: GameState = FLEET_SETUP) =
         require(state == FLEET_SETUP || state == BATTLE).let {
-            when(player) {
+            when (player) {
                 Player.ONE -> Game(gameId, configuration, player1, player2, board, board2, state)
                 Player.TWO -> Game(gameId, configuration, player1, player2, board1, board, state)
             }
         }
 
-    internal fun switchTurn() = Game(gameId, configuration,
+    internal fun switchTurn() = Game(
+        gameId, configuration,
         player1, player2, board1, board2, state,
         changePlayersTurn()
     )
@@ -74,7 +83,7 @@ class Game(
         }
 
     fun getBoard(player: Player = Player.ONE) =
-        when(player) {
+        when (player) {
             Player.ONE -> board1
             Player.TWO -> board2
         }

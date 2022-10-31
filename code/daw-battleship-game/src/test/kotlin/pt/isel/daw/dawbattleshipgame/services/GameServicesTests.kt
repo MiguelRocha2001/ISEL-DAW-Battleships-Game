@@ -7,10 +7,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.domain.state.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.state.GameState
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
@@ -251,13 +252,16 @@ class GameServicesTests {
             //game before last shot
             game = gameServices.getGame(gameId) as Either.Right
 
-            val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1))  as Either.Right //fixme O barco não morre,esta ultima posição continua a ser ship
+            val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1))  as Either.Right
+            //fixme O barco não morre,esta ultima posição continua a ser ship
             assertEquals(GameState.FINISHED, gameResult.value)
 
             //game after last shot
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FINISHED,game.value.state)
             assertEquals(userPair.first ,game.value.winner)
+            assertEquals(game.value.board2["A5".toCoordinate()].isHit, true)
+            println(game.value.board2.toString())
         }
     }
 
@@ -287,8 +291,8 @@ class GameServicesTests {
             assertTrue(boardGameSecond.value.isShip(Coordinate(5, 5)))
 
             //check the confirmation of the fleet
-            assertTrue(boardGameFirst.value.confirmed)
-            assertFalse(boardGameSecond.value.confirmed)
+            assertTrue(boardGameFirst.value.isConfirmed())
+            assertFalse(boardGameSecond.value.isConfirmed())
 
             //check if all the ships are included
             assertTrue(boardGameFirst.value.getShips().size == 2)
