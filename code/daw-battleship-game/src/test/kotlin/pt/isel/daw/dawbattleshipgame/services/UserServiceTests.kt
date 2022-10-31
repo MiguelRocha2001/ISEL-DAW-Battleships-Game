@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
+import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserDeletionError
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
-import pt.isel.daw.dawbattleshipgame.utils.Sha256TokenEncoder
-import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
+import pt.isel.daw.dawbattleshipgame.utils.*
 
 class UserServiceTests {
 @Test
@@ -153,8 +153,8 @@ class UserServiceTests {
         }
     }
 
-    @Test //FIXME: This test is not working
-    fun rankings_of_users_with_no_games(){//TODO: Create a test for the ranking of users with games
+    @Test
+    fun rankings_of_users_with_no_games(){
         testWithTransactionManagerAndRollback {
             val userService = UserServices(
                 it,
@@ -162,14 +162,14 @@ class UserServiceTests {
                 BCryptPasswordEncoder(),
                 Sha256TokenEncoder(),
             )
-            userService.createUser("user1", "Password1") as Either.Right
-            userService.createUser("user2", "Password2") as Either.Right
-            userService.createUser("user3", "Password3") as Either.Right
+            val userPair = createUserPair(it)
+            createGame(it, userPair.first, userPair.second, getGameTestConfiguration())
 
             val rankings = userService.getUserRanking()
-            assertEquals(3, rankings.size)
+            println(rankings)
+            assertEquals(2, rankings.size)
             assertEquals(0, rankings[0].wins)
-            assertTrue(rankings[0].username == "user1" || rankings[0].username == "user2" || rankings[0].username == "user3")
+            assertTrue(rankings.map { u -> u.username }.containsAll(listOf("user1", "user2")))
         }
     }
 

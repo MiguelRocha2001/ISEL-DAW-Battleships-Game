@@ -33,9 +33,9 @@ class JdbiUsersRepository(
     override fun getUsersRanking(): List<UserRanking> {
         return handle.createQuery(
             """
-                select count(_user.id), count(winner = _user.id) from game
+                select _user.username, count(winner = _user.id) as wins ,count(_user.id) as gamesPlayed from game
                 join _user on game.player1 = _user.id or game.player2 = _user.id
-                order by _user.id
+                group by _user.id order by wins
             """.trimIndent()
         ).mapTo<UserRanking>().toList()
     }
