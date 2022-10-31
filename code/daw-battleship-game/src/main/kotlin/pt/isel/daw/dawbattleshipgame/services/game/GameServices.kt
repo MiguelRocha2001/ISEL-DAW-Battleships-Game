@@ -61,7 +61,6 @@ class GameServices(
                 ?: return@run Either.Left(PlaceShipError.InvalidMove)
             replaceGame(db, newGame)
             return@run Either.Right(newGame.state)
-
         }
     }
 
