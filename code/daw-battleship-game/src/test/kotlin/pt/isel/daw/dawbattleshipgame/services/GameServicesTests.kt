@@ -20,7 +20,7 @@ import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 
 class GameServicesTests {
-    val configuration = getGameTestConfiguration()
+    private val configuration = getGameTestConfiguration()
 
     private fun createUserPair(transactionManager: TransactionManager): Pair<Int, Int> {
 
@@ -99,8 +99,7 @@ class GameServicesTests {
                 assertEquals(user1Game.value.state, GameState.FLEET_SETUP)
             }
         }
-        val user2Game = gameService.getGame(user2GameIdResult.value)
-        when (user2Game) {
+        when (val user2Game = gameService.getGame(user2GameIdResult.value)) {
             is Either.Left -> fail("Unexpected $user2Game")
             is Either.Right -> {
                 assertEquals(user2Game.value.gameId, user2GameIdResult.value)
@@ -250,7 +249,7 @@ class GameServicesTests {
             gameServices.placeShot(userPair.second, Coordinate(1,4))
 
             //game before last shot
-            game = gameServices.getGame(gameId) as Either.Right
+            gameServices.getGame(gameId) as Either.Right
 
             val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1))  as Either.Right
             //fixme O barco não morre,esta ultima posição continua a ser ship
@@ -266,13 +265,13 @@ class GameServicesTests {
     }
 
 @Test
-    fun getMyAndOpponentFleetLayout() { //FIXME NEEDS FIXING TEST
+    fun getMyAndOpponentFleetLayout() {
         testWithTransactionManagerAndRollback { transactionManager ->
             val userPair = createUserPair(transactionManager)
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
