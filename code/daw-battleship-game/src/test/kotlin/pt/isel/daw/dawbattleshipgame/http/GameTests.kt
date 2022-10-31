@@ -1,15 +1,22 @@
 package pt.isel.daw.dawbattleshipgame.http
 
+import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.postgresql.ds.PGSimpleDataSource
+import org.springframework.beans.factory.annotation.Autowire
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GameTests {
@@ -19,7 +26,13 @@ class GameTests {
 
     @TestConfiguration
     class GameTestConfiguration {
-
+        @Bean
+        @Primary
+        fun jdbiTest() = Jdbi.create(
+            PGSimpleDataSource().apply {
+                setURL(System.getenv("DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION"))
+            }
+        ).configure()
     }
 
     /**
@@ -229,7 +242,7 @@ class GameTests {
     }
 
     @Test
-    fun `can place ship`() {
+    fun `can place multiple ships`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
@@ -253,6 +266,436 @@ class GameTests {
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "SUBMARINE",
+                    "position" to mapOf(
+                        "row" to 3,
+                        "column" to 1
+                    ),
+                    "orientation" to "VERTICAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "BATTLESHIP",
+                    "position" to mapOf(
+                        "row" to 10,
+                        "column" to 4
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 6,
+                        "column" to 6
+                    ),
+                    "orientation" to "VERTICAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CRUISER",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 7
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `Placing ships touching boarders`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 10,
+                        "column" to 8
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CARRIER",
+                    "position" to mapOf(
+                        "row" to 6,
+                        "column" to 1
+                    ),
+                    "orientation" to "VERTICAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `Placing the same ship twice`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CARRIER",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 1
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CARRIER",
+                    "position" to mapOf(
+                        "row" to 5,
+                        "column" to 1
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `Placing ship in invalid coordinates`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CARRIER",
+                    "position" to mapOf(
+                        "row" to 0,
+                        "column" to 0
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isBadRequest // bad request because position is invalid
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "SUBMARINE",
+                    "position" to mapOf(
+                        "row" to 50,
+                        "column" to 10
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405) // method not allowed because, even though position is valid, it is not in the board context
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `Placing ship on top of another`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "CARRIER",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 1
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "BATTLESHIP",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 1
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "BATTLESHIP",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 1
+                    ),
+                    "orientation" to "VERTICAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "BATTLESHIP",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 2
+                    ),
+                    "orientation" to "VERTICAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `Placing ship touching another`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "BATTLESHIP",
+                    "position" to mapOf(
+                        "row" to 2,
+                        "column" to 3
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isCreated
+
+        // touching above
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 1,
+                        "column" to 3
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        // touching below
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 3,
+                        "column" to 3
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        // touching left
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 2,
+                        "column" to 1
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        // touching right
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 2,
+                        "column" to 7
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `Placing ship half outside boards`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player2Id = gameInfo.player2Id
+        val player1Token = gameInfo.player1Token
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "BATTLESHIP",
+                    "position" to mapOf(
+                        "row" to 5,
+                        "column" to 8
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 10,
+                        "column" to 10
+                    ),
+                    "orientation" to "HORIZONTAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
+
+        client.post().uri("/games/{id}/place-ship", gameId)
+            .bodyValue(
+                mapOf(
+                    "shipType" to "DESTROYER",
+                    "position" to mapOf(
+                        "row" to 10,
+                        "column" to 10
+                    ),
+                    "orientation" to "VERTICAL"
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isEqualTo(405)
 
         deleteGame(client, gameId)
         deleteUser(client, player1Id)

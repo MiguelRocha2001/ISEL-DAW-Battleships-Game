@@ -18,7 +18,12 @@ data class PlaceShipInputModel(
     val orientation: OrientationInputModel
 )
 
-data class CoordinateInputModel(val row: Int, val column: Int)
+data class CoordinateInputModel(val row: Int, val column: Int) {
+    init {
+        require(row > 0) { "Row must be greater than 0" }
+        require(column > 0) { "Column must be greater than 0" }
+    }
+}
 enum class OrientationInputModel {
     HORIZONTAL,
     VERTICAL;
