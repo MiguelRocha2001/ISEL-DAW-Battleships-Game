@@ -48,3 +48,16 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.named<Jar>("jar") {//create a fat jar with all dependencies included in it (for deployment)
+	dependsOn("copyRuntimeDependencies")
+	manifest {
+		attributes["Main-Class"] = "pt.isel.daw.dawbattleshipgame.BattleshipApplicationKt"
+		attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(" ") { it.name }
+	}
+}
+
+tasks.register<Copy>("copyRuntimeDependencies") {//copy all dependencies to a folder
+	into("build/libs")
+	from(configurations.runtimeClasspath)
+}

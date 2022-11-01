@@ -6,7 +6,7 @@ import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 data class ServerInfo(
     val authors: List<Pair<String, String>> = listOf(
         "António Carvalho" to "A48347@alunos.isel.pt",
-        "Pedro Silva" to "",
+        "Pedro Silva" to "A47128@alunos.isel.pt",
         "Miguel Rocha" to "A47185@alunos.isel.pt"
     ),
     val systemVersion: String = "1.0.0",
