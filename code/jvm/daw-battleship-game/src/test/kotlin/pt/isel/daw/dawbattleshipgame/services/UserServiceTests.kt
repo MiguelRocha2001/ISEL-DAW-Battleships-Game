@@ -13,17 +13,17 @@ import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class UserServiceTests {
-@Test
+    @Test
     fun create_user(){
-    testWithTransactionManagerAndRollback{transactionManager ->
-        val userService = UserServices(
-            transactionManager,
-            UserLogic(),
-            BCryptPasswordEncoder(),
-            Sha256TokenEncoder(),
-        )
-        val result = userService.createUser("user", "Password") as Either.Right
-        assertTrue(result.value > 0)
+        testWithTransactionManagerAndRollback{transactionManager ->
+            val userService = UserServices(
+                transactionManager,
+                UserLogic(),
+                BCryptPasswordEncoder(),
+                Sha256TokenEncoder(),
+            )
+            val result = userService.createUser("user", "Password") as Either.Right
+            assertTrue(result.value > 0)
         }
     }
 
@@ -172,5 +172,4 @@ class UserServiceTests {
             assertTrue(rankings.map { u -> u.username }.containsAll(listOf("user1", "user2")))
         }
     }
-
 }
