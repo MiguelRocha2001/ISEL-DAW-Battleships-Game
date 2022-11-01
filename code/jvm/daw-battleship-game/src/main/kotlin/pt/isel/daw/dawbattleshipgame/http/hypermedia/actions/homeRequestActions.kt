@@ -22,7 +22,7 @@ fun buildHomeActions(sirenBuilderScope: SirenBuilderScope<HomeOutputModel>) {
     sirenBuilderScope.action(
         name = "login",
         href = URI(Uris.USERS_TOKEN),
-        method = HttpMethod.GET,
+        method = HttpMethod.POST,
         type = "application/json"
     ) {
         this.textField("username")

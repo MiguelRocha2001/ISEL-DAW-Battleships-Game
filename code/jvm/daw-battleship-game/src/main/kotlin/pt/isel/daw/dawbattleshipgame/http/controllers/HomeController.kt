@@ -13,7 +13,6 @@ import pt.isel.daw.dawbattleshipgame.services.InfoServices
 class HomeController(
     private val infoServices: InfoServices
 ) {
-
     @GetMapping(Uris.HOME)
     fun getHome() = siren(HomeOutputModel("Welcome to the Battleship Game API")) {
         link(Uris.home(), Rels.SELF)

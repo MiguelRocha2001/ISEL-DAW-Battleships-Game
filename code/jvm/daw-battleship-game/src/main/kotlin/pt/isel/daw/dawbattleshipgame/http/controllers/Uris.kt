@@ -30,12 +30,12 @@ object Uris {
 
     fun home(): URI = URI(HOME)
     fun info(): URI = URI(SERVER_INFO)
-    fun userHome(): URI = URI(USER_HOME)
 
     // ------------------ USERS ------------------
     fun userCreate() = URI(USERS_CREATE)
     fun userById(id: Int) = UriTemplate(USERS_BY_ID).expand(id)
     fun createToken(): URI = URI(USERS_TOKEN)
+    fun userHome(): URI = URI(USER_HOME)
     fun logout(): URI = URI(USERS_TOKEN)
     fun register(): URI = URI(USERS_CREATE)
     fun usersStats(): URI = URI(USERS_STATS)

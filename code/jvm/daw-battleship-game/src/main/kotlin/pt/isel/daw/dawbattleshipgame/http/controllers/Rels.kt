@@ -18,6 +18,7 @@ object Rels {
 
     // ------------------- USERS -------------------
     val TOKEN = LinkRelation("token")
+    val USER_HOME = LinkRelation("user-home")
     val REGISTER = LinkRelation("register")
 
     // ------------------- GAMES -------------------

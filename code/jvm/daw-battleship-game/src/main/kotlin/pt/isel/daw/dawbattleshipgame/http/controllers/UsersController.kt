@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildTokenRequestActions
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel
@@ -46,7 +46,9 @@ class UsersController(
             is Either.Right -> ResponseEntity.status(201)
                 .body(
                     siren(TokenOutputModel(res.value)) {
-                        buildTokenRequestActions(this)
+                        link(Uris.createToken(), Rels.SELF)
+                        link(Uris.userHome(), Rels.USER_HOME)
+                        buildStartGameAction(this)
                     })
             is Either.Left -> when (res.value) {
                 TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
@@ -60,11 +62,14 @@ class UsersController(
     }
 
     @GetMapping(Uris.USER_HOME)
-    fun getUserHome(user: User): UserHomeOutputModel {
-        return UserHomeOutputModel(
-            id = user.id.toString(),
-            username = user.username,
-        )
+    fun getUserHome(user: User): ResponseEntity<*> {
+        return ResponseEntity.status(201)
+            .body(
+                siren(UserHomeOutputModel(user.id, user.username)) {
+                    link(Uris.userHome(), Rels.SELF)
+                    buildStartGameAction(this)
+                }
+            )
     }
 
     @DeleteMapping(Uris.USERS_BY_ID)

@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.model.home
 
 data class HomeOutputModel(
-    val credits: String,
+    val title: String,
 )
 
 data class ServerInfoOutputModel(
