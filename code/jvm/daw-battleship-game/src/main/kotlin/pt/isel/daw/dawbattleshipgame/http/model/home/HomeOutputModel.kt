@@ -5,6 +5,11 @@ data class HomeOutputModel(
 )
 
 data class ServerInfoOutputModel(
-    val authors: List<Pair<String, String>>,
+    val authors: List<AuthorOutputModel>,
     val systemVersion: String
+)
+
+data class AuthorOutputModel(
+    val name: String,
+    val email: String
 )

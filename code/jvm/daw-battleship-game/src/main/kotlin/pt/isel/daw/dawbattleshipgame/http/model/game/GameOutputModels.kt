@@ -15,6 +15,7 @@ data class UserStatOutputModel(val username: String, val wins: Int, val gamesPla
 data class GameActionOutputModel(val state: GameStateOutputModel, val gameId: Int?)
 
 fun Board.toBoardOutputModel(): BoardOutputModel {
+    /* Disabled temporary
     val cells = mutableMapOf<CoordinateModel, CoordinateContentOutputModel>()
     this.board.forEach { panel ->
         val coordinateModel = CoordinateModel(panel.coordinate.row, panel.coordinate.column)
@@ -23,11 +24,14 @@ fun Board.toBoardOutputModel(): BoardOutputModel {
         cells[coordinateModel] = CoordinateContentOutputModel(shipType.toString().lowercase(), isHit)
     }
     return BoardOutputModel(cells, this.board.size)
+    */
+    return BoardOutputModel(this.toString(), this.board.size, this.isConfirmed())
 }
 
 data class BoardOutputModel(
-    val cells: Map<CoordinateModel, CoordinateContentOutputModel>,
-    val nCells: Int
+    val cells: String, // Board representation
+    val nCells: Int,
+    val isConfirmed: Boolean
 )
 
 data class CoordinateModel(

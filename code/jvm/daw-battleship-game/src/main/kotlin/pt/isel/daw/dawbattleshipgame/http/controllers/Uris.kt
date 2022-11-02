@@ -5,15 +5,17 @@ import java.net.URI
 
 object Uris {
 
+    const val SERVER_INFO = "/info"
     const val HOME = "/"
     const val USER_HOME = "/me"
-    const val GAME_BY_ID = "/games/{id}"
 
     const val USERS_CREATE = "/users"
     const val USERS_TOKEN = "/users/token"
     const val USERS_BY_ID = "/users/{id}"
+    const val USERS_STATS = "/users/all/statistics"
 
     const val GAMES_CREATE = "/games"
+    const val GAME_BY_ID = "/games/{id}"
     const val GAMES_GET_GAME_ID = "/games/current"
     const val GAMES_PLACE_SHIP = "/games/{id}/place-ship"
     const val GAMES_MOVE_SHIP = "/games/{id}/move-ship"
@@ -24,9 +26,6 @@ object Uris {
     const val GAMES_GET_OPPONENT_FLEET = "/games/{id}/opponent-fleet"
     const val GAMES_STATE = "/games/{id}/state"
     const val GAMES_DELETE = "/games/{id}"
-
-    const val SERVER_INFO = "/server-info"
-    const val USERS_STATS = "/user/statistics"
 
     fun home(): URI = URI(HOME)
     fun info(): URI = URI(SERVER_INFO)

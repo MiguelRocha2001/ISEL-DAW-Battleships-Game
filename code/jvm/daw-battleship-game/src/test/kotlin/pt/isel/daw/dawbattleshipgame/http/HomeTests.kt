@@ -11,9 +11,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
+import pt.isel.daw.dawbattleshipgame.http.model.home.AuthorOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HomeTests {
@@ -51,15 +53,25 @@ class HomeTests {
         assertNotNull(siren)
 
         // asserting properties
-        val title = (siren.properties as LinkedHashMap<String, *>)["title"] as? String ?: fail("Credits is in fault or not a string")
+        val title = (siren.properties as LinkedHashMap<String, *>)["title"] as? String
+            ?: fail("Credits is in fault or not a string")
         assertEquals("Welcome to the Battleship Game API", title)
 
         // asserting links
         val links = siren.links
-        assertEquals(1, links.size)
+        assertEquals(3, links.size)
+
         assertEquals("/", links[0].href)
         assertEquals(1, links[0].rel.size)
         assertEquals("self", links[0].rel[0])
+
+        assertEquals("/users/all/statistics", links[1].href)
+        assertEquals(1, links[1].rel.size)
+        assertEquals("user-stats", links[1].rel[0])
+
+        assertEquals("/info", links[2].href)
+        assertEquals(1, links[2].rel.size)
+        assertEquals("server-info", links[2].rel[0])
 
         // asserting actions
         val actions = siren.actions
@@ -74,5 +86,49 @@ class HomeTests {
         assertEquals("/users/token", actions[1].href)
         assertEquals("POST", actions[1].method)
         assertEquals("application/json", actions[1].type)
+    }
+
+    @Test
+    fun getServerInfo() {
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        // when: getting the server info
+        // then: the response is a 200 with a proper Location header
+        val siren = client.get().uri("/info")
+            .exchange()
+            .expectStatus().isOk
+            .expectHeader().contentType("application/json")
+            .expectBody(SirenModel::class.java)
+            .returnResult()
+            .responseBody ?: fail("No response body")
+
+        assertNotNull(siren)
+
+        // asserting properties
+        val authors = (siren.properties as LinkedHashMap<String, *>)["authors"] as? List<LinkedHashMap<String, String>>
+            ?: fail("Authors is in fault or not a string")
+
+        // asserts authors
+        assertEquals(3, authors.size)
+
+        assertTrue { authors.all { it.size == 2 } } // this indicates that each author has only 2 properties (name and email)
+        assertEquals("António Carvalho", authors[0]["name"])
+        assertEquals("A48347@alunos.isel.pt", authors[0]["email"])
+        assertEquals("Pedro Silva", authors[1]["name"])
+        assertEquals("A47128@alunos.isel.pt", authors[1]["email"])
+        assertEquals("Miguel Rocha", authors[2]["name"])
+        assertEquals("A47185@alunos.isel.pt", authors[2]["email"])
+
+        // confirms that the version is really a String
+        (siren.properties as LinkedHashMap<String, *>)["systemVersion"] as? String
+            ?: fail("SystemVersion is in fault or not a string")
+
+        // asserting links
+        val links = siren.links
+        assertEquals(1, links.size)
+
+        assertEquals("/info", links[0].href)
+        assertEquals(1, links[0].rel.size)
+        assertEquals("self", links[0].rel[0])
     }
 }
