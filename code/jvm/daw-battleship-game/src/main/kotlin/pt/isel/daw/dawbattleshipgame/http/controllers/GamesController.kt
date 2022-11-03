@@ -61,6 +61,7 @@ class GamesController(
                 })
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                GameIdError.UserInGameQueue -> Problem.response(404, Problem.userInGameQueue)
             }
         }
     }

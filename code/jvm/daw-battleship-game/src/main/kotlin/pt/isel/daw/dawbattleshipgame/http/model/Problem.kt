@@ -59,6 +59,12 @@ class Problem(
             detail = "Invalid name or password"
         )
 
+        val userInGameQueue = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-in-game-queue"),
+            title = "User in game queue",
+            detail = "User is still in game queue"
+        )
+
         val gameNotFound = Problem(
             URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/game-not-found"),
             title = "Invalid credentials",

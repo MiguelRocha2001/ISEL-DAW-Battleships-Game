@@ -1,0 +1,1 @@
+This error happens when the user tries to request its current active game, but the game hasn't started yet. The game will start when another player joins.

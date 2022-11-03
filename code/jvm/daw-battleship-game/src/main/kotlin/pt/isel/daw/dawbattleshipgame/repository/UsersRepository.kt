@@ -28,4 +28,5 @@ interface UsersRepository {
     fun deleteUser(userId: Int)
     fun isUserStoredById(userId: Int): Boolean
     fun deleteToken(userId: Int)
+    fun isInQueue(userId: Int): Boolean
 }

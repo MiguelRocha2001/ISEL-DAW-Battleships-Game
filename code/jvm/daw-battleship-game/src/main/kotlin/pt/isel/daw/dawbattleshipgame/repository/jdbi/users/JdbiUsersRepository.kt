@@ -118,4 +118,11 @@ class JdbiUsersRepository(
             .bind("user_id", userId)
             .execute()
     }
+
+    override fun isInQueue(userId: Int): Boolean {
+        return handle.createQuery("select count(*) from USER_QUEUE where _user = :_user")
+            .bind("_user", userId)
+            .mapTo<Int>()
+            .single() != 0
+    }
 }

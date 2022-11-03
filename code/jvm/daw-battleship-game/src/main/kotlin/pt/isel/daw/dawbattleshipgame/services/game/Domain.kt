@@ -58,6 +58,7 @@ typealias GameStateResult = Either<GameStateError, GameState>
 
 sealed class GameIdError {
     object GameNotFound: GameIdError()
+    object UserInGameQueue: GameIdError()
 }
 typealias GameIdResult = Either<GameIdError, Int>
 

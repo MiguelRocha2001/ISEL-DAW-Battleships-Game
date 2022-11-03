@@ -44,8 +44,12 @@ class GameServices(
 
     fun getGameIdByUser(userId: Int): GameIdResult {
         return transactionManager.run {
-            val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameIdError.GameNotFound)
+            val gamesDb = it.gamesRepository
+            val usersDb = it.usersRepository
+            if (usersDb.isInQueue(userId)) {
+                return@run Either.Left(GameIdError.UserInGameQueue)
+            }
+            val game = gamesDb.getGameByUser(userId) ?: return@run Either.Left(GameIdError.GameNotFound)
             Either.Right(game.gameId)
         }
     }
