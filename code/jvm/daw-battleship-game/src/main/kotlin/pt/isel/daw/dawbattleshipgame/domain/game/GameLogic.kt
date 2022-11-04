@@ -25,8 +25,8 @@ fun Game.placeShip(
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = generateShipCoordinates(shipType, position, orientation, player) ?: throw Exception()
         return when (player) {
-            Player.ONE -> this.updateBoard(board1.placeShip(shipCoordinates, shipType), Player.ONE)
-            Player.TWO -> this.updateBoard(board2.placeShip(shipCoordinates, shipType), Player.TWO)
+            Player.ONE -> this.updateGame(board1.placeShip(shipCoordinates, shipType), Player.ONE, null)
+            Player.TWO -> this.updateGame(board2.placeShip(shipCoordinates, shipType), Player.TWO, null)
         }
     } catch (e: Exception) {
         null
@@ -43,7 +43,7 @@ private fun Game.placeShip(
 ): Game? {
     return try {
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
-        return this.updateBoard(getBoard(player).placeShip(coordinates, shipType), player)
+        return this.updateGame(getBoard(player).placeShip(coordinates, shipType), player, null)
     } catch (e: Exception) {
         null
     }
@@ -78,7 +78,7 @@ private fun Game.removeShip(p: Coordinate, player: Player = Player.ONE): Game? {
         if (!getBoard(player).isShip(p)) throw Exception()
         val ship = getBoard(player).getShips().getShip(p)
         val shipCoordinates = ship.coordinates
-        return this.updateBoard(getBoard(player).placeWaterPanel(shipCoordinates), player)
+        return this.updateGame(getBoard(player).placeWaterPanel(shipCoordinates), player, null)
     } catch (e: Exception) {
         null
     }
@@ -109,7 +109,7 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
     return try {
         if (playerTurn != userId) return null
         val gameResult =
-            this.updateBoard(getBoard(player.other()).placeShot(shot), player.other(), GameState.BATTLE).switchTurn()
+            this.updateGame(getBoard(player.other()).placeShot(shot), player.other(), getPlayerId(player.other()), GameState.BATTLE)
         if (gameResult.getBoard(player.other()).allShipsSunk()) {
             gameResult.setWinner(userId)
         } else {
@@ -121,12 +121,15 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
 }
 
 
-fun Game.confirmFleet(player: Player) =
-    this.updateBoard(
-        getBoard(player).confirm(), player,
-        if (getBoard(player.other()).isConfirmed()) GameState.BATTLE
-        else GameState.FLEET_SETUP
+fun Game.confirmFleet(player: Player): Game {
+    val isOtherConfirmed = getBoard(player.other()).isConfirmed()
+    return this.updateGame(
+        getBoard(player).confirm(),
+        player,
+        if (isOtherConfirmed) this.player1 else null, // player 1 always starts first
+        if (isOtherConfirmed) GameState.BATTLE else GameState.FLEET_SETUP
     )
+}
 
 /** ------------------------------------------ Auxiliary functions ---------------------------------------**/
 

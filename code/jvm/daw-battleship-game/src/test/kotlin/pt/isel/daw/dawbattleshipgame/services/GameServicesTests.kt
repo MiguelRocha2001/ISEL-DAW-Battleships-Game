@@ -233,7 +233,6 @@ class GameServicesTests {
         }
     }
 
-    /*
     @Test
     fun placeShot(){
         testWithTransactionManagerAndRollback { transactionManager ->
@@ -264,20 +263,20 @@ class GameServicesTests {
             gameServices.placeShot(userPair.second, Coordinate(1,4))
 
             //game before last shot
-            gameServices.getGame(gameId) as Either.Right
+            gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
 
-            val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1))  as Either.Right
+            val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1)) as? Either.Right
+                ?: fail("Expected game result")
             assertEquals(GameState.FINISHED, gameResult.value)
 
             //game after last shot
-            game = gameServices.getGame(gameId) as Either.Right
+            game = gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
             assertEquals(GameState.FINISHED,game.value.state)
             assertEquals(userPair.first ,game.value.winner)
             assertTrue(game.value.board2["A5".toCoordinate()].isHit)
             println(game.value.board2.toString())
         }
     }
-     */
 
 @Test
     fun getMyAndOpponentFleetLayout() {

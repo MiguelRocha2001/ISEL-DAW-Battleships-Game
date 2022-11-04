@@ -61,19 +61,13 @@ class Game (
             playerTurn, winner
         )
 
-    internal fun updateBoard(board: Board, player: Player, state: GameState = FLEET_SETUP) =
+    internal fun updateGame(board: Board, player: Player, playerTurn: Int?, state: GameState = FLEET_SETUP) =
         require(state == FLEET_SETUP || state == BATTLE).let {
             when (player) {
-                Player.ONE -> Game(gameId, configuration, player1, player2, board, board2, state)
-                Player.TWO -> Game(gameId, configuration, player1, player2, board1, board, state)
+                Player.ONE -> Game(gameId, configuration, player1, player2, board, board2, state, playerTurn, winner)
+                Player.TWO -> Game(gameId, configuration, player1, player2, board1, board, state, playerTurn, winner)
             }
         }
-
-    internal fun switchTurn() = Game(
-        gameId, configuration,
-        player1, player2, board1, board2, state,
-        changePlayersTurn()
-    )
 
     private fun changePlayersTurn() =
         when (playerTurn) {
@@ -100,6 +94,12 @@ class Game (
                 FLEET_SETUP
             )
     }
+
+    internal fun getPlayerId(player: Player) =
+        when (player) {
+            Player.ONE -> player1
+            Player.TWO -> player2
+        }
 
     //TODO() to be changed, its like this because of the tests
     override fun toString(): String = board1.toString()
