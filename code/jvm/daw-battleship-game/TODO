@@ -5,4 +5,4 @@
 - Mesmo que os testes http falhem, apagar os users e games criados;
 - Rever uris;
 - Rever Problem vals;
-- Bug where user can place shots multiple times.
+- Return Error classes in Domain.

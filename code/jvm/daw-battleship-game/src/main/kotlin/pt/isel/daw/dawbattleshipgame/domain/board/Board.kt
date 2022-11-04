@@ -87,6 +87,8 @@ class Board {
         coordinate.checkValid(dimension)
         .let { board[getIdx(coordinate)] }
 
+    fun isHit(c: Coordinate) = this[c].isHit
+
 
     /**
      * Check if list of panel is sunk in case every panel is hit

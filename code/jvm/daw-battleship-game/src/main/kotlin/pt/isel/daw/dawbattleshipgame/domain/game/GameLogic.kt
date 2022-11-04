@@ -107,9 +107,10 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
  */
 fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): Game? {
     return try {
-        if (playerTurn != userId) return null
+        val opponentBoard = getBoard(player.other())
+        if (playerTurn != userId || opponentBoard.isHit(shot)) return null
         val gameResult =
-            this.updateGame(getBoard(player.other()).placeShot(shot), player.other(), getPlayerId(player.other()), GameState.BATTLE)
+            this.updateGame(opponentBoard.placeShot(shot), player.other(), getPlayerId(player.other()), GameState.BATTLE)
         if (gameResult.getBoard(player.other()).allShipsSunk()) {
             gameResult.setWinner(userId)
         } else {

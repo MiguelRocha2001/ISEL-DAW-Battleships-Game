@@ -278,7 +278,35 @@ class GameServicesTests {
         }
     }
 
-@Test
+    @Test
+    fun invalidPlaceShot() {
+        testWithTransactionManagerAndRollback { transactionManager ->
+            val userPair = createUserPair(transactionManager)
+            val gameServices = GameServices(transactionManager)
+
+            // Create Game
+            createGame(transactionManager, userPair.first, userPair.second, configuration)
+
+            // apply some actions with player_1
+            gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            gameServices.confirmFleet(userPair.first)
+            gameServices.confirmFleet(userPair.second)
+
+            gameServices.placeShot(userPair.first, Coordinate(1,1)) // valid
+            gameServices.placeShot(userPair.second, Coordinate(2,2)) // valid
+
+            val result = gameServices.placeShot(userPair.first, Coordinate(1,1)) // same coordinate
+            assertEquals(Either.Left(PlaceShotError.InvalidMove), result)
+
+            val result2 = gameServices.placeShot(userPair.second, Coordinate(3,3)) // not its turn
+            assertEquals(Either.Left(PlaceShotError.InvalidMove), result2) // TODO should be ActionNotPermitted
+
+
+        }
+    }
+
+    @Test
     fun getMyAndOpponentFleetLayout() {
         testWithTransactionManagerAndRollback { transactionManager ->
             val userPair = createUserPair(transactionManager)

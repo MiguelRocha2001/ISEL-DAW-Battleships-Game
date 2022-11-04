@@ -69,13 +69,6 @@ class Game (
             }
         }
 
-    private fun changePlayersTurn() =
-        when (playerTurn) {
-            player1 -> player2
-            player2 -> player1
-            else -> throw IllegalStateException("Illegal game state")
-        }
-
     fun getBoard(player: Player = Player.ONE) =
         when (player) {
             Player.ONE -> board1
