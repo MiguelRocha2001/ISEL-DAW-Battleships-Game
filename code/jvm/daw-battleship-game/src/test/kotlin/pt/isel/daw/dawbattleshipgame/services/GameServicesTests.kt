@@ -233,6 +233,7 @@ class GameServicesTests {
         }
     }
 
+    /*
     @Test
     fun placeShot(){
         testWithTransactionManagerAndRollback { transactionManager ->
@@ -276,6 +277,7 @@ class GameServicesTests {
             println(game.value.board2.toString())
         }
     }
+     */
 
 @Test
     fun getMyAndOpponentFleetLayout() {

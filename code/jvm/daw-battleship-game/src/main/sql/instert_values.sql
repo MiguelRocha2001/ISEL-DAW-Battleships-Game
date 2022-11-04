@@ -27,5 +27,5 @@ insert into board(game, _user, confirmed, grid) values
 (2, 3, false, '                                                                                                    ');
 
 insert into ship(configuration, name, length) VALUES
-(1, 'kruiser', 3),
-(2, 'kruiser', 3);
+(1, 'cruiser', 3),
+(2, 'cruiser', 3);
