@@ -50,7 +50,7 @@ enum class ShipTypeInputModel {
 fun ShipTypeInputModel.toShipType() = when (this) {
     ShipTypeInputModel.CARRIER -> ShipType.CARRIER
     ShipTypeInputModel.BATTLESHIP -> ShipType.BATTLESHIP
-    ShipTypeInputModel.CRUISER -> ShipType.KRUISER
+    ShipTypeInputModel.CRUISER -> ShipType.CRUISER
     ShipTypeInputModel.SUBMARINE -> ShipType.SUBMARINE
     ShipTypeInputModel.DESTROYER -> ShipType.DESTROYER
 }

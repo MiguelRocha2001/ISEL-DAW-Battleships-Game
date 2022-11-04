@@ -126,7 +126,7 @@ class GameTestMultipleActions {
         var gameResult = game.placeShip(ShipType.SUBMARINE, "A1".toCoordinate(), Orientation.HORIZONTAL)
         gameResult = gameResult?.placeShip(ShipType.CARRIER, "A3".toCoordinate(), Orientation.HORIZONTAL)
         gameResult = gameResult?.placeShip(ShipType.DESTROYER, "A5".toCoordinate(), Orientation.HORIZONTAL)
-        gameResult = gameResult?.placeShip(ShipType.KRUISER, "A7".toCoordinate(), Orientation.HORIZONTAL)
+        gameResult = gameResult?.placeShip(ShipType.CRUISER, "A7".toCoordinate(), Orientation.HORIZONTAL)
         gameResult = gameResult?.placeShip(ShipType.BATTLESHIP, "A9".toCoordinate(), Orientation.HORIZONTAL)
         gameResult = gameResult?.moveShip("A1".toCoordinate(),"A2".toCoordinate())
         gameResult = gameResult?.moveShip("A3".toCoordinate(),"F3".toCoordinate())

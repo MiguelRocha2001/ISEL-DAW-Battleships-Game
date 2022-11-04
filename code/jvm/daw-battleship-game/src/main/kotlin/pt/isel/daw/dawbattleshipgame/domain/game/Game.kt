@@ -19,7 +19,7 @@ enum class GameState {
 fun String.getDbState() =
     GameState.values().first { it.dbName == this }
 
-class Game(
+class Game (
     val gameId: Int,
     val configuration: Configuration,
     val player1: Int,
@@ -64,8 +64,8 @@ class Game(
     internal fun updateBoard(board: Board, player: Player, state: GameState = FLEET_SETUP) =
         require(state == FLEET_SETUP || state == BATTLE).let {
             when (player) {
-                Player.ONE -> Game(gameId, configuration, player1, player2, board, board2, state)
-                Player.TWO -> Game(gameId, configuration, player1, player2, board1, board, state)
+                Player.ONE -> Game(gameId, configuration, player1, player2, board, board2, state, playerTurn)
+                Player.TWO -> Game(gameId, configuration, player1, player2, board1, board, state, playerTurn)
             }
         }
 

@@ -48,7 +48,7 @@ create table BOARD(
 
 create table SHIP(
     configuration int,
-    name varchar(20) not null check (name in ('carrier', 'battleship', 'kruiser', 'submarine', 'destroyer')),
+    name varchar(20) not null check (name in ('carrier', 'battleship', 'cruiser', 'submarine', 'destroyer')),
     length int,
     primary key (configuration, name),
     foreign key (configuration) references CONFIGURATION(game)

@@ -30,7 +30,7 @@ class UsersController(
                 )
                 .body(siren(UserCreateOutputModel(res.value)) {
                     link(Uris.userCreate(), Rels.SELF)
-                    link(Uris.createToken(), Rels.TOKEN)
+                    link(Uris.createToken(), Rels.TOKEN) // TODO -> should be in actions
                 })
             is Either.Left -> when (res.value) {
                 UserCreationError.InsecurePassword -> Problem.response(400, Problem.insecurePassword)

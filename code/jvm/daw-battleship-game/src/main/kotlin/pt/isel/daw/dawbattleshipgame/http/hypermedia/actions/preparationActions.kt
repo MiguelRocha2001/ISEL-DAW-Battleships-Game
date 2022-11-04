@@ -10,7 +10,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
     // Place Ship
     sirenBuilderScope.action(
         name = "place-ship",
-        href = URI(Uris.GAMES_PLACE_SHIP),
+        href = URI(Uris.GAMES_PLACE_SHIP.replace("{id}", ":id")),
         method = HttpMethod.POST,
         type = "application/json"
     ) {
@@ -21,7 +21,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
     // Move Ship
     sirenBuilderScope.action(
         name = "move-ship",
-        href = URI(Uris.GAMES_MOVE_SHIP),
+        href = URI(Uris.GAMES_MOVE_SHIP.replace("{id}", ":id")),
         method = HttpMethod.POST,
         type = "application/json"
     ) {
@@ -34,7 +34,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
     // Rotate Ship
     sirenBuilderScope.action(
         name = "rotate-ship",
-        href = URI(Uris.GAMES_ROTATE_SHIP),
+        href = URI(Uris.GAMES_ROTATE_SHIP.replace("{id}", ":id")),
         method = HttpMethod.POST,
         type = "application/json"
     ) {
@@ -45,7 +45,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
     // Confirm Fleet
     sirenBuilderScope.action(
         name = "confirm-fleet",
-        href = URI(Uris.GAMES_CONFIRM_FLEET),
+        href = URI(Uris.GAMES_CONFIRM_FLEET.replace("{id}", ":id")),
         method = HttpMethod.POST,
         type = "application/json"
     ) {

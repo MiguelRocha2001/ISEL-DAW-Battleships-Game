@@ -119,7 +119,7 @@ class GameServicesTests {
             gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
             gameServices.placeShip(userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.HORIZONTAL)
             gameServices.placeShip(userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
-            gameServices.placeShip(userPair.second, ShipType.KRUISER, Coordinate(5, 9), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CRUISER, Coordinate(5, 9), Orientation.VERTICAL)
 
 
             gameServices.confirmFleet(userPair.first)
@@ -215,7 +215,7 @@ class GameServicesTests {
             gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
             gameServices.placeShip(userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.HORIZONTAL)
             gameServices.placeShip(userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
-            gameServices.placeShip(userPair.second, ShipType.KRUISER, Coordinate(5, 9), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.second, ShipType.CRUISER, Coordinate(5, 9), Orientation.VERTICAL)
             gameServices.placeShip(userPair.first, ShipType.CARRIER, Coordinate(1, 5), Orientation.HORIZONTAL)
             gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
 
@@ -288,7 +288,7 @@ class GameServicesTests {
 
             // apply some actions with player_1
             gameServices.placeShip(userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            gameServices.placeShip(userPair.first, ShipType.KRUISER, Coordinate(5, 5), Orientation.VERTICAL)
+            gameServices.placeShip(userPair.first, ShipType.CRUISER, Coordinate(5, 5), Orientation.VERTICAL)
             gameServices.placeShip(userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
             gameServices.placeShip(userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL)
 

@@ -6,7 +6,7 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Panel
 enum class ShipType(private val icon: Char) {
     CARRIER('C'),
     BATTLESHIP('B'),
-    KRUISER('K'),
+    CRUISER('K'),
     SUBMARINE('S'),
     DESTROYER('D');
 
@@ -33,7 +33,7 @@ fun String.toShipType(): ShipType {
     return when (this.lowercase()) {
         "carrier" -> ShipType.CARRIER
         "battleship" -> ShipType.BATTLESHIP
-        "kruiser" -> ShipType.KRUISER
+        "cruiser" -> ShipType.CRUISER
         "submarine" -> ShipType.SUBMARINE
         "destroyer" -> ShipType.DESTROYER
         else -> throw IllegalArgumentException("Invalid ship type")

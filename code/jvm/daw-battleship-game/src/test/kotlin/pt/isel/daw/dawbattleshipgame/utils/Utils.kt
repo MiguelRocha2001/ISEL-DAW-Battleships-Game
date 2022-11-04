@@ -19,7 +19,7 @@ fun getGameTestConfiguration() = Configuration(
     fleet = setOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
-        Pair(ShipType.KRUISER, 3),
+        Pair(ShipType.CRUISER, 3),
         Pair(ShipType.SUBMARINE, 3),
         Pair(ShipType.DESTROYER, 2)
     ),
