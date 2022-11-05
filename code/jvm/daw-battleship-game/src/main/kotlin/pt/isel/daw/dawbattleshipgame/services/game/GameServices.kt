@@ -54,12 +54,12 @@ class GameServices(
         }
     }
 
-    fun placeShip(userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation): PlaceShipResult {
+    fun placeShip(gameId: Int, userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation): PlaceShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShipError.GameNotFound)
+            val game = db.getGame(gameId) ?: return@run Either.Left(PlaceShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
-            if(game.state != GameState.FLEET_SETUP)
+            if (game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(PlaceShipError.ActionNotPermitted)
             val newGame = game.placeShip(ship, position, orientation, player)
                 ?: return@run Either.Left(PlaceShipError.InvalidMove)
@@ -68,10 +68,10 @@ class GameServices(
         }
     }
 
-    fun rotateShip(userId: Int, position: Coordinate): RotateShipResult {
+    fun rotateShip(gameId: Int, userId: Int, position: Coordinate): RotateShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(RotateShipError.GameNotFound)
+            val game = db.getGame(gameId) ?: return@run Either.Left(RotateShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(RotateShipError.ActionNotPermitted)
@@ -82,10 +82,10 @@ class GameServices(
         }
     }
 
-    fun moveShip(userId: Int, origin: Coordinate, destination: Coordinate): MoveShipResult {
+    fun moveShip(gameId: Int, userId: Int, origin: Coordinate, destination: Coordinate): MoveShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(MoveShipError.GameNotFound)
+            val game = db.getGame(gameId) ?: return@run Either.Left(MoveShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(MoveShipError.ActionNotPermitted)
@@ -96,10 +96,10 @@ class GameServices(
         }
     }
 
-    fun confirmFleet(userId: Int): FleetConfirmationResult {
+    fun confirmFleet(gameId: Int, userId: Int): FleetConfirmationResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?:
+            val game = db.getGame(gameId) ?:
                 return@run Either.Left(FleetConfirmationError.GameNotFound)
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
@@ -112,10 +112,10 @@ class GameServices(
         }
     }
 
-    fun placeShot(userId: Int, c: Coordinate): PlaceShotResult {
+    fun placeShot(gameId: Int, userId: Int, c: Coordinate): PlaceShotResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?:
+            val game = db.getGame(gameId) ?:
                 return@run Either.Left(PlaceShotError.ActionNotPermitted)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.BATTLE)
@@ -127,28 +127,28 @@ class GameServices(
         }
     }
 
-    fun getMyFleetLayout(userId: Int): BoardResult {
+    fun getMyFleetLayout(gameId: Int, userId: Int): BoardResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
+            val game = db.getGame(gameId) ?: return@run Either.Left(GameSearchError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             return@run Either.Right(game.getBoard(player))
         }
     }
 
-    fun getOpponentFleet(userId: Int): BoardResult {
+    fun getOpponentFleet(gameId: Int, userId: Int): BoardResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
+            val game = db.getGame(gameId) ?: return@run Either.Left(GameSearchError.GameNotFound)
             val opponent = if(userId == game.player1) Player.TWO else Player.ONE
             return@run Either.Right(game.getBoard(opponent))
         }
     }
 
-    fun getGameState(userId: Int): GameStateResult {
+    fun getGameState(gameId: Int): GameStateResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameStateError.GameNotFound)
+            val game = db.getGame(gameId) ?: return@run Either.Left(GameStateError.GameNotFound)
             return@run Either.Right(game.state)
         }
     }
@@ -166,11 +166,11 @@ class GameServices(
         db.saveGame(game)
     }
 
-    fun deleteGame(id: Int): DeleteGameResult {
+    fun deleteGame(gameId: Int): DeleteGameResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            db.getGame(id) ?: return@run Either.Left(DeleteGameError.GameNotFound)
-            db.removeGame(id)
+            db.getGame(gameId) ?: return@run Either.Left(DeleteGameError.GameNotFound)
+            db.removeGame(gameId)
             return@run Either.Right(Unit)
         }
     }

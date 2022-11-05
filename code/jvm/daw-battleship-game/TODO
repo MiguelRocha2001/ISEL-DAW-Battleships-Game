@@ -1,8 +1,8 @@
 - Usar Docker;
-- Fazer testes ao Battle;
+- Fazer testes ao Battle (domain);
 - Implementar temporização nos pedidos;
-- Nas funçoes de interaçao com o jogo, estamos a pedir o gameId mas nao estamos a usar. Rever isso;
 - Mesmo que os testes http falhem, apagar os users e games criados;
 - Rever uris;
 - Rever Problem vals;
-- Return Error classes in Domain.
+- Return Error classes in Domain;
+- Repeated code when handling errors, in controllers;
