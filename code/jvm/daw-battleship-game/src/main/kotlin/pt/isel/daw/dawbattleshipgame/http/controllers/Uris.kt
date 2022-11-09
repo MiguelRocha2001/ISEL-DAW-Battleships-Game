@@ -16,7 +16,7 @@ object Uris {
 
     const val GAMES_CREATE = "/games"
     const val GAME_BY_ID = "/games/{id}"
-    const val GAMES_GET_GAME_ID = "/games/current"
+    const val GAMES_GAME_ID = "/games/current"
     const val GAMES_PLACE_SHIP = "/games/{id}/place-ship"
     const val GAMES_MOVE_SHIP = "/games/{id}/move-ship"
     const val GAMES_ROTATE_SHIP = "/games/{id}/rotate-ship"
@@ -47,7 +47,7 @@ object Uris {
     fun gameCreate() = URI(GAMES_CREATE)
     fun gameById(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
     fun gameInfo(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
-    fun currentGameId(): URI = URI(GAMES_GET_GAME_ID)
+    fun currentGameId(): URI = URI(GAMES_GAME_ID)
 
     fun placeShip(gameId: Int) = UriTemplate(GAMES_PLACE_SHIP).expand(gameId)
     fun moveShip(gameId: Int) = UriTemplate(GAMES_MOVE_SHIP).expand(gameId)

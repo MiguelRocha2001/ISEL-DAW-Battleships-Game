@@ -6,3 +6,4 @@
 - Rever Problem vals;
 - Return Error classes in Domain;
 - Repeated code when handling errors, in controllers;
+- Add request to position all ships, in a single row;

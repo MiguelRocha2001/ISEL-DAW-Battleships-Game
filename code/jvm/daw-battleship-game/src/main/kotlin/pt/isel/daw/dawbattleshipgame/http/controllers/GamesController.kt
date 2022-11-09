@@ -51,7 +51,7 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.GAMES_GET_GAME_ID)
+    @GetMapping(Uris.GAMES_GAME_ID)
     fun getCurrentGameId(user: User): ResponseEntity<*> {
         val res = gameServices.getGameIdByUser(user.id)
         return when (res) {

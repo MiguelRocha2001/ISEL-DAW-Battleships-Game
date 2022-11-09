@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameAction
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel
@@ -30,7 +31,7 @@ class UsersController(
                 )
                 .body(siren(UserCreateOutputModel(res.value)) {
                     link(Uris.userCreate(), Rels.SELF)
-                    link(Uris.createToken(), Rels.TOKEN) // TODO -> should be in actions
+                    createTokenSirenAction(this)
                 })
             is Either.Left -> when (res.value) {
                 UserCreationError.InsecurePassword -> Problem.response(400, Problem.insecurePassword)
@@ -67,6 +68,7 @@ class UsersController(
             .body(
                 siren(UserHomeOutputModel(user.id, user.username)) {
                     link(Uris.userHome(), Rels.SELF)
+                    link(Uris.currentGameId(), Rels.GAME_ID)
                     buildStartGameAction(this)
                 }
             )

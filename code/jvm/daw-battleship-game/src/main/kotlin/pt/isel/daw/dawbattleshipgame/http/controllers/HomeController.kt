@@ -19,6 +19,7 @@ class HomeController(
         link(Uris.home(), Rels.SELF)
         link(Uris.usersStats(), Rels.USERS_STATS)
         link(Uris.serverInfo(), Rels.SERVER_INFO)
+        link(Uris.userHome(), Rels.USER_HOME)
         buildHomeActions(this)
     }
 
