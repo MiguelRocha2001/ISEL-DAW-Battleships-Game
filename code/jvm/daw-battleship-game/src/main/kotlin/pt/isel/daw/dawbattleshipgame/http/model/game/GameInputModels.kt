@@ -12,6 +12,9 @@ data class CreateGameInputModel(
     val roundTimeout: Int
 )
 
+data class FleetStateInputModel(val fleetConfirmed: Boolean)
+
+data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>)
 data class PlaceShipInputModel(
     val shipType: ShipTypeInputModel,
     val position: CoordinateInputModel,

@@ -12,39 +12,39 @@ sealed class GameCreationError: Error() {
 }
 typealias GameCreationResult = Either<GameCreationError, Pair<GameState, Int?>>
 
-sealed class PlaceShipError {
-    object GameNotFound: PlaceShipError()
-    object ActionNotPermitted : PlaceShipError()
-    object InvalidMove: PlaceShipError()
+sealed class PlaceShipsError {
+    object GameNotFound: PlaceShipsError()
+    object ActionNotPermitted : PlaceShipsError()
+    object InvalidMove: PlaceShipsError()
 }
-typealias PlaceShipResult = Either<PlaceShipError, Int>
+typealias PlaceShipsResult = Either<PlaceShipsError, List<Int>>
 
 sealed class MoveShipError {
     object GameNotFound: MoveShipError()
     object ActionNotPermitted : MoveShipError()
     object InvalidMove: MoveShipError()
 }
-typealias MoveShipResult = Either<MoveShipError, GameState>
+typealias MoveShipResult = Either<MoveShipError, Unit>
 
 sealed class RotateShipError {
     object GameNotFound: RotateShipError()
     object ActionNotPermitted : RotateShipError()
     object InvalidMove: RotateShipError()
 }
-typealias RotateShipResult = Either<RotateShipError, GameState>
+typealias RotateShipResult = Either<RotateShipError, Unit>
 
 sealed class FleetConfirmationError {
     object GameNotFound: FleetConfirmationError()
     object ActionNotPermitted : FleetConfirmationError()
 }
-typealias FleetConfirmationResult = Either<FleetConfirmationError, GameState>
+typealias FleetConfirmationResult = Either<FleetConfirmationError, Unit>
 
 sealed class PlaceShotError {
     object GameNotFound: PlaceShotError()
     object ActionNotPermitted : PlaceShotError()
     object InvalidMove: PlaceShotError()
 }
-typealias PlaceShotResult = Either<PlaceShotError, GameState>
+typealias PlaceShotResult = Either<PlaceShotError, Unit>
 
 sealed class GameSearchError {
     object GameNotFound: GameSearchError()

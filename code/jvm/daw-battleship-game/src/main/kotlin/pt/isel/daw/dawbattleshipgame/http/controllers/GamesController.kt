@@ -66,28 +66,46 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.GAMES_PLACE_SHIP)
-    fun placeShip(
+    @PutMapping(Uris.GAME_FLEET)
+    fun updateFleet(
         user: User,
         @PathVariable id: Int,
-        @RequestBody placeShipInputModel: PlaceShipInputModel
+        @RequestBody fleetStateInputModel: FleetStateInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.placeShip(
+        val res = gameServices.updateFleetState(id, user.id, fleetStateInputModel.fleetConfirmed)
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(204).build<Unit>()
+            is Either.Left -> when (res.value) {
+                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+            }
+        }
+    }
+
+    @PostMapping(Uris.GAME_FLEET)
+    fun placeShips(
+        user: User,
+        @PathVariable id: Int,
+        @RequestBody placeShipsInputModel: PlaceShipsInputModel
+    ): ResponseEntity<*> {
+        val res = gameServices.placeShips(
             id,
             user.id,
-            placeShipInputModel.shipType.toShipType(),
-            Coordinate(placeShipInputModel.position.row, placeShipInputModel.position.column),
-            placeShipInputModel.orientation.toOrientation()
+            placeShipsInputModel.ships.map { Triple(
+                it.shipType.toShipType(),
+                it.position.toCoordinate(),
+                it.orientation.toOrientation()
+            ) }
         )
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
+                .body(siren(PlaceShipsOutputModel(res.value)) {
                     links(placeShipLinks(id))
                 })
             is Either.Left -> when (res.value) {
-                PlaceShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                PlaceShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+                PlaceShipsError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                PlaceShipsError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                PlaceShipsError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }
@@ -136,24 +154,6 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.GAMES_CONFIRM_FLEET)
-    fun confirmFleet(
-        user: User,
-        @PathVariable id: Int
-    ): ResponseEntity<*> {
-        val res = gameServices.confirmFleet(id, user.id)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(confirmFleetLinks(id))
-                })
-            is Either.Left -> when (res.value) {
-                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-            }
-        }
-    }
-
     @PostMapping(Uris.GAMES_PLACE_SHOT)
     fun placeShot(
         user: User,
@@ -162,10 +162,7 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.placeShot(id, user.id, coordinate)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(placeShotLinks(id))
-                })
+            is Either.Right -> ResponseEntity.status(204).build<Unit>()
             is Either.Left -> when (res.value) {
                 PlaceShotError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
                 PlaceShotError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
@@ -226,7 +223,7 @@ class GamesController(
     }
 
     @GetMapping(Uris.GAME_BY_ID)
-    fun getGameInfo(
+    fun getGame(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {

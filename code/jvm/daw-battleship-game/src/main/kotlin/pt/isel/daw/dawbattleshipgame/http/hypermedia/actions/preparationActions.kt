@@ -10,7 +10,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
     // Place Ship
     sirenBuilderScope.action(
         name = "place-ship",
-        href = URI(Uris.GAMES_PLACE_SHIP.replace("{id}", ":id")),
+        href = URI(Uris.GAME_FLEET.replace("{id}", ":id")),
         method = HttpMethod.POST,
         type = "application/json"
     ) {

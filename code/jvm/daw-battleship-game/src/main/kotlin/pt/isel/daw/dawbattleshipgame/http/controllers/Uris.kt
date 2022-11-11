@@ -17,10 +17,9 @@ object Uris {
     const val GAMES_CREATE = "/games"
     const val GAME_BY_ID = "/games/{id}"
     const val GAMES_GAME_ID = "/games/current/id"
-    const val GAMES_PLACE_SHIP = "/games/{id}/ships/"
+    const val GAME_FLEET = "/games/{id}/ships/"
     const val GAMES_MOVE_SHIP = "/games/{id}/ships/{id}"
     const val GAMES_PLACE_SHOT = "/games/{id}/place-shot"
-    const val GAMES_CONFIRM_FLEET = "/games/{id}/confirm-fleet"
     const val GAMES_GET_MY_FLEET = "/games/{id}/my-fleet"
     const val GAMES_GET_OPPONENT_FLEET = "/games/{id}/opponent-fleet"
     const val GAMES_STATE = "/games/{id}/state"
@@ -48,7 +47,7 @@ object Uris {
     fun gameInfo(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
     fun currentGameId(): URI = URI(GAMES_GAME_ID)
 
-    fun placeShip(gameId: Int) = UriTemplate(GAMES_PLACE_SHIP).expand(gameId)
+    fun placeShip(gameId: Int) = UriTemplate(GAME_FLEET).expand(gameId)
     fun moveShip(gameId: Int) = UriTemplate(GAMES_MOVE_SHIP).expand(gameId)
     fun rotateShip(gameId: Int) = UriTemplate(GAMES_ROTATE_SHIP).expand(gameId)
     fun placeShot(gameId: Int) = UriTemplate(GAMES_PLACE_SHOT).expand(gameId)

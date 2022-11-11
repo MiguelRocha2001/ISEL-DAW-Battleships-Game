@@ -30,8 +30,8 @@ class GamePlaceShotServicesTests {
 
 
             //var game = gameServices.getGame(gameId) as Either.Right
-            gameServices.confirmFleet(gameId, userPair.first)
-            gameServices.confirmFleet(gameId, userPair.second)
+            gameServices.updateFleetState(gameId, userPair.first)
+            gameServices.updateFleetState(gameId, userPair.second)
             var game = gameServices.getGame(gameId)
             assertTrue(game is Either.Right)
 
@@ -73,8 +73,8 @@ class GamePlaceShotServicesTests {
             // apply some actions with player_1
             gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
             gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
-            gameServices.confirmFleet(gameId, userPair.first)
-            gameServices.confirmFleet(gameId, userPair.second)
+            gameServices.updateFleetState(gameId, userPair.first)
+            gameServices.updateFleetState(gameId, userPair.second)
 
             gameServices.placeShot(gameId, userPair.first, Coordinate(1,1)) // valid
             gameServices.placeShot(gameId, userPair.second, Coordinate(2,2)) // valid

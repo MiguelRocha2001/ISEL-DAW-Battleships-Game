@@ -15,7 +15,7 @@ data class UserStatOutputModel(val username: String, val wins: Int, val gamesPla
 
 data class GameInfoOutputModel(val state: GameStateOutputModel, val gameId: Int?)
 
-data class ShipPlacedOutputModel(val shipId: Int)
+data class PlaceShipsOutputModel(val shipIds: List<Int>)
 
 
 fun Board.toBoardOutputModel(): BoardOutputModel {

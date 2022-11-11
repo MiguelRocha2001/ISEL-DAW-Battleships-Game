@@ -125,7 +125,7 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
 }
 
 
-fun Game.confirmFleet(player: Player): Game {
+fun Game.updateFleetState(player: Player): Game {
     val isOtherConfirmed = getBoard(player.other()).isConfirmed()
     return this.updateGame(
         getBoard(player).confirm(),
