@@ -36,7 +36,7 @@ class GamesController(
             is Either.Right ->
                 ResponseEntity.status(if (res.value.second != null) 201 else 202) // It depends if the game was created
                     .body(
-                        siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
+                        siren(GameInfoOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
                             links(startGameLinks(res.value.second))
                         }
                     )
@@ -81,7 +81,7 @@ class GamesController(
         )
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(placeShipLinks(id))
                 })
             is Either.Left -> when (res.value) {
@@ -92,42 +92,46 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.GAMES_MOVE_SHIP)
-    fun moveShip(
+    @PutMapping(Uris.GAMES_MOVE_SHIP)
+    fun modifyShip(
         user: User,
         @PathVariable id: Int,
-        @RequestBody moveShipInputModel: MoveShipInputModel
+        @RequestBody alterShipInputModel: AlterShipInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.moveShip(id, user.id, moveShipInputModel.origin, moveShipInputModel.destination)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(moveShipLinks(id))
-                })
-            is Either.Left -> when (res.value) {
-                MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-            }
-        }
-    }
+        if (alterShipInputModel is MoveShipInputModel) {
+            val res = gameServices.moveShip(
+                id,
+                user.id,
+                alterShipInputModel.shipId,
+                alterShipInputModel.position.toCoordinate(),
+                alterShipInputModel.newCoordinate.toCoordinate()
+            )
+            return when (res) {
+                is Either.Right -> ResponseEntity.status(201)
+                    .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
+                        links(moveShipLinks(id))
+                    })
 
-    @PostMapping(Uris.GAMES_ROTATE_SHIP)
-    fun rotateShip(
-        user: User,
-        @PathVariable id: Int,
-        @RequestBody coordinate: Coordinate
-    ): ResponseEntity<*> {
-        val res = gameServices.rotateShip(id, user.id, coordinate)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(rotateShipLinks(id))
-                })
-            is Either.Left -> when (res.value) {
-                RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+                is Either.Left -> when (res.value) {
+                    MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                    MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                    MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+                }
+            }
+        } else {
+            alterShipInputModel as RotateShipInputModel
+            val res = gameServices.rotateShip(id, user.id, alterShipInputModel.shipId, alterShipInputModel.newOrientation)
+            return when (res) {
+                is Either.Right -> ResponseEntity.status(201)
+                    .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
+                        links(rotateShipLinks(id))
+                    })
+
+                is Either.Left -> when (res.value) {
+                    RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                    RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                    RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+                }
             }
         }
     }
@@ -140,7 +144,7 @@ class GamesController(
         val res = gameServices.confirmFleet(id, user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(confirmFleetLinks(id))
                 })
             is Either.Left -> when (res.value) {
@@ -159,7 +163,7 @@ class GamesController(
         val res = gameServices.placeShot(id, user.id, coordinate)
         return when (res) {
             is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
+                .body(siren(GameInfoOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(placeShotLinks(id))
                 })
             is Either.Left -> when (res.value) {

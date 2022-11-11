@@ -16,7 +16,7 @@ internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
 
 internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val dbGameMapper = getDbGameMapper(handle, gameId) ?: return null
-    val (player1DbBoardMapper, player2DbBoardMapper) = getDbBoardMapperMappers(handle, gameId)
+    val (player1DbBoardMapper, player2DbBoardMapper) = getDbBoardMappers(handle, gameId)
 
     val dbConfigurationMapper = getDbConfigurationMapper(handle, gameId) ?:
         throw IllegalStateException("Game $gameId has no configuration")
@@ -66,7 +66,7 @@ private fun getDbGameMapper(handle: Handle, gameId: Int): DbGameMapper? {
         .singleOrNull()
 }
 
-private fun getDbBoardMapperMappers(handle: Handle, gameId: Int): Pair<DbBoardMapper, DbBoardMapper> {
+private fun getDbBoardMappers(handle: Handle, gameId: Int): Pair<DbBoardMapper, DbBoardMapper> {
     val boards = handle.createQuery("select * from BOARD where game = :game")
         .bind("game", gameId)
         .mapTo<DbBoardMapper>()

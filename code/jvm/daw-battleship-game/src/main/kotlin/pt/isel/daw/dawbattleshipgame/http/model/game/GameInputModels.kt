@@ -19,6 +19,8 @@ data class PlaceShipInputModel(
 )
 
 data class CoordinateInputModel(val row: Int, val column: Int) {
+    fun toCoordinate() = Coordinate(row, column)
+
     init {
         require(row > 0) { "Row must be greater than 0" }
         require(column > 0) { "Column must be greater than 0" }
@@ -55,7 +57,15 @@ fun ShipTypeInputModel.toShipType() = when (this) {
     ShipTypeInputModel.DESTROYER -> ShipType.DESTROYER
 }
 
+sealed class AlterShipInputModel
+
 data class MoveShipInputModel(
-    val origin: Coordinate,
-    val destination: Coordinate
-)
+    val shipId: Int,
+    val position: CoordinateInputModel,
+    val newCoordinate: CoordinateInputModel
+) : AlterShipInputModel()
+
+data class RotateShipInputModel(
+    val shipId: Int,
+    val newOrientation: OrientationInputModel
+) : AlterShipInputModel()

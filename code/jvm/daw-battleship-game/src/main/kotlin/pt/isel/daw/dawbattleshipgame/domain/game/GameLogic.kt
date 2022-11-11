@@ -15,6 +15,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
  * @return updated Game or null, if is not possible to position [shipType] in [position]
  */
 fun Game.placeShip(
+    shipId: Int,
     shipType: ShipType,
     position: Coordinate,
     orientation: Orientation,
@@ -25,8 +26,8 @@ fun Game.placeShip(
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
         val shipCoordinates = generateShipCoordinates(shipType, position, orientation, player) ?: throw Exception()
         return when (player) {
-            Player.ONE -> this.updateGame(board1.placeShip(shipCoordinates, shipType), Player.ONE, null)
-            Player.TWO -> this.updateGame(board2.placeShip(shipCoordinates, shipType), Player.TWO, null)
+            Player.ONE -> this.updateGame(board1.placeShip(shipCoordinates, shipType, shipId), Player.ONE, null)
+            Player.TWO -> this.updateGame(board2.placeShip(shipCoordinates, shipType, shipId), Player.TWO, null)
         }
     } catch (e: Exception) {
         null
@@ -37,13 +38,14 @@ fun Game.placeShip(
  * Tries to place a ship, giving its coordinates and its type
  */
 private fun Game.placeShip(
+    shipId: Int,
     shipType: ShipType,
     coordinates: CoordinateSet,
     player: Player = Player.ONE
 ): Game? {
     return try {
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
-        return this.updateGame(getBoard(player).placeShip(coordinates, shipType), player, null)
+        return this.updateGame(getBoard(player).placeShip(coordinates, shipType, shipId), player, null)
     } catch (e: Exception) {
         null
     }
@@ -53,14 +55,15 @@ private fun Game.placeShip(
  * Generates a new Warmup Board with a moved ship
  */
 fun Game.moveShip(
+    shipId: Int,
     position: Coordinate,
-    destination: Coordinate,
+    newCoordinate: Coordinate,
     player: Player = Player.ONE,
 ): Game? {
     return try {
-        val ship = getBoard(player).getShips().getShip(position)
-        val newCoordinates = ship.coordinates.moveFromTo(position, destination, this.configuration.boardSize)
-        val newGame = this.removeShip(position, player)?.placeShip(ship.type, newCoordinates, player) ?: return null
+        val ship = getBoard(player).getShips().getShip(shipId)
+        val newCoordinates = ship.coordinates.moveFromTo(position, newCoordinate, this.configuration.boardSize)
+        val newGame = this.removeShip(shipId, player)?.placeShip(shipId, ship.type, newCoordinates, player) ?: return null
         if (isShipTouchingAnother(player, newCoordinates, ship.type)) return null
         else newGame
     } catch (e: Exception) {
@@ -73,10 +76,9 @@ fun Game.moveShip(
  * @param p coordinate where the ship is located (some part of the ship)
  * @return new Game with ship removed or null if ship was not found, for [p]
  */
-private fun Game.removeShip(p: Coordinate, player: Player = Player.ONE): Game? {
+private fun Game.removeShip(shipId: Int, player: Player = Player.ONE): Game? {
     return try {
-        if (!getBoard(player).isShip(p)) throw Exception()
-        val ship = getBoard(player).getShips().getShip(p)
+        val ship = getBoard(player).getShips().getShip(shipId)
         val shipCoordinates = ship.coordinates
         return this.updateGame(getBoard(player).placeWaterPanel(shipCoordinates), player, null)
     } catch (e: Exception) {
@@ -88,13 +90,14 @@ private fun Game.removeShip(p: Coordinate, player: Player = Player.ONE): Game? {
  * Tries to rotate a ship, if possible.
  * @return newly created game, with ship rotated, or null if not possible
  */
-fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
+fun Game.rotateShip(shipId: Int, orientation: Orientation? = null, player: Player = Player.ONE): Game? {
     return try {
-        val ship = getBoard(player).getShips().getShip(position)
+        val ship = getBoard(player).getShips().getShip(shipId)
         val curOrientation = ship.getOrientation()
-        val shipPosOrigin = getBoard(player).getShips().getShip(position).coordinates.first()
-        val tmpGame = removeShip(position, player)
-        return tmpGame?.placeShip(ship.type, shipPosOrigin, curOrientation.other(), player)
+        val shipPosOrigin = getBoard(player).getShips().getShip(shipId).coordinates.first()
+        val tmpGame = removeShip(shipId, player)
+        val newOrientation = orientation ?: curOrientation.other()
+        return tmpGame?.placeShip(shipId, ship.type, shipPosOrigin, newOrientation, player)
     } catch (e: Exception) {
         null
     }

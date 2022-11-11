@@ -17,7 +17,7 @@ sealed class PlaceShipError {
     object ActionNotPermitted : PlaceShipError()
     object InvalidMove: PlaceShipError()
 }
-typealias PlaceShipResult = Either<PlaceShipError, GameState>
+typealias PlaceShipResult = Either<PlaceShipError, Int>
 
 sealed class MoveShipError {
     object GameNotFound: MoveShipError()

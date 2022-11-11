@@ -12,7 +12,11 @@ data class UserStatsOutputModel(val users: List<UserStatOutputModel>)
 data class UserStatOutputModel(val username: String, val wins: Int, val gamesPlayed: Int)
 
 
-data class GameActionOutputModel(val state: GameStateOutputModel, val gameId: Int?)
+
+data class GameInfoOutputModel(val state: GameStateOutputModel, val gameId: Int?)
+
+data class ShipPlacedOutputModel(val shipId: Int)
+
 
 fun Board.toBoardOutputModel(): BoardOutputModel {
     /* Disabled temporary

@@ -16,10 +16,9 @@ object Uris {
 
     const val GAMES_CREATE = "/games"
     const val GAME_BY_ID = "/games/{id}"
-    const val GAMES_GAME_ID = "/games/current"
-    const val GAMES_PLACE_SHIP = "/games/{id}/place-ship"
-    const val GAMES_MOVE_SHIP = "/games/{id}/move-ship"
-    const val GAMES_ROTATE_SHIP = "/games/{id}/rotate-ship"
+    const val GAMES_GAME_ID = "/games/current/id"
+    const val GAMES_PLACE_SHIP = "/games/{id}/ships/"
+    const val GAMES_MOVE_SHIP = "/games/{id}/ships/{id}"
     const val GAMES_PLACE_SHOT = "/games/{id}/place-shot"
     const val GAMES_CONFIRM_FLEET = "/games/{id}/confirm-fleet"
     const val GAMES_GET_MY_FLEET = "/games/{id}/my-fleet"

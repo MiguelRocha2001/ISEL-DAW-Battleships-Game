@@ -35,7 +35,7 @@ class Board {
      * Returns a string for the database representation
      */
     fun getDbString() = board.joinToString("") {
-        it.getDbIcon().toString()
+        it.getDbIcon().toString() + it.shipId
     }
 
     private constructor(board: List<Panel>, confirm: Boolean) {
@@ -51,7 +51,7 @@ class Board {
     constructor(string: String, confirm : Boolean = false){
         dimension = sqrt(string.length.toDouble()).toInt()
         coordinates = Coordinates(dimension)
-        this.board = string.mapIndexed{ idx, char ->
+        this.board = string.mapIndexed { idx, char ->
             char.getPanel(coordinates.values()[idx])
         }
         this.confirmed =  confirm
@@ -100,12 +100,13 @@ class Board {
      * Place a ship with given set of coordinates and a ship type
      * @return a new Board with the panels affected
      */
-    fun placeShip(cs : CoordinateSet, shipType: ShipType) =
-        Board(board.toMutableList().apply {
+    fun placeShip(cs : CoordinateSet, shipType: ShipType, shipId: Int): Board {
+        return Board(board.toMutableList().apply {
             cs.forEach {
-                this[getIdx(it)] = Panel(it, shipType)
+                this[getIdx(it)] = Panel(it, shipType, shipId = shipId)
             }
         }, confirmed)
+    }
 
     /**
      * Places a set of coordinates as water panels
@@ -152,9 +153,10 @@ class Board {
     private fun getShipFromBoard(type : ShipType): Ship? {
         val coordinates = board[type]
         if (coordinates.isEmpty()) return null
+        val shipId = coordinates.firstOrNull()?.shipId ?: throw IllegalStateException("Should not have been null")
         return Ship(coordinates.map {
             it.coordinate
-        }.toSet(), type, coordinates.checkSunk())
+        }.toSet(), type, coordinates.checkSunk(), shipId)
     }
 
 }
