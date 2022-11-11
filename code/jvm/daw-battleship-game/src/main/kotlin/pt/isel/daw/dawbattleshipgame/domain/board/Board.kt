@@ -157,4 +157,11 @@ class Board {
         }.toSet(), type, coordinates.checkSunk())
     }
 
+    /**
+     * Confirm all ships are placed, all types and size are correct
+     */
+    fun allShipsPlaced(fleet : Map<ShipType, Int>) =
+            this.getShips().all {
+                fleet[it.type] == it.coordinates.size
+            }
 }

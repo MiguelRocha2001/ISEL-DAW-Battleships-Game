@@ -1,9 +1,12 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.GameState
+import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 internal fun insertGame(handle: Handle, game: Game) {
@@ -20,6 +23,20 @@ internal fun insertGame(handle: Handle, game: Game) {
         .bind("winner", game.winner)
         .bind("player_turn", game.playerTurn)
         .execute()
+}
+
+internal fun makeGame(handle: Handle, game: InitGame): Int? {
+    return handle.createUpdate(
+            """
+                insert into GAME(player1, player2)
+                values(:player1, :player2) 
+            """
+    )
+            .bind("player1", game.player1)
+            .bind("player2", game.player2)
+            .executeAndReturnGeneratedKeys()
+            .mapTo<Int>()
+            .firstOrNull()
 }
 
 internal fun insertBoards(handle: Handle, game: Game) {

@@ -101,6 +101,19 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
 }
 
 
+fun Game.confirmFleet(player: Player): Game {
+    require(getBoard(player).allShipsPlaced(configuration.fleet.toMap())){
+        "All ships must be placed"
+    }
+    val isOtherConfirmed = getBoard(player.other()).isConfirmed()
+    return this.updateGame(
+        getBoard(player).confirm(),
+        player,
+        if (isOtherConfirmed) this.player1 else null, // player 1 always starts first
+        if (isOtherConfirmed) GameState.BATTLE else GameState.FLEET_SETUP
+    )
+}
+
 /**
  * Builds a new Game object, with place shot on [shot], in opponent board.
  * If this shot sinks all enemy fleet, the game is over. In this case, End object is returned.
@@ -110,7 +123,7 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
         val opponentBoard = getBoard(player.other())
         if (playerTurn != userId || opponentBoard.isHit(shot)) return null
         val gameResult =
-            this.updateGame(opponentBoard.placeShot(shot), player.other(), getPlayerId(player.other()), GameState.BATTLE)
+                this.updateGame(opponentBoard.placeShot(shot), player.other(), getPlayerId(player.other()), GameState.BATTLE)
         if (gameResult.getBoard(player.other()).allShipsSunk()) {
             gameResult.setWinner(userId)
         } else {
@@ -119,17 +132,6 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
     } catch (e: Exception) {
         null
     }
-}
-
-
-fun Game.confirmFleet(player: Player): Game {
-    val isOtherConfirmed = getBoard(player.other()).isConfirmed()
-    return this.updateGame(
-        getBoard(player).confirm(),
-        player,
-        if (isOtherConfirmed) this.player1 else null, // player 1 always starts first
-        if (isOtherConfirmed) GameState.BATTLE else GameState.FLEET_SETUP
-    )
 }
 
 /** ------------------------------------------ Auxiliary functions ---------------------------------------**/

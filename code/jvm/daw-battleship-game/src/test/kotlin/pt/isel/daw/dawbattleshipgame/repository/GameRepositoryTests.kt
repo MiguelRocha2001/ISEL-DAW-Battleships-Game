@@ -50,4 +50,30 @@ class GameRepositoryTests {
             }
         }
     }
+
+    @Test
+    fun testNewCreateGame() {
+        testWithTransactionManagerAndRollback { transactionManager ->
+            transactionManager.run { transaction ->
+                val passwordValidationInfo1 = PasswordValidationInfo(passwordEncoder.encode("User1password"))
+                val passwordValidationInfo2 = PasswordValidationInfo(passwordEncoder.encode("User2password"))
+                val usersRepo = transaction.usersRepository
+                val player1Id = usersRepo.storeUser("user1", passwordValidationInfo1)
+                val player2Id = usersRepo.storeUser("user2", passwordValidationInfo2)
+                val gamesRepo = transaction.gamesRepository
+                resetGamesDatabase(gamesRepo) // clears all games
+                val configuration = getGameTestConfiguration()
+                val game = Game.startGame(player1Id, player2Id, configuration) // PreparationPhase
+                val gameId = gamesRepo.startGame(game)
+                requireNotNull(gameId)
+                val gameFromDb = gamesRepo.getGame(gameId)
+                checkNotNull(gameFromDb)
+                assert(gameFromDb.gameId == gameId)
+                assert(gameFromDb.configuration == configuration)
+                assert(gameFromDb.player1 == player1Id)
+                assert(gameFromDb.player2 == player2Id)
+                assert(gameFromDb.state == GameState.FLEET_SETUP)
+            }
+        }
+    }
 }

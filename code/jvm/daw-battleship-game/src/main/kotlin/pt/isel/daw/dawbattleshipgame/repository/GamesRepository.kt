@@ -1,10 +1,12 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
 
 
 interface GamesRepository {
     fun saveGame(game: Game)
+    fun startGame(game: InitGame) : Int?
     fun removeGame(gameId: Int)
     fun emptyRepository()
     fun getGame(gameId: Int): Game?

@@ -15,8 +15,8 @@ create table TOKEN(
 );
 
 create table GAME(
-    id int primary key,
-    state varchar(32) check (state in ('not_started', 'fleet_setup', 'waiting', 'battle' , 'finished')),
+    id serial primary key,
+    state varchar(32) default 'fleet_setup' check (state in ('not_started', 'fleet_setup', 'waiting', 'battle' , 'finished')),
     player1 int not null,
     player2 int not null,
     winner int default null,

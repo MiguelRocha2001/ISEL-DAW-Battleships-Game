@@ -47,14 +47,14 @@ class GamesController(
                 ) // TODO: check if this is the correct error
                 GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userAlreadyInQueue)
                 GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userAlreadyInGame)
+                GameCreationError.UnableToCreateGame -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }
 
     @GetMapping(Uris.GAMES_GAME_ID)
     fun getCurrentGameId(user: User): ResponseEntity<*> {
-        val res = gameServices.getGameIdByUser(user.id)
-        return when (res) {
+        return when (val res = gameServices.getGameIdByUser(user.id)) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameIdOutputModel(res.value)) {
                     links(gameByIdLinks(user.id))
@@ -98,8 +98,7 @@ class GamesController(
         @PathVariable id: Int,
         @RequestBody moveShipInputModel: MoveShipInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.moveShip(id, user.id, moveShipInputModel.origin, moveShipInputModel.destination)
-        return when (res) {
+        return when (val res = gameServices.moveShip(id, user.id, moveShipInputModel.origin, moveShipInputModel.destination)) {
             is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(moveShipLinks(id))
@@ -118,8 +117,7 @@ class GamesController(
         @PathVariable id: Int,
         @RequestBody coordinate: Coordinate
     ): ResponseEntity<*> {
-        val res = gameServices.rotateShip(id, user.id, coordinate)
-        return when (res) {
+        return when (val res = gameServices.rotateShip(id, user.id, coordinate)) {
             is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(rotateShipLinks(id))
@@ -137,8 +135,7 @@ class GamesController(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.confirmFleet(id, user.id)
-        return when (res) {
+        return when (val res = gameServices.confirmFleet(id, user.id)) {
             is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(confirmFleetLinks(id))
@@ -156,8 +153,7 @@ class GamesController(
         @PathVariable id: Int,
         @RequestBody coordinate: Coordinate
     ): ResponseEntity<*> {
-        val res = gameServices.placeShot(id, user.id, coordinate)
-        return when (res) {
+        return when (val res = gameServices.placeShot(id, user.id, coordinate)) {
             is Either.Right -> ResponseEntity.status(201)
                 .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
                     links(placeShotLinks(id))
@@ -175,8 +171,7 @@ class GamesController(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getMyFleetLayout(id, user.id)
-        return when (res) {
+        return when (val res = gameServices.getMyFleetLayout(id, user.id)) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
 
@@ -192,8 +187,7 @@ class GamesController(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getOpponentFleet(id, user.id)
-        return when (res) {
+        return when (val res = gameServices.getOpponentFleet(id, user.id)) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
 
@@ -209,8 +203,7 @@ class GamesController(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getGameState(id)
-        return when (res) {
+        return when (val res = gameServices.getGameState(id)) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameStateOutputModel.get(res.value)) {
 
@@ -226,8 +219,7 @@ class GamesController(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getGame(id)
-        return when (res) {
+        return when (val res = gameServices.getGame(id)) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(
                     GameOutputModel(
@@ -253,8 +245,7 @@ class GamesController(
     fun deleteGame(
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.deleteGame(id)
-        return when (res) {
+        return when (val res = gameServices.deleteGame(id)) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value) {
 

@@ -7,14 +7,14 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.placeShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
+import pt.isel.daw.dawbattleshipgame.utils.generateId
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
 
 
 class GameTestPlacing {
-    private val gameId = generateRandomId()
-    private val player1 = generateRandomId()
-    private val player2 = generateRandomId()
+    private val gameId = generateId()
+    private val player1 = generateId()
+    private val player2 = generateId()
     private val configuration = getGameTestConfiguration()
 
     @Test

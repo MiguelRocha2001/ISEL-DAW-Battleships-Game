@@ -3,6 +3,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 
 
@@ -29,6 +30,14 @@ class JdbiGamesRepository(
         insertGame(handle, game)
         insertBoards(handle, game)
         insertConfiguration(handle, game.gameId, game.configuration)
+    }
+
+    override fun startGame(game : InitGame) : Int? {
+        val gameId = makeGame(handle, game) ?: return null
+        insertBoard(handle, gameId, game.player1, game.board1)
+        insertBoard(handle, gameId, game.player2, game.board2)
+        insertConfiguration(handle, gameId, game.configuration)
+        return gameId
     }
 
     override fun removeGame(gameId: Int) {

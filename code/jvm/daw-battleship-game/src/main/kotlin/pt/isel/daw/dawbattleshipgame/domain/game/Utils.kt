@@ -1,13 +1,13 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
 
-fun requireNull(value: Int?) {
+fun <T> checkNull(value: T?) {
     require(value == null) {
         "Illegal game state"
     }
 }
 
-fun requireNotNull(value: Int?) {
+fun <T> checkNotNull(value: T?) {
     require(value != null) {
         "Illegal game state"
     }

@@ -19,6 +19,11 @@ enum class GameState {
 fun String.getDbState() =
     GameState.values().first { it.dbName == this }
 
+class InitGame(val player1 : Int, val player2: Int, val configuration : Configuration){
+    val board1 = Board(configuration.boardSize)
+    val board2 = Board(configuration.boardSize)
+}
+
 class Game (
     val gameId: Int,
     val configuration: Configuration,
@@ -26,7 +31,7 @@ class Game (
     val player2: Int,
     val board1: Board,
     val board2: Board,
-    val state: GameState,
+    val state: GameState = NOT_STARTED,
 
     val playerTurn: Int? =
         if (state == NOT_STARTED || state == FLEET_SETUP)
@@ -37,19 +42,19 @@ class Game (
     init {
         when (state) {
             NOT_STARTED -> {
-                requireNull(playerTurn); requireNull(winner)
+                checkNull(playerTurn); checkNull(winner);
             }
             FLEET_SETUP -> {
-                requireNull(playerTurn); requireNull(winner)
+                checkNull(playerTurn); checkNull(winner)
             }
             WAITING -> {
-                requireNull(playerTurn); requireNull(winner)
+                checkNull(playerTurn); checkNull(winner)
             }
             BATTLE -> {
-                requireNotNull(playerTurn); requireNull(winner)
+                checkNotNull(playerTurn); checkNull(winner)
             }
             FINISHED -> {
-                requireNotNull(playerTurn); requireNotNull(winner)
+                checkNotNull(playerTurn); checkNotNull(winner)
             }
         }
     }
@@ -86,6 +91,8 @@ class Game (
                 Board(configuration.boardSize),
                 FLEET_SETUP
             )
+        fun startGame(player1: Int, player2: Int, configuration: Configuration) =
+                InitGame(player1, player2, configuration)
     }
 
     internal fun getPlayerId(player: Player) =
@@ -94,6 +101,6 @@ class Game (
             Player.TWO -> player2
         }
 
-    //TODO() to be changed, its like this because of the tests
+    //TODO(to be changed, its like this because of the tests)
     override fun toString(): String = board1.toString()
 }

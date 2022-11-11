@@ -9,7 +9,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
-import pt.isel.daw.dawbattleshipgame.utils.generateRandomId
+import pt.isel.daw.dawbattleshipgame.utils.generateId
 
 @Component
 class GameServices(
@@ -35,9 +35,10 @@ class GameServices(
                 Either.Right(GameState.NOT_STARTED to null)
             } else {
                 userDb.removeUserFromQueue(userWaiting)
-                val newGame = Game.newGame(generateRandomId(), userWaiting, userId, configuration)
-                gameDb.saveGame(newGame)
-                Either.Right(newGame.state to newGame.gameId)
+                val newGame = Game.startGame(userWaiting, userId, configuration)
+                val gameId = gameDb.startGame(newGame)
+                gameId ?: Either.Left(GameCreationError.GameNotFound)
+                Either.Right(GameState.FLEET_SETUP to gameId)
             }
         }
     }

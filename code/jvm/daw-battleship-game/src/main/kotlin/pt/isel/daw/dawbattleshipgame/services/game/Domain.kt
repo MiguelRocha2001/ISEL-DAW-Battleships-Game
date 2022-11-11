@@ -9,6 +9,7 @@ sealed class GameCreationError: Error() {
     object GameNotFound: GameCreationError()
     object UserAlreadyInGame : GameCreationError()
     object UserAlreadyInQueue : GameCreationError()
+    object UnableToCreateGame : GameCreationError()
 }
 typealias GameCreationResult = Either<GameCreationError, Pair<GameState, Int?>>
 
