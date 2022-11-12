@@ -9,7 +9,6 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
-import pt.isel.daw.dawbattleshipgame.utils.generateId
 
 @Component
 class GameServices(
@@ -50,7 +49,8 @@ class GameServices(
             if (usersDb.isInQueue(userId)) {
                 return@run Either.Left(GameIdError.UserInGameQueue)
             }
-            val game = gamesDb.getGameByUser(userId) ?: return@run Either.Left(GameIdError.GameNotFound)
+            val game = gamesDb.getGameByUser(userId) ?:
+                return@run Either.Left(GameIdError.GameNotFound)
             Either.Right(game.gameId)
         }
     }

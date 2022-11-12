@@ -15,10 +15,10 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
  * @return updated Game or null, if is not possible to position [shipType] in [position]
  */
 fun Game.placeShip(
-    shipType: ShipType,
-    position: Coordinate,
-    orientation: Orientation,
-    player: Player = Player.ONE
+        shipType: ShipType,
+        position: Coordinate,
+        orientation: Orientation,
+        player: Player = Player.ONE
 ): Game? {
     if (isShipPlaced(shipType, player)) return null
     return try {
@@ -37,12 +37,13 @@ fun Game.placeShip(
  * Tries to place a ship, giving its coordinates and its type
  */
 private fun Game.placeShip(
-    shipType: ShipType,
-    coordinates: CoordinateSet,
-    player: Player = Player.ONE
+        shipType: ShipType,
+        coordinates: CoordinateSet,
+        player: Player = Player.ONE
 ): Game? {
     return try {
         if (!this.configuration.isShipValid(shipType)) throw Exception("Invalid ship type")
+        if (isShipTouchingAnother(player, coordinates, shipType)) throw Exception("Invalid location")
         return this.updateGame(getBoard(player).placeShip(coordinates, shipType), player, null)
     } catch (e: Exception) {
         null
@@ -53,9 +54,9 @@ private fun Game.placeShip(
  * Generates a new Warmup Board with a moved ship
  */
 fun Game.moveShip(
-    position: Coordinate,
-    destination: Coordinate,
-    player: Player = Player.ONE,
+        position: Coordinate,
+        destination: Coordinate,
+        player: Player = Player.ONE,
 ): Game? {
     return try {
         val ship = getBoard(player).getShips().getShip(position)
@@ -102,15 +103,15 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
 
 
 fun Game.confirmFleet(player: Player): Game {
-    require(getBoard(player).allShipsPlaced(configuration.fleet.toMap())){
+    require(getBoard(player).allShipsPlaced(configuration.fleet.toMap())) {
         "All ships must be placed"
     }
     val isOtherConfirmed = getBoard(player.other()).isConfirmed()
     return this.updateGame(
-        getBoard(player).confirm(),
-        player,
-        if (isOtherConfirmed) this.player1 else null, // player 1 always starts first
-        if (isOtherConfirmed) GameState.BATTLE else GameState.FLEET_SETUP
+            getBoard(player).confirm(),
+            player,
+            if (isOtherConfirmed) this.player1 else null, // player 1 always starts first
+            if (isOtherConfirmed) GameState.BATTLE else GameState.FLEET_SETUP
     )
 }
 
@@ -140,13 +141,13 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): 
  * @returns List of Coordinates with positions to build a ship or null if impossible
  */
 private fun Game.generateShipCoordinates(
-    ship: ShipType, position: Coordinate,
-    orientation: Orientation, player: Player
+        ship: ShipType, position: Coordinate,
+        orientation: Orientation, player: Player
 ): CoordinateSet? {
     if (getBoard(player).isShip(position)) return null
 
-    val shipCoordinates = generateShipPanels(
-        getShipLength(ship), position, orientation, player
+    val shipCoordinates = getBoard(player).generateCoordinates(
+            getShipLength(ship), position, orientation
     ) ?: return null
 
     if (isShipTouchingAnother(player, shipCoordinates, ship)) return null
@@ -157,45 +158,52 @@ private fun Game.generateShipCoordinates(
  * Detects if a Ship, given by [shipCoordinates] is touching another Ship (ShipPanel).
  */
 private fun Game.isShipTouchingAnother(player: Player, shipCoordinates: CoordinateSet, shipType: ShipType): Boolean =
-    shipCoordinates.any { isShipNearCoordinate(it, getBoard(player), shipType) }
+        shipCoordinates.any { isShipNearCoordinate(it, getBoard(player), shipType) }
 
 /**
  * Check if any ship from the player is near the coordinate
  */
 private fun isShipNearCoordinate(c: Coordinate, board: Board, shipType: ShipType) =
-    board.coordinates.radius(c).any {
-        board.isShip(it) && (board[it].shipType != shipType)
-    }
+        board.coordinates.radius(c).any {
+            board.isShip(it) && (board[it].shipType != shipType)
+        }
 
-/**
- * Generates the coordinates needed to make the ship
- */
-private fun Game.generateShipPanels(
-    size: Int,
-    coordinate: Coordinate,
-    orientation: Orientation,
-    player: Player
-): CoordinateSet? {
-    var auxCoordinate = coordinate
-    val set = mutableSetOf(coordinate)
-    repeat(size - 1) {
-        auxCoordinate = if (orientation === Orientation.HORIZONTAL)
-            getBoard(player).coordinates.right(auxCoordinate) ?: return null
-        else
-            getBoard(player).coordinates.down(auxCoordinate) ?: return null
-        set.add(auxCoordinate)
-    }
-    return set
-}
 
 /**
  * Retrieves the ship length according to class game configuration.
  */
 private fun Game.getShipLength(shipType: ShipType) =
-    configuration.fleet.first { it.first === shipType }.second
+        configuration.fleet.first { it.first === shipType }.second
 
 private fun Game.isShipPlaced(shipType: ShipType, player: Player) =
-    getBoard(player).getShips().map { it.type }.any { it === shipType }
+        getBoard(player).getShips().map { it.type }.any { it === shipType }
+
+
+fun Game.generateShips(): Game {
+    var game = this
+    var auxGame: Game?
+
+    //wrap function inside to fix repeated code
+    fun tryRandomCoordinate(board: Board, size: Int, shipType: ShipType, player: Player) {
+        do {
+            val coordinates = board.generateCoordinates(size,
+                    board.coordinates.random(), Orientation.random()
+            )
+            auxGame = if (coordinates != null) {
+                game.placeShip(shipType, coordinates, player)
+            } else null
+
+        } while (auxGame == null)
+        game = auxGame!!
+        auxGame = null
+    }
+
+    configuration.fleet.forEach {
+        tryRandomCoordinate(board1, it.second, it.first, Player.ONE)
+        tryRandomCoordinate(board2, it.second, it.first, Player.TWO)
+    }
+    return game
+}
 
 
 /**-------------------------------------------------------------------------------------------------------------------------------**/

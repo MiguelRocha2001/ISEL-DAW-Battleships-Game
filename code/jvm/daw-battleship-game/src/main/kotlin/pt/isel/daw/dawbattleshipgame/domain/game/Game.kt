@@ -42,7 +42,7 @@ class Game (
     init {
         when (state) {
             NOT_STARTED -> {
-                checkNull(playerTurn); checkNull(winner);
+                checkNull(playerTurn); checkNull(winner)
             }
             FLEET_SETUP -> {
                 checkNull(playerTurn); checkNull(winner)
@@ -80,13 +80,21 @@ class Game (
             Player.TWO -> board2
         }
 
+    /**
+     * Check if all ships have been placed
+     * @return true if all ships placed, false otherwise
+     */
+    fun allShipsPlaced() =
+            configuration.fleet.toMap().let {
+                board1.allShipsPlaced(it) &&
+                        board2.allShipsPlaced(it)
+            }
+
     companion object {
         fun newGame(gameId: Int, player1: Int, player2: Int, configuration: Configuration) =
             Game(
-                gameId,
-                configuration,
-                player1,
-                player2,
+                gameId, configuration,
+                player1, player2,
                 Board(configuration.boardSize),
                 Board(configuration.boardSize),
                 FLEET_SETUP

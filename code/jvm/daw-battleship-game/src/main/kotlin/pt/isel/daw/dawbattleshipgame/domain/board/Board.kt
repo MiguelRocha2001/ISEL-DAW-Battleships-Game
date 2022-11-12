@@ -1,15 +1,18 @@
 package pt.isel.daw.dawbattleshipgame.domain.board
 
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
+import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.Ship
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.getPanel
 import kotlin.math.sqrt
 
 class Board {
-    private val dimension : Int
-    val board : List<Panel>
-    val coordinates : Coordinates
-    private val confirmed : Boolean
+    private val dimension: Int
+    val board: List<Panel>
+    val coordinates: Coordinates
+    private val confirmed: Boolean
 
     /**
      * Initiates the board with empty panels (Water Panels)
@@ -48,20 +51,20 @@ class Board {
     /**
      * Initialize a board with a string from DB
      */
-    constructor(string: String, confirm : Boolean = false){
+    constructor(string: String, confirm: Boolean = false) {
         dimension = sqrt(string.length.toDouble()).toInt()
         coordinates = Coordinates(dimension)
-        this.board = string.mapIndexed{ idx, char ->
+        this.board = string.mapIndexed { idx, char ->
             char.getPanel(coordinates.values()[idx])
         }
-        this.confirmed =  confirm
+        this.confirmed = confirm
     }
 
     private operator fun List<Panel>.get(c: Coordinate): Panel {
         return board[getIdx(c)]
     }
 
-    operator fun get(i : Int) = board[i]
+    operator fun get(i: Int) = board[i]
 
     private fun getIdx(c: Coordinate) = c.checkValid(dimension).let {
         (c.row - 1) * dimension + (c.column - 1)
@@ -70,8 +73,8 @@ class Board {
     override fun toString(): String {
         var str = "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n"
         for (i in 0 until dimension) {
-            str += "| ${i+1}"
-            str = if (i+1 < 10 ) "$str |" else "$str|"
+            str += "| ${i + 1}"
+            str = if (i + 1 < 10) "$str |" else "$str|"
             for (j in 0 until dimension) {
                 str += ' ' + board[i * dimension + j].toString() + " |"
             }
@@ -81,11 +84,11 @@ class Board {
     }
 
     private operator fun List<Panel>.get(shipType: ShipType) =
-        board.filter { it.shipType == shipType }
+            board.filter { it.shipType == shipType }
 
     operator fun get(coordinate: Coordinate) =
-        coordinate.checkValid(dimension)
-        .let { board[getIdx(coordinate)] }
+            coordinate.checkValid(dimension)
+                    .let { board[getIdx(coordinate)] }
 
     fun isHit(c: Coordinate) = this[c].isHit
 
@@ -100,23 +103,23 @@ class Board {
      * Place a ship with given set of coordinates and a ship type
      * @return a new Board with the panels affected
      */
-    fun placeShip(cs : CoordinateSet, shipType: ShipType) =
-        Board(board.toMutableList().apply {
-            cs.forEach {
-                this[getIdx(it)] = Panel(it, shipType)
-            }
-        }, confirmed)
+    fun placeShip(cs: CoordinateSet, shipType: ShipType) =
+            Board(board.toMutableList().apply {
+                cs.forEach {
+                    this[getIdx(it)] = Panel(it, shipType)
+                }
+            }, confirmed)
 
     /**
      * Places a set of coordinates as water panels
      * @return a new Board with the panels affected
      */
-    fun placeWaterPanel(cs : CoordinateSet) =
-        Board(board.toMutableList().apply {
-            cs.forEach {
-                this[getIdx(it)] = Panel(it, null, this[it].isHit)
-            }
-        }, confirmed)
+    fun placeWaterPanel(cs: CoordinateSet) =
+            Board(board.toMutableList().apply {
+                cs.forEach {
+                    this[getIdx(it)] = Panel(it, null, this[it].isHit)
+                }
+            }, confirmed)
 
     /**
      * Check if coordinate is a ship
@@ -127,10 +130,10 @@ class Board {
      * Place a shot in the board (change to hit the panel)
      * @return a new Board with the panels affected
      */
-    fun placeShot(c : Coordinate) =
-        Board(board.toMutableList().apply {
-            this[getIdx(c)] = this[c].hit()
-        }, confirmed)
+    fun placeShot(c: Coordinate) =
+            Board(board.toMutableList().apply {
+                this[getIdx(c)] = this[c].hit()
+            }, confirmed)
 
 
     /**
@@ -149,7 +152,7 @@ class Board {
     /**
      * Returns a ship from the board, given a specific ShipType
      */
-    private fun getShipFromBoard(type : ShipType): Ship? {
+    private fun getShipFromBoard(type: ShipType): Ship? {
         val coordinates = board[type]
         if (coordinates.isEmpty()) return null
         return Ship(coordinates.map {
@@ -160,8 +163,25 @@ class Board {
     /**
      * Confirm all ships are placed, all types and size are correct
      */
-    fun allShipsPlaced(fleet : Map<ShipType, Int>) =
-            this.getShips().all {
+    fun allShipsPlaced(fleet: Map<ShipType, Int>) =
+            getShips().all {
                 fleet[it.type] == it.coordinates.size
-            }
+            } && getShips().size == fleet.size
+
+    /**
+     * Generate Coordinates
+     */
+    fun generateCoordinates(size: Int, origin: Coordinate, orientation: Orientation
+    ): CoordinateSet? {
+        var auxCoordinate = origin
+        val set = mutableSetOf(origin)
+        repeat(size - 1) {
+            auxCoordinate = if (orientation === Orientation.HORIZONTAL)
+                this.coordinates.right(auxCoordinate) ?: return null
+            else
+                this.coordinates.down(auxCoordinate) ?: return null
+            set.add(auxCoordinate)
+        }
+        return set
+    }
 }
