@@ -2,7 +2,7 @@ package pt.isel.daw.dawbattleshipgame.domain.ship
 
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.CoordinateSet
-data class Ship(val coordinates : CoordinateSet, val type : ShipType, val isSunk : Boolean)
+data class Ship(val coordinates : CoordinateSet, val type : ShipType, val isSunk : Boolean, val id: Int)
 
 fun Ship.getOrientation(): Orientation {
     if (coordinates.isEmpty()) {
@@ -22,5 +22,5 @@ fun Ship.getOrientation(): Orientation {
 }
 
 typealias ShipSet = Set<Ship>
-fun ShipSet.getShip(position: Coordinate) =
-    this.first { it.coordinates.any { c -> c == position}}
+fun ShipSet.getShip(shipId: Int) =
+    this.first { it.id == shipId }

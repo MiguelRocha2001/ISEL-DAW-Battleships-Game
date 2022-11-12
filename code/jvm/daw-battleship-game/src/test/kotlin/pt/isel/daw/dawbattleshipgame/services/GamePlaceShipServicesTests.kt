@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
@@ -55,10 +54,10 @@ class GamePlaceShipServicesTests {
             val nonExistingGameId = 12345
 
             val palaceShipInvalidPosition = gameServices.placeShip(nonExistingGameId, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
-            assertEquals(PlaceShipError.GameNotFound, palaceShipInvalidPosition.value)
+            assertEquals(PlaceShipsError.GameNotFound, palaceShipInvalidPosition.value)
 
             val placeShipOutOfBoard = gameServices.placeShip(nonExistingGameId, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
-            assertEquals(PlaceShipError.GameNotFound, placeShipOutOfBoard.value)
+            assertEquals(PlaceShipsError.GameNotFound, placeShipOutOfBoard.value)
         }
     }
 
@@ -72,7 +71,7 @@ class GamePlaceShipServicesTests {
             gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(3, 1), Orientation.HORIZONTAL) as Either.Right
             val sameTypeShip = gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 1), Orientation.HORIZONTAL) as Either.Left
 
-            assertEquals(PlaceShipError.InvalidMove, sameTypeShip.value)
+            assertEquals(PlaceShipsError.InvalidMove, sameTypeShip.value)
         }
     }
 
@@ -86,7 +85,7 @@ class GamePlaceShipServicesTests {
             gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(1 ,1), Orientation.HORIZONTAL) as Either.Right
 
             val overlayShip = gameServices.placeShip(gameId, userPair.first, ShipType.SUBMARINE, Coordinate(1, 3), Orientation.VERTICAL) as Either.Left
-            assertEquals(PlaceShipError.InvalidMove, overlayShip.value)
+            assertEquals(PlaceShipsError.InvalidMove, overlayShip.value)
         }
     }
 
@@ -99,10 +98,10 @@ class GamePlaceShipServicesTests {
             val gameId = createGame(it, userPair.first, userPair.second, configuration)
 
             val palaceShipInvalidPosition = gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
-            assertEquals(PlaceShipError.InvalidMove, palaceShipInvalidPosition.value)
+            assertEquals(PlaceShipsError.InvalidMove, palaceShipInvalidPosition.value)
 
             val placeShipOutOfBoard = gameServices.placeShip(gameId, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
-            assertEquals(PlaceShipError.InvalidMove, placeShipOutOfBoard.value)
+            assertEquals(PlaceShipsError.InvalidMove, placeShipOutOfBoard.value)
         }
     }
 
@@ -120,15 +119,15 @@ class GamePlaceShipServicesTests {
             gameServices.placeShip(gameId, userPair.second, ShipType.CRUISER, Coordinate(5, 9), Orientation.VERTICAL)
 
 
-            gameServices.confirmFleet(gameId, userPair.first)
-            gameServices.confirmFleet(gameId, userPair.second)
+            gameServices.updateFleetState(gameId, userPair.first)
+            gameServices.updateFleetState(gameId, userPair.second)
 
             // invalid place ships
             val invalidPlace1 = gameServices.placeShip(gameId, userPair.first, ShipType.CARRIER, Coordinate(1, 5), Orientation.HORIZONTAL) as Either.Left
             val invalidPlace2 = gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL) as Either.Left
 
-            assertEquals(PlaceShipError.ActionNotPermitted, invalidPlace1.value)
-            assertEquals(PlaceShipError.ActionNotPermitted, invalidPlace2.value)
+            assertEquals(PlaceShipsError.ActionNotPermitted, invalidPlace1.value)
+            assertEquals(PlaceShipsError.ActionNotPermitted, invalidPlace2.value)
 
         }
     }

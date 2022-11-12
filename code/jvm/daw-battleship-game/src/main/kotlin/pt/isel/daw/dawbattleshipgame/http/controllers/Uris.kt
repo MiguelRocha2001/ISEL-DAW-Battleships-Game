@@ -5,53 +5,88 @@ import java.net.URI
 
 object Uris {
 
-    const val SERVER_INFO = "/info"
-    const val HOME = "/"
-    const val USER_HOME = "/me"
+    object Server {
+        const val SERVER_INFO = "/info"
+        const val HOME = "/"
 
-    const val USERS_CREATE = "/users"
-    const val USERS_TOKEN = "/users/token"
-    const val USERS_BY_ID = "/users/{id}"
-    const val USERS_STATS = "/users/all/statistics"
+        fun home(): URI = URI(HOME)
+        fun info(): URI = URI(SERVER_INFO)
+        fun serverInfo(): URI = URI(SERVER_INFO)
+    }
 
-    const val GAMES_CREATE = "/games"
-    const val GAME_BY_ID = "/games/{id}"
-    const val GAMES_GAME_ID = "/games/current"
-    const val GAMES_PLACE_SHIP = "/games/{id}/place-ship"
-    const val GAMES_MOVE_SHIP = "/games/{id}/move-ship"
-    const val GAMES_ROTATE_SHIP = "/games/{id}/rotate-ship"
-    const val GAMES_PLACE_SHOT = "/games/{id}/place-shot"
-    const val GAMES_CONFIRM_FLEET = "/games/{id}/confirm-fleet"
-    const val GAMES_GET_MY_FLEET = "/games/{id}/my-fleet"
-    const val GAMES_GET_OPPONENT_FLEET = "/games/{id}/opponent-fleet"
-    const val GAMES_STATE = "/games/{id}/state"
-    const val GAMES_DELETE = "/games/{id}"
+    object Users {
+        const val USERS_CREATE = "/users"
+        const val USERS_TOKEN = "/users/token"
+        const val USERS_BY_ID = "/users/{id}"
+        const val USERS_STATS = "/users/all/statistics"
+        const val USER_HOME = "/me"
 
-    fun home(): URI = URI(HOME)
-    fun info(): URI = URI(SERVER_INFO)
+        fun userCreate() = URI(USERS_CREATE)
+        fun userById(id: Int) = UriTemplate(USERS_BY_ID).expand(id)
+        fun createToken(): URI = URI(USERS_TOKEN)
+        fun userHome(): URI = URI(USER_HOME)
+        fun logout(): URI = URI(USERS_TOKEN)
+        fun register(): URI = URI(USERS_CREATE)
+        fun usersStats(): URI = URI(USERS_STATS)
+        fun battleshipsStatistics(): URI = URI(USERS_STATS)
+    }
 
-    // ------------------ USERS ------------------
-    fun userCreate() = URI(USERS_CREATE)
-    fun userById(id: Int) = UriTemplate(USERS_BY_ID).expand(id)
-    fun createToken(): URI = URI(USERS_TOKEN)
-    fun userHome(): URI = URI(USER_HOME)
-    fun logout(): URI = URI(USERS_TOKEN)
-    fun register(): URI = URI(USERS_CREATE)
-    fun usersStats(): URI = URI(USERS_STATS)
+    object Games {
+        const val ALL = "/games"
 
-    // ------------------ SERVER ------------------
-    fun serverInfo(): URI = URI(SERVER_INFO)
-    fun battleshipsStatistics(): URI = URI(USERS_STATS)
+        object Ships {
+            const val ALL = Games.ALL + "/ships"
+            const val BY_ID = "$ALL/ships/{id}"
+            fun all(): URI = URI(ALL)
+            fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+        }
+        object Shots {
+            const val ALL = Games.ALL + "/shots"
+            const val BY_ID = "$ALL/shots/{id}"
+            fun all(): URI = URI(ALL)
+            fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+        }
 
-    // ------------------ GAMES ------------------
-    fun gameCreate() = URI(GAMES_CREATE)
-    fun gameById(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
-    fun gameInfo(gameId: Int) = UriTemplate(GAME_BY_ID).expand(gameId)
-    fun currentGameId(): URI = URI(GAMES_GAME_ID)
+        object My {
+            const val ALL = "/my/games"
+            const val BY_ID = "/my/games/{id}"
+            const val CURRENT = "$ALL/current"
 
-    fun placeShip(gameId: Int) = UriTemplate(GAMES_PLACE_SHIP).expand(gameId)
-    fun moveShip(gameId: Int) = UriTemplate(GAMES_MOVE_SHIP).expand(gameId)
-    fun rotateShip(gameId: Int) = UriTemplate(GAMES_ROTATE_SHIP).expand(gameId)
-    fun placeShot(gameId: Int) = UriTemplate(GAMES_PLACE_SHOT).expand(gameId)
-    fun confirmFleet(gameId: Int) = UriTemplate(GAMES_CONFIRM_FLEET).expand(gameId)
+            fun all(): URI = URI(ALL)
+            fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+
+            object Current {
+                object My {
+                    object Ships {
+                        const val ALL = "$CURRENT/ships"
+                        const val BY_ID = "$ALL/{id}"
+                        fun all(): URI = URI(ALL)
+                        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+                    }
+
+                    object Shots {
+                        const val ALL = "$CURRENT/shots"
+                        const val BY_ID = "$ALL/{id}"
+                        fun all(): URI = URI(ALL)
+                        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+                    }
+                }
+                object Opponent {
+                    object Ships {
+                        const val ALL = "$CURRENT/opponent/ships"
+                        const val BY_ID = "$ALL/{id}"
+                        fun all(): URI = URI(ALL)
+                        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+                    }
+
+                    object Shots {
+                        const val ALL = "$CURRENT/opponent/shots"
+                        const val BY_ID = "$ALL/{id}"
+                        fun all(): URI = URI(ALL)
+                        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+                    }
+                }
+            }
+        }
+    }
 }

@@ -55,49 +55,52 @@ class GameServices(
         }
     }
 
-    fun placeShip(gameId: Int, userId: Int, ship: ShipType, position: Coordinate, orientation: Orientation): PlaceShipResult {
+    fun placeShips(gameId: Int, userId: Int, ships: List<Triple<ShipType, Coordinate, Orientation>>): PlaceShipsResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGame(gameId) ?: return@run Either.Left(PlaceShipError.GameNotFound)
+            var game = db.getGame(gameId) ?: return@run Either.Left(PlaceShipsError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if (game.state != GameState.FLEET_SETUP)
-                return@run Either.Left(PlaceShipError.ActionNotPermitted)
-            val newGame = game.placeShip(ship, position, orientation, player)
-                ?: return@run Either.Left(PlaceShipError.InvalidMove)
-            replaceGame(db, newGame)
-            return@run Either.Right(newGame.state)
+                return@run Either.Left(PlaceShipsError.ActionNotPermitted)
+            val shipIds = ships.map { generateRandomId() } // generated ids for the ships
+            ships.forEachIndexed { idx, (shipType, coordinate, orientation) ->
+                game = game.placeShip(shipIds[idx], shipType, coordinate, orientation, player)
+                    ?: return@run Either.Left(PlaceShipsError.InvalidMove)
+            }
+            replaceGame(db, game)
+            return@run Either.Right(shipIds)
         }
     }
 
-    fun rotateShip(gameId: Int, userId: Int, position: Coordinate): RotateShipResult {
+    fun rotateShip(gameId: Int, userId: Int, shipId: Int, newOrientation: Orientation): RotateShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGame(gameId) ?: return@run Either.Left(RotateShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(RotateShipError.ActionNotPermitted)
-            val newGame = game.rotateShip(position, player)
+            val newGame = game.rotateShip(shipId, newOrientation, player)
                 ?: return@run Either.Left(RotateShipError.InvalidMove)
             replaceGame(db, newGame)
-            return@run Either.Right(newGame.state)
+            return@run Either.Right(Unit)
         }
     }
 
-    fun moveShip(gameId: Int, userId: Int, origin: Coordinate, destination: Coordinate): MoveShipResult {
+    fun moveShip(gameId: Int, userId: Int, shipId: Int, position: Coordinate, newCoordinate: Coordinate): MoveShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGame(gameId) ?: return@run Either.Left(MoveShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(MoveShipError.ActionNotPermitted)
-            val newGame = game.moveShip(origin, destination, player)
+            val newGame = game.moveShip(shipId, position, newCoordinate, player)
                 ?: return@run Either.Left(MoveShipError.InvalidMove)
             replaceGame(db, newGame)
-            return@run Either.Right(newGame.state)
+            return@run Either.Right(Unit)
         }
     }
 
-    fun confirmFleet(gameId: Int, userId: Int): FleetConfirmationResult {
+    fun updateFleetState(gameId: Int, userId: Int, confirmed: Boolean): FleetConfirmationResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGame(gameId) ?:
@@ -107,9 +110,10 @@ class GameServices(
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.getBoard(player).isConfirmed())
                 return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
-            val newGame = game.confirmFleet(player)
+            if (!confirmed) return@run Either.Right(Unit)
+            val newGame = game.updateFleetState(player)
             replaceGame(db, newGame)
-            Either.Right(newGame.state)
+            Either.Right(Unit)
         }
     }
 
@@ -124,7 +128,7 @@ class GameServices(
             val newGame = game.placeShot(userId, c, player)
                 ?: return@run Either.Left(PlaceShotError.InvalidMove)
             replaceGame(db, newGame)
-            return@run Either.Right(newGame.state)
+            return@run Either.Right(Unit)
         }
     }
 

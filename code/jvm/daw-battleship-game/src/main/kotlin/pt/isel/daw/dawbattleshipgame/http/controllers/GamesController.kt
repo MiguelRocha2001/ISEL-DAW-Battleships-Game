@@ -18,8 +18,8 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 class GamesController(
     private val gameServices: GameServices
 ) {
-    @PostMapping(Uris.GAMES_CREATE)
-    fun create(
+    @PostMapping(Uris.Games.My.ALL)
+    fun createGame(
         user: User,
         @RequestBody createGameInputModel: CreateGameInputModel
     ): ResponseEntity<*> {
@@ -33,13 +33,27 @@ class GamesController(
             )
         )
         return when (res) {
-            is Either.Right ->
-                ResponseEntity.status(if (res.value.second != null) 201 else 202) // It depends if the game was created
-                    .body(
-                        siren(GameActionOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
-                            links(startGameLinks(res.value.second))
+            is Either.Right -> {
+                val gameId = res.value.second
+                return if (gameId != null) {
+                    ResponseEntity.status (201) // Games created
+                    .header(
+                        "Location",
+                        Uris.Games.byId(gameId).toASCIIString()
+                    ).body(
+                        siren(GameInfoOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
+                            Uris.Games.gameById(gameId) to Rels.GAME_ID
                         }
                     )
+                } else {
+                    ResponseEntity.status (202) // Game not created but request was processed
+                    .body(
+                        siren(GameInfoOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
+                            Uris.Games.currentGameId() to Rels.GAME_ID
+                        }
+                    )
+                }
+            }
             is Either.Left -> when (res.value) {
                 GameCreationError.GameNotFound -> Problem.response(
                     404,
@@ -47,14 +61,14 @@ class GamesController(
                 ) // TODO: check if this is the correct error
                 GameCreationError.UserAlreadyInQueue -> Problem.response(405, Problem.userAlreadyInQueue)
                 GameCreationError.UserAlreadyInGame -> Problem.response(405, Problem.userAlreadyInGame)
-                GameCreationError.UnableToCreateGame -> Problem.response(404, Problem.gameNotFound)
             }
         }
     }
 
-    @GetMapping(Uris.GAMES_GAME_ID)
+    @GetMapping(Uris.Games.My.CURRENT)
     fun getCurrentGameId(user: User): ResponseEntity<*> {
-        return when (val res = gameServices.getGameIdByUser(user.id)) {
+        val res = gameServices.getGameIdByUser(user.id)
+        return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameIdOutputModel(res.value)) {
                     links(gameByIdLinks(user.id))
@@ -66,80 +80,14 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.GAMES_PLACE_SHIP)
-    fun placeShip(
+    @PutMapping(Uris.Games.My.Current.Ships.ALL)
+    fun updateFleet(
         user: User,
-        @PathVariable id: Int,
-        @RequestBody placeShipInputModel: PlaceShipInputModel
+        @RequestBody fleetStateInputModel: FleetStateInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.placeShip(
-            id,
-            user.id,
-            placeShipInputModel.shipType.toShipType(),
-            Coordinate(placeShipInputModel.origin.row, placeShipInputModel.origin.column),
-            placeShipInputModel.orientation.toOrientation()
-        )
+        val res = gameServices.updateFleetState(id, user.id, fleetStateInputModel.fleetConfirmed)
         return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(placeShipLinks(id))
-                })
-            is Either.Left -> when (res.value) {
-                PlaceShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                PlaceShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                PlaceShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-            }
-        }
-    }
-
-    @PostMapping(Uris.GAMES_MOVE_SHIP)
-    fun moveShip(
-        user: User,
-        @PathVariable id: Int,
-        @RequestBody moveShipInputModel: MoveShipInputModel
-    ): ResponseEntity<*> {
-        return when (val res = gameServices.moveShip(id, user.id, moveShipInputModel.origin, moveShipInputModel.destination)) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(moveShipLinks(id))
-                })
-            is Either.Left -> when (res.value) {
-                MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-            }
-        }
-    }
-
-    @PostMapping(Uris.GAMES_ROTATE_SHIP)
-    fun rotateShip(
-        user: User,
-        @PathVariable id: Int,
-        @RequestBody coordinate: Coordinate
-    ): ResponseEntity<*> {
-        return when (val res = gameServices.rotateShip(id, user.id, coordinate)) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(rotateShipLinks(id))
-                })
-            is Either.Left -> when (res.value) {
-                RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-            }
-        }
-    }
-
-    @PostMapping(Uris.GAMES_CONFIRM_FLEET)
-    fun confirmFleet(
-        user: User,
-        @PathVariable id: Int
-    ): ResponseEntity<*> {
-        return when (val res = gameServices.confirmFleet(id, user.id)) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(confirmFleetLinks(id))
-                })
+            is Either.Right -> ResponseEntity.status(204).build<Unit>()
             is Either.Left -> when (res.value) {
                 FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
                 FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
@@ -147,17 +95,77 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.GAMES_PLACE_SHOT)
-    fun placeShot(
+    @PostMapping(Uris.Games.My.Current.Ships.ALL)
+    fun placeShips(
+        user: User,
+        @RequestBody placeShipsInputModel: PlaceShipsInputModel
+    ): ResponseEntity<*> {
+        val res = gameServices.placeShips(
+            id,
+            user.id,
+            placeShipsInputModel.ships.map { Triple(
+                it.shipType.toShipType(),
+                it.position.toCoordinate(),
+                it.orientation.toOrientation()
+            ) }
+        )
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(201) // TODO -> add header
+                .body(siren(PlaceShipsOutputModel(res.value)) {
+                    links(placeShipLinks(id))
+                })
+            is Either.Left -> when (res.value) {
+                PlaceShipsError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                PlaceShipsError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                PlaceShipsError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+            }
+        }
+    }
+
+    @PutMapping(Uris.Games.My.Current.Ships.BY_ID)
+    fun updateShip(
         user: User,
         @PathVariable id: Int,
+        @RequestBody alterShipInputModel: AlterShipInputModel
+    ): ResponseEntity<*> {
+        if (alterShipInputModel is MoveShipInputModel) {
+            val res = gameServices.moveShip(
+                id,
+                user.id,
+                alterShipInputModel.shipId,
+                alterShipInputModel.position.toCoordinate(),
+                alterShipInputModel.newCoordinate.toCoordinate()
+            )
+            return when (res) {
+                is Either.Right -> ResponseEntity.status(204).build<Unit>()
+                is Either.Left -> when (res.value) {
+                    MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                    MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                    MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+                }
+            }
+        } else {
+            alterShipInputModel as RotateShipInputModel
+            val res = gameServices.rotateShip(id, user.id, alterShipInputModel.shipId, alterShipInputModel.newOrientation)
+            return when (res) {
+                is Either.Right -> ResponseEntity.status(204).build<Unit>()
+                is Either.Left -> when (res.value) {
+                    RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                    RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                    RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+                }
+            }
+        }
+    }
+
+    @PostMapping(Uris.Games.My.Current.Shots.ALL)
+    fun placeShot(
+        user: User,
         @RequestBody coordinate: Coordinate
     ): ResponseEntity<*> {
-        return when (val res = gameServices.placeShot(id, user.id, coordinate)) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(siren(GameActionOutputModel(GameStateOutputModel.get(res.value), id)) {
-                    links(placeShotLinks(id))
-                })
+        val res = gameServices.placeShot(id, user.id, coordinate)
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(204).build<Unit>() // TODO -> add header
             is Either.Left -> when (res.value) {
                 PlaceShotError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
                 PlaceShotError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
@@ -166,12 +174,12 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.GAMES_GET_MY_FLEET)
+    @GetMapping(Uris.Games.My.Current.Ships.ALL)
     fun getMyFleet(
         user: User,
-        @PathVariable id: Int
     ): ResponseEntity<*> {
-        return when (val res = gameServices.getMyFleetLayout(id, user.id)) {
+        val res = gameServices.getMyFleetLayout(id, user.id)
+        return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
 
@@ -182,14 +190,17 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.GAMES_GET_OPPONENT_FLEET)
+    @GetMapping(Uris.Games.My.Current)
     fun getOpponentFleet(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        return when (val res = gameServices.getOpponentFleet(id, user.id)) {
+        val res = gameServices.getOpponentFleet(id, user.id)
+        return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(res.value.toBoardOutputModel()))
+                .body(siren(res.value.toBoardOutputModel()) {
+
+                })
             is Either.Left -> when (res.value) {
                 GameSearchError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
@@ -201,9 +212,12 @@ class GamesController(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        return when (val res = gameServices.getGameState(id)) {
+        val res = gameServices.getGameState(id)
+        return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameStateOutputModel.get(res.value)))
+                .body(siren(GameStateOutputModel.get(res.value)) {
+
+                })
             is Either.Left -> when (res.value) {
                 GameStateError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
@@ -211,11 +225,12 @@ class GamesController(
     }
 
     @GetMapping(Uris.GAME_BY_ID)
-    fun getGameInfo(
+    fun getGame(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        return when (val res = gameServices.getGame(id)) {
+        val res = gameServices.getGame(id)
+        return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(
                     GameOutputModel(
@@ -241,9 +256,12 @@ class GamesController(
     fun deleteGame(
         @PathVariable id: Int
     ): ResponseEntity<*> {
-        return when (val res = gameServices.deleteGame(id)) {
+        val res = gameServices.deleteGame(id)
+        return when (res) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(res.value))
+                .body(siren(res.value) {
+
+                })
             is Either.Left -> when (res.value) {
                 DeleteGameError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }

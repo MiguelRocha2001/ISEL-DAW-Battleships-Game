@@ -2,10 +2,8 @@ package pt.isel.daw.dawbattleshipgame.services
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
@@ -36,11 +34,11 @@ class GameServicesConfirmLayoutTests {
             var game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
 
-            gameServices.confirmFleet(gameId, userPair.first)
+            gameServices.updateFleetState(gameId, userPair.first)
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
 
-            gameServices.confirmFleet(gameId, userPair.second)
+            gameServices.updateFleetState(gameId, userPair.second)
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.BATTLE, game.value.state)
         }
