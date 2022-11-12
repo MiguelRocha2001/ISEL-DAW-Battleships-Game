@@ -121,7 +121,7 @@ class ActionBuilderScope(
     fun build() = ActionModel(name, href.toASCIIString(), method.name, type, fields)
 }
 
-fun <T> siren(value: T, block: SirenBuilderScope<T>.() -> Unit): SirenModel<T> {
+fun <T> siren(value: T, block: SirenBuilderScope<T>.() -> Unit = {}): SirenModel<T> {
     val scope = SirenBuilderScope(value)
     scope.block()
     return scope.build()

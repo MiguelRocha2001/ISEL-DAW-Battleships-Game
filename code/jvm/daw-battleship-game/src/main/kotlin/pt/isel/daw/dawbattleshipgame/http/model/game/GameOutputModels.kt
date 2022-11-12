@@ -10,10 +10,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.GameState
  */
 data class UserStatsOutputModel(val users: List<UserStatOutputModel>)
 data class UserStatOutputModel(val username: String, val wins: Int, val gamesPlayed: Int)
-
-
 data class GameActionOutputModel(val state: GameStateOutputModel, val gameId: Int?)
-
 fun Board.toBoardOutputModel(): BoardOutputModel {
     /* Disabled temporary
     val cells = mutableMapOf<CoordinateModel, CoordinateContentOutputModel>()

@@ -76,7 +76,7 @@ class GamesController(
             id,
             user.id,
             placeShipInputModel.shipType.toShipType(),
-            Coordinate(placeShipInputModel.position.row, placeShipInputModel.position.column),
+            Coordinate(placeShipInputModel.origin.row, placeShipInputModel.origin.column),
             placeShipInputModel.orientation.toOrientation()
         )
         return when (res) {
@@ -189,9 +189,7 @@ class GamesController(
     ): ResponseEntity<*> {
         return when (val res = gameServices.getOpponentFleet(id, user.id)) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(res.value.toBoardOutputModel()) {
-
-                })
+                .body(siren(res.value.toBoardOutputModel()))
             is Either.Left -> when (res.value) {
                 GameSearchError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
@@ -205,9 +203,7 @@ class GamesController(
     ): ResponseEntity<*> {
         return when (val res = gameServices.getGameState(id)) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameStateOutputModel.get(res.value)) {
-
-                })
+                .body(siren(GameStateOutputModel.get(res.value)))
             is Either.Left -> when (res.value) {
                 GameStateError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }
@@ -247,9 +243,7 @@ class GamesController(
     ): ResponseEntity<*> {
         return when (val res = gameServices.deleteGame(id)) {
             is Either.Right -> ResponseEntity.status(200)
-                .body(siren(res.value) {
-
-                })
+                .body(siren(res.value))
             is Either.Left -> when (res.value) {
                 DeleteGameError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
             }

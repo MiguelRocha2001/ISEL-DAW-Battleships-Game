@@ -58,8 +58,10 @@ class UsersController(
     }
 
     @GetMapping(Uris.USERS_BY_ID)
-    fun getById(@PathVariable id: String) {
-        TODO("TODO")
+    fun getById(@PathVariable id: Int) : ResponseEntity<*>{
+        val user = userService.getUserById(id) ?:
+            return Problem.response(404, Problem.userNotFound)
+        return TODO()
     }
 
     @GetMapping(Uris.USER_HOME)
@@ -72,6 +74,7 @@ class UsersController(
                     buildStartGameAction(this)
                 }
             )
+        //TODO see errors related to this -- Unauthorized 401
     }
 
     @DeleteMapping(Uris.USERS_BY_ID)

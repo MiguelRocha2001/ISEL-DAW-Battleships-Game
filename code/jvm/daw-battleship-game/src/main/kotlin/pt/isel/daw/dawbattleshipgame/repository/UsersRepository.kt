@@ -11,15 +11,11 @@ interface UsersRepository {
         username: String,
         passwordValidation: PasswordValidationInfo,
     ): Int
-
     fun getUsersRanking() : List<UserRanking>
-
     fun getUserByUsername(username: String): User?
-
+    fun getUserById(id: Int): User?
     fun getUserByTokenValidationInfo(tokenValidationInfo: TokenValidationInfo): User?
-
     fun isUserStoredByUsername(username: String): Boolean
-
     fun createToken(userId: Int, token: TokenValidationInfo)
     fun getFirstUserInQueue(): Int?
     fun removeUserFromQueue(userWaiting: Int)

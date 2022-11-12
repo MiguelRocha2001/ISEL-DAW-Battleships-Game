@@ -73,6 +73,14 @@ class UserServices(
         }
     }
 
+    fun getUserById(id: Int): User? {
+        if(id < 0) return null
+        return transactionManager.run {
+            val usersRepository = it.usersRepository
+            usersRepository.getUserById(id)
+        }
+    }
+
     private fun userNotFound(): TokenCreationResult {
         passwordEncoder.encode("changeit")
         return Either.Left(TokenCreationError.UserOrPasswordAreInvalid)
