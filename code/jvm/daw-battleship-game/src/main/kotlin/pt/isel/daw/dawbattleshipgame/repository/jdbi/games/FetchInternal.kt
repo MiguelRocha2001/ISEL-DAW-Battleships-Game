@@ -3,10 +3,9 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.getDbState
+import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
+import java.time.Instant
 
 
 internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
@@ -29,6 +28,11 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
         dbGameMapper.player1, dbGameMapper.player2,
         player1Board, player2Board,
         dbGameMapper.state.getDbState(),
+        Instants.get(
+                dbGameMapper.created,
+                dbGameMapper.updated,
+                dbGameMapper.deadline
+        ),
         dbGameMapper.player_turn,
         dbGameMapper.winner
     )

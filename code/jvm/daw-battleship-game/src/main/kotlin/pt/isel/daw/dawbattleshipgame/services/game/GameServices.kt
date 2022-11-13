@@ -74,29 +74,18 @@ class GameServices(
         }
     }
 
-    fun rotateShip(userId: Int, position: Coordinate): RotateShipResult {
+    fun updateShip(userId: Int, position: Coordinate, newCoordinate: Coordinate? = null): UpdateShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(RotateShipError.GameNotFound)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(UpdateShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.FLEET_SETUP)
-                return@run Either.Left(RotateShipError.ActionNotPermitted)
-            val newGame = game.rotateShip(position, player)
-                ?: return@run Either.Left(RotateShipError.InvalidMove)
-            replaceGame(db, newGame)
-            return@run Either.Right(Unit)
-        }
-    }
-
-    fun moveShip(userId: Int, position: Coordinate, newCoordinate: Coordinate): MoveShipResult {
-        return transactionManager.run {
-            val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(MoveShipError.GameNotFound)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
-            if(game.state != GameState.FLEET_SETUP)
-                return@run Either.Left(MoveShipError.ActionNotPermitted)
-            val newGame = game.moveShip(position, newCoordinate, player)
-                ?: return@run Either.Left(MoveShipError.InvalidMove)
+                return@run Either.Left(UpdateShipError.ActionNotPermitted)
+            val newGame = if(newCoordinate != null)
+                        game.moveShip(position, newCoordinate, player)
+                            else game.rotateShip(position, player)
+            if(newGame == null)
+                return@run Either.Left(UpdateShipError.InvalidMove)
             replaceGame(db, newGame)
             return@run Either.Right(Unit)
         }

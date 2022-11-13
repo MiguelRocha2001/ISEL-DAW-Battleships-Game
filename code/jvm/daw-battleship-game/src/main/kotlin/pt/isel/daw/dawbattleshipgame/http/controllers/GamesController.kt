@@ -123,30 +123,22 @@ class GamesController(
         user: User,
         @RequestBody alterShipInputModel: AlterShipInputModel
     ): ResponseEntity<*> {
-        if (alterShipInputModel is MoveShipInputModel) {
-            val res = gameServices.moveShip(
+        val res = if (alterShipInputModel is MoveShipInputModel) {
+            gameServices.updateShip(
                 user.id,
                 alterShipInputModel.origin.toCoordinate(),
                 alterShipInputModel.position.toCoordinate()
             )
-            return when (res) {
-                is Either.Right -> ResponseEntity.status(204).build<Unit>()
-                is Either.Left -> when (res.value) {
-                    MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                    MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                    MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-                }
-            }
         } else {
             alterShipInputModel as RotateShipInputModel
-            val res = gameServices.rotateShip(user.id, alterShipInputModel.position.toCoordinate())
-            return when (res) {
-                is Either.Right -> ResponseEntity.status(204).build<Unit>()
-                is Either.Left -> when (res.value) {
-                    RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                    RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                    RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-                }
+            gameServices.updateShip(user.id, alterShipInputModel.position.toCoordinate())
+        }
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(204).build<Unit>()
+            is Either.Left -> when (res.value) {
+                UpdateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                UpdateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                UpdateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }

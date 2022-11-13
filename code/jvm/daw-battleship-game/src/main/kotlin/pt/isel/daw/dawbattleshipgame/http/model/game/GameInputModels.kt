@@ -9,7 +9,7 @@ data class CreateGameInputModel(
         val boardSize: Int,
         val fleet: Map<ShipTypeInputModel, Int>,
         val nShotsPerRound: Int,
-        val roundTimeout: Int
+        val roundTimeout: Long
 ) {
     init {
         require(boardSize in 8..15) {
@@ -18,9 +18,8 @@ data class CreateGameInputModel(
         require(fleet.isNotEmpty()) {
             "There must be at least one boat"
         }
-        require(nShotsPerRound in 1..10
-                && roundTimeout in 1..10 ){
-            "Must be in range [1..10]"
+        require(nShotsPerRound in 1..10){
+            "Shots must be in range [1..10]"
         }
     }
 }
