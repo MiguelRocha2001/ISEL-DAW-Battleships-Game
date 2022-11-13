@@ -11,7 +11,7 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GameServicesStatusTests {
-    private val configuration = getGameTestConfiguration()
+    private val configuration = getGameTestConfiguration1()
 
     @Test
     fun create_and_join_game() {
@@ -31,15 +31,15 @@ class GameServicesStatusTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.first, ShipType.CRUISER, Coordinate(5, 5), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.CRUISER, Coordinate(5, 5), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL)
 
-            val boardGameSecond = gameServices.getOpponentFleet(gameId, userPair.first) as Either.Right
+            val boardGameSecond = gameServices.getOpponentFleet(userPair.first) as Either.Right
 
-            gameServices.updateFleetState(gameId, userPair.first)
-            val boardGameFirst = gameServices.getMyFleetLayout(gameId, userPair.first) as Either.Right
+            gameServices.updateFleetState(userPair.first, true)
+            val boardGameFirst = gameServices.getMyFleetLayout(userPair.first) as Either.Right
             //check if the ships are in the right place
             assertTrue(boardGameFirst.value.isShip(Coordinate(2, 3)))
             assertTrue(boardGameFirst.value.isShip(Coordinate(5, 5)))
@@ -67,16 +67,16 @@ class GameServicesStatusTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
 
             var gameStateFirst = gameServices.getGameState(gameId) as Either.Right
             var gameStateSecond = gameServices.getGameState(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, gameStateFirst.value)
             assertEquals(GameState.FLEET_SETUP, gameStateSecond.value)
 
-            gameServices.updateFleetState(gameId, userPair.first)
-            gameServices.updateFleetState(gameId, userPair.second)
+            gameServices.updateFleetState(userPair.first, true)
+            gameServices.updateFleetState(userPair.second, true)
 
             gameStateFirst = gameServices.getGameState(gameId) as Either.Right
             gameStateSecond = gameServices.getGameState(gameId) as Either.Right
@@ -109,8 +109,8 @@ class GameServicesStatusTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
 
             var game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
@@ -123,8 +123,8 @@ class GameServicesStatusTests {
             assertEquals(ShipType.CARRIER, game.value.board2.getShips().first().type)
             assertEquals(userPair.second, game.value.player2)
 
-            gameServices.updateFleetState(gameId, userPair.first)
-            gameServices.updateFleetState(gameId, userPair.second)
+            gameServices.updateFleetState(userPair.first, true)
+            gameServices.updateFleetState(userPair.second, true)
 
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.BATTLE, game.value.state)
@@ -152,8 +152,8 @@ class GameServicesStatusTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
 
             gameServices.deleteGame(gameId) as Either.Right
 

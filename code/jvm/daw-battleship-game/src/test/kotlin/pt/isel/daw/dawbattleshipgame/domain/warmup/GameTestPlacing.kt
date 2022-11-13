@@ -8,14 +8,14 @@ import pt.isel.daw.dawbattleshipgame.domain.game.placeShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.utils.generateId
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
 
 
 class GameTestPlacing {
     private val gameId = generateId()
     private val player1 = generateId()
     private val player2 = generateId()
-    private val configuration = getGameTestConfiguration()
+    private val configuration = getGameTestConfiguration1()
 
     @Test
     fun initializing_new_game() {

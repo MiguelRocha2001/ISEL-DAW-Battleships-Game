@@ -5,15 +5,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.services.game.*
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GameServicesRotateShipTests {
-    private val configuration = getGameTestConfiguration()
+    private val configuration = getGameTestConfiguration1()
 
     @Test
     fun rotateAndMoveShip() {
@@ -26,11 +24,11 @@ class GameServicesRotateShipTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
             var game = gameServices.getGame(gameId) as Either.Right
 
             println(game.value.board1.toString())
-            gameServices.rotateShip(gameId, userPair.first, Coordinate(2, 3))
+            gameServices.rotateShip(userPair.first, Coordinate(2, 3))
             game = gameServices.getGame(gameId) as Either.Right
             println(game.value.board1.toString())
 
@@ -41,7 +39,7 @@ class GameServicesRotateShipTests {
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 4)))
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 5)))
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 6)))
-                    gameServices.moveShip(gameId, userPair.first, Coordinate(2, 3), Coordinate(3, 3))
+                    gameServices.moveShip(userPair.first, Coordinate(2, 3), Coordinate(3, 3))
                     assertFalse(foundGame.value.board1.isShip(Coordinate(3, 3)))
                     assertFalse(foundGame.value.board1.isShip(Coordinate(3, 4)))
                     assertFalse(foundGame.value.board1.isShip(Coordinate(3, 5)))

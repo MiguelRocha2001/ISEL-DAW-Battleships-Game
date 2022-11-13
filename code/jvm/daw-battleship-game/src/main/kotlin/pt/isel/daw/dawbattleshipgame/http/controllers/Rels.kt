@@ -19,5 +19,6 @@ object Rels {
 
     // ------------------- GAMES -------------------
     val GAME_ID = LinkRelation("game-id")
+    val GAME = LinkRelation("game")
     val GAME_INFO = LinkRelation("game-info")
 }

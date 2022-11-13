@@ -42,14 +42,14 @@ class GamesController(
                         Uris.Games.byId(gameId).toASCIIString()
                     ).body(
                         siren(GameInfoOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
-                            Uris.Games.gameById(gameId) to Rels.GAME_ID
+                            Uris.Games.byId(gameId) to Rels.GAME_ID
                         }
                     )
                 } else {
                     ResponseEntity.status (202) // Game not created but request was processed
                     .body(
                         siren(GameInfoOutputModel(GameStateOutputModel.get(res.value.first), res.value.second)) {
-                            Uris.Games.currentGameId() to Rels.GAME_ID
+                            Uris.Games.My.CURRENT to Rels.GAME
                         }
                     )
                 }
@@ -80,12 +80,12 @@ class GamesController(
         }
     }
 
-    @PutMapping(Uris.Games.My.Current.Ships.ALL)
+    @PutMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun updateFleet(
         user: User,
         @RequestBody fleetStateInputModel: FleetStateInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.updateFleetState(id, user.id, fleetStateInputModel.fleetConfirmed)
+        val res = gameServices.updateFleetState(user.id, fleetStateInputModel.fleetConfirmed)
         return when (res) {
             is Either.Right -> ResponseEntity.status(204).build<Unit>()
             is Either.Left -> when (res.value) {
@@ -95,13 +95,12 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.My.Current.Ships.ALL)
+    @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun placeShips(
         user: User,
         @RequestBody placeShipsInputModel: PlaceShipsInputModel
     ): ResponseEntity<*> {
         val res = gameServices.placeShips(
-            id,
             user.id,
             placeShipsInputModel.ships.map { Triple(
                 it.shipType.toShipType(),
@@ -110,10 +109,7 @@ class GamesController(
             ) }
         )
         return when (res) {
-            is Either.Right -> ResponseEntity.status(201) // TODO -> add header
-                .body(siren(PlaceShipsOutputModel(res.value)) {
-                    links(placeShipLinks(id))
-                })
+            is Either.Right -> ResponseEntity.status(201).build<Unit>()
             is Either.Left -> when (res.value) {
                 PlaceShipsError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
                 PlaceShipsError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
@@ -122,19 +118,16 @@ class GamesController(
         }
     }
 
-    @PutMapping(Uris.Games.My.Current.Ships.BY_ID)
+    @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun updateShip(
         user: User,
-        @PathVariable id: Int,
         @RequestBody alterShipInputModel: AlterShipInputModel
     ): ResponseEntity<*> {
         if (alterShipInputModel is MoveShipInputModel) {
             val res = gameServices.moveShip(
-                id,
                 user.id,
-                alterShipInputModel.shipId,
-                alterShipInputModel.position.toCoordinate(),
-                alterShipInputModel.newCoordinate.toCoordinate()
+                alterShipInputModel.origin.toCoordinate(),
+                alterShipInputModel.position.toCoordinate()
             )
             return when (res) {
                 is Either.Right -> ResponseEntity.status(204).build<Unit>()
@@ -146,7 +139,7 @@ class GamesController(
             }
         } else {
             alterShipInputModel as RotateShipInputModel
-            val res = gameServices.rotateShip(id, user.id, alterShipInputModel.shipId, alterShipInputModel.newOrientation)
+            val res = gameServices.rotateShip(user.id, alterShipInputModel.position.toCoordinate())
             return when (res) {
                 is Either.Right -> ResponseEntity.status(204).build<Unit>()
                 is Either.Left -> when (res.value) {
@@ -158,12 +151,12 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.My.Current.Shots.ALL)
+    @PostMapping(Uris.Games.My.Current.My.Shots.ALL)
     fun placeShot(
         user: User,
         @RequestBody coordinate: Coordinate
     ): ResponseEntity<*> {
-        val res = gameServices.placeShot(id, user.id, coordinate)
+        val res = gameServices.placeShot(user.id, coordinate)
         return when (res) {
             is Either.Right -> ResponseEntity.status(204).build<Unit>() // TODO -> add header
             is Either.Left -> when (res.value) {
@@ -174,11 +167,11 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.Games.My.Current.Ships.ALL)
+    @GetMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun getMyFleet(
         user: User,
     ): ResponseEntity<*> {
-        val res = gameServices.getMyFleetLayout(id, user.id)
+        val res = gameServices.getMyFleetLayout(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
@@ -190,12 +183,11 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.Games.My.Current)
+    @GetMapping(Uris.Games.My.Current.Opponent.Ships.ALL)
     fun getOpponentFleet(
         user: User,
-        @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getOpponentFleet(id, user.id)
+        val res = gameServices.getOpponentFleet(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
@@ -207,7 +199,7 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.GAMES_STATE)
+    @GetMapping(Uris.Games.BY_ID)
     fun getGameState(
         user: User,
         @PathVariable id: Int
@@ -224,7 +216,7 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.GAME_BY_ID)
+    @GetMapping(Uris.Games.BY_ID)
     fun getGame(
         user: User,
         @PathVariable id: Int
@@ -252,7 +244,7 @@ class GamesController(
         }
     }
 
-    @DeleteMapping(Uris.GAMES_DELETE)
+    @DeleteMapping(Uris.Games.BY_ID)
     fun deleteGame(
         @PathVariable id: Int
     ): ResponseEntity<*> {

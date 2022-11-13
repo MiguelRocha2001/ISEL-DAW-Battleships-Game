@@ -29,9 +29,9 @@ data class FleetStateInputModel(val fleetConfirmed: Boolean)
 
 data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>)
 data class PlaceShipInputModel(
-        val shipType: ShipTypeInputModel,
-        val origin: CoordinateInputModel,
-        val orientation: OrientationInputModel
+    val shipType: ShipTypeInputModel,
+    val position: CoordinateInputModel,
+    val orientation: OrientationInputModel
 )
 
 data class CoordinateInputModel(val row: Int, val column: Int) {
@@ -78,12 +78,11 @@ fun ShipTypeInputModel.toShipType() = when (this) {
 sealed class AlterShipInputModel
 
 data class MoveShipInputModel(
-    val shipId: Int,
+    val origin: CoordinateInputModel,
     val position: CoordinateInputModel,
     val newCoordinate: CoordinateInputModel
 ) : AlterShipInputModel()
 
 data class RotateShipInputModel(
-    val shipId: Int,
-    val newOrientation: OrientationInputModel
+    val position: CoordinateInputModel
 ) : AlterShipInputModel()

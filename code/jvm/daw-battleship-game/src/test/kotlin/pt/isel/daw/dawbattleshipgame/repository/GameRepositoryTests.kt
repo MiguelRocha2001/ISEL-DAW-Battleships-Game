@@ -7,7 +7,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
 import pt.isel.daw.dawbattleshipgame.utils.generateGameId
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
 import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 
@@ -34,7 +34,7 @@ class GameRepositoryTests {
                 val gamesRepo = transaction.gamesRepository
                 resetGamesDatabase(gamesRepo) // clears all games
                 val gameId = generateGameId()
-                val configuration = getGameTestConfiguration()
+                val configuration = getGameTestConfiguration1()
                 val game = Game.newGame(gameId, player1Id, player2Id, configuration) // PreparationPhase
 
                 gamesRepo.saveGame(game)
@@ -62,7 +62,7 @@ class GameRepositoryTests {
                 val player2Id = usersRepo.storeUser("user2", passwordValidationInfo2)
                 val gamesRepo = transaction.gamesRepository
                 resetGamesDatabase(gamesRepo) // clears all games
-                val configuration = getGameTestConfiguration()
+                val configuration = getGameTestConfiguration1()
                 val game = Game.startGame(player1Id, player2Id, configuration) // PreparationPhase
                 val gameId = gamesRepo.startGame(game)
                 requireNotNull(gameId)

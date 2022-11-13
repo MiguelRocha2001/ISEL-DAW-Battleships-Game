@@ -9,7 +9,7 @@ import java.net.URI
 fun buildBattleActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
     sirenBuilderScope.action(
         name = "place-shot",
-        href = URI(Uris.GAMES_PLACE_SHOT.replace("{id}", ":id")),
+        href = URI(Uris.Games.My.Current.My.Shots.ALL),
         method = HttpMethod.POST,
         type = "application/json"
     ) {

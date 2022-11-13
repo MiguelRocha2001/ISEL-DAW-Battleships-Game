@@ -5,14 +5,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
-import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.services.game.*
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GamePlaceShipServicesTests {
-    private val configuration = getGameTestConfiguration()
+    private val configuration = getGameTestConfiguration1()
 
     @Test
     fun placeShip() {
@@ -22,19 +21,8 @@ class GamePlaceShipServicesTests {
             val userPair = createUserPair(transactionManager)
 
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
-            val placeShip1Result =
-                gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            when (placeShip1Result) {
-                is Either.Left -> fail("Unexpected $placeShip1Result")
-                is Either.Right -> assertEquals(GameState.FLEET_SETUP,placeShip1Result.value)
-            }
-
-            val placeShip2Result =
-                gameServices.placeShip(gameId, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL)
-            when (placeShip2Result) {
-                is Either.Left -> fail("Unexpected $placeShip2Result")
-                is Either.Right -> assertEquals(GameState.FLEET_SETUP, placeShip2Result.value)
-            }
+            val placeShip1Result = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL) as Either.Right
+            val placeShip2Result = placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL) as Either.Right
 
             when (val game = gameServices.getGame(gameId)) {
                 is Either.Left -> fail("Unexpected $game")
@@ -51,12 +39,11 @@ class GamePlaceShipServicesTests {
         testWithTransactionManagerAndRollback {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
-            val nonExistingGameId = 12345
 
-            val palaceShipInvalidPosition = gameServices.placeShip(nonExistingGameId, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
+            val palaceShipInvalidPosition = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
             assertEquals(PlaceShipsError.GameNotFound, palaceShipInvalidPosition.value)
 
-            val placeShipOutOfBoard = gameServices.placeShip(nonExistingGameId, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
+            val placeShipOutOfBoard = placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
             assertEquals(PlaceShipsError.GameNotFound, placeShipOutOfBoard.value)
         }
     }
@@ -68,8 +55,8 @@ class GamePlaceShipServicesTests {
             val userPair = createUserPair(it)
             val gameId = createGame(it, userPair.first, userPair.second, configuration)
 
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(3, 1), Orientation.HORIZONTAL) as Either.Right
-            val sameTypeShip = gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 1), Orientation.HORIZONTAL) as Either.Left
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(3, 1), Orientation.HORIZONTAL) as Either.Right
+            val sameTypeShip = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 1), Orientation.HORIZONTAL) as Either.Left
 
             assertEquals(PlaceShipsError.InvalidMove, sameTypeShip.value)
         }
@@ -80,11 +67,12 @@ class GamePlaceShipServicesTests {
         testWithTransactionManagerAndRollback {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
-            val gameId = createGame(it, userPair.first, userPair.second, configuration)
 
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(1 ,1), Orientation.HORIZONTAL) as Either.Right
+            createGame(it, userPair.first, userPair.second, configuration)
 
-            val overlayShip = gameServices.placeShip(gameId, userPair.first, ShipType.SUBMARINE, Coordinate(1, 3), Orientation.VERTICAL) as Either.Left
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1 ,1), Orientation.HORIZONTAL) as Either.Right
+
+            val overlayShip = placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(1, 3), Orientation.VERTICAL) as Either.Left
             assertEquals(PlaceShipsError.InvalidMove, overlayShip.value)
         }
     }
@@ -95,12 +83,12 @@ class GamePlaceShipServicesTests {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
 
-            val gameId = createGame(it, userPair.first, userPair.second, configuration)
+            createGame(it, userPair.first, userPair.second, configuration)
 
-            val palaceShipInvalidPosition = gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
+            val palaceShipInvalidPosition = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
             assertEquals(PlaceShipsError.InvalidMove, palaceShipInvalidPosition.value)
 
-            val placeShipOutOfBoard = gameServices.placeShip(gameId, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
+            val placeShipOutOfBoard = placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
             assertEquals(PlaceShipsError.InvalidMove, placeShipOutOfBoard.value)
         }
     }
@@ -110,21 +98,21 @@ class GamePlaceShipServicesTests {
         testWithTransactionManagerAndRollback {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
-            val gameId = createGame(it, userPair.first, userPair.second, configuration)
+            createGame(it, userPair.first, userPair.second, getGameTestConfiguration2())
 
             // valid place ships
-            gameServices.placeShip(gameId, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.HORIZONTAL)
-            gameServices.placeShip(gameId, userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
-            gameServices.placeShip(gameId, userPair.second, ShipType.CRUISER, Coordinate(5, 9), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.BATTLESHIP, Coordinate(5, 5), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(5, 9), Orientation.VERTICAL)
 
 
-            gameServices.updateFleetState(gameId, userPair.first)
-            gameServices.updateFleetState(gameId, userPair.second)
+            gameServices.updateFleetState(userPair.first, true)
+            gameServices.updateFleetState(userPair.second, true)
 
             // invalid place ships
-            val invalidPlace1 = gameServices.placeShip(gameId, userPair.first, ShipType.CARRIER, Coordinate(1, 5), Orientation.HORIZONTAL) as Either.Left
-            val invalidPlace2 = gameServices.placeShip(gameId, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL) as Either.Left
+            val invalidPlace1 = placeShip(gameServices, userPair.first, ShipType.CARRIER, Coordinate(1, 5), Orientation.HORIZONTAL) as Either.Left
+            val invalidPlace2 = placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL) as Either.Left
 
             assertEquals(PlaceShipsError.ActionNotPermitted, invalidPlace1.value)
             assertEquals(PlaceShipsError.ActionNotPermitted, invalidPlace2.value)

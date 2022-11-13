@@ -14,13 +14,23 @@ import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
-fun getGameTestConfiguration() = Configuration(
+fun getGameTestConfiguration1() = Configuration(
     boardSize = 10,
     fleet = setOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
         Pair(ShipType.CRUISER, 3),
         Pair(ShipType.SUBMARINE, 3),
+        Pair(ShipType.DESTROYER, 2)
+    ),
+    nShotsPerRound = 10,
+    roundTimeout = 10
+)
+
+fun getGameTestConfiguration2() = Configuration(
+    boardSize = 10,
+    fleet = setOf(
+        Pair(ShipType.BATTLESHIP, 4),
         Pair(ShipType.DESTROYER, 2)
     ),
     nShotsPerRound = 10,

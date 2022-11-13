@@ -5,7 +5,7 @@ import java.net.URI
 
 object Uris {
 
-    object Server {
+    object Home {
         const val SERVER_INFO = "/info"
         const val HOME = "/"
 
@@ -15,24 +15,28 @@ object Uris {
     }
 
     object Users {
-        const val USERS_CREATE = "/users"
-        const val USERS_TOKEN = "/users/token"
-        const val USERS_BY_ID = "/users/{id}"
-        const val USERS_STATS = "/users/all/statistics"
-        const val USER_HOME = "/me"
+        const val CREATE = "/users"
+        const val TOKEN = "/users/token"
+        const val BY_ID = "/users/{id}"
+        const val STATS = "/users/all/statistics"
+        const val HOME = "/me"
 
-        fun userCreate() = URI(USERS_CREATE)
-        fun userById(id: Int) = UriTemplate(USERS_BY_ID).expand(id)
-        fun createToken(): URI = URI(USERS_TOKEN)
-        fun userHome(): URI = URI(USER_HOME)
-        fun logout(): URI = URI(USERS_TOKEN)
-        fun register(): URI = URI(USERS_CREATE)
-        fun usersStats(): URI = URI(USERS_STATS)
-        fun battleshipsStatistics(): URI = URI(USERS_STATS)
+        fun create() = URI(CREATE)
+        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+        fun createToken(): URI = URI(TOKEN)
+        fun home(): URI = URI(HOME)
+        fun logout(): URI = URI(TOKEN)
+        fun register(): URI = URI(CREATE)
+        fun stats(): URI = URI(STATS)
+        fun battleshipsStatistics(): URI = URI(STATS)
     }
 
     object Games {
         const val ALL = "/games"
+        const val BY_ID = "/games/{id}"
+
+        fun all(): URI = URI(ALL)
+        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
 
         object Ships {
             const val ALL = Games.ALL + "/ships"
@@ -54,18 +58,19 @@ object Uris {
 
             fun all(): URI = URI(ALL)
             fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+            fun current(): URI = URI(CURRENT)
 
             object Current {
                 object My {
                     object Ships {
-                        const val ALL = "$CURRENT/ships"
+                        const val ALL = "$CURRENT/my/ships"
                         const val BY_ID = "$ALL/{id}"
                         fun all(): URI = URI(ALL)
                         fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
                     }
 
                     object Shots {
-                        const val ALL = "$CURRENT/shots"
+                        const val ALL = "$CURRENT/my/shots"
                         const val BY_ID = "$ALL/{id}"
                         fun all(): URI = URI(ALL)
                         fun byId(id: Int) = UriTemplate(BY_ID).expand(id)

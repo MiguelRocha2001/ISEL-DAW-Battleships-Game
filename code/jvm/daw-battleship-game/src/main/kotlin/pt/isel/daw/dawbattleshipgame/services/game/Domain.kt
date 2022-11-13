@@ -9,7 +9,6 @@ sealed class GameCreationError: Error() {
     object GameNotFound: GameCreationError()
     object UserAlreadyInGame : GameCreationError()
     object UserAlreadyInQueue : GameCreationError()
-    object UnableToCreateGame : GameCreationError()
 }
 typealias GameCreationResult = Either<GameCreationError, Pair<GameState, Int?>>
 
@@ -18,7 +17,7 @@ sealed class PlaceShipsError {
     object ActionNotPermitted : PlaceShipsError()
     object InvalidMove: PlaceShipsError()
 }
-typealias PlaceShipsResult = Either<PlaceShipsError, List<Int>>
+typealias PlaceShipsResult = Either<PlaceShipsError, Unit>
 
 sealed class MoveShipError {
     object GameNotFound: MoveShipError()

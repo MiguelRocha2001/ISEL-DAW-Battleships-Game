@@ -11,7 +11,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.rotateShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.utils.generateId
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
 
 
 class GameTestMultipleActions {
@@ -19,7 +19,7 @@ class GameTestMultipleActions {
     private val gameId = generateId()
     private val player1 = generateId()
     private val player2 = generateId()
-    private val configuration = getGameTestConfiguration()
+    private val configuration = getGameTestConfiguration1()
 
     @Test
     fun adding_two_ships_and_rotate_both() {

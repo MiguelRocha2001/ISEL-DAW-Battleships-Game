@@ -7,7 +7,6 @@ class Panel(
     val coordinate: Coordinate,
     val shipType: ShipType? = null,
     val isHit: Boolean = false,
-    val shipId: Int? = null
 ) {
     /**
      * Gets panel database representation conforming to this table:

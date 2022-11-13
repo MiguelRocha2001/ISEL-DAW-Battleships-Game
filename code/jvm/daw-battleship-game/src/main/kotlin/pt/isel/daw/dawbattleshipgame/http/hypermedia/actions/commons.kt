@@ -8,7 +8,7 @@ import java.net.URI
 fun createTokenSirenAction(sirenBuilderScope: SirenBuilderScope<*>) =
     sirenBuilderScope.action(
         name = "create-token",
-        href = URI(Uris.USERS_TOKEN),
+        href = URI(Uris.Users.TOKEN),
         method = HttpMethod.POST,
         type = "application/json"
     ) {
