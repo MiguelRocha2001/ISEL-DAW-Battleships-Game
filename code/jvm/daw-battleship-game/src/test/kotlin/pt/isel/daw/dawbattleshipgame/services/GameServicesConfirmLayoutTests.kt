@@ -24,11 +24,15 @@ class GameServicesConfirmLayoutTests {
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.HORIZONTAL)
-            placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.CRUISER, Coordinate(5, 9), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.first, ShipType.CARRIER, Coordinate(1, 5), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.second, ShipType.BATTLESHIP, Coordinate(3, 5), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(6, 8), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(1, 15), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.CARRIER, Coordinate(1, 8), Orientation.HORIZONTAL)
             placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.CRUISER, Coordinate(11, 11), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.second, ShipType.CRUISER, Coordinate(12, 6), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(13, 5), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(15, 8), Orientation.HORIZONTAL)
 
 
             var game = gameServices.getGame(gameId) as Either.Right

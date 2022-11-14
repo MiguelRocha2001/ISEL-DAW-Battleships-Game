@@ -85,7 +85,7 @@ class GamePlaceShipServicesTests {
 
             createGame(it, userPair.first, userPair.second, configuration)
 
-            val palaceShipInvalidPosition = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(9, 9), Orientation.HORIZONTAL) as Either.Left
+            val palaceShipInvalidPosition = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(15, 15), Orientation.HORIZONTAL) as Either.Left
             assertEquals(PlaceShipsError.InvalidMove, palaceShipInvalidPosition.value)
 
             val placeShipOutOfBoard = placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(90, 90), Orientation.VERTICAL) as Either.Left
@@ -101,8 +101,8 @@ class GamePlaceShipServicesTests {
             createGame(it, userPair.first, userPair.second, getGameTestConfiguration2())
 
             // valid place ships
-            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.BATTLESHIP, Coordinate(5, 5), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.BATTLESHIP, Coordinate(5, 1), Orientation.HORIZONTAL)
             placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
             placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(5, 9), Orientation.VERTICAL)
 

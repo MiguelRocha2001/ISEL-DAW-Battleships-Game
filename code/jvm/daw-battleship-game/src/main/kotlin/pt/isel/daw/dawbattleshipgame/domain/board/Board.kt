@@ -71,7 +71,12 @@ class Board {
     }
 
     override fun toString(): String {
-        var str = "    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  |\n"
+
+        var str = "    |"
+        for(i in 'A'-1 until 'A'+ dimension -1) {
+            str += " ${i+1}  |"
+        }
+        str += "\n"
         for (i in 0 until dimension) {
             str += "| ${i + 1}"
             str = if (i + 1 < 10) "$str |" else "$str|"

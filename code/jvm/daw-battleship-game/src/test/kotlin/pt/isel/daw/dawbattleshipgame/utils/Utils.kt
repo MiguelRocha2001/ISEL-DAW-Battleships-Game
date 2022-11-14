@@ -15,7 +15,8 @@ import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 fun getGameTestConfiguration1() = Configuration(
-    boardSize = 10,
+    boardSize = 15,
+    nShotsPerRound = 10,
     fleet = setOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
@@ -23,7 +24,6 @@ fun getGameTestConfiguration1() = Configuration(
         Pair(ShipType.SUBMARINE, 3),
         Pair(ShipType.DESTROYER, 2)
     ),
-    nShotsPerRound = 10,
     roundTimeout = 10
 )
 
@@ -34,6 +34,41 @@ fun getGameTestConfiguration2() = Configuration(
         Pair(ShipType.DESTROYER, 2)
     ),
     nShotsPerRound = 10,
+    roundTimeout = 10
+)
+
+fun getGameTestConfiguration3() = Configuration(
+    boardSize = 8,
+    fleet = setOf(
+        Pair(ShipType.DESTROYER, 2)
+    ),
+    nShotsPerRound = 10,
+    roundTimeout = 10
+)
+
+fun getGameTestConfiguration4() = Configuration(
+    boardSize = 10,
+    nShotsPerRound = 10,
+    fleet = setOf(
+        Pair(ShipType.CARRIER, 5),
+        Pair(ShipType.BATTLESHIP, 4),
+        Pair(ShipType.CRUISER, 3),
+        Pair(ShipType.SUBMARINE, 3),
+        Pair(ShipType.DESTROYER, 2)
+    ),
+    roundTimeout = 10
+)
+
+fun getGameTestConfiguration5() = Configuration(
+    boardSize = 13,
+    nShotsPerRound = 5,
+    fleet = setOf(
+        Pair(ShipType.CARRIER, 5),
+        Pair(ShipType.BATTLESHIP, 4),
+        Pair(ShipType.CRUISER, 3),
+        Pair(ShipType.SUBMARINE, 3),
+        Pair(ShipType.DESTROYER, 2)
+    ),
     roundTimeout = 10
 )
 
@@ -49,6 +84,7 @@ fun getCreateGameInputModel() = CreateGameInputModel(
     nShotsPerRound = 10,
     roundTimeout = 10
 )
+
 
 fun generateGameId(): Int = (Math.random() * 100000).toInt()
 
