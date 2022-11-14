@@ -55,6 +55,7 @@ object Uris {
             const val ALL = "/my/games"
             const val BY_ID = "/my/games/{id}"
             const val CURRENT = "$ALL/current"
+            const val CURRENT_ID = "$CURRENT/id"
 
             fun all(): URI = URI(ALL)
             fun byId(id: Int) = UriTemplate(BY_ID).expand(id)

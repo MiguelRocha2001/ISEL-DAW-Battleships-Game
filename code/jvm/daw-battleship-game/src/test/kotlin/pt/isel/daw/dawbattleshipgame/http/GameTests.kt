@@ -66,7 +66,7 @@ class GameTests {
             .responseBody ?: fail("Game id is null")
 
         assertNotNull(siren)
-        val userId = (siren.properties as java.util.LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
+        val userId = (siren.properties as LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
 
         // when: creating a token
         // then: the response is a 200
@@ -106,21 +106,21 @@ class GameTests {
         val player2Token = player2.second
 
         // player 1 will try to create a game, and will be put in the waiting list
-        client.post().uri("/games")
+        client.post().uri("/my/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isAccepted
 
         // player 2 should be able to create a game
-        client.post().uri("/games")
+        client.post().uri("/my/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isCreated
 
         // player 1 should be able to get the game
-        val gameId1Siren = client.get().uri("/games/current")
+        val gameId1Siren = client.get().uri("/my/games/current")
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isOk
@@ -132,7 +132,7 @@ class GameTests {
         val gameId1 = (gameId1Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: fail("Game id is null")
 
         // player 2 should be able to get the game
-        val gameId2Siren = client.get().uri("/games/current")
+        val gameId2Siren = client.get().uri("/my/games/current")
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isOk
@@ -184,7 +184,7 @@ class GameTests {
         val gameConfig = getCreateGameInputModel()
 
         // player 1 tries to create another game
-        client.post().uri("/games")
+        client.post().uri("/my/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -195,7 +195,7 @@ class GameTests {
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
 
         // player 2 tries to create another game
-        client.post().uri("/games")
+        client.post().uri("/my/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
@@ -221,14 +221,14 @@ class GameTests {
         val gameConfig = getCreateGameInputModel()
 
         // player 1 will try to create a game, and will be put in the waiting list
-        client.post().uri("/games")
+        client.post().uri("/my/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $userToken")
             .exchange()
             .expectStatus().isAccepted
 
         // player 1 will try to create a game, and will be put in the waiting list
-        client.post().uri("/games")
+        client.post().uri("/my/games")
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $userToken")
             .exchange()
@@ -252,22 +252,24 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri("/my/games/current/my/ships")
             .bodyValue(
-                mapOf(
-                    "shipType" to "CARRIER",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 1
-                    ),
-                    "orientation" to "HORIZONTAL"
+                listOf(
+                    mapOf(
+                        "shipType" to "CARRIER",
+                        "position" to mapOf(
+                            "row" to 1,
+                            "column" to 1
+                        ),
+                        "orientation" to "HORIZONTAL"
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isCreated
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri("/my/games/current/my/ships")
             .bodyValue(
                 mapOf(
                     "shipType" to "SUBMARINE",

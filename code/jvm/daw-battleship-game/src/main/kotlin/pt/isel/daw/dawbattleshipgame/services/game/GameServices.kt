@@ -150,10 +150,10 @@ class GameServices(
         }
     }
 
-    fun getGame(gameId: Int): GameResult {
+    fun getGame(userId: Int): GameResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGame(gameId) ?: return@run Either.Left(GameError.GameNotFound)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameError.GameNotFound)
             Either.Right(game)
         }
     }

@@ -65,7 +65,7 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.Games.My.CURRENT)
+    @GetMapping(Uris.Games.My.CURRENT_ID)
     fun getCurrentGameId(user: User): ResponseEntity<*> {
         val res = gameServices.getGameIdByUser(user.id)
         return when (res) {
@@ -81,9 +81,9 @@ class GamesController(
     }
 
     @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
-    fun placeShips(
+    fun postShips(
         user: User,
-        @RequestBody postShipInputModel: Any
+        @RequestBody postShipInputModel: PostShipInputModel
     ): ResponseEntity<*> {
         return when (postShipInputModel) {
             is PlaceShipsInputModel -> {
@@ -91,9 +91,6 @@ class GamesController(
             }
             is AlterShipInputModel -> {
                 updateShip(user, postShipInputModel)
-            }
-            else -> {
-                Problem.response(400, Problem.invalidInputBody)
             }
         }
     }
@@ -124,16 +121,11 @@ class GamesController(
         user: User,
         alterShipInputModel: AlterShipInputModel
     ): ResponseEntity<*> {
-        val res = if (alterShipInputModel is MoveShipInputModel) {
-            gameServices.updateShip(
-                user.id,
-                alterShipInputModel.origin.toCoordinate(),
-                alterShipInputModel.destination.toCoordinate()
-            )
-        } else {
-            alterShipInputModel as RotateShipInputModel
-            gameServices.updateShip(user.id, alterShipInputModel.position.toCoordinate())
-        }
+        val res = gameServices.updateShip(
+            user.id,
+            alterShipInputModel.origin.toCoordinate(),
+            alterShipInputModel.destination?.toCoordinate()
+        )
         return when (res) {
             is Either.Right -> ResponseEntity.status(204).build<Unit>()
             is Either.Left -> when (res.value) {
@@ -226,12 +218,11 @@ class GamesController(
     }
      */
 
-    @GetMapping(Uris.Games.BY_ID)
+    @GetMapping(Uris.Games.My.CURRENT)
     fun getGame(
         user: User,
-        @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getGame(id)
+        val res = gameServices.getGame(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(

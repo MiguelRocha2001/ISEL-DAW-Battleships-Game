@@ -88,8 +88,6 @@ fun getCreateGameInputModel() = CreateGameInputModel(
 
 fun generateGameId(): Int = (Math.random() * 100000).toInt()
 
-fun generateToken(): String = (Math.random() * 100000).toString()
-
 fun getRandomPassword(): String = "A" + (Math.random() * 100000).toString()
 
 fun createUserPair(transactionManager: TransactionManager): Pair<Int, Int> {
