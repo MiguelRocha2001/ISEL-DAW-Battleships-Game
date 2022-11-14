@@ -71,7 +71,6 @@ class GamePlaceShipServicesTests {
             createGame(it, userPair.first, userPair.second, configuration)
 
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1 ,1), Orientation.HORIZONTAL) as Either.Right
-
             val overlayShip = placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(1, 3), Orientation.VERTICAL) as Either.Left
             assertEquals(PlaceShipsError.InvalidMove, overlayShip.value)
         }

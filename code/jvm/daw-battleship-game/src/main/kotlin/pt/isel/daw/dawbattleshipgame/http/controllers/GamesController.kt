@@ -71,7 +71,7 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameIdOutputModel(res.value)) {
-                    links(gameByIdLinks(user.id))
+                    gameByIdLinks(user.id)
                 })
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -98,7 +98,21 @@ class GamesController(
     @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun placeShips(
         user: User,
-        @RequestBody placeShipsInputModel: PlaceShipsInputModel
+        @RequestBody postShipInputModel: PostShipInputModel
+    ): ResponseEntity<*> {
+        return when (postShipInputModel) {
+            is PlaceShipsInputModel -> {
+                placeShips(user, postShipInputModel)
+            }
+            is AlterShipInputModel -> {
+                updateShip(user, postShipInputModel)
+            }
+        }
+    }
+
+    fun placeShips(
+        user: User,
+        placeShipsInputModel: PlaceShipsInputModel
     ): ResponseEntity<*> {
         val res = gameServices.placeShips(
             user.id,
@@ -118,35 +132,26 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun updateShip(
         user: User,
-        @RequestBody alterShipInputModel: AlterShipInputModel
+        alterShipInputModel: AlterShipInputModel
     ): ResponseEntity<*> {
-        if (alterShipInputModel is MoveShipInputModel) {
-            val res = gameServices.moveShip(
+        val res = if (alterShipInputModel is MoveShipInputModel) {
+            gameServices.updateShip(
                 user.id,
                 alterShipInputModel.origin.toCoordinate(),
                 alterShipInputModel.position.toCoordinate()
             )
-            return when (res) {
-                is Either.Right -> ResponseEntity.status(204).build<Unit>()
-                is Either.Left -> when (res.value) {
-                    MoveShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                    MoveShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                    MoveShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-                }
-            }
         } else {
             alterShipInputModel as RotateShipInputModel
-            val res = gameServices.rotateShip(user.id, alterShipInputModel.position.toCoordinate())
-            return when (res) {
-                is Either.Right -> ResponseEntity.status(204).build<Unit>()
-                is Either.Left -> when (res.value) {
-                    RotateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                    RotateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-                    RotateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
-                }
+            gameServices.updateShip(user.id, alterShipInputModel.position.toCoordinate())
+        }
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(204).build<Unit>()
+            is Either.Left -> when (res.value) {
+                UpdateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                UpdateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
+                UpdateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
             }
         }
     }
@@ -199,6 +204,7 @@ class GamesController(
         }
     }
 
+    /*
     @GetMapping(Uris.Games.BY_ID)
     fun getGameState(
         user: User,
@@ -215,6 +221,7 @@ class GamesController(
             }
         }
     }
+     */
 
     @GetMapping(Uris.Games.BY_ID)
     fun getGame(
@@ -226,7 +233,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(
                     GameOutputModel(
-                        gameId = res.value.gameId,
+                        gameId = res.value.id,
                         configuration = res.value.configuration,
                         player1 = res.value.player1,
                         player2 = res.value.player2,

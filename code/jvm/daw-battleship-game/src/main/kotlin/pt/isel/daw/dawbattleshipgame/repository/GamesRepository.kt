@@ -13,4 +13,5 @@ interface GamesRepository {
     fun getGameByUser(userId: Int): Game?
     fun isInGame(userId: Int): Boolean
     fun removeUserFromGame(userId: Int)
+    fun updateGame(game: Game)
 }

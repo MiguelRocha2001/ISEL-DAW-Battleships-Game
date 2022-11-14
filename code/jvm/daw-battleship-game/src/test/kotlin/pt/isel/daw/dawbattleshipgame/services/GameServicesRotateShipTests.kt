@@ -28,7 +28,7 @@ class GameServicesRotateShipTests {
             var game = gameServices.getGame(gameId) as Either.Right
 
             println(game.value.board1.toString())
-            gameServices.rotateShip(userPair.first, Coordinate(2, 3))
+            gameServices.updateShip(userPair.first, Coordinate(2, 3))
             game = gameServices.getGame(gameId) as Either.Right
             println(game.value.board1.toString())
 
@@ -39,7 +39,7 @@ class GameServicesRotateShipTests {
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 4)))
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 5)))
                     assertTrue(foundGame.value.board1.isShip(Coordinate(2, 6)))
-                    gameServices.moveShip(userPair.first, Coordinate(2, 3), Coordinate(3, 3))
+                    gameServices.updateShip(userPair.first, Coordinate(2, 3), Coordinate(3, 3))
                     assertFalse(foundGame.value.board1.isShip(Coordinate(3, 3)))
                     assertFalse(foundGame.value.board1.isShip(Coordinate(3, 4)))
                     assertFalse(foundGame.value.board1.isShip(Coordinate(3, 5)))

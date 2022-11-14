@@ -51,7 +51,7 @@ class GameServices(
             }
             val game = gamesDb.getGameByUser(userId) ?:
                 return@run Either.Left(GameIdError.GameNotFound)
-            Either.Right(game.gameId)
+            Either.Right(game.id)
         }
     }
 
@@ -65,39 +65,28 @@ class GameServices(
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if (game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(PlaceShipsError.ActionNotPermitted)
-            ships.forEachIndexed { idx, (shipType, coordinate, orientation) ->
-                game = game.placeShip(shipType, coordinate, orientation, player)
+            ships.forEach { s ->
+                game = game.placeShip(s.first, s.second, s.third, player)
                     ?: return@run Either.Left(PlaceShipsError.InvalidMove)
             }
-            replaceGame(db, game)
+            updateGame(db, game)
             return@run Either.Right(Unit)
         }
     }
 
-    fun rotateShip(userId: Int, position: Coordinate): RotateShipResult {
+    fun updateShip(userId: Int, position: Coordinate, newCoordinate: Coordinate? = null): UpdateShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(RotateShipError.GameNotFound)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(UpdateShipError.GameNotFound)
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.FLEET_SETUP)
-                return@run Either.Left(RotateShipError.ActionNotPermitted)
-            val newGame = game.rotateShip(position, player)
-                ?: return@run Either.Left(RotateShipError.InvalidMove)
-            replaceGame(db, newGame)
-            return@run Either.Right(Unit)
-        }
-    }
-
-    fun moveShip(userId: Int, position: Coordinate, newCoordinate: Coordinate): MoveShipResult {
-        return transactionManager.run {
-            val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(MoveShipError.GameNotFound)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
-            if(game.state != GameState.FLEET_SETUP)
-                return@run Either.Left(MoveShipError.ActionNotPermitted)
-            val newGame = game.moveShip(position, newCoordinate, player)
-                ?: return@run Either.Left(MoveShipError.InvalidMove)
-            replaceGame(db, newGame)
+                return@run Either.Left(UpdateShipError.ActionNotPermitted)
+            val newGame = if(newCoordinate != null)
+                        game.moveShip(position, newCoordinate, player)
+                            else game.rotateShip(position, player)
+            if(newGame == null)
+                return@run Either.Left(UpdateShipError.InvalidMove)
+            updateGame(db, newGame)
             return@run Either.Right(Unit)
         }
     }
@@ -113,7 +102,7 @@ class GameServices(
                 return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
             if (!confirmed) return@run Either.Right(Unit)
             val newGame = game.confirmFleet(player)
-            replaceGame(db, newGame)
+            updateGame(db, newGame)
             Either.Right(Unit)
         }
     }
@@ -130,7 +119,7 @@ class GameServices(
                 return@run Either.Left(PlaceShotError.ActionNotPermitted)
             val newGame = game.placeShot(userId, c, player)
                 ?: return@run Either.Left(PlaceShotError.InvalidMove)
-            replaceGame(db, newGame)
+            updateGame(db, newGame)
             return@run Either.Right(Unit)
         }
     }
@@ -169,9 +158,14 @@ class GameServices(
         }
     }
 
+    @Deprecated("Use update game instead")
     private fun replaceGame(db: GamesRepository, game: Game) {
-        db.removeGame(game.gameId)
+        db.removeGame(game.id)
         db.saveGame(game)
+    }
+
+    private fun updateGame(db: GamesRepository, game: Game){
+        db.updateGame(game)
     }
 
     fun deleteGame(gameId: Int): DeleteGameResult {

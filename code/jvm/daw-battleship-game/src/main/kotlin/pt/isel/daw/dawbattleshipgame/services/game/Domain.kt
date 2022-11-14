@@ -19,19 +19,12 @@ sealed class PlaceShipsError {
 }
 typealias PlaceShipsResult = Either<PlaceShipsError, Unit>
 
-sealed class MoveShipError {
-    object GameNotFound: MoveShipError()
-    object ActionNotPermitted : MoveShipError()
-    object InvalidMove: MoveShipError()
+sealed class UpdateShipError {
+    object GameNotFound: UpdateShipError()
+    object ActionNotPermitted : UpdateShipError()
+    object InvalidMove: UpdateShipError()
 }
-typealias MoveShipResult = Either<MoveShipError, Unit>
-
-sealed class RotateShipError {
-    object GameNotFound: RotateShipError()
-    object ActionNotPermitted : RotateShipError()
-    object InvalidMove: RotateShipError()
-}
-typealias RotateShipResult = Either<RotateShipError, Unit>
+typealias UpdateShipResult = Either<UpdateShipError, Unit>
 
 sealed class FleetConfirmationError {
     object GameNotFound: FleetConfirmationError()

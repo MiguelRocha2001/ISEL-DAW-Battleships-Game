@@ -9,7 +9,7 @@ data class CreateGameInputModel(
         val boardSize: Int,
         val fleet: Map<ShipTypeInputModel, Int>,
         val nShotsPerRound: Int,
-        val roundTimeout: Int
+        val roundTimeout: Long
 ) {
     init {
         require(boardSize in 8..15) {
@@ -18,21 +18,11 @@ data class CreateGameInputModel(
         require(fleet.isNotEmpty()) {
             "There must be at least one boat"
         }
-        require(nShotsPerRound in 1..10
-                && roundTimeout in 1..10 ){
-            "Must be in range [1..10]"
+        require(nShotsPerRound in 1..10){
+            "Shots must be in range [1..10]"
         }
     }
 }
-
-data class FleetStateInputModel(val fleetConfirmed: Boolean)
-
-data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>)
-data class PlaceShipInputModel(
-    val shipType: ShipTypeInputModel,
-    val position: CoordinateInputModel,
-    val orientation: OrientationInputModel
-)
 
 data class CoordinateInputModel(val row: Int, val column: Int) {
     fun toCoordinate() = Coordinate(row, column)
@@ -75,7 +65,17 @@ fun ShipTypeInputModel.toShipType() = when (this) {
     ShipTypeInputModel.DESTROYER -> ShipType.DESTROYER
 }
 
-sealed class AlterShipInputModel
+data class FleetStateInputModel(val fleetConfirmed: Boolean)
+
+sealed class PostShipInputModel
+data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>) : PostShipInputModel()
+data class PlaceShipInputModel(
+    val shipType: ShipTypeInputModel,
+    val position: CoordinateInputModel,
+    val orientation: OrientationInputModel
+)
+
+sealed class AlterShipInputModel: PostShipInputModel()
 
 data class MoveShipInputModel(
     val origin: CoordinateInputModel,
