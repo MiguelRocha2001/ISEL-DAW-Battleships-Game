@@ -222,7 +222,7 @@ class GamesController(
     fun getGame(
         user: User,
     ): ResponseEntity<*> {
-        val res = gameServices.getGame(user.id)
+        val res = gameServices.getGameByUser(user.id)
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(

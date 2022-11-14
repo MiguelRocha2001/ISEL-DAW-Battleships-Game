@@ -254,75 +254,50 @@ class GameTests {
 
         client.post().uri("/my/games/current/my/ships")
             .bodyValue(
-                listOf(
-                    mapOf(
-                        "shipType" to "CARRIER",
-                        "position" to mapOf(
-                            "row" to 1,
-                            "column" to 1
+                mapOf(
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 1
+                            ),
+                            "orientation" to "HORIZONTAL"
                         ),
-                        "orientation" to "HORIZONTAL"
+                        mapOf(
+                            "shipType" to "SUBMARINE",
+                            "position" to mapOf(
+                                "row" to 3,
+                                "column" to 1
+                            ),
+                            "orientation" to "VERTICAL"
+                        ),
+                        mapOf(
+                            "shipType" to "BATTLESHIP",
+                            "position" to mapOf(
+                                "row" to 10,
+                                "column" to 4
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        ),
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 6,
+                                "column" to 6
+                            ),
+                            "orientation" to "VERTICAL"
+                        ),
+                        mapOf(
+                            "shipType" to "CRUISER",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 7
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
                     )
-                )
-            )
-            .header("Authorization", "Bearer $player1Token")
-            .exchange()
-            .expectStatus().isCreated
-
-        client.post().uri("/my/games/current/my/ships")
-            .bodyValue(
-                mapOf(
-                    "shipType" to "SUBMARINE",
-                    "position" to mapOf(
-                        "row" to 3,
-                        "column" to 1
-                    ),
-                    "orientation" to "VERTICAL"
-                )
-            )
-            .header("Authorization", "Bearer $player1Token")
-            .exchange()
-            .expectStatus().isCreated
-
-        client.post().uri("/games/{id}/place-ship", gameId)
-            .bodyValue(
-                mapOf(
-                    "shipType" to "BATTLESHIP",
-                    "position" to mapOf(
-                        "row" to 10,
-                        "column" to 4
-                    ),
-                    "orientation" to "HORIZONTAL"
-                )
-            )
-            .header("Authorization", "Bearer $player1Token")
-            .exchange()
-            .expectStatus().isCreated
-
-        client.post().uri("/games/{id}/place-ship", gameId)
-            .bodyValue(
-                mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 6,
-                        "column" to 6
-                    ),
-                    "orientation" to "VERTICAL"
-                )
-            )
-            .header("Authorization", "Bearer $player1Token")
-            .exchange()
-            .expectStatus().isCreated
-
-        client.post().uri("/games/{id}/place-ship", gameId)
-            .bodyValue(
-                mapOf(
-                    "shipType" to "CRUISER",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 7
-                    ),
-                    "orientation" to "HORIZONTAL"
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -345,30 +320,40 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri("/my/games/current/my/ships")
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 10,
-                        "column" to 8
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 10,
+                                "column" to 8
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isCreated
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri("/my/games/current/my/ships", gameId)
             .bodyValue(
                 mapOf(
-                    "shipType" to "CARRIER",
-                    "position" to mapOf(
-                        "row" to 6,
-                        "column" to 1
-                    ),
-                    "orientation" to "VERTICAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 6,
+                                "column" to 1
+                            ),
+                            "orientation" to "VERTICAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
