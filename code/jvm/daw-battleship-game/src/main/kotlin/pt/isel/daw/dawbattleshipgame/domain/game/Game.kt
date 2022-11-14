@@ -120,18 +120,18 @@ class Game (
             }
 
     companion object {
-        fun newGame(gameId: Int, player1: Int, player2: Int, configuration: Configuration) =
-            RealClock.now().let {
-                Game(
-                        gameId, configuration,
-                        player1, player2,
-                        Board(configuration.boardSize),
-                        Board(configuration.boardSize),
-                        FLEET_SETUP, Instants(it, it,
-                        it + Duration.ofSeconds(configuration.roundTimeout)
-                )
-                )
-            }
+        fun newGame(gameId: Int, player1: Int, player2: Int,
+                    configuration: Configuration,
+                    instant: Instant = RealClock.now()
+        ) = Game(
+                gameId, configuration,
+                player1, player2,
+                Board(configuration.boardSize),
+                Board(configuration.boardSize),
+                FLEET_SETUP, Instants(instant, instant,
+                instant + Duration.ofSeconds(configuration.roundTimeout)
+        ))
+
         fun startGame(player1: Int, player2: Int, configuration: Configuration) =
                 InitGame(player1, player2, configuration)
     }

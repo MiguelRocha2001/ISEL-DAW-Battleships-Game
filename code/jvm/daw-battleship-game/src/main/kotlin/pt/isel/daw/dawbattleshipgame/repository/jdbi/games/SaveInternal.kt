@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import org.jdbi.v3.core.statement.Update
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
@@ -102,6 +103,37 @@ fun confirmBoard(handle: Handle, gameId: Int, playerId: Int) {
         .bind("game", gameId)
         .bind("user", playerId)
         .execute()
+}
+
+
+fun updateGame(handle: Handle, game: Game) {
+    handle.createUpdate(
+            """update game set state = :state, 
+                    winner = :winner, player_turn = :playerTurn,
+                    updated = :updated, deadline = :deadline 
+                    where id = :id
+                """.trimMargin()
+    )
+            .bind("id", game.id)
+            .bind("state", game.state.dbName)
+            .bind("winner", game.winner)
+            .bind("playerTurn", game.playerTurn)
+            .bind("updated", game.instants.updated.epochSecond)
+            .bind("deadline", game.instants.deadline.epochSecond)
+            .execute()
+}
+
+fun updateBoard(handle: Handle, board: Board, userId : Int, gameId: Int) {
+    handle.createUpdate(
+            """update board set grid = :grid, confirmed = :confirmed
+                    where _user = :userId and game = :gameId
+                """.trimMargin()
+    )
+            .bind("grid", board.getDbString())
+            .bind("confirmed", board.isConfirmed())
+            .bind("userId", userId)
+            .bind("gameId", gameId)
+            .execute()
 }
 
 fun deleteGame(handle: Handle, gameId: Int) {

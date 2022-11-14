@@ -57,19 +57,8 @@ class JdbiGamesRepository(
     }
 
     override fun updateGame(game: Game) {
-        handle.createUpdate(
-                """update from game set state = :state, 
-                    winner = :winner, player_turn = :playerTurn,
-                    updated = :updated, deadline = :deadline 
-                    where id = :id 
-                """.trimMargin()
-        )
-                .bind("id", game.id)
-                .bind("state", game.state)
-                .bind("winner", game.winner)
-                .bind("player_turn", game.playerTurn)
-                .bind("updated", game.instants.updated.epochSecond)
-                .bind("deadline", game.instants.deadline.epochSecond)
-                .execute()
+        updateGame(handle, game)
+        updateBoard(handle, game.board1, game.player1, game.id)
+        updateBoard(handle, game.board2, game.player2, game.id)
     }
 }

@@ -6,10 +6,7 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.users.JdbiUsersRepository
-import pt.isel.daw.dawbattleshipgame.utils.generateGameId
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
-import pt.isel.daw.dawbattleshipgame.utils.testWithHandleAndRollback
-import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
+import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GameRepositoryTests {
     private val passwordEncoder = BCryptPasswordEncoder()
@@ -28,14 +25,15 @@ class GameRepositoryTests {
                 val passwordValidationInfo1 = PasswordValidationInfo(passwordEncoder.encode("User1password"))
                 val passwordValidationInfo2 = PasswordValidationInfo(passwordEncoder.encode("User2password"))
                 val usersRepo = transaction.usersRepository
-                val player1Id = usersRepo.storeUser("user1", passwordValidationInfo1).toInt()
-                val player2Id = usersRepo.storeUser("user2", passwordValidationInfo2).toInt()
+                val player1Id = usersRepo.storeUser("user1", passwordValidationInfo1)
+                val player2Id = usersRepo.storeUser("user2", passwordValidationInfo2)
 
                 val gamesRepo = transaction.gamesRepository
                 resetGamesDatabase(gamesRepo) // clears all games
                 val gameId = generateGameId()
                 val configuration = getGameTestConfiguration1()
-                val game = Game.newGame(gameId, player1Id, player2Id, configuration) // PreparationPhase
+                val instant = RealClock.now()
+                val game = Game.newGame(gameId, player1Id, player2Id, configuration, instant) // PreparationPhase
 
                 gamesRepo.saveGame(game)
 
@@ -47,6 +45,8 @@ class GameRepositoryTests {
                 assert(gameFromDb.player1 == player1Id)
                 assert(gameFromDb.player2 == player2Id)
                 assert(gameFromDb.state == GameState.FLEET_SETUP)
+                assert(gameFromDb.instants.created == instant)
+                assert(gameFromDb.instants.updated == instant)
             }
         }
     }

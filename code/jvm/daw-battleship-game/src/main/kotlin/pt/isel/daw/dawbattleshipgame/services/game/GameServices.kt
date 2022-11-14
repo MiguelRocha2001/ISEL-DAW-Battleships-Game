@@ -65,8 +65,8 @@ class GameServices(
             val player = if(userId == game.player1) Player.ONE else Player.TWO
             if (game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(PlaceShipsError.ActionNotPermitted)
-            ships.forEach { (shipType, coordinate, orientation) ->
-                game = game.placeShip(shipType, coordinate, orientation, player)
+            ships.forEach { s ->
+                game = game.placeShip(s.first, s.second, s.third, player)
                     ?: return@run Either.Left(PlaceShipsError.InvalidMove)
             }
             updateGame(db, game)
