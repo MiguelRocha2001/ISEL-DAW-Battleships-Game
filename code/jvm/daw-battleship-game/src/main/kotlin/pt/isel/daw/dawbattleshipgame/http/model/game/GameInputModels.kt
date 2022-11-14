@@ -79,8 +79,7 @@ sealed class AlterShipInputModel: PostShipInputModel()
 
 data class MoveShipInputModel(
     val origin: CoordinateInputModel,
-    val position: CoordinateInputModel,
-    val newCoordinate: CoordinateInputModel
+    val destination: CoordinateInputModel
 ) : AlterShipInputModel()
 
 data class RotateShipInputModel(

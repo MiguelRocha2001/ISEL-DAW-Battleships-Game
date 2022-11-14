@@ -5,11 +5,10 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.*
 import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
-import java.time.Instant
 
 
 internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
-    val gameId = getGameIdBUser(handle, userId) ?: return null
+    val gameId = getGameIdByUser(handle, userId) ?: return null
     return fetchGameInternal(handle, gameId)
 }
 
@@ -38,7 +37,7 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     )
 }
 
-private fun getGameIdBUser(handle: Handle, userId: Int): Int? {
+private fun getGameIdByUser(handle: Handle, userId: Int): Int? {
     val dbGameMapper = handle.createQuery(
         """
             SELECT * FROM game

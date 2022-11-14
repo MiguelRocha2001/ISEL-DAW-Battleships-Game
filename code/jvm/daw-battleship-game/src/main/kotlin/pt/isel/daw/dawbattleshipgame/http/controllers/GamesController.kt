@@ -80,25 +80,10 @@ class GamesController(
         }
     }
 
-    @PutMapping(Uris.Games.My.Current.My.Ships.ALL)
-    fun updateFleet(
-        user: User,
-        @RequestBody fleetStateInputModel: FleetStateInputModel
-    ): ResponseEntity<*> {
-        val res = gameServices.updateFleetState(user.id, fleetStateInputModel.fleetConfirmed)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(204).build<Unit>()
-            is Either.Left -> when (res.value) {
-                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
-            }
-        }
-    }
-
     @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun placeShips(
         user: User,
-        @RequestBody postShipInputModel: PostShipInputModel
+        @RequestBody postShipInputModel: Any
     ): ResponseEntity<*> {
         return when (postShipInputModel) {
             is PlaceShipsInputModel -> {
@@ -106,6 +91,9 @@ class GamesController(
             }
             is AlterShipInputModel -> {
                 updateShip(user, postShipInputModel)
+            }
+            else -> {
+                Problem.response(400, Problem.invalidInputBody)
             }
         }
     }
@@ -140,7 +128,7 @@ class GamesController(
             gameServices.updateShip(
                 user.id,
                 alterShipInputModel.origin.toCoordinate(),
-                alterShipInputModel.position.toCoordinate()
+                alterShipInputModel.destination.toCoordinate()
             )
         } else {
             alterShipInputModel as RotateShipInputModel
@@ -152,6 +140,21 @@ class GamesController(
                 UpdateShipError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
                 UpdateShipError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
                 UpdateShipError.InvalidMove -> Problem.response(405, Problem.invalidMove)
+            }
+        }
+    }
+
+    @PutMapping(Uris.Games.My.Current.My.Ships.ALL)
+    fun updateFleet(
+        user: User,
+        @RequestBody fleetStateInputModel: FleetStateInputModel
+    ): ResponseEntity<*> {
+        val res = gameServices.updateFleetState(user.id, fleetStateInputModel.fleetConfirmed)
+        return when (res) {
+            is Either.Right -> ResponseEntity.status(204).build<Unit>()
+            is Either.Left -> when (res.value) {
+                FleetConfirmationError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
+                FleetConfirmationError.ActionNotPermitted -> Problem.response(405, Problem.actionNotPermitted)
             }
         }
     }

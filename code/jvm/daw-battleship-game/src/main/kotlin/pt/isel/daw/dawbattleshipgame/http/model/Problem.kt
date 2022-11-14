@@ -87,5 +87,11 @@ data class Problem(
             "Invalid user id",
             "User not found"
         )
+
+        val invalidInputBody = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-not-found"),
+            "Invalid input body",
+            "Body is not of the expected format"
+        )
     }
 }
