@@ -6,7 +6,7 @@ data class DbGameMapper(
     val state: String,
     val player1: Int,
     val player2: Int,
-    val created: Long,
+    val created: Long, //bigint
     val updated: Long,
     val deadline: Long,
     val winner: Int?,

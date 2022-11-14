@@ -29,7 +29,7 @@ class JdbiGamesRepository(
     override fun saveGame(game: Game) {
         insertGame(handle, game)
         insertBoards(handle, game)
-        insertConfiguration(handle, game.gameId, game.configuration)
+        insertConfiguration(handle, game.id, game.configuration)
     }
 
     override fun startGame(game : InitGame) : Int? {
@@ -53,6 +53,23 @@ class JdbiGamesRepository(
             .bind("_user", userId)
             .execute()
         val game = getGameByUser(userId) ?: return
-        deleteGame(handle, game.gameId)
+        deleteGame(handle, game.id)
+    }
+
+    override fun updateGame(game: Game) {
+        handle.createUpdate(
+                """update from game set state = :state, 
+                    winner = :winner, player_turn = :playerTurn,
+                    updated = :updated, deadline = :deadline 
+                    where id = :id 
+                """.trimMargin()
+        )
+                .bind("id", game.id)
+                .bind("state", game.state)
+                .bind("winner", game.winner)
+                .bind("player_turn", game.playerTurn)
+                .bind("updated", game.instants.updated.epochSecond)
+                .bind("deadline", game.instants.deadline.epochSecond)
+                .execute()
     }
 }

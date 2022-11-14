@@ -42,7 +42,7 @@ class GameRepositoryTests {
                 val gameFromDb = gamesRepo.getGame(gameId)
 
                 checkNotNull(gameFromDb)
-                assert(gameFromDb.gameId == gameId)
+                assert(gameFromDb.id == gameId)
                 assert(gameFromDb.configuration == configuration)
                 assert(gameFromDb.player1 == player1Id)
                 assert(gameFromDb.player2 == player2Id)
@@ -68,7 +68,7 @@ class GameRepositoryTests {
                 requireNotNull(gameId)
                 val gameFromDb = gamesRepo.getGame(gameId)
                 checkNotNull(gameFromDb)
-                assert(gameFromDb.gameId == gameId)
+                assert(gameFromDb.id == gameId)
                 assert(gameFromDb.configuration == configuration)
                 assert(gameFromDb.player1 == player1Id)
                 assert(gameFromDb.player2 == player2Id)

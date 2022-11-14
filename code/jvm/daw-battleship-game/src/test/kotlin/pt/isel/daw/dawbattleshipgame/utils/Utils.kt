@@ -127,7 +127,7 @@ fun createGame(transactionManager: TransactionManager, player1: Int, player2: In
     when (val user1Game = gameService.getGame(user1GameIdResult.value)) {
         is Either.Left -> fail("Unexpected $user1Game")
         is Either.Right -> {
-            Assertions.assertEquals(user1Game.value.gameId, user1GameIdResult.value)
+            Assertions.assertEquals(user1Game.value.id, user1GameIdResult.value)
             Assertions.assertEquals(user1Game.value.player1, player1)
             Assertions.assertEquals(user1Game.value.player2, player2)
             Assertions.assertEquals(user1Game.value.state, GameState.FLEET_SETUP)
@@ -136,7 +136,7 @@ fun createGame(transactionManager: TransactionManager, player1: Int, player2: In
     when (val user2Game = gameService.getGame(user2GameIdResult.value)) {
         is Either.Left -> fail("Unexpected $user2Game")
         is Either.Right -> {
-            Assertions.assertEquals(user2Game.value.gameId, user2GameIdResult.value)
+            Assertions.assertEquals(user2Game.value.id, user2GameIdResult.value)
             Assertions.assertEquals(user2Game.value.player1, player1)
             Assertions.assertEquals(user2Game.value.player2, player2)
             Assertions.assertEquals(user2Game.value.state, GameState.FLEET_SETUP)

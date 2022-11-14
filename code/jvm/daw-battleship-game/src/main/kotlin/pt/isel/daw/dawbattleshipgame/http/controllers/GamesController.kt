@@ -233,7 +233,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(
                     GameOutputModel(
-                        gameId = res.value.gameId,
+                        gameId = res.value.id,
                         configuration = res.value.configuration,
                         player1 = res.value.player1,
                         player2 = res.value.player2,

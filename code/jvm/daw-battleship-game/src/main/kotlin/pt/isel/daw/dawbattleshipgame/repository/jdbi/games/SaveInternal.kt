@@ -5,23 +5,25 @@ import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 internal fun insertGame(handle: Handle, game: Game) {
     handle.createUpdate(
         """
-                insert into GAME(id, player1, player2, state, winner, player_turn)
-                values(:id, :player1, :player2, :state, :winner, :player_turn) 
+                insert into GAME(id, player1, player2, state, winner, player_turn, created, updated, deadline)
+                values(:id, :player1, :player2, :state, :winner, :player_turn, :created, :updated, :deadline) 
             """
     )
-        .bind("id", game.gameId)
+        .bind("id", game.id)
         .bind("player1", game.player1)
         .bind("state", game.state.dbName)
         .bind("player2", game.player2)
         .bind("winner", game.winner)
         .bind("player_turn", game.playerTurn)
+        .bind("created", game.instants.created.epochSecond)
+        .bind("updated", game.instants.updated.epochSecond)
+        .bind("deadline", game.instants.deadline.epochSecond)
         .execute()
 }
 
@@ -40,8 +42,8 @@ internal fun makeGame(handle: Handle, game: InitGame): Int? {
 }
 
 internal fun insertBoards(handle: Handle, game: Game) {
-    insertBoard(handle, game.gameId, game.player1, game.board1)
-    insertBoard(handle, game.gameId, game.player2, game.board2)
+    insertBoard(handle, game.id, game.player1, game.board1)
+    insertBoard(handle, game.id, game.player2, game.board2)
 }
 
 internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {

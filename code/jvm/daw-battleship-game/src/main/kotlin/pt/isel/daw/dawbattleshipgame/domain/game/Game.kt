@@ -42,14 +42,14 @@ data class Instants(
 
 
 class Game (
-        val gameId: Int,
+        val id: Int,
         val configuration: Configuration,
         val player1: Int,
         val player2: Int,
         val board1: Board,
         val board2: Board,
         val state: GameState = NOT_STARTED,
-        private val instants: Instants = Instants(),
+        val instants: Instants = Instants(),
 
 
         val playerTurn: Int? =
@@ -80,7 +80,7 @@ class Game (
 
     internal fun setWinner(winner: Int) =
         Game(
-            gameId, configuration, player1,
+            id, configuration, player1,
             player2, board1, board2, FINISHED,
             instants, playerTurn, winner
         )
@@ -89,13 +89,13 @@ class Game (
         require(state == FLEET_SETUP || state == BATTLE).let {
             when (player) {
                 Player.ONE -> Game(
-                        gameId, configuration,
+                        id, configuration,
                         player1, player2, board,
                         board2, state, instants,
                         playerTurn, winner
                 )
                 Player.TWO -> Game(
-                        gameId, configuration,
+                        id, configuration,
                         player1, player2, board1,
                         board, state, instants,
                         playerTurn, winner
@@ -128,7 +128,7 @@ class Game (
                         Board(configuration.boardSize),
                         Board(configuration.boardSize),
                         FLEET_SETUP, Instants(it, it,
-                        it + Duration.ofSeconds(configuration.roundTimeout.toLong())
+                        it + Duration.ofSeconds(configuration.roundTimeout)
                 )
                 )
             }
