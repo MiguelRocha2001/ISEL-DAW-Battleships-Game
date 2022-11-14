@@ -24,15 +24,6 @@ data class CreateGameInputModel(
     }
 }
 
-data class FleetStateInputModel(val fleetConfirmed: Boolean)
-
-data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>)
-data class PlaceShipInputModel(
-    val shipType: ShipTypeInputModel,
-    val position: CoordinateInputModel,
-    val orientation: OrientationInputModel
-)
-
 data class CoordinateInputModel(val row: Int, val column: Int) {
     fun toCoordinate() = Coordinate(row, column)
 
@@ -74,7 +65,17 @@ fun ShipTypeInputModel.toShipType() = when (this) {
     ShipTypeInputModel.DESTROYER -> ShipType.DESTROYER
 }
 
-sealed class AlterShipInputModel
+data class FleetStateInputModel(val fleetConfirmed: Boolean)
+
+sealed class PostShipInputModel
+data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>) : PostShipInputModel()
+data class PlaceShipInputModel(
+    val shipType: ShipTypeInputModel,
+    val position: CoordinateInputModel,
+    val orientation: OrientationInputModel
+)
+
+sealed class AlterShipInputModel: PostShipInputModel()
 
 data class MoveShipInputModel(
     val origin: CoordinateInputModel,

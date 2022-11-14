@@ -71,7 +71,7 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameIdOutputModel(res.value)) {
-                    links(gameByIdLinks(user.id))
+                    gameByIdLinks(user.id)
                 })
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -98,7 +98,21 @@ class GamesController(
     @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun placeShips(
         user: User,
-        @RequestBody placeShipsInputModel: PlaceShipsInputModel
+        @RequestBody postShipInputModel: PostShipInputModel
+    ): ResponseEntity<*> {
+        return when (postShipInputModel) {
+            is PlaceShipsInputModel -> {
+                placeShips(user, postShipInputModel)
+            }
+            is AlterShipInputModel -> {
+                updateShip(user, postShipInputModel)
+            }
+        }
+    }
+
+    fun placeShips(
+        user: User,
+        placeShipsInputModel: PlaceShipsInputModel
     ): ResponseEntity<*> {
         val res = gameServices.placeShips(
             user.id,
@@ -118,10 +132,9 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun updateShip(
         user: User,
-        @RequestBody alterShipInputModel: AlterShipInputModel
+        alterShipInputModel: AlterShipInputModel
     ): ResponseEntity<*> {
         val res = if (alterShipInputModel is MoveShipInputModel) {
             gameServices.updateShip(
@@ -191,6 +204,7 @@ class GamesController(
         }
     }
 
+    /*
     @GetMapping(Uris.Games.BY_ID)
     fun getGameState(
         user: User,
@@ -207,6 +221,7 @@ class GamesController(
             }
         }
     }
+     */
 
     @GetMapping(Uris.Games.BY_ID)
     fun getGame(
