@@ -1,5 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.model.game
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
@@ -18,9 +20,11 @@ data class CreateGameInputModel(
         require(fleet.isNotEmpty()) {
             "There must be at least one boat"
         }
+        /* TODO -> remove later
         require(nShotsPerRound in 1..10){
             "Shots must be in range [1..10]"
         }
+         */
     }
 }
 
@@ -67,22 +71,22 @@ fun ShipTypeInputModel.toShipType() = when (this) {
 
 data class FleetStateInputModel(val fleetConfirmed: Boolean)
 
-sealed class PostShipInputModel
-data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>) : PostShipInputModel()
+// @JsonDeserialize(`as` = PlaceShipsInputModel::class)
+@JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "operation")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = PlaceShipsInputModel::class, name = "place-ship"),
+    JsonSubTypes.Type(value = AlterShipInputModel::class, name = "alter-ship"),
+)
+sealed class PostShipInputModel(open val operation: String)
+
+data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>): PostShipInputModel("place-ship")
 data class PlaceShipInputModel(
     val shipType: ShipTypeInputModel,
     val position: CoordinateInputModel,
     val orientation: OrientationInputModel
 )
 
-sealed class AlterShipInputModel: PostShipInputModel()
-
-data class MoveShipInputModel(
+class AlterShipInputModel(
     val origin: CoordinateInputModel,
-    val position: CoordinateInputModel,
-    val newCoordinate: CoordinateInputModel
-) : AlterShipInputModel()
-
-data class RotateShipInputModel(
-    val position: CoordinateInputModel
-) : AlterShipInputModel()
+    val destination: CoordinateInputModel?, // null if ship is to be rotated
+): PostShipInputModel("alter-ship")

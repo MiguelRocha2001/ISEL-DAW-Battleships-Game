@@ -33,15 +33,7 @@ class UserTests {
         ).configure()
     }
 
-    @Test
-    fun `can create an user`() {
-        // given: an HTTP client
-        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-
-        // and: a random user
-        val username = UUID.randomUUID().toString()
-        val password = getRandomPassword()
-
+    fun createUser(username: String, password: String, client: WebTestClient): Int {
         // when: creating an user
         // then: the response is a 201 with a proper Location header
         val siren = client.post().uri("/users")
@@ -62,41 +54,51 @@ class UserTests {
             .responseBody ?: fail("Game id is null")
 
         assertNotNull(siren)
-        val userId = (siren.properties as java.util.LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
+        val userId = (siren.properties as LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
+
+        // verify links
+        val links = siren.links
+        assertNotNull(links)
+        assertEquals(1, links.size)
+        assertEquals("self", links[0].rel[0])
+        assertEquals("/users", links[0].href)
+
+        // verify actions
+        val actions = siren.actions
+        assertNotNull(actions)
+        assertEquals(1, actions.size)
+        assertEquals("create-token", actions[0].name)
+        assertEquals("/users/token", actions[0].href)
+        assertEquals("POST", actions[0].method)
+        assertEquals("application/json", actions[0].type)
+        assertEquals(2, actions[0].fields.size)
+        assertEquals("username", actions[0].fields[0].name)
+        assertEquals("text", actions[0].fields[0].type)
+        assertEquals("password", actions[0].fields[1].name)
+        assertEquals("text", actions[0].fields[1].type)
+
+        return userId
+    }
+
+    @Test
+    fun canCreateUser() {
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+        val username = UUID.randomUUID().toString()
+        val password = getRandomPassword()
+
+        val userId = createUser(username, password, client)
 
         deleteUser(client, userId)
     }
 
     @Test
     fun `can create an user, obtain a token, and access user home`() {
-        // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-
         // and: a random user
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
 
-        // when: creating an user
-        // then: the response is a 201 with a proper Location header
-        val siren = client.post().uri("/users")
-            .bodyValue(
-                mapOf(
-                    "username" to username,
-                    "password" to password
-                )
-            )
-            .exchange()
-            .expectStatus().isCreated
-            .expectHeader().value("location") {
-                assertTrue(it.startsWith("/users/"))
-            }
-            .expectHeader().contentType("application/json")
-            .expectBody(SirenModel::class.java)
-            .returnResult()
-            .responseBody ?: fail("Game id is null")
-
-        assertNotNull(siren)
-        val userId = (siren.properties as java.util.LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
+        val userId = createUser(username, password, client)
 
         // when: creating a token
         // then: the response is a 200
@@ -132,10 +134,15 @@ class UserTests {
 
         // asserting links
         val links = userHome.links
-        assertEquals(1, links.size)
+        assertEquals(2, links.size)
+
         assertEquals("/me", links[0].href)
         assertEquals(1, links[0].rel.size)
         assertEquals("self", links[0].rel[0])
+
+        assertEquals("/my/games/current", links[1].href)
+        assertEquals(1, links[1].rel.size)
+        assertEquals("game-id", links[1].rel[0])
 
         // asserting actions
         val actions = userHome.actions
@@ -167,20 +174,7 @@ class UserTests {
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
 
-        // when: creating a user
-        // then: the response is a 201 with a proper Location header
-        client.post().uri("/users")
-            .bodyValue(
-                mapOf(
-                    "username" to username,
-                    "password" to password
-                )
-            )
-            .exchange()
-            .expectStatus().isCreated
-            .expectHeader().value("location") {
-                assertTrue(it.startsWith("/users/"))
-            }
+        val userId = createUser(username, password, client)
 
         // when: creating the same user again
         // then: the response is a 400 with the proper tyoe
@@ -196,6 +190,7 @@ class UserTests {
             .expectHeader().contentType("application/problem+json")
             .expectBody()
 
+        deleteUser(client, userId)
     }
 
     @Test
@@ -219,4 +214,84 @@ class UserTests {
             .exchange()
             .expectStatus().isBadRequest
     }
+
+    @Test
+    fun `requesting token with wrong password or username`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+        val username = UUID.randomUUID().toString()
+        val password = getRandomPassword()
+        val userId = createUser(username, password, client)
+
+        // when: requesting a token with wrong username
+        // then: the response is a 403 with the proper type
+        client.post().uri("/users/token")
+            .bodyValue(
+                mapOf(
+                    "username" to username + "wrong",
+                    "password" to password
+                )
+            )
+            .exchange()
+            .expectStatus().isForbidden
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+
+        // when: requesting a token with wrong password
+        // then: the response is a 403 with the proper type
+        client.post().uri("/users/token")
+            .bodyValue(
+                mapOf(
+                    "username" to username,
+                    "password" to password + "wrong"
+                )
+            )
+            .exchange()
+            .expectStatus().isForbidden
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+
+        deleteUser(client, userId)
+    }
+
+    @Test
+    fun `requesting token with black password or username`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+        val username = UUID.randomUUID().toString()
+        val password = getRandomPassword()
+        val userId = createUser(username, password, client)
+
+        // when: requesting a token with wrong username
+        // then: the response is a 403 with the proper type
+        client.post().uri("/users/token")
+            .bodyValue(
+                mapOf(
+                    "username" to "",
+                    "password" to password
+                )
+            )
+            .exchange()
+            .expectStatus().isForbidden
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+
+        // when: requesting a token with wrong password
+        // then: the response is a 403 with the proper type
+        client.post().uri("/users/token")
+            .bodyValue(
+                mapOf(
+                    "username" to username,
+                    "password" to ""
+                )
+            )
+            .exchange()
+            .expectStatus().isForbidden
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+
+        deleteUser(client, userId)
+    }
+
+
 }

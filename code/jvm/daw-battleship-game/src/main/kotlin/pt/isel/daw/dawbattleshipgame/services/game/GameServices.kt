@@ -158,6 +158,14 @@ class GameServices(
         }
     }
 
+    fun getGameByUser(userId: Int): GameResult {
+        return transactionManager.run {
+            val db = it.gamesRepository
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameError.GameNotFound)
+            Either.Right(game)
+        }
+    }
+
     @Deprecated("Use update game instead")
     private fun replaceGame(db: GamesRepository, game: Game) {
         db.removeGame(game.id)

@@ -52,7 +52,7 @@ class UsersController(
                         buildStartGameAction(this)
                     })
             is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(400, Problem.userOrPasswordAreInvalid)
+                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(403, Problem.userOrPasswordAreInvalid)
             }
         }
     }

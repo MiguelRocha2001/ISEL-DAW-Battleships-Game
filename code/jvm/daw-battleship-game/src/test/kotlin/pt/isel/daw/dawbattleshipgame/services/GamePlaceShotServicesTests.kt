@@ -13,7 +13,7 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GamePlaceShotServicesTests {
-    private val configuration = getGameTestConfiguration1()
+    private val configuration = getGameTestConfiguration3()
 
     @Test
     fun placeShot() {
@@ -25,8 +25,9 @@ class GamePlaceShotServicesTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(1, 1), Orientation.HORIZONTAL)
+            placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(3, 1), Orientation.HORIZONTAL)
+
 
 
             //var game = gameServices.getGame(gameId) as Either.Right
@@ -37,27 +38,17 @@ class GamePlaceShotServicesTests {
 
             //place all the shots with the objective of sinking all player two ships
             gameServices.placeShot(userPair.first, Coordinate(1,1))
-            gameServices.placeShot(userPair.second, Coordinate(2,2))
-            gameServices.placeShot(userPair.first, Coordinate(2,1))
-            gameServices.placeShot(userPair.second, Coordinate(4,1))
-            gameServices.placeShot(userPair.first, Coordinate(3,1))
-            gameServices.placeShot(userPair.second, Coordinate(5,3))
-            gameServices.placeShot(userPair.first, Coordinate(4,1))
-            gameServices.placeShot(userPair.second, Coordinate(1,4))
+            gameServices.placeShot(userPair.second, Coordinate(3,2))
+            gameServices.placeShot(userPair.first, Coordinate(1,2))
+
 
             //game before last shot
-            gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
-
-            val gameResult = gameServices.placeShot(userPair.first, Coordinate(5,1)) as? Either.Right
-                ?: fail("Expected game result")
-            assertEquals(GameState.FINISHED, gameResult.value)
+            game = gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
+            assertEquals(GameState.FINISHED, game.value.state)
 
             //game after last shot
-            game = gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
-            assertEquals(GameState.FINISHED,game.value.state)
             assertEquals(userPair.first ,game.value.winner)
-            assertTrue(game.value.board2["A5".toCoordinate()].isHit)
-            println(game.value.board2.toString())
+            assertTrue(game.value.board2["A1".toCoordinate()].isHit)
         }
     }
 
@@ -71,8 +62,8 @@ class GamePlaceShotServicesTests {
             val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(2, 3), Orientation.VERTICAL)
+            placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(1, 1), Orientation.VERTICAL)
             gameServices.updateFleetState(userPair.first, true)
             gameServices.updateFleetState(userPair.second, true)
 

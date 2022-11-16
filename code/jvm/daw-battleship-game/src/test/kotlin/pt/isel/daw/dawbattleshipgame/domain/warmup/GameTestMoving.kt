@@ -9,14 +9,14 @@ import pt.isel.daw.dawbattleshipgame.domain.game.placeShip
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.utils.generateId
-import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration4
 
 
 class GameTestMoving {
     private val gameId = generateId()
     private val player1 = generateId()
     private val player2 = generateId()
-    private val configuration = getGameTestConfiguration1()
+    private val configuration = getGameTestConfiguration4()
 
     @Test
     fun valid_ship_move_1() {
