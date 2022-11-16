@@ -91,6 +91,7 @@ class UsersController(
         }
     }
 
+    @Deprecated("New implementation coming soon")
     @GetMapping(Uris.Users.STATS)
     fun getUserStatistics(): ResponseEntity<*> {
         val res = userService.getUserRanking()
