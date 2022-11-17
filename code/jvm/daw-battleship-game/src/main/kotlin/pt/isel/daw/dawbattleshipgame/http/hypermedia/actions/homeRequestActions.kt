@@ -10,7 +10,7 @@ fun buildHomeActions(sirenBuilderScope: SirenBuilderScope<HomeOutputModel>) {
     // Create User
     sirenBuilderScope.action(
         name = "create-user",
-        href = URI(Uris.Users.CREATE),
+        href = URI(Uris.Users.ALL),
         method = HttpMethod.POST,
         type = "application/json"
     ) {

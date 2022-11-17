@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
@@ -49,7 +50,7 @@ class GameTests {
 
         // when: creating a user
         // then: the response is a 201 with a proper Location header
-        val siren = client.post().uri("/users")
+        val siren = client.post().uri(Uris.Users.ALL)
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -106,21 +107,21 @@ class GameTests {
         val player2Token = player2.second
 
         // player 1 will try to create a game, and will be put in the waiting list
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isAccepted
 
         // player 2 should be able to create a game
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isCreated
 
         // player 1 should be able to get the game
-        val gameId1Siren = client.get().uri("/my/games/current")
+        val gameId1Siren = client.get().uri(Uris.Games.My.CURRENT)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isOk
@@ -132,7 +133,7 @@ class GameTests {
         val gameId1 = (gameId1Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: fail("Game id is null")
 
         // player 2 should be able to get the game
-        val gameId2Siren = client.get().uri("/my/games/current")
+        val gameId2Siren = client.get().uri(Uris.Games.My.CURRENT)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
             .expectStatus().isOk
@@ -164,7 +165,7 @@ class GameTests {
     }
 
     private fun deleteGame(client: WebTestClient, gameId: Int) {
-        client.delete().uri("/games/$gameId")
+        client.delete().uri(Uris.Games.BY_ID, gameId)
             .exchange()
             .expectStatus().isOk
     }
@@ -184,7 +185,7 @@ class GameTests {
         val gameConfig = getCreateGameInputModel()
 
         // player 1 tries to create another game
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -195,7 +196,7 @@ class GameTests {
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
 
         // player 2 tries to create another game
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $player2Token")
             .exchange()
@@ -221,14 +222,14 @@ class GameTests {
         val gameConfig = getCreateGameInputModel()
 
         // player 1 will try to create a game, and will be put in the waiting list
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $userToken")
             .exchange()
             .expectStatus().isAccepted
 
         // player 1 will try to create a game, and will be put in the waiting list
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $userToken")
             .exchange()
@@ -250,7 +251,7 @@ class GameTests {
         val gameConfig = getCreateGameInputModel()
 
         // Invalid user will try to create a game, without success
-        client.post().uri("/my/games")
+        client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
             .header("Authorization", "Bearer $nonValidUserToken")
             .exchange()
@@ -268,7 +269,7 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/my/games/current/my/ships")
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
                     "operation" to "place-ship",
@@ -337,7 +338,7 @@ class GameTests {
 
 
         // Invalid user will try to add a ship, without success
-        client.post().uri("/my/games/current/my/ships", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
                     "operation" to "place-ship",
@@ -369,7 +370,7 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/my/games/current/my/ships")
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
                     "operation" to "place-ship",
@@ -389,7 +390,7 @@ class GameTests {
             .exchange()
             .expectStatus().isCreated
 
-        client.post().uri("/my/games/current/my/ships", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
                     "operation" to "place-ship",
@@ -425,30 +426,40 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "CARRIER",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 1
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 1
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isCreated
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "CARRIER",
-                    "position" to mapOf(
-                        "row" to 5,
-                        "column" to 1
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 5,
+                                "column" to 1
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -471,30 +482,41 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "CARRIER",
-                    "position" to mapOf(
-                        "row" to 0,
-                        "column" to 0
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 0,
+                                "column" to 0
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
+
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isBadRequest // bad request because position is invalid
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "SUBMARINE",
-                    "position" to mapOf(
-                        "row" to 50,
-                        "column" to 10
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "SUBMARINE",
+                            "position" to mapOf(
+                                "row" to 50,
+                                "column" to 10
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -517,60 +539,80 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "CARRIER",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 1
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 1
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isCreated
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "BATTLESHIP",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 1
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "BATTLESHIP",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 1
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "BATTLESHIP",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 1
-                    ),
-                    "orientation" to "VERTICAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "BATTLESHIP",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 1
+                            ),
+                            "orientation" to "VERTICAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "BATTLESHIP",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 2
-                    ),
-                    "orientation" to "VERTICAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "BATTLESHIP",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 2
+                            ),
+                            "orientation" to "VERTICAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -593,15 +635,20 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "BATTLESHIP",
-                    "position" to mapOf(
-                        "row" to 2,
-                        "column" to 3
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "BATTLESHIP",
+                            "position" to mapOf(
+                                "row" to 2,
+                                "column" to 3
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -609,15 +656,20 @@ class GameTests {
             .expectStatus().isCreated
 
         // touching above
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 1,
-                        "column" to 3
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 1,
+                                "column" to 3
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -625,15 +677,20 @@ class GameTests {
             .expectStatus().isEqualTo(405)
 
         // touching below
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 3,
-                        "column" to 3
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 3,
+                                "column" to 3
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -641,15 +698,20 @@ class GameTests {
             .expectStatus().isEqualTo(405)
 
         // touching left
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 2,
-                        "column" to 1
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 2,
+                                "column" to 1
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -657,15 +719,20 @@ class GameTests {
             .expectStatus().isEqualTo(405)
 
         // touching right
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 2,
-                        "column" to 7
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 2,
+                                "column" to 7
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
@@ -688,45 +755,60 @@ class GameTests {
         val player2Id = gameInfo.player2Id
         val player1Token = gameInfo.player1Token
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "BATTLESHIP",
-                    "position" to mapOf(
-                        "row" to 5,
-                        "column" to 8
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "BATTLESHIP",
+                            "position" to mapOf(
+                                "row" to 5,
+                                "column" to 8
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 10,
-                        "column" to 10
-                    ),
-                    "orientation" to "HORIZONTAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 10,
+                                "column" to 10
+                            ),
+                            "orientation" to "HORIZONTAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
-        client.post().uri("/games/{id}/place-ship", gameId)
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "shipType" to "DESTROYER",
-                    "position" to mapOf(
-                        "row" to 10,
-                        "column" to 10
-                    ),
-                    "orientation" to "VERTICAL"
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "DESTROYER",
+                            "position" to mapOf(
+                                "row" to 10,
+                                "column" to 10
+                            ),
+                            "orientation" to "VERTICAL"
+                        )
+                    )
                 )
             )
             .header("Authorization", "Bearer $player1Token")

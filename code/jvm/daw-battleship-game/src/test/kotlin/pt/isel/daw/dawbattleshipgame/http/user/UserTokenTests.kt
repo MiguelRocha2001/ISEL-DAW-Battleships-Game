@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.createUser
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
@@ -47,7 +48,7 @@ class UserTokenTests {
 
         // when: creating a token
         // then: the response is a 200
-        val result = client.post().uri("/users/token")
+        val result = client.post().uri(Uris.Users.TOKEN)
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -78,7 +79,7 @@ class UserTokenTests {
 
         // when: requesting a token with wrong username
         // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
+        client.post().uri(Uris.Users.TOKEN)
             .bodyValue(
                 mapOf(
                     "username" to username + "wrong",
@@ -92,7 +93,7 @@ class UserTokenTests {
 
         // when: requesting a token with wrong password
         // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
+        client.post().uri(Uris.Users.TOKEN)
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -117,7 +118,7 @@ class UserTokenTests {
 
         // when: requesting a token with wrong username
         // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
+        client.post().uri(Uris.Users.TOKEN)
             .bodyValue(
                 mapOf(
                     "username" to "",
@@ -131,7 +132,7 @@ class UserTokenTests {
 
         // when: requesting a token with wrong password
         // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
+        client.post().uri(Uris.Users.TOKEN)
             .bodyValue(
                 mapOf(
                     "username" to username,

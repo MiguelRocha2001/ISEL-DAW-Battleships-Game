@@ -15,18 +15,18 @@ object Uris {
     }
 
     object Users {
-        const val CREATE = "/users"
+        const val ALL = "/users"
         const val TOKEN = "/users/token"
         const val BY_ID = "/users/{id}"
         const val STATS = "/users/all/statistics"
         const val HOME = "/me"
 
-        fun create() = URI(CREATE)
+        fun create() = URI(ALL)
         fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
         fun createToken(): URI = URI(TOKEN)
         fun home(): URI = URI(HOME)
         fun logout(): URI = URI(TOKEN)
-        fun register(): URI = URI(CREATE)
+        fun register(): URI = URI(ALL)
         fun stats(): URI = URI(STATS)
         fun battleshipsStatistics(): URI = URI(STATS)
     }

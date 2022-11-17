@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.createUserAndToken
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
@@ -46,7 +47,7 @@ class UserGetTests {
         val creationResult = createUserAndToken(username, password, client)
         val id = creationResult.first
         val token = creationResult.second
-        val beforeDeletion = client.get().uri("/me")
+        val beforeDeletion = client.get().uri(Uris.Users.HOME)
             .header("Authorization", "Bearer $token")
             .exchange()
             .expectStatus().isCreated
@@ -60,7 +61,7 @@ class UserGetTests {
         // when: deleting the user
         deleteUser(client,id)
 
-        val afterDeletion = client.get().uri("/me")
+        val afterDeletion = client.get().uri(Uris.Users.HOME)
             .header("Authorization", "Bearer $token")
             .exchange()
             .expectStatus().isUnauthorized //FIXME: should be 404 or 400 because the user does not exist

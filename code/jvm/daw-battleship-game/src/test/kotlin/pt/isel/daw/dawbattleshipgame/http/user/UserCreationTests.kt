@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.createUser
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
@@ -55,7 +56,7 @@ class UserCreationTests {
 
         // when: creating a token
         // then: the response is a 200
-        val result = client.post().uri("/users/token")
+        val result = client.post().uri(Uris.Users.TOKEN)
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -73,7 +74,7 @@ class UserCreationTests {
 
         // when: getting the user home with a valid token
         // then: the response is a 200 with the proper representation
-        val userHome = client.get().uri("/me")
+        val userHome = client.get().uri(Uris.Users.HOME)
             .header("Authorization", "Bearer ${token}")
             .exchange()
             .expectStatus().isCreated
@@ -109,7 +110,7 @@ class UserCreationTests {
 
         // when: getting the user home with an invalid token
         // then: the response is a 4001 with the proper problem
-        client.get().uri("/me")
+        client.get().uri(Uris.Users.HOME)
             .header("Authorization", "Bearer ${token}-invalid")
             .exchange()
             .expectStatus().isUnauthorized
@@ -131,7 +132,7 @@ class UserCreationTests {
 
         // when: creating the same user again
         // then: the response is a 400 with the proper tyoe
-        client.post().uri("/users")
+        client.post().uri(Uris.Users.ALL)
             .bodyValue(
                 mapOf(
                     "username" to username,
@@ -156,7 +157,7 @@ class UserCreationTests {
 
         // when: creating a user
         // then: the response is a 400 with the proper type
-        client.post().uri("/users")
+        client.post().uri(Uris.Users.ALL)
             .bodyValue(
                 mapOf(
                     "username" to "",
@@ -182,7 +183,7 @@ class UserCreationTests {
 
         // when: creating a user
         // then: the response is a 400 with the proper type
-        client.post().uri("/users")
+        client.post().uri(Uris.Users.ALL)
             .bodyValue(
                 mapOf(
                     "username" to username,

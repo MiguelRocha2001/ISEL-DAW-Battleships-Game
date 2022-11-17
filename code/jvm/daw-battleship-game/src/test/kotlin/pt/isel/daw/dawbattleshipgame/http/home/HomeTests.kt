@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import kotlin.collections.LinkedHashMap
@@ -39,7 +40,7 @@ class HomeTests {
 
         // when: creating an user
         // then: the response is a 201 with a proper Location header
-        val siren = client.get().uri("/")
+        val siren = client.get().uri(Uris.Home.HOME)
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentType("application/json")
@@ -95,7 +96,7 @@ class HomeTests {
 
         // when: getting the server info
         // then: the response is a 200 with a proper Location header
-        val siren = client.get().uri("/info")
+        val siren = client.get().uri(Uris.Home.SERVER_INFO)
             .exchange()
             .expectStatus().isOk
             .expectHeader().contentType("application/json")

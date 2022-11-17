@@ -20,7 +20,7 @@ import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 class UsersController(
     private val userService: UserServices
 ) {
-    @PostMapping(Uris.Users.CREATE)
+    @PostMapping(Uris.Users.ALL)
     fun create(@RequestBody input: UserCreateInputModel): ResponseEntity<*> {
         val res = userService.createUser(input.username, input.password)
         return when (res) {
