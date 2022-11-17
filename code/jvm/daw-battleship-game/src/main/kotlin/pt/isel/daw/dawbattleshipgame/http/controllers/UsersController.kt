@@ -79,7 +79,7 @@ class UsersController(
                     clazz("user-home")
                 }
             )
-        //TODO see errors related to this -- Unauthorized 401
+        //TODO( see errors related to this -- Unauthorized 401 )
     }
 
     @DeleteMapping(Uris.Users.BY_ID)
@@ -97,7 +97,6 @@ class UsersController(
         }
     }
 
-    @Deprecated("New implementation coming soon")
     @GetMapping(Uris.Users.STATS)
     fun getUserStatistics(): ResponseEntity<*> {
         val res = userService.getUserRanking()
@@ -106,7 +105,6 @@ class UsersController(
             .body(siren(UserStatsOutputModel(userStats)) {
                 link(Uris.Users.stats(), Rels.SELF)
                 clazz("users")
-
             })
     }
 }
