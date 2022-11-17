@@ -1,7 +1,9 @@
 create table _USER(
     id int generated always as identity primary key,
     username VARCHAR(64) unique not null,
-    password_validation VARCHAR(256) not null
+    password_validation VARCHAR(256) not null,
+    games_played int default 0 not null,
+    wins int default 0 not null
 );
 
 create table USER_QUEUE(
