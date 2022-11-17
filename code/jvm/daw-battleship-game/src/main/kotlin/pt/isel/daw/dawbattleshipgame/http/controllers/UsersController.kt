@@ -32,8 +32,10 @@ class UsersController(
                 .body(siren(UserCreateOutputModel(res.value)) {
                     link(Uris.Users.create(), Rels.SELF)
                     createTokenSirenAction(this)
+                    clazz("user")
                 })
             is Either.Left -> when (res.value) {
+                UserCreationError.InvalidUsername -> Problem.response(400, Problem.invalidUsername)
                 UserCreationError.InsecurePassword -> Problem.response(400, Problem.insecurePassword)
                 UserCreationError.UserAlreadyExists -> Problem.response(400, Problem.userAlreadyExists)
             }
@@ -50,6 +52,8 @@ class UsersController(
                         link(Uris.Users.createToken(), Rels.SELF)
                         link(Uris.Users.home(), Rels.USER_HOME)
                         buildStartGameAction(this)
+                        clazz("user-token")
+
                     })
             is Either.Left -> when (res.value) {
                 TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(403, Problem.userOrPasswordAreInvalid)
@@ -72,6 +76,7 @@ class UsersController(
                     link(Uris.Users.home(), Rels.SELF)
                     link(Uris.Games.My.current(), Rels.GAME_ID)
                     buildStartGameAction(this)
+                    clazz("user-home")
                 }
             )
         //TODO see errors related to this -- Unauthorized 401
@@ -83,6 +88,7 @@ class UsersController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(204)
                 .body(siren(res.value) {
+                clazz("user")
 
                 })
             is Either.Left -> when (res.value) {
@@ -98,6 +104,8 @@ class UsersController(
         return ResponseEntity.status(200)
             .body(siren(UserStatsOutputModel(userStats)) {
                 link(Uris.Users.stats(), Rels.SELF)
+                clazz("users")
+
             })
     }
 }

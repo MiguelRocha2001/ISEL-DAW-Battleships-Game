@@ -24,6 +24,10 @@ class UserServices(
             return Either.Left(UserCreationError.InsecurePassword)
         }
 
+        if(username.isBlank()) {
+            return Either.Left(UserCreationError.InvalidUsername)
+        }
+
         val passwordValidationInfo = PasswordValidationInfo(
             passwordEncoder.encode(password)
         )

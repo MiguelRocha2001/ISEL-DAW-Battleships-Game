@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.http
+package pt.isel.daw.dawbattleshipgame.http.user
 
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.Assertions.*
@@ -10,13 +10,15 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.createUser
+import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserTests {
+class UserCreationTests {
 
     // One of the very few places where we use property injection
     @LocalServerPort
@@ -33,66 +35,17 @@ class UserTests {
         ).configure()
     }
 
-    fun createUser(username: String, password: String, client: WebTestClient): Int {
-        // when: creating an user
-        // then: the response is a 201 with a proper Location header
-        val siren = client.post().uri("/users")
-            .bodyValue(
-                mapOf(
-                    "username" to username,
-                    "password" to password
-                )
-            )
-            .exchange()
-            .expectStatus().isCreated
-            .expectHeader().value("location") {
-                assertTrue(it.startsWith("/users/"))
-            }
-            .expectHeader().contentType("application/json")
-            .expectBody(SirenModel::class.java)
-            .returnResult()
-            .responseBody ?: fail("Game id is null")
-
-        assertNotNull(siren)
-        val userId = (siren.properties as LinkedHashMap<String, *>)["userId"] as? Int ?: fail("Game id is null")
-
-        // verify links
-        val links = siren.links
-        assertNotNull(links)
-        assertEquals(1, links.size)
-        assertEquals("self", links[0].rel[0])
-        assertEquals("/users", links[0].href)
-
-        // verify actions
-        val actions = siren.actions
-        assertNotNull(actions)
-        assertEquals(1, actions.size)
-        assertEquals("create-token", actions[0].name)
-        assertEquals("/users/token", actions[0].href)
-        assertEquals("POST", actions[0].method)
-        assertEquals("application/json", actions[0].type)
-        assertEquals(2, actions[0].fields.size)
-        assertEquals("username", actions[0].fields[0].name)
-        assertEquals("text", actions[0].fields[0].type)
-        assertEquals("password", actions[0].fields[1].name)
-        assertEquals("text", actions[0].fields[1].type)
-
-        return userId
-    }
-
     @Test
     fun canCreateUser() {
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
         val username = UUID.randomUUID().toString()
         val password = getRandomPassword()
-
         val userId = createUser(username, password, client)
-
         deleteUser(client, userId)
     }
 
     @Test
-    fun `can create an user, obtain a token, and access user home`() {
+    fun `can create an user, obtain a token, and access user home`() { //fixme: I think this test is not needed or should be in another class
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
         // and: a random user
         val username = UUID.randomUUID().toString()
@@ -194,6 +147,31 @@ class UserTests {
     }
 
     @Test
+    fun `user creation with black username`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        // and: a random user
+        val password = "superSecurePassword"
+
+        // when: creating a user
+        // then: the response is a 400 with the proper type
+        client.post().uri("/users")
+            .bodyValue(
+                mapOf(
+                    "username" to "",
+                    "password" to password
+                )
+            )
+            .exchange()
+            .expectStatus().isBadRequest
+            .expectHeader().contentType("application/problem+json")
+            .expectBody()
+            .jsonPath("type")
+            .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/invalid-username")
+    }
+
+    @Test
     fun `user creation produces an error if password is weak`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
@@ -214,84 +192,5 @@ class UserTests {
             .exchange()
             .expectStatus().isBadRequest
     }
-
-    @Test
-    fun `requesting token with wrong password or username`() {
-        // given: an HTTP client
-        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-        val username = UUID.randomUUID().toString()
-        val password = getRandomPassword()
-        val userId = createUser(username, password, client)
-
-        // when: requesting a token with wrong username
-        // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
-            .bodyValue(
-                mapOf(
-                    "username" to username + "wrong",
-                    "password" to password
-                )
-            )
-            .exchange()
-            .expectStatus().isForbidden
-            .expectHeader().contentType("application/problem+json")
-            .expectBody()
-
-        // when: requesting a token with wrong password
-        // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
-            .bodyValue(
-                mapOf(
-                    "username" to username,
-                    "password" to password + "wrong"
-                )
-            )
-            .exchange()
-            .expectStatus().isForbidden
-            .expectHeader().contentType("application/problem+json")
-            .expectBody()
-
-        deleteUser(client, userId)
-    }
-
-    @Test
-    fun `requesting token with black password or username`() {
-        // given: an HTTP client
-        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-        val username = UUID.randomUUID().toString()
-        val password = getRandomPassword()
-        val userId = createUser(username, password, client)
-
-        // when: requesting a token with wrong username
-        // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
-            .bodyValue(
-                mapOf(
-                    "username" to "",
-                    "password" to password
-                )
-            )
-            .exchange()
-            .expectStatus().isForbidden
-            .expectHeader().contentType("application/problem+json")
-            .expectBody()
-
-        // when: requesting a token with wrong password
-        // then: the response is a 403 with the proper type
-        client.post().uri("/users/token")
-            .bodyValue(
-                mapOf(
-                    "username" to username,
-                    "password" to ""
-                )
-            )
-            .exchange()
-            .expectStatus().isForbidden
-            .expectHeader().contentType("application/problem+json")
-            .expectBody()
-
-        deleteUser(client, userId)
-    }
-
 
 }

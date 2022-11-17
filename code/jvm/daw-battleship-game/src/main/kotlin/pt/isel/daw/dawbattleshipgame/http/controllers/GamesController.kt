@@ -72,6 +72,7 @@ class GamesController(
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(GameIdOutputModel(res.value)) {
                     gameByIdLinks(user.id)
+                    clazz("game")
                 })
             is Either.Left -> when (res.value) {
                 GameIdError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -175,6 +176,7 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
+                clazz("ships")
 
                 })
             is Either.Left -> when (res.value) {
@@ -191,7 +193,7 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value.toBoardOutputModel()) {
-
+                clazz("ships")
                 })
             is Either.Left -> when (res.value) {
                 GameSearchError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -238,6 +240,8 @@ class GamesController(
                 ) {
                     buildPreparationActions(this)
                     buildBattleActions(this)
+                    clazz("game")
+
                 })
             is Either.Left -> when (res.value) {
                 GameError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
@@ -253,6 +257,7 @@ class GamesController(
         return when (res) {
             is Either.Right -> ResponseEntity.status(200)
                 .body(siren(res.value) {
+                clazz("game")
 
                 })
             is Either.Left -> when (res.value) {

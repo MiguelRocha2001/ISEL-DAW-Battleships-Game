@@ -1,4 +1,4 @@
-package pt.isel.daw.dawbattleshipgame.http
+package pt.isel.daw.dawbattleshipgame.http.home
 
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.Assertions.*
@@ -11,10 +11,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
-import pt.isel.daw.dawbattleshipgame.http.model.home.AuthorOutputModel
-import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
-import java.util.*
 import kotlin.collections.LinkedHashMap
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,7 +33,7 @@ class HomeTests {
     }
 
     @Test
-    fun `can create an user`() {
+    fun `home menu`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 

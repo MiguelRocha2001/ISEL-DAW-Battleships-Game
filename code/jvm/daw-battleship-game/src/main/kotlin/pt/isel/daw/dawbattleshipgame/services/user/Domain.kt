@@ -5,6 +5,8 @@ import pt.isel.daw.dawbattleshipgame.Either
 sealed class UserCreationError {
     object UserAlreadyExists : UserCreationError()
     object InsecurePassword : UserCreationError()
+    object InvalidUsername: UserCreationError()
+
 }
 typealias UserCreationResult = Either<UserCreationError, Int>
 

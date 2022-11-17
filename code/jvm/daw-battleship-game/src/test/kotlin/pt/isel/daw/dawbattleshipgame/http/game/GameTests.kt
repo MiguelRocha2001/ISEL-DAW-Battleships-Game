@@ -1,16 +1,16 @@
-package pt.isel.daw.dawbattleshipgame.http
+package pt.isel.daw.dawbattleshipgame.http.game
 
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
-import org.springframework.beans.factory.annotation.Autowire
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
@@ -25,7 +25,7 @@ class GameTests {
     var port: Int = 0
 
     @TestConfiguration
-    class GameTestConfiguration {
+    class GameTestConfiguration { //TODO: Fix and categorize/organize tests
         @Bean
         @Primary
         fun jdbiTest() = Jdbi.create(
@@ -242,6 +242,22 @@ class GameTests {
     }
 
     @Test
+    fun `non valid user tries to starts a game`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val nonValidUserToken = "DGykwxMgqS8_JshvyLveWVXt2UywYHt7A4pMKHcpmk4="
+        val gameConfig = getCreateGameInputModel()
+
+        // Invalid user will try to create a game, without success
+        client.post().uri("/my/games")
+            .bodyValue(gameConfig)
+            .header("Authorization", "Bearer $nonValidUserToken")
+            .exchange()
+            .expectStatus().isUnauthorized
+    }
+
+    @Test
     fun `can place multiple ships`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
@@ -307,6 +323,39 @@ class GameTests {
         deleteGame(client, gameId)
         deleteUser(client, player1Id)
         deleteUser(client, player2Id)
+    }
+
+
+    @Test
+    fun `non valid user tries to place a ship`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val nonValidToken = "DGykwxMgqS8_JshvyLveWVXt2UywYHt7A4pMKHcpmk4="
+
+
+        // Invalid user will try to add a ship, without success
+        client.post().uri("/my/games/current/my/ships", gameId)
+            .bodyValue(
+                mapOf(
+                    "operation" to "place-ship",
+                    "ships" to listOf(
+                        mapOf(
+                            "shipType" to "CARRIER",
+                            "position" to mapOf(
+                                "row" to 6,
+                                "column" to 1
+                            ),
+                            "orientation" to "VERTICAL"
+                        )
+                    )
+                )
+            )
+            .header("Authorization", "Bearer $nonValidToken")
+            .exchange()
+            .expectStatus().isUnauthorized
     }
 
     @Test

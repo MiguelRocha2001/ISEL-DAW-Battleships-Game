@@ -40,6 +40,12 @@ data class Problem(
             "Password needs at least 4 characters including one uppercase letter"
         )
 
+        val invalidUsername = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/invalid-username"),
+            "Invalid Username",
+            "Username cannot be empty"
+        )
+
         val userOrPasswordAreInvalid = Problem(
             URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-or-password-are-invalid"),
             "Invalid credentials",
