@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
+import pt.isel.daw.dawbattleshipgame.http.createUser
 import pt.isel.daw.dawbattleshipgame.http.createUserAndToken
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
@@ -66,11 +67,11 @@ class UserGetTests {
         val afterDeletion = client.get().uri(Uris.Users.HOME)
             .header("Authorization", "Bearer $token")
             .exchange()
-            .expectStatus().isUnauthorized //FIXME: should be 404 or 400 because the user does not exist
+            .expectStatus().isUnauthorized
 
     }
 
-
+@Test
     fun `get to user home with invalid token`() {
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
         // and: a random user
@@ -78,16 +79,13 @@ class UserGetTests {
         val password = getRandomPassword()
 
         // when: creating a user
-        createUserAndToken(username, password, client)
+        val creationResultId = createUser(username, password, client)
         val token = "invalid token"
-        val beforeDeletion = client.get().uri(Uris.Users.HOME)
+        client.get().uri(Uris.Users.HOME)
             .header("Authorization", "Bearer $token")
             .exchange()
             .expectStatus().isUnauthorized
+        deleteUser(client, creationResultId)
     }
-
-        //TODO make a test with invalid token -> should be unauthorized
-    //TODO make a normal get test?
-
 
 }

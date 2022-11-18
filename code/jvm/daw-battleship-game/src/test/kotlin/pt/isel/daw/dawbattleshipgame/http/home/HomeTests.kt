@@ -19,7 +19,7 @@ import kotlin.collections.LinkedHashMap
 class HomeTests {
 
     // One of the very few places where we use property injection
-    @LocalServerPort
+    @LocalServerPort //TODO PERGUNTAR SE É PRECISO TER ESTA TRALHA TODA EM CADA TESTE
     var port: Int = 0
 
     @TestConfiguration
