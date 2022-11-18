@@ -20,7 +20,7 @@ class GamePlaceShipServicesTests {
 
             val userPair = createUserPair(transactionManager)
 
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
             val placeShip1Result = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL) as Either.Right
             val placeShip2Result = placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL) as Either.Right
 
@@ -53,7 +53,7 @@ class GamePlaceShipServicesTests {
         testWithTransactionManagerAndRollback {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
-            val gameId = createGame(it, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(3, 1), Orientation.HORIZONTAL) as Either.Right
             val sameTypeShip = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 1), Orientation.HORIZONTAL) as Either.Left
@@ -68,7 +68,7 @@ class GamePlaceShipServicesTests {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
 
-            createGame(it, userPair.first, userPair.second, configuration)
+            createGame(gameServices, userPair.first, userPair.second, configuration)
 
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1 ,1), Orientation.HORIZONTAL) as Either.Right
             val overlayShip = placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(1, 3), Orientation.VERTICAL) as Either.Left
@@ -82,7 +82,7 @@ class GamePlaceShipServicesTests {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
 
-            createGame(it, userPair.first, userPair.second, configuration)
+            createGame(gameServices, userPair.first, userPair.second, configuration)
 
             val palaceShipInvalidPosition = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(15, 15), Orientation.HORIZONTAL) as Either.Left
             assertEquals(PlaceShipsError.InvalidMove, palaceShipInvalidPosition.value)
@@ -97,7 +97,7 @@ class GamePlaceShipServicesTests {
         testWithTransactionManagerAndRollback {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)
-            createGame(it, userPair.first, userPair.second, getGameTestConfiguration2())
+            createGame(gameServices, userPair.first, userPair.second, getGameTestConfiguration2())
 
             // valid place ships
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 3), Orientation.VERTICAL)

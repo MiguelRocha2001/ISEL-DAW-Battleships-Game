@@ -22,7 +22,7 @@ class GamePlaceShotServicesTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(1, 1), Orientation.HORIZONTAL)
@@ -59,7 +59,7 @@ class GamePlaceShotServicesTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(2, 3), Orientation.VERTICAL)
@@ -67,13 +67,15 @@ class GamePlaceShotServicesTests {
             gameServices.updateFleetState(userPair.first, true)
             gameServices.updateFleetState(userPair.second, true)
 
-            gameServices.placeShot(userPair.first, Coordinate(1,1)) // valid
-            gameServices.placeShot(userPair.second, Coordinate(2,2)) // valid
+            val placeShotResult1 = gameServices.placeShot(userPair.first, Coordinate(1, 1)) // valid
+            assertEquals(Either.Right(Unit), placeShotResult1)
+            val placeShotResult2 = gameServices.placeShot(userPair.second, Coordinate(2, 2)) // valid
+            assertEquals(Either.Right(Unit), placeShotResult2)
 
-            val result = gameServices.placeShot(userPair.first, Coordinate(1,1)) // same coordinate
+            val result = gameServices.placeShot(userPair.first, Coordinate(1, 1)) // same coordinate
             assertEquals(Either.Left(PlaceShotError.InvalidMove), result)
 
-            val result2 = gameServices.placeShot(userPair.second, Coordinate(3,3)) // not its turn
+            val result2 = gameServices.placeShot(userPair.second, Coordinate(3, 3)) // not its turn
             assertEquals(Either.Left(PlaceShotError.InvalidMove), result2) // TODO should be ActionNotPermitted
         }
     }

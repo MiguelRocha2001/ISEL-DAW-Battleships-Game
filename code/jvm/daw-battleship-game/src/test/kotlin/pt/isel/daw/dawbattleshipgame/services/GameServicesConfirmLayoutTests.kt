@@ -20,7 +20,7 @@ class GameServicesConfirmLayoutTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)

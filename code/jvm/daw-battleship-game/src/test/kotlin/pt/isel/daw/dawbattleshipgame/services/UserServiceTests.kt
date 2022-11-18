@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
+import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserDeletionError
@@ -162,7 +163,8 @@ class UserServiceTests {
                 Sha256TokenEncoder(),
             )
             val userPair = createUserPair(it)
-            createGame(it, userPair.first, userPair.second, getGameTestConfiguration1())
+            val gameServices = GameServices(it)
+            createGame(gameServices, userPair.first, userPair.second, getGameTestConfiguration1())
 
             val rankings = userService.getUserRanking()
             println(rankings)

@@ -127,9 +127,8 @@ fun createUserPair(transactionManager: TransactionManager): Pair<Int, Int> {
  * Also, checks if gameId is equal or greater than 0.
  * @return gameId
  */
-fun createGame(transactionManager: TransactionManager, player1: Int, player2: Int, configuration: Configuration): Int {
-    val gameService = GameServices(transactionManager)
-    val gameCreationResult1 = gameService.startGame(player1, configuration)
+fun createGame(gameServices: GameServices, player1: Int, player2: Int, configuration: Configuration): Int {
+    val gameCreationResult1 = gameServices.startGame(player1, configuration)
     when (gameCreationResult1) {
         is Either.Left -> fail("Unexpected $gameCreationResult1")
         is Either.Right -> {
@@ -137,7 +136,7 @@ fun createGame(transactionManager: TransactionManager, player1: Int, player2: In
             Assertions.assertNull(gameCreationResult1.value.second)
         }
     }
-    val gameCreationResult2 = gameService.startGame(player2, configuration)
+    val gameCreationResult2 = gameServices.startGame(player2, configuration)
     when (gameCreationResult2) {
         is Either.Left -> fail("Unexpected $gameCreationResult2")
         is Either.Right -> {
@@ -146,19 +145,20 @@ fun createGame(transactionManager: TransactionManager, player1: Int, player2: In
         }
 
     }
-    val user1GameIdResult = gameService.getGameIdByUser(player1)
+    val user1GameIdResult = gameServices.getGameIdByUser(player1)
     when (user1GameIdResult) {
         is Either.Left -> fail("Unexpected $gameCreationResult1")
         is Either.Right -> Assertions.assertTrue(user1GameIdResult.value >= 0)
     }
-    val user2GameIdResult = gameService.getGameIdByUser(player2)
+    val user2GameIdResult = gameServices.getGameIdByUser(player2)
     when (user2GameIdResult) {
         is Either.Left -> fail("Unexpected $gameCreationResult2")
         is Either.Right -> Assertions.assertTrue(user2GameIdResult.value >= 0)
     }
     Assertions.assertEquals(user1GameIdResult.value, user2GameIdResult.value)
 
-    when (val user1Game = gameService.getGame(user1GameIdResult.value)) {
+    val user1Game = gameServices.getGame(user1GameIdResult.value)
+    when (user1Game) {
         is Either.Left -> fail("Unexpected $user1Game")
         is Either.Right -> {
             Assertions.assertEquals(user1Game.value.id, user1GameIdResult.value)
@@ -167,7 +167,8 @@ fun createGame(transactionManager: TransactionManager, player1: Int, player2: In
             Assertions.assertEquals(user1Game.value.state, GameState.FLEET_SETUP)
         }
     }
-    when (val user2Game = gameService.getGame(user2GameIdResult.value)) {
+    val user2Game = gameServices.getGame(user2GameIdResult.value)
+    when (user2Game) {
         is Either.Left -> fail("Unexpected $user2Game")
         is Either.Right -> {
             Assertions.assertEquals(user2Game.value.id, user2GameIdResult.value)
@@ -176,5 +177,11 @@ fun createGame(transactionManager: TransactionManager, player1: Int, player2: In
             Assertions.assertEquals(user2Game.value.state, GameState.FLEET_SETUP)
         }
     }
+    // asserts if both users are playing the same game
+    val player1Game = user1Game.value
+    val player2Game = user2Game.value
+    Assertions.assertEquals(player1Game.id, player2Game.id)
+    Assertions.assertEquals(player1Game.player1, player2Game.player1)
+    Assertions.assertEquals(player1Game.player2, player2Game.player2)
     return user1GameIdResult.value
 }

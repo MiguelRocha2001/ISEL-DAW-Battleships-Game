@@ -119,7 +119,7 @@ fun Game.confirmFleet(player: Player): Game {
  * Builds a new Game object, with place shot on [shot], in opponent board.
  * If this shot sinks all enemy fleet, the game is over. In this case, End object is returned.
  */
-fun Game.placeShot(userId: Int, shot: Coordinate, player: Player = Player.ONE): Game? {
+fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
     return try {
         val opponentBoard = getBoard(player.other())
         if (playerTurn != userId || opponentBoard.isHit(shot)) return null

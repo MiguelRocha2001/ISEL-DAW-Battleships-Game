@@ -70,7 +70,7 @@ class UserGetTests {
 
     }
 
-    @Test
+
     fun `get to user home with invalid token`() {
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
         // and: a random user

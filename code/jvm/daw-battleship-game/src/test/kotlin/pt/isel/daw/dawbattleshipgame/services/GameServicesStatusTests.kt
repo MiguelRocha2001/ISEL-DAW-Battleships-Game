@@ -17,7 +17,8 @@ class GameServicesStatusTests {
     fun create_and_join_game() {
         testWithTransactionManagerAndRollback { transactionManager ->
             val userPair = createUserPair(transactionManager)
-            createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameServices = GameServices(transactionManager)
+            createGame(gameServices, userPair.first, userPair.second, configuration)
         }
     }
 
@@ -28,7 +29,7 @@ class GameServicesStatusTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 3), Orientation.VERTICAL)
@@ -64,7 +65,7 @@ class GameServicesStatusTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 3), Orientation.VERTICAL)
@@ -108,7 +109,7 @@ class GameServicesStatusTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 3), Orientation.VERTICAL)
@@ -153,7 +154,7 @@ class GameServicesStatusTests {
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(transactionManager, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
