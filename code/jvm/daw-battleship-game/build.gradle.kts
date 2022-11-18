@@ -14,7 +14,6 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 repositories {
 	mavenCentral()
 }
-
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -61,3 +60,5 @@ tasks.register<Copy>("copyRuntimeDependencies") {//copy all dependencies to a fo
 	into("build/libs")
 	from(configurations.runtimeClasspath)
 }
+
+

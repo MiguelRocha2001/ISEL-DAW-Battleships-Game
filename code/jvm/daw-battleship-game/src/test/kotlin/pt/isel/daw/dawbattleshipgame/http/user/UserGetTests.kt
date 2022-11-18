@@ -36,6 +36,8 @@ class UserGetTests {
         ).configure()
     }
 
+
+
     @Test
     fun `creates a user,gets it,deletes ans gets it again`() {
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
@@ -68,7 +70,23 @@ class UserGetTests {
 
     }
 
-    //TODO make a test with invalid token -> should be unauthorized
+    @Test
+    fun `get to user home with invalid token`() {
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+        // and: a random user
+        val username = UUID.randomUUID().toString()
+        val password = getRandomPassword()
+
+        // when: creating a user
+        createUserAndToken(username, password, client)
+        val token = "invalid token"
+        val beforeDeletion = client.get().uri(Uris.Users.HOME)
+            .header("Authorization", "Bearer $token")
+            .exchange()
+            .expectStatus().isUnauthorized
+    }
+
+        //TODO make a test with invalid token -> should be unauthorized
     //TODO make a normal get test?
 
 

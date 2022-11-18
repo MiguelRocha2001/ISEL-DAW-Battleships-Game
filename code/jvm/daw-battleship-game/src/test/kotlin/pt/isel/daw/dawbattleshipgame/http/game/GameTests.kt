@@ -256,6 +256,7 @@ class GameTests {
             .header("Authorization", "Bearer $nonValidUserToken")
             .exchange()
             .expectStatus().isUnauthorized
+
     }
 
     @Test
@@ -357,6 +358,10 @@ class GameTests {
             .header("Authorization", "Bearer $nonValidToken")
             .exchange()
             .expectStatus().isUnauthorized
+
+        deleteGame(client, gameId)
+        deleteUser(client, gameInfo.player1Id)
+        deleteUser(client, gameInfo.player2Id)
     }
 
     @Test
