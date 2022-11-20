@@ -3,16 +3,15 @@ package pt.isel.daw.dawbattleshipgame.http
 import org.junit.jupiter.api.Assertions
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
-import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
 
-fun deleteUser(client: WebTestClient, userId: Int) {
+internal fun deleteUser(client: WebTestClient, userId: Int) {
     client.delete().uri("/users/$userId")
         .exchange()
         .expectStatus().isEqualTo(204)
 }
 
-fun createUser(username: String, password: String, client: WebTestClient): Int {
+internal fun createUser(username: String, password: String, client: WebTestClient): Int {
     // when: creating an user
     // then: the response is a 201 with a proper Location header
     val siren = client.post().uri("/users")
@@ -59,7 +58,7 @@ fun createUser(username: String, password: String, client: WebTestClient): Int {
     return userId
 }
 
-fun createUserAndToken(username: String, password: String, client: WebTestClient): Pair<Int, String> { //Fixme:merge this with the copy in gameTests.kt
+internal fun createUserAndToken(username: String, password: String, client: WebTestClient): Pair<Int, String> { //Fixme:merge this with the copy in gameTests.kt
     // when: creating a user
     // then: the response is a 201 with a proper Location header
     val siren = client.post().uri("/users")
