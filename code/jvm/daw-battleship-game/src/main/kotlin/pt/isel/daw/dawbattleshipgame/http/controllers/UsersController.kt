@@ -8,8 +8,10 @@ import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameActio
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
+import pt.isel.daw.dawbattleshipgame.http.model.domainProblemMapper
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatsOutputModel
+import pt.isel.daw.dawbattleshipgame.http.model.map
 import pt.isel.daw.dawbattleshipgame.http.model.user.*
 import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
 import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
@@ -23,41 +25,33 @@ class UsersController(
     @PostMapping(Uris.Users.ALL)
     fun create(@RequestBody input: UserCreateInputModel): ResponseEntity<*> {
         val res = userService.createUser(input.username, input.password)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .header(
-                    "Location",
-                    Uris.Users.byId(res.value).toASCIIString()
-                )
-                .body(siren(UserCreateOutputModel(res.value)) {
-                    link(Uris.Users.create(), Rels.SELF)
-                    createTokenSirenAction(this)
-                    clazz("user")
-                })
-            is Either.Left -> when (res.value) {
-                UserCreationError.InvalidUsername -> Problem.response(400, Problem.invalidUsername)
-                UserCreationError.InsecurePassword -> Problem.response(400, Problem.insecurePassword)
-                UserCreationError.UserAlreadyExists -> Problem.response(400, Problem.userAlreadyExists)
-            }
+        return res.map {
+            ResponseEntity.status(201)
+                    .header(
+                            "Location",
+                            Uris.Users.byId(it).toASCIIString()
+                    )
+                    .body(siren(UserCreateOutputModel(it)) {
+                        link(Uris.Users.create(), Rels.SELF)
+                        createTokenSirenAction(this)
+                        clazz("user")
+                    })
         }
     }
 
     @PostMapping(Uris.Users.TOKEN)
     fun token(@RequestBody input: UserCreateTokenInputModel): ResponseEntity<*> {
         val res = userService.createToken(input.username, input.password)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(201)
-                .body(
-                    siren(TokenOutputModel(res.value)) {
-                        link(Uris.Users.createToken(), Rels.SELF)
-                        link(Uris.Users.home(), Rels.USER_HOME)
-                        buildStartGameAction(this)
-                        clazz("user-token")
+        return res.map {
+            ResponseEntity.status(201)
+                    .body(
+                            siren(TokenOutputModel(it)) {
+                                link(Uris.Users.createToken(), Rels.SELF)
+                                link(Uris.Users.home(), Rels.USER_HOME)
+                                buildStartGameAction(this)
+                                clazz("user-token")
 
-                    })
-            is Either.Left -> when (res.value) {
-                TokenCreationError.UserOrPasswordAreInvalid -> Problem.response(403, Problem.userOrPasswordAreInvalid)
-            }
+                            })
         }
     }
 
@@ -85,15 +79,12 @@ class UsersController(
     @DeleteMapping(Uris.Users.BY_ID)
     fun deleteUser(@PathVariable id: Int): ResponseEntity<*> {
         val res = userService.deleteUser(id)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(204)
-                .body(siren(res.value) {
-                clazz("user")
+        return res.map {
+            ResponseEntity.status(204)
+                    .body(siren(it) {
+                        clazz("user")
 
-                })
-            is Either.Left -> when (res.value) {
-                UserDeletionError.UserDoesNotExist -> Problem.response(400, Problem.userNotFound)
-            }
+                    })
         }
     }
 

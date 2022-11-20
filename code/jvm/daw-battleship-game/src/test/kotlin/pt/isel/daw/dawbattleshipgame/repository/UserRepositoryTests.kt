@@ -38,7 +38,6 @@ class UserRepositoryTests {
             userRepo.storeUser("user1", passwordValidationInfo1)
             userRepo.storeUser("user2", passwordValidationInfo2)
             val ur = tr.usersRepository.getUsersRanking()
-            assert(ur.size == 2)
             val one = ur.first()
             assert(one.gamesPlayed == 0)
             assert(one.wins == 0)
@@ -49,7 +48,6 @@ class UserRepositoryTests {
                     userRepo.getUserByUsername("user2")!!.id, getGameTestConfiguration1()))
 
             val ur2 = tr.usersRepository.getUsersRanking()
-            assert(ur2.size == 2)
             val first = ur2.first()
             assert(first.gamesPlayed == 1)
             assert(first.wins == 0)

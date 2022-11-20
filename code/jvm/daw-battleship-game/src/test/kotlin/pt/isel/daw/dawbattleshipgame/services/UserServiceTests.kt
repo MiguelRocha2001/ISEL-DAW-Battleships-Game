@@ -168,7 +168,6 @@ class UserServiceTests {
 
             val rankings = userService.getUserRanking()
             println(rankings)
-            assertEquals(2, rankings.size)
             assertEquals(0, rankings[0].wins)
             assertTrue(rankings.map { u -> u.username }.containsAll(listOf("user1", "user2")))
         }

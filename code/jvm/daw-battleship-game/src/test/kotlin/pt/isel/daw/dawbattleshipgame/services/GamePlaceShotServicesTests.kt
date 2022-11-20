@@ -6,6 +6,7 @@ import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
@@ -44,6 +45,7 @@ class GamePlaceShotServicesTests {
 
             //game before last shot
             game = gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
+            game.value.debug()
             assertEquals(GameState.FINISHED, game.value.state)
 
             //game after last shot

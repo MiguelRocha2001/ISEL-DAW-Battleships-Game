@@ -34,6 +34,7 @@ data class Problem(
             "User already exists",
             "Try another name"
         )
+
         val insecurePassword = Problem(
             URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/insecure-password"),
             "Insecure Password",
@@ -101,3 +102,36 @@ data class Problem(
         )
     }
 }
+
+
+val problems = mapOf(
+        "UserAlreadyExists" to Problem.response(400, Problem.userAlreadyExists),
+
+        "TUserAlreadyExists" to Problem.response(404, Problem.userAlreadyExists),
+
+        "TInsecurePassword" to Problem.response(405, Problem.insecurePassword),
+
+        "InsecurePassword" to Problem.response(400, Problem.insecurePassword),
+
+        "TInvalidUsername" to Problem.response(405, Problem.invalidUsername),
+
+        "InvalidUsername" to Problem.response(400, Problem.invalidUsername),
+
+        "UserOrPasswordAreInvalid" to Problem.response(403, Problem.userOrPasswordAreInvalid),
+
+        "UserAlreadyInQueue" to Problem.response(405, Problem.userAlreadyInQueue),
+
+        "UserAlreadyInGame" to Problem.response(405, Problem.userAlreadyInGame),
+
+        "UserInGameQueue" to Problem.response(404, Problem.userInGameQueue),
+
+        "GameNotFound" to Problem.response(404, Problem.gameNotFound),
+
+        "ActionNotPermitted" to Problem.response(405, Problem.actionNotPermitted),
+
+        "InvalidMove" to Problem.response(405, Problem.invalidMove),
+
+        "UserNotFound" to Problem.response(404, Problem.userNotFound),
+
+        "InvalidInputBody" to Problem.response(405, Problem.invalidInputBody)
+)

@@ -148,7 +148,7 @@ class UserCreationTests {
     }
 
     @Test
-    fun `user creation with black username`() {
+    fun `user creation with blank username`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 

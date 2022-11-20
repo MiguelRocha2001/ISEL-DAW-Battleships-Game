@@ -62,7 +62,7 @@ class GameServices(
         return transactionManager.run {
             val db = it.gamesRepository
             var game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShipsError.GameNotFound)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
+            val player = game.getUser(userId)
             if (game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(PlaceShipsError.ActionNotPermitted)
             ships.forEach { s ->
@@ -78,7 +78,7 @@ class GameServices(
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(UpdateShipError.GameNotFound)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
+            val player = game.getUser(userId)
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(UpdateShipError.ActionNotPermitted)
             val newGame = if(newCoordinate != null)
@@ -97,7 +97,7 @@ class GameServices(
             val game = db.getGameByUser(userId) ?: return@run Either.Left(FleetConfirmationError.GameNotFound)
             if(game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
+            val player = game.getUser(userId)
             if(game.getBoard(player).isConfirmed())
                 return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
             if (!confirmed) return@run Either.Right(Unit)
@@ -114,10 +114,9 @@ class GameServices(
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
             if(game.state != GameState.BATTLE)
                 return@run Either.Left(PlaceShotError.ActionNotPermitted)
-            val newGame = game.placeShot(userId, c, player)
+            val newGame = game.placeShot(userId, c, game.getUser(userId))
                 ?: return@run Either.Left(PlaceShotError.InvalidMove)
             updateGame(db, newGame)
             return@run Either.Right(Unit)
@@ -128,8 +127,7 @@ class GameServices(
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
-            val player = if(userId == game.player1) Player.ONE else Player.TWO
-            return@run Either.Right(game.getBoard(player))
+            return@run Either.Right(game.getBoard(game.getUser(userId)))
         }
     }
 
@@ -137,7 +135,7 @@ class GameServices(
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
-            val opponent = if(userId == game.player1) Player.TWO else Player.ONE
+            val opponent = game.getUser(userId).other()
             return@run Either.Right(game.getBoard(opponent))
         }
     }

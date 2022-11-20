@@ -4,6 +4,7 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState.*
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.utils.RealClock
+import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.util.*
 import java.time.Duration
@@ -51,13 +52,22 @@ class Game (
         val state: GameState = NOT_STARTED,
         val instants: Instants = Instants(),
 
-
         val playerTurn: Int? =
         if (state == NOT_STARTED || state == FLEET_SETUP)
             null else player1,
 
         val winner: Int? = null
 ) {
+    fun debug() = println(
+            "Game(id = $id, " +
+                    "configuration = $configuration, " +
+                    "player1 = $player1, " +
+                    "player2 = $player2, " +
+                    "board1 = $board1, " +
+                    "board2 = $board2, " +
+                    "state = $state)"
+    )
+
     init {
         when (state) {
             NOT_STARTED -> {
@@ -84,6 +94,12 @@ class Game (
             player2, board1, board2, FINISHED,
             instants, playerTurn, winner
         )
+
+    fun getUser(userId : Int) = when(userId) {
+        player1 -> Player.ONE
+        player2 -> Player.TWO
+        else -> throw IllegalArgumentException("No user found")
+    }
 
     internal fun updateGame(board: Board, player: Player, playerTurn: Int?, state: GameState = FLEET_SETUP) =
         require(state == FLEET_SETUP || state == BATTLE).let {
