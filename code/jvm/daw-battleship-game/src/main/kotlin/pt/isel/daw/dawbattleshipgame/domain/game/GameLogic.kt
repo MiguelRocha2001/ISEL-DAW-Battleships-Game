@@ -102,10 +102,13 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
 }
 
 
-fun Game.confirmFleet(player: Player): Game {
+fun Game.confirmFleet(player: Player): Game? {
+    /*
     require(getBoard(player).allShipsPlaced(configuration.fleet.toMap())) {
         "All ships must be placed"
-    }
+    } */
+   if(!getBoard(player).allShipsPlaced(configuration.fleet.toMap())) { return null }
+
     val isOtherConfirmed = getBoard(player.other()).isConfirmed()
     return this.updateGame(
             getBoard(player).confirm(),
