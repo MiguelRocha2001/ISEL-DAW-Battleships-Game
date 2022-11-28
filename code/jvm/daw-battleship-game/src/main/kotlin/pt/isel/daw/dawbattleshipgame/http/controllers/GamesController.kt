@@ -26,34 +26,33 @@ class GamesController(
         @RequestBody createGameInputModel: CreateGameInputModel
     ): ResponseEntity<*> {
         val res = gameServices.startGame(
-                user.id,
-                Configuration(
-                        createGameInputModel.boardSize,
-                        createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
-                        createGameInputModel.nShotsPerRound,
-                        createGameInputModel.roundTimeout
-                )
+            user.id,
+            Configuration(
+                    createGameInputModel.boardSize,
+                    createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
+                    createGameInputModel.nShotsPerRound,
+                    createGameInputModel.roundTimeout
+            )
         )
-
         return res.map {
             val gameId = it.second
             if (gameId != null) {
                 ResponseEntity.status (201) // Games created
-                        .header(
-                                "Location",
-                                Uris.Games.byId(gameId).toASCIIString()
-                        ).body(
-                                siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
-                                    Uris.Games.byId(gameId) to Rels.GAME_ID
-                                }
-                        )
+                    .header(
+                            "Location",
+                            Uris.Games.byId(gameId).toASCIIString()
+                    ).body(
+                            siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
+                                Uris.Games.byId(gameId) to Rels.GAME_ID
+                            }
+                    )
             } else {
                 ResponseEntity.status (202) // Game not created but request was processed
-                        .body(
-                                siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
-                                    Uris.Games.My.CURRENT to Rels.GAME
-                                }
-                        )
+                    .body(
+                        siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
+                            Uris.Games.My.CURRENT to Rels.GAME
+                        }
+                    )
             }
         }
     }
@@ -63,10 +62,10 @@ class GamesController(
         val res = gameServices.getGameIdByUser(user.id)
         return res.map {
             ResponseEntity.status(200)
-                    .body(siren(GameIdOutputModel(it)) {
-                        gameByIdLinks(user.id)
-                        clazz("game")
-                    })
+                .body(siren(GameIdOutputModel(it)) {
+                    gameByIdLinks(user.id)
+                    clazz("game")
+                })
         }
     }
 
@@ -130,9 +129,9 @@ class GamesController(
     @PostMapping(Uris.Games.My.Current.My.Shots.ALL)
     fun placeShot(
         user: User,
-        @RequestBody coordinate: Coordinate
+        @RequestBody coordinate: CoordinateInputModel
     ): ResponseEntity<*> {
-        val res = gameServices.placeShot(user.id, coordinate)
+        val res = gameServices.placeShot(user.id, coordinate.toCoordinate())
         return res.map {
             ResponseEntity.status(204).build<Unit>() // TODO -> add header
         }

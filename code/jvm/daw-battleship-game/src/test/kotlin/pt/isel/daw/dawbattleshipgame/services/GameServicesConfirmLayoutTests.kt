@@ -23,17 +23,29 @@ class GameServicesConfirmLayoutTests {
             val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
 
             // apply some actions with player_1
-            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.BATTLESHIP, Coordinate(3, 5), Orientation.HORIZONTAL)
-            placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(6, 8), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(1, 15), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.first, ShipType.CARRIER, Coordinate(1, 8), Orientation.HORIZONTAL)
-            placeShip(gameServices, userPair.second, ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL)
-            placeShip(gameServices, userPair.first, ShipType.CRUISER, Coordinate(11, 11), Orientation.HORIZONTAL)
-            placeShip(gameServices, userPair.second, ShipType.CRUISER, Coordinate(12, 6), Orientation.HORIZONTAL)
-            placeShip(gameServices, userPair.first, ShipType.SUBMARINE, Coordinate(13, 5), Orientation.HORIZONTAL)
-            placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(15, 8), Orientation.HORIZONTAL)
+            val res1 = gameServices.placeShips(
+                userPair.first,
+                listOf(
+                    Triple(ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL),
+                    Triple(ShipType.DESTROYER, Coordinate(6, 8), Orientation.VERTICAL),
+                    Triple(ShipType.CARRIER, Coordinate(1, 8), Orientation.HORIZONTAL),
+                    Triple(ShipType.CRUISER, Coordinate(11, 11), Orientation.HORIZONTAL),
+                    Triple(ShipType.SUBMARINE, Coordinate(13, 5), Orientation.HORIZONTAL),
+                )
+            )
+            assertTrue(res1 is Either.Right)
 
+            val res2 = gameServices.placeShips(
+                userPair.second,
+                listOf(
+                    Triple(ShipType.BATTLESHIP, Coordinate(3, 5), Orientation.HORIZONTAL),
+                    Triple(ShipType.DESTROYER, Coordinate(1, 15), Orientation.VERTICAL),
+                    Triple(ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL),
+                    Triple(ShipType.CRUISER, Coordinate(12, 6), Orientation.HORIZONTAL),
+                    Triple(ShipType.SUBMARINE, Coordinate(15, 8), Orientation.HORIZONTAL),
+                )
+            )
+            assertTrue(res2 is Either.Right)
 
             var game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
