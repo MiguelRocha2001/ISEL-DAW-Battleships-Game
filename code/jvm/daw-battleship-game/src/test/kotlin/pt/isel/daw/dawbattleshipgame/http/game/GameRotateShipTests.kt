@@ -32,9 +32,110 @@ class GameRotateShipTests {
         ).configure()
     }
 
-    /**
-     * Creates a User and returns the token.
-     * Also, asserts if the behavior is correct.
-     */
+
+    @Test
+    fun `valid rotation`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player1Token = gameInfo.player1Token
+        val player2Id = gameInfo.player2Id
+        val player2Token = gameInfo.player2Token
+
+
+        placeSomeShips(client, player1Token)
+        placeSomeShips(client, player2Token)
+
+
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
+            .bodyValue(
+                mapOf(
+                    "operation" to "alter-ship",
+                    "origin" to mapOf("row" to "6", "column" to "6"),
+                    "destination" to null,
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isNoContent
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `non valid rotation,rotating a place without ship`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player1Token = gameInfo.player1Token
+        val player2Id = gameInfo.player2Id
+        val player2Token = gameInfo.player2Token
+
+
+        placeSomeShips(client, player1Token)
+        placeSomeShips(client, player2Token)
+
+
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
+            .bodyValue(
+                mapOf(
+                    "operation" to "alter-ship",
+                    "origin" to mapOf("row" to "9", "column" to "4"),
+                    "destination" to null,
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().is4xxClientError
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+
+    }
+
+    @Test
+    fun `invalid rotation,trying to rotate ship that cant`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player1Token = gameInfo.player1Token
+        val player2Id = gameInfo.player2Id
+        val player2Token = gameInfo.player2Token
+
+
+        placeSomeShips(client, player1Token)
+        placeSomeShips(client, player2Token)
+
+
+        client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
+            .bodyValue(
+                mapOf(
+                    "operation" to "alter-ship",
+                    "origin" to mapOf("row" to "6", "column" to "6"),
+                    "destination" to null,
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isNoContent
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+
 
 }
