@@ -1,13 +1,7 @@
 import * as React from 'react'
-import {
-    useState,
-    useEffect,
-} from 'react'
-import { useFetch } from './useFetch'
+import { Siren } from './siren'
 
-export function Show({ url }: { url: string }) {
-    const content = useFetch(url)
-
+export function Show({ content, property }: { content: Siren, property?: string }) {
     if (!content) {
         return (
             <div>
@@ -19,7 +13,7 @@ export function Show({ url }: { url: string }) {
     return (
         <div>
             <pre>
-                {JSON.stringify(content, null, 2)}
+                {JSON.stringify(content.properties[property], null, 2)}
             </pre>
         </div>
     )

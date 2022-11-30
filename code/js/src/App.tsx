@@ -15,20 +15,8 @@ const router = createBrowserRouter([
         "element": <Info />
     },
     {
-        "path": "/path2",
+        "path": "/rankings",
         "element": <Rankings />
-    },
-    {
-        "path": "/path3",
-        "element": <Auth />
-    },
-    {
-        "path": "/users/:uid",
-        "element": <UserHome />
-    },
-    {
-        "path": "/users/:uid/games/:gid",
-        "element": <Game />
     }
 ])
 

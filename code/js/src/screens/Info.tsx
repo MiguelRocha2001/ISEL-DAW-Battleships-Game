@@ -11,7 +11,7 @@ export function Info() {
     const [url, setUrl] = useState(defaultUrl)
     return (
         <div>
-            <Show url={url} />
+            
         </div >
     )
 }
