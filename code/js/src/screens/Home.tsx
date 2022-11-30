@@ -2,18 +2,13 @@ import * as React from 'react'
 import { Show } from '../utils/Show'
 import { useFetch } from '../utils/useFetch'
 import { Link } from 'react-router-dom'
-
-const defaultUrl = "http://localhost:8080/api"
+import {
+    useState,
+} from 'react'
+import { navigation } from '../navigation'
 
 export function Home() {
-    const content = useFetch(defaultUrl)
-    if (content === undefined) {
-        return (
-            <div>
-                ...loading...
-            </div>
-        )
-    }
+    const content = navigation.fetchHome()
     return (
         <div>
             <Show content={content} property="title" />

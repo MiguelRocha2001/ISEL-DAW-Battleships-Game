@@ -10,15 +10,10 @@ useFetch(url: string): Siren | undefined {
     useEffect(() => {
         let cancelled = false
         async function doFetch() {
-            try {
-                const resp = await fetch(url)
-                const body = await resp.json()
-                
-                if (!cancelled) {
-                    setContent(body)
-                }
-            } catch (e) {
-                console.log("error", e)
+            const resp = await fetch(url)
+            const body = await resp.json()
+            if (!cancelled) {
+                setContent(body)
             }
         }
         setContent(undefined)

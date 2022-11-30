@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Siren } from './siren'
 
-export function Show({ content, property }: { content: Siren, property?: string }) {
+export function Show({ content, property }: { content?: Siren, property?: string }) {
     if (!content) {
         return (
             <div>
@@ -9,7 +9,6 @@ export function Show({ content, property }: { content: Siren, property?: string 
             </div>
         )
     }
-
     return (
         <div>
             <pre>

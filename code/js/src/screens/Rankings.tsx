@@ -1,16 +1,12 @@
 import * as React from 'react'
-import {
-    useState,
-} from 'react'
-
-const defaultUrl = "http://localhost:8080/api/users/all/statistics"
+import { Show } from '../utils/Show'
+import { navigation } from '../navigation'
 
 export function Rankings() {
-    const [editUrl, setEditUrl] = useState(defaultUrl)
-    const [url, setUrl] = useState(defaultUrl)
+    const content = navigation.fetchBattleshipRanks()
     return (
         <div>
-            
+            <Show content={content} property="users" />
         </div>
     )
 }

@@ -6,7 +6,7 @@ export type Siren = {
     actions: Action[];
   };
 
-type Link = {
+export type Link = {
     rel: string[];
     href: string;
     title?: string;

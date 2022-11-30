@@ -1,17 +1,12 @@
 import * as React from 'react'
-import {
-    useState,
-} from 'react'
 import { Show } from '../utils/Show'
-
-const defaultUrl = "http://localhost:8080/api/info"
+import { navigation } from '../navigation'
 
 export function Info() {
-    const [editUrl, setEditUrl] = useState(defaultUrl)
-    const [url, setUrl] = useState(defaultUrl)
+    const content = navigation.fetchServerInfo()
     return (
         <div>
-            
+            <Show content={content} property="authors" />
         </div >
     )
 }
