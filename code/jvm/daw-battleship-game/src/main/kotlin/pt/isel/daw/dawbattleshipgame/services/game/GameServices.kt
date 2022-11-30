@@ -85,7 +85,7 @@ class GameServices(
                         game.moveShip(position, newCoordinate, player)
                             else game.rotateShip(position, player)
             if(newGame == null)
-                return@run Either.Left(UpdateShipError.InvalidMove)
+                return@run Either.Left(UpdateShipError.ActionNotPermitted)
             updateGame(db, newGame)
             return@run Either.Right(Unit)
         }
@@ -101,7 +101,7 @@ class GameServices(
             if(game.getBoard(player).isConfirmed())
                 return@run Either.Left(FleetConfirmationError.ActionNotPermitted)
             if (!confirmed) return@run Either.Right(Unit)
-            val newGame = game.confirmFleet(player)
+            val newGame = game.confirmFleet(player) ?: return@run Either.Left(FleetConfirmationError.NotAllShipsPlaced)
             updateGame(db, newGame)
             Either.Right(Unit)
         }

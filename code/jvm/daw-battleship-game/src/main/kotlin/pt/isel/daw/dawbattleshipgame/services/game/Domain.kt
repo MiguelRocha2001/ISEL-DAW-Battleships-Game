@@ -30,6 +30,8 @@ typealias UpdateShipResult = Either<UpdateShipError, Unit>
 sealed class FleetConfirmationError : Error(){
     object GameNotFound: FleetConfirmationError()
     object ActionNotPermitted : FleetConfirmationError()
+
+    object NotAllShipsPlaced: FleetConfirmationError()
 }
 typealias FleetConfirmationResult = Either<FleetConfirmationError, Unit>
 

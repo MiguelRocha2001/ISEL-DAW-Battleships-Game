@@ -66,7 +66,6 @@ internal fun createGame(client: WebTestClient): GameInfo {
     val gameId2 = (gameId2Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: Assertions.fail("Game id is null")
 
     Assertions.assertEquals(gameId1, gameId2)
-
     return GameInfo(gameId1, player1Id, player1Token, player2Id, player2Token)
 }
 
@@ -123,3 +122,70 @@ internal fun createUser( client: WebTestClient): Pair<Int, String> {
     return userId to token
 }
 
+internal fun placeSomeShips(client: WebTestClient, playerToken: String){
+    client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
+        .bodyValue(
+            mapOf(
+                "operation" to "place-ship",
+                "ships" to listOf(
+                    mapOf(
+                        "shipType" to "CARRIER",
+                        "position" to mapOf(
+                            "row" to 1,
+                            "column" to 1
+                        ),
+                        "orientation" to "HORIZONTAL"
+                    ),
+                    mapOf(
+                        "shipType" to "SUBMARINE",
+                        "position" to mapOf(
+                            "row" to 3,
+                            "column" to 1
+                        ),
+                        "orientation" to "VERTICAL"
+                    ),
+                    mapOf(
+                        "shipType" to "BATTLESHIP",
+                        "position" to mapOf(
+                            "row" to 10,
+                            "column" to 4
+                        ),
+                        "orientation" to "HORIZONTAL"
+                    ),
+                    mapOf(
+                        "shipType" to "DESTROYER",
+                        "position" to mapOf(
+                            "row" to 6,
+                            "column" to 6
+                        ),
+                        "orientation" to "VERTICAL"
+                    ),
+                    mapOf(
+                        "shipType" to "CRUISER",
+                        "position" to mapOf(
+                            "row" to 1,
+                            "column" to 7
+                        ),
+                        "orientation" to "HORIZONTAL"
+                    )
+                )
+            )
+        )
+        .header("Authorization", "Bearer $playerToken")
+        .exchange()
+        .expectStatus().isCreated
+
+}
+
+
+internal fun confirmPlayerFleet(playerToken:String,client: WebTestClient){
+    client.put().uri(Uris.Games.My.Current.My.Ships.ALL)
+        .bodyValue(
+            mapOf(
+                "fleetConfirmed" to "true",
+            )
+        )
+        .header("Authorization", "Bearer $playerToken")
+        .exchange()
+        .expectStatus().isNoContent
+}
