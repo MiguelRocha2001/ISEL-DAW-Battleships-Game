@@ -49,8 +49,8 @@ class GameConfirmFleetTests {
         val player2Token = gameInfo.player2Token
 
 
-        placeSomeShips(client, gameInfo.player1Token)
-        placeSomeShips(client, gameInfo.player2Token)
+        placeSomeShips(client, player1Token)
+        placeSomeShips(client, player2Token)
 
 
         client.put().uri(Uris.Games.My.Current.My.Ships.ALL)

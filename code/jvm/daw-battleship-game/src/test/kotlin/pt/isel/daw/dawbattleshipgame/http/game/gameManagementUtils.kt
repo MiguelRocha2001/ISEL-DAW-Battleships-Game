@@ -178,7 +178,14 @@ internal fun placeSomeShips(client: WebTestClient, playerToken: String){
 }
 
 
-internal fun confirmFleet(client: WebTestClient){
-
-
+internal fun confirmPlayerFleet(playerToken:String,client: WebTestClient){
+    client.put().uri(Uris.Games.My.Current.My.Ships.ALL)
+        .bodyValue(
+            mapOf(
+                "fleetConfirmed" to "true",
+            )
+        )
+        .header("Authorization", "Bearer $playerToken")
+        .exchange()
+        .expectStatus().isNoContent
 }

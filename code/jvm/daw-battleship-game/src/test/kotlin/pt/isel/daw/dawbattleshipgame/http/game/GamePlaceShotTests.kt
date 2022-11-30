@@ -12,7 +12,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
-import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,7 +52,8 @@ class GamePlaceShotTests {
         placeSomeShips(client, gameInfo.player1Token)
         placeSomeShips(client, gameInfo.player2Token)
 
-
+        confirmPlayerFleet(player1Token,client)
+        confirmPlayerFleet(player2Token,client)
 
         val playerOneShot = Pair("1"," 1")
 
@@ -67,19 +67,142 @@ class GamePlaceShotTests {
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
-            .expectStatus().isCreated
-
-
-        Uris.Games.My.Current.My.Ships.ALL
-
-        deleteGame(client, gameId)
-        deleteUser(client, gameInfo.player1Id)
-        deleteUser(client, gameInfo.player2Id)
+            .expectStatus().isNoContent
 
         deleteGame(client, gameId)
         deleteUser(client, player1Id)
         deleteUser(client, player2Id)
     }
 
+
+    @Test
+    fun `error trying place shots twice in a row`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player1Token = gameInfo.player1Token
+        val player2Id = gameInfo.player2Id
+        val player2Token = gameInfo.player2Token
+
+
+        placeSomeShips(client, gameInfo.player1Token)
+        placeSomeShips(client, gameInfo.player2Token)
+
+        confirmPlayerFleet(player1Token,client)
+        confirmPlayerFleet(player2Token,client)
+
+        val playerOneShot = Pair("1"," 1")
+        val playerOneShotAgain = Pair("1"," 2")
+
+        // Invalid user will try to add a ship, without success
+        client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
+            .bodyValue(
+                mapOf(
+                    "row" to playerOneShot.first,
+                    "column" to playerOneShot.second
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().isNoContent
+
+
+        client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
+            .bodyValue(
+                mapOf(
+                    "row" to playerOneShotAgain.first,
+                    "column" to playerOneShotAgain.second
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().is4xxClientError
+
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+    @Test
+    fun `error trying to shoot unauthorized `() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player1Token = gameInfo.player1Token
+        val player2Id = gameInfo.player2Id
+        val player2Token = gameInfo.player2Token
+
+
+        placeSomeShips(client, gameInfo.player1Token)
+        placeSomeShips(client, gameInfo.player2Token)
+
+        confirmPlayerFleet(player1Token,client)
+        confirmPlayerFleet(player2Token,client)
+
+        val playerOneShot = Pair("1"," 1")
+        val playerOneShotAgain = Pair("1"," 2")
+        val invalidToken = "cKrSPcM-onxaqTsUuPKMOCdUjmEfsizpjj5pUgd5C6U=cKrSPcM-onxaqTsUuPKMOCdUjmEfsizpjj5pUgd5C6U="
+
+        // Invalid user will try to add a ship, without success
+        client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
+            .bodyValue(
+                mapOf(
+                    "row" to playerOneShot.first,
+                    "column" to playerOneShot.second
+                )
+            )
+            .header("Authorization", "Bearer $invalidToken")
+            .exchange()
+            .expectStatus().isUnauthorized
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
+
+
+    @Test
+    fun `error trying shot without opponent confirmation`() {
+        // given: an HTTP client
+        val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
+
+        val gameInfo = createGame(client)
+        val gameId = gameInfo.gameId
+        val player1Id = gameInfo.player1Id
+        val player1Token = gameInfo.player1Token
+        val player2Id = gameInfo.player2Id
+        val player2Token = gameInfo.player2Token
+
+
+        placeSomeShips(client, gameInfo.player1Token)
+        placeSomeShips(client, gameInfo.player2Token)
+
+        confirmPlayerFleet(player1Token,client)
+
+        val playerOneShot = Pair("1"," 1")
+
+        // Invalid user will try to add a ship, without success
+        client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
+            .bodyValue(
+                mapOf(
+                    "row" to playerOneShot.first,
+                    "column" to playerOneShot.second
+                )
+            )
+            .header("Authorization", "Bearer $player1Token")
+            .exchange()
+            .expectStatus().is4xxClientError
+
+        deleteGame(client, gameId)
+        deleteUser(client, player1Id)
+        deleteUser(client, player2Id)
+    }
 
 }

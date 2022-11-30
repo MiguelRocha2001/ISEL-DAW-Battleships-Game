@@ -100,6 +100,11 @@ data class Problem(
             "Invalid input body",
             "Body is not of the expected format"
         )
+
+        val notAllShipsPlaced = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-not-found"),
+            "Not all ships placed",
+            "Cannot proceed with the confirmation while all of the ships are not placed")
     }
 }
 
@@ -133,5 +138,7 @@ val problems = mapOf(
 
         "UserNotFound" to Problem.response(404, Problem.userNotFound),
 
-        "InvalidInputBody" to Problem.response(405, Problem.invalidInputBody)
+        "InvalidInputBody" to Problem.response(405, Problem.invalidInputBody),
+
+        "NotAllShipsPlaced" to Problem.response(405, Problem.notAllShipsPlaced),
 )
