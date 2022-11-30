@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom'
 import {
     useState,
 } from 'react'
-
-const defaultUrl = "http://localhost:8080/api"
+import { navigation } from '../navigation'
 
 export function Home() {
-    const content = useFetch(defaultUrl)
+    const content = navigation.fetchHome()
     return (
         <div>
             <Show content={content} property="title" />

@@ -4,15 +4,13 @@ import {
 } from 'react'
 import { Show } from '../utils/Show'
 import { useFetch } from '../utils/useFetch'
-
-const defaultUrl = "http://localhost:8080/api/info"
+import { navigation } from '../navigation'
 
 export function Info() {
-    const [url, setUrl] = useState(defaultUrl)
-    const content = useFetch(defaultUrl)
+    const content = navigation.fetchServerInfo()
     return (
         <div>
-            <Show content={content} property="title" />
+            <Show content={content} property="authors" />
         </div >
     )
 }
