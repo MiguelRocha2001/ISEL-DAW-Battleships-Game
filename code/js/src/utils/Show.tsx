@@ -9,7 +9,6 @@ export function Show({ content, property }: { content?: Siren, property?: string
             </div>
         )
     }
-
     return (
         <div>
             <pre>

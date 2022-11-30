@@ -4,6 +4,9 @@ import {
 } from 'react-router-dom'
 import { Info } from './screens/Info'
 import { Home } from './screens/Home'
+import { AuthnContainer } from './screens/auth/Authn'
+import { useLoggedIn, useSetLogin } from './screens/auth/Authn'
+import { Rankings } from './screens/Rankings'
 
 const router = createBrowserRouter([
     {
@@ -25,41 +28,3 @@ export function App() {
         <RouterProvider router={router} />
     )
 }
-
-
-function Rankings() {
-    return (
-        <div>
-            <h1>Screen 2</h1>
-        </div>
-    )
-}
-
-function Auth() {
-    return (
-        <div>
-            <h1>Screen 3</h1>
-        </div>
-    )
-}
-
-function UserHome() {
-    const {uid} = useParams()
-    return (
-        <div>
-            <h2>User Detail</h2>
-            {uid}
-        </div>
-    )
-}
-
-function Game() {
-    const {gid, uid} = useParams()
-    return (
-        <div>
-            <h2>User Game Detail</h2>
-            {uid}, {gid}
-        </div>
-    )
-}
- 
