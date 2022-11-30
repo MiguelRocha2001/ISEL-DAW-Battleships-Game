@@ -3,6 +3,7 @@ import {
     createBrowserRouter, Link, RouterProvider, useParams,
 } from 'react-router-dom'
 import { Info } from './screens/Info'
+import { Home } from './screens/Home'
 
 const router = createBrowserRouter([
     {
@@ -37,18 +38,24 @@ export function App() {
     )
 }
 
+/*
 function Home() {
     return (
         <div>
             <h1>Home</h1>
             <ol>
-                <li><a href="/info">Info</a></li>
-                <li><Link to="/rankings">Rankings</Link></li>
-                <li><Link to="/auth">Authentication</Link></li>
+                <li><a href="/path1">screen 1 (using a)</a></li>
+                <li><Link to="/path1">screen 1</Link></li>
+                <li><Link to="/path2">screen 2</Link></li>
+                <li><Link to="/path3">screen 3</Link></li>
+                <li><Link to="/users/123">User 123</Link></li>
+                <li><Link to="/users/abc">User abc</Link></li>
+                <li><Link to="/users/123/games/xyz">User 123 Game xyz</Link></li>
             </ol>
         </div>
     )
 }
+*/
 
 
 function Rankings() {

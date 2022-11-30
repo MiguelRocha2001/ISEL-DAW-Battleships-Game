@@ -5,7 +5,12 @@ module.exports = {
     },
     devServer: {
         historyApiFallback: true,
-        port: 8008
+        proxy: {
+            '/api': {
+              target: 'http://localhost:api/9000',
+              pathRewrite: { '^/api': '' },
+            },
+          },
     },
     module: {
         rules: [
