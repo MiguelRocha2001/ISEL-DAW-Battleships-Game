@@ -3,6 +3,45 @@ import {
     useEffect,
 } from 'react'
 
+type Siren = {
+    class: string;
+    properties: Object;
+    links: Link[];
+    entities: Entity[];
+    actions: Action[];
+  };
+
+type Link = {
+    rel: string[];
+    href: string;
+    title?: string;
+    type?: string;
+};
+
+type Entity = {
+    class: string[];
+    properties: Object;
+    entities: Entity[];
+    links: Link[];
+    actions: Action[];
+    title: string;
+};
+
+type Action = {
+    name: string;
+    title: string;
+    method: string;
+    href: string;
+    type: string;
+    fields: Field[];
+};
+
+type Field = {
+    name: string;
+    type: string;
+    value: string;
+};
+
 export function 
 useFetch(url: string): string | undefined {
     const [content, setContent] = useState(undefined)
@@ -11,8 +50,8 @@ useFetch(url: string): string | undefined {
         async function doFetch() {
             try {
                 const resp = await fetch(url)
-                console.log("resp", resp)
                 const body = await resp.json()
+                
                 if (!cancelled) {
                     setContent(body)
                 }
