@@ -169,7 +169,9 @@ class UserServiceTests {
             val rankings = userService.getUserRanking()
             println(rankings)
             assertEquals(0, rankings[0].wins)
-            assertTrue(rankings.map { u -> u.username }.containsAll(listOf("user1", "user2")))
+            assertTrue(rankings[0].gamesPlayed == 1, "games played should be 1")
+            assertTrue(rankings[1].gamesPlayed == 1, "games played should be 1")
+            assertTrue(rankings.size >= 2)
         }
     }
 }
