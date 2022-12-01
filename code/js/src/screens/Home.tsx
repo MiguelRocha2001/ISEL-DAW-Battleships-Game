@@ -8,11 +8,11 @@ export function Home() {
     return (
         <div>
             <Show content={content} property="title" />
-            <ol>
+            <ul>
                 <li><Link to="/info">Info</Link></li>
                 <li><Link to="/rankings">Ranks</Link></li>
                 <li><Link to="/auth">Auth</Link></li>
-            </ol>
+            </ul>
         </div>
     )
 }

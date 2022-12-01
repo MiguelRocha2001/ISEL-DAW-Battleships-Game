@@ -1,4 +1,5 @@
-import { links } from './links'
+import { links } from './server_info/links'
+import { auth } from './server_info/auth'
 import { Siren } from './utils/siren'
 import { Action } from './utils/siren'
 import { Link } from './utils/siren'
@@ -103,6 +104,7 @@ function fetchToken(fields: ActionInput[]) {
             }
             const resp = useFetch(request)
             if (resp) {
+                // TODO extract token from response
                 logger.info("fetchToken: responde sucessfull")
                 return resp
             } else return undefined
@@ -131,9 +133,14 @@ function validateFields(fields: ActionInput[], action: Action): boolean {
     return true
 }
 
+function isLogged(): boolean {
+    return auth.getToken() !== undefined
+}
+
 export const navigation = {
     fetchHome,
     fetchServerInfo,
     fetchBattleshipRanks,
-    fetchToken
+    fetchToken,
+    isLogged
 }

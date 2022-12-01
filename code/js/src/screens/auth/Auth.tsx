@@ -3,8 +3,6 @@ import { useState } from 'react'
 import { ChangeEvent } from 'react'
 import { MouseEvent } from 'react'
 import { AuthnContainer } from './Authn'
-import { useLoggedIn } from './Authn'
-import { useSetLogin } from './Authn'
 import { navigation } from '../../navigation'
 
 export function Auth() {

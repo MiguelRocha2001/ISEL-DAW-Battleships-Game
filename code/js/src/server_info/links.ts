@@ -1,4 +1,4 @@
-import { Action } from "./utils/siren"
+import { Action } from "../utils/siren"
 
 const host = 'http://localhost:8080/api'
 
