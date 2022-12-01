@@ -1,10 +1,6 @@
 import * as React from 'react'
 import { Show } from '../utils/Show'
-import { useFetch } from '../utils/useFetch'
 import { Link } from 'react-router-dom'
-import {
-    useState,
-} from 'react'
 import { navigation } from '../navigation'
 
 export function Home() {
@@ -15,6 +11,7 @@ export function Home() {
             <ol>
                 <li><Link to="/info">Info</Link></li>
                 <li><Link to="/rankings">Ranks</Link></li>
+                <li><Link to="/auth">Auth</Link></li>
             </ol>
         </div>
     )

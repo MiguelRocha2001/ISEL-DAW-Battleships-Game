@@ -22,7 +22,7 @@ type Entity = {
     title: string;
 };
 
-type Action = {
+export type Action = {
     name: string;
     title: string;
     method: string;

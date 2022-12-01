@@ -4,9 +4,8 @@ import {
 } from 'react-router-dom'
 import { Info } from './screens/Info'
 import { Home } from './screens/Home'
-import { AuthnContainer } from './screens/auth/Authn'
-import { useLoggedIn, useSetLogin } from './screens/auth/Authn'
 import { Rankings } from './screens/Rankings'
+import { Auth } from './screens/auth/Auth'
 
 const router = createBrowserRouter([
     {
@@ -20,6 +19,10 @@ const router = createBrowserRouter([
     {
         "path": "/rankings",
         "element": <Rankings />
+    },
+    {
+        "path": "/auth",
+        "element": <Auth />
     }
 ])
 
