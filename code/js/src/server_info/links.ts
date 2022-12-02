@@ -2,7 +2,7 @@ import { Action } from "../utils/siren"
 
 const host = 'http://localhost:8080/api'
 
-const defaultUrl = host
+const defaultUrl = '/'
 
 let infoLink: string | undefined
 let battleshipRanksLink: string | undefined

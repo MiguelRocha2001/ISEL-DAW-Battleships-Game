@@ -46,7 +46,7 @@ function extractLink(linksArg: Link[], rel: string): string {
         const link = linksArg[i]
         for (let j = 0; j < link.rel.length; j++) {
             if (link.rel[j] === rel) {
-                return links.host + link.href
+                return link.href
             }
         }
     }
@@ -111,7 +111,7 @@ async function fetchToken(fields: ActionInput[]) {
     async function fetchTokenInternal(fields: ActionInput[], action: Action) {
         if (validateFields(fields, action)) {
             const request = {
-                url: "POST",
+                url: action.href,
                 method: action.method,
                 body: fields
             }
