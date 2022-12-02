@@ -1,6 +1,6 @@
 export type Siren = {
     class: string;
-    properties: Object;
+    properties: any;
     links: Link[];
     entities: Entity[];
     actions: Action[];

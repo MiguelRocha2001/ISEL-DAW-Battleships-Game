@@ -5,6 +5,8 @@ import { navigation } from './navigation'
 export function TopBar() {
     const isLogged = navigation.isLogged()
     return (
-        <div>{isLogged ? "Logged" : "NotLogged"}</div>
+        <div>
+            <p>{isLogged ? "Logged" : "NotLogged"}</p>
+        </div>
     )
 }

@@ -15,6 +15,7 @@ export type ActionInput = {
     value: string
 }
 
+/*
 export function useFetch(request: Request): Siren | undefined {
     const [content, setContent] = useState(undefined)
     useEffect(() => {
@@ -41,7 +42,21 @@ export function useFetch(request: Request): Siren | undefined {
     }, [request.url])
     return content
 }
+*/
 
 function validateRequestMethod(method: string) {
     return method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE'
+}
+
+export async function doFetch(request: Request): Promise<Siren | undefined> {
+    if (validateRequestMethod(request.method)) {
+        const resp = await fetch(request.url, {
+            method: request.method,
+            body: JSON.stringify(request.body)
+        })
+        const body = await resp.json()
+        return body
+    } else {
+        throw new Error("Invalid request method")
+    }
 }
