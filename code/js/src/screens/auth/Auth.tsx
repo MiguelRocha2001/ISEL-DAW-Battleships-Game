@@ -4,22 +4,34 @@ import { ChangeEvent } from 'react'
 import { MouseEvent } from 'react'
 import { AuthnContainer } from './Authn'
 import { navigation } from '../../navigation'
+import { Link } from 'react-router-dom'
 
 export function Auth() {
-    return <AuthnContainer children={[
-        <InputForm key = '1' title='Login' onClickHandlerParam={ async (username, password) => 
-            navigation.fetchToken([
-                {name: "username", value: username},
-                {name: "password", value: password},
-            ])
-        }/>,
-        <InputForm key = '2' title='Register' onClickHandlerParam={ (username, password) => 
-            navigation.registerNewUser([
-                {name: "username", value: username},
-                {name: "password", value: password},
-            ])
-        }/>
-    ]}/>
+    const [token, setToken] = useState(undefined)
+    if (navigation.isLogged()) {
+        return (<li><Link to="/userHome">User Home</Link></li>)
+    }
+    else {
+        return (
+            <div>
+                <AuthnContainer children={[
+                    <InputForm key = '1' title='Login' onClickHandlerParam={ async (username, password) => {
+                        const token = await navigation.fetchToken([
+                            {name: "username", value: username},
+                            {name: "password", value: password},
+                        ])
+                        setToken(token)
+                    }}/>,
+                    <InputForm key = '2' title='Register' onClickHandlerParam={ (username, password) => 
+                        navigation.registerNewUser([
+                            {name: "username", value: username},
+                            {name: "password", value: password},
+                        ])
+                    }/>
+                ]}/>
+            </div>
+        )
+    }
 }
 
 const MAX_FIELD_LENGTH = 50

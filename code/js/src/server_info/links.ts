@@ -7,6 +7,7 @@ const defaultUrl = '/'
 let infoLink: string | undefined
 let battleshipRanksLink: string | undefined
 let tokenAction: Action | undefined
+let registerAction: Action | undefined
 
 function getInfoLink() {
     return infoLink
@@ -29,6 +30,13 @@ function setTokenAction(action: Action) {
     tokenAction = action
 }
 
+function getRegisterAction() {
+    return registerAction
+}
+function setRegisterAction(action: Action) {
+    registerAction = action
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -38,4 +46,6 @@ export const links = {
     setBattleshipRanksLink,
     getTokenAction,
     setTokenAction,
+    getRegisterAction,
+    setRegisterAction,
 }

@@ -107,8 +107,8 @@ async function fetchBattleshipRanks(): Promise<Siren> {
     return undefined
 }
 
-async function fetchToken(fields: ActionInput[]) {
-    async function fetchTokenInternal(fields: ActionInput[], action: Action) {
+async function fetchToken(fields: ActionInput[]): Promise<string> {
+    async function fetchTokenInternal(fields: ActionInput[], action: Action): Promise<string> {
         if (validateFields(fields, action)) {
             const request = {
                 url: action.href,
@@ -121,20 +121,24 @@ async function fetchToken(fields: ActionInput[]) {
                 if (token) {
                     logger.info("fetchToken: responde sucessfull")
                     auth.setToken(token)
+                    logger.info("fetchToken: token set to: ", token)
+                    return token
                 } else {
                     logger.error("fetchToken: token not found in response")
+                    return undefined
                 }
             }
+            return undefined
         }
     }
     const action = links.getTokenAction()
     if (action) {
-        await fetchTokenInternal(fields, action)
+        return await fetchTokenInternal(fields, action)
     } else {
         const resp = await fetchHome()
         if (resp) {
             const action = extractTokenAction(resp.actions)
-            await fetchTokenInternal(fields, action)
+            return await fetchTokenInternal(fields, action)
         }
     }
 }
@@ -143,7 +147,7 @@ async function registerNewUser(fields: ActionInput[]) {
     async function registerNewUserInternal(fields: ActionInput[], action: Action) {
         if (validateFields(fields, action)) {
             const request = {
-                url: "POST",
+                url: action.href,
                 method: action.method,
                 body: fields
             }
@@ -154,7 +158,7 @@ async function registerNewUser(fields: ActionInput[]) {
             }
         }
     }
-    const action = links.getTokenAction()
+    const action = links.getRegisterAction()
     if (action) {
         await registerNewUserInternal(fields, action)
     } else {

@@ -55,7 +55,7 @@ function validateRequestMethod(method: string) {
 // TODO -> receives 415 Unsupported Media Type on POST requests
 export async function doFetch(request: Request): Promise<Siren | undefined> {
     if (validateRequestMethod(request.method)) {
-        logger.info("senfing request to: ", links.host + request.url)
+        logger.info("sending request to: ", links.host + request.url)
         const resp = await fetch(links.host + request.url, {
             method: request.method,
             body: request.body ? buildBody(request.body) : undefined,

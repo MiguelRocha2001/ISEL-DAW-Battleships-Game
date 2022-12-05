@@ -1,5 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.services
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
@@ -13,8 +15,7 @@ data class ServerInfo(
 )
 
 @Component
-class InfoServices(
-    private val transactionManager: TransactionManager,
-) {
-    fun getServerInfo(): ServerInfo = ServerInfo()
+class InfoServices {
+    private val logger: Logger = LoggerFactory.getLogger("InfoServices")
+    fun getServerInfo(): ServerInfo = ServerInfo().also { logger.info("Server info retrieved") }
 }
