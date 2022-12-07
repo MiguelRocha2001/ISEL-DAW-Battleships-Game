@@ -4,8 +4,10 @@ import { Siren } from './utils/siren'
 import { Action } from './utils/siren'
 import { Link } from './utils/siren'
 import { useFetch } from './utils/useFetch'
+import { doFetch } from './utils/useFetch'
 import { Logger } from "tslog";
 import { ActionInput } from './utils/useFetch'
+import { useState, useEffect } from 'react'
 
 const logger = new Logger({ name: "Navigation" });
 
@@ -102,14 +104,14 @@ function fetchBattleshipRanks(): Siren | undefined {
     return undefined
 }
 
-function useFetchToken(fields: ActionInput[]): string {
+async function fetchToken(fields: ActionInput[]): Promise<string | undefined> {
     const action = links.getTokenAction()
     const request = action ? {
         url: action.href,
         method: action.method,
         body: fields
     } : undefined
-    const resp = useFetch(request)
+    const resp = await doFetch(request)
     if (resp) {
         const token = resp.properties.token
         if (token) {
@@ -122,7 +124,6 @@ function useFetchToken(fields: ActionInput[]): string {
             return undefined
         }
     }
-    return undefined
 }
 
 async function useRegisterNewUser(fields: ActionInput[]) {
@@ -172,7 +173,7 @@ export const navigation = {
     useFetchHome,
     useFetchServerInfo,
     fetchBattleshipRanks,
-    useFetchToken,
+    fetchToken,
     useRegisterNewUser,
     isLogged
 }

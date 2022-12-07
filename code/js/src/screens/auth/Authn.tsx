@@ -6,27 +6,28 @@ import {
 } from 'react'
 
 type ContextType = {
-    loggedin: boolean,
-    setLogin: (v: boolean) => void
+    user: string | undefined,
+    setUser: (v: string | undefined) => void
 }
 const LoggedInContext = createContext<ContextType>({
-    loggedin: false,
-    setLogin: () => {}
+    user: undefined,
+    setUser: () => { },
 })
 
 export function AuthnContainer({ children }: { children: React.ReactNode }) {
-    const [loggedin, setLoggedin] = useState(false)
+    const [user, setUser] = useState(undefined)
+    console.log(`AuthnContainer: ${user}`)
     return (
-        <LoggedInContext.Provider value={{loggedin: loggedin, setLogin: setLoggedin }}>
+        <LoggedInContext.Provider value={{ user: user, setUser: setUser }}>
             {children}
         </LoggedInContext.Provider>
     )
 }
 
-export function useLoggedIn() {
-    return useContext(LoggedInContext).loggedin
+export function useCurrentUser() {
+    return useContext(LoggedInContext).user
 }
 
-export function useSetLogin() {
-    return useContext(LoggedInContext).setLogin
+export function useSetUser() {
+    return useContext(LoggedInContext).setUser
 }

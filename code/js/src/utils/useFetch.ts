@@ -40,6 +40,7 @@ export function useFetch(request: Request): Siren | undefined {
                     },
                 })
                 const body = await resp.json()
+                console.log(body)
                 if (!cancelled) {
                     setContent(body)
                 }
@@ -54,8 +55,23 @@ export function useFetch(request: Request): Siren | undefined {
     return content
 }
 
+// TODO -> receives 415 Unsupported Media Type on POST requests
+export async function doFetch(request: Request): Promise<Siren | undefined> {
+    if (request && validateRequestMethod(request)) {
+        logger.info("sending request to: ", links.host + request.url)
+        const resp = await fetch(links.host + request.url, {
+            method: request.method,
+            body: request.body ? buildBody(request.body) : undefined,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        const body = await resp.json()
+        return body
+    }
+    return undefined
+}
 
-    
 function buildBody(fields: ActionInput[]): string {
     const body = {}
     fields.forEach(field => {
