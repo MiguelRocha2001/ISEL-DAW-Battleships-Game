@@ -5,10 +5,10 @@ import {
 } from 'react'
 import { Show } from '../utils/Show'
 import { Link } from 'react-router-dom'
-import { navigation } from '../navigation'
+import { Services } from '../services'
 
 export function Home() {
-    const content = navigation.useFetchHome()
+    const content = Services.useFetchHome()
     return (
         <div>
             <Show content={content} property="title" />

@@ -2,7 +2,7 @@ import * as React from "react"
 import { useState } from "react"
 import { flushSync, unstable_batchedUpdates } from "react-dom"
 import { Navigate, useLocation, useNavigate } from "react-router-dom"
-import { navigation } from "../../navigation"
+import { Services } from "../../services"
 import { useSetUser } from "./Authn"
 
 function delay(delayInMs: number) {
@@ -12,7 +12,7 @@ function delay(delayInMs: number) {
 }
 
 export async function authenticate(username: string, password: string): Promise<string | undefined> {
-    return navigation.fetchToken([
+    return Services.fetchToken([
         {name: "username", value: username},
         {name: "password", value: password},
     ])

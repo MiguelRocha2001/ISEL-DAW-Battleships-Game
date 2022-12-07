@@ -9,7 +9,7 @@ import java.net.URI
 fun buildStartGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
     sirenBuilderScope.action(
         name = "start-game",
-        href = URI(Uris.Games.ALL),
+        href = URI(Uris.Games.My.ALL),
         method = HttpMethod.POST,
         type = "application/json"
     ) {

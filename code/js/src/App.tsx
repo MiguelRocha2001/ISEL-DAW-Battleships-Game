@@ -5,10 +5,10 @@ import {
 import { Info } from './screens/Info'
 import { Home } from './screens/Home'
 import { Rankings } from './screens/Rankings'
-import { RequireAuthn } from './screens/auth/RequireAuthn'
 import { AuthnContainer } from './screens/auth/Authn'
-import { Login } from './screens/auth/Login'
 import { Me } from './screens/Me'
+import { Game } from './screens/Game'
+import { Login } from './screens/auth/Login'
 
 
 const router = createBrowserRouter([
@@ -35,6 +35,10 @@ const router = createBrowserRouter([
             {
                 "path": "/me",
                 "element": <Me />,
+            },
+            {
+                "path": "/game",
+                "element": <Game />,
             }
         ]
     }

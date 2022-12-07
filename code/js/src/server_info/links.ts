@@ -14,6 +14,8 @@ let infoLink: string | undefined
 let battleshipRanksLink: string | undefined
 let tokenAction: Action | undefined
 let registerAction: Action | undefined
+let createGameAction: Action | undefined
+let gameLink: string | undefined
 
 
 function getInfoLink() {
@@ -44,6 +46,20 @@ function setRegisterAction(action: Action) {
     registerAction = action
 }
 
+function getCreateGameAction() {
+    return createGameAction
+}
+function setCreateGameAction(action: Action) {
+    createGameAction = action
+}
+
+function getGameLink() {
+    return gameLink
+}
+function setGameLink(link: string) {
+    gameLink = link
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -55,4 +71,8 @@ export const links = {
     setTokenAction,
     getRegisterAction,
     setRegisterAction,
+    getCreateGameAction,
+    setCreateGameAction,
+    getGameLink,
+    setGameLink,
 }

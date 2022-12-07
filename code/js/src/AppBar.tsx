@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { navigation } from './navigation'
+import { Services } from './services'
 
 export function TopBar() {
-    const isLogged = navigation.isLogged()
+    const isLogged = Services.isLogged()
     return (
         <div>
             <p>{isLogged ? "Logged" : "NotLogged"}</p>

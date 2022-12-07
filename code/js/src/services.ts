@@ -2,12 +2,12 @@ import { links } from './server_info/links'
 import { auth } from './server_info/auth'
 import { Siren } from './utils/siren'
 import { Action } from './utils/siren'
-import { Link } from './utils/siren'
 import { useFetch } from './utils/useFetch'
 import { doFetch } from './utils/useFetch'
+import { Fetch } from './utils/useFetch'
 import { Logger } from "tslog";
-import { ActionInput } from './utils/useFetch'
-import { useState, useEffect } from 'react'
+import { KeyValuePair } from './utils/useFetch'
+import { CreateGameRequest, CreateGameResponse, Game} from './domain'
 
 const logger = new Logger({ name: "Navigation" });
 
@@ -18,10 +18,10 @@ function useFetchHome(): Siren | undefined {
     
     if (resp) {
         logger.info("fetchHome: responde sucessfull")
-        const serverInfoLink = extractInfoLink(resp.links)
-        const battleshipRanksLink = extractBattleshipRanksLink(resp.links)
-        const tokenAction = extractTokenAction(resp.actions)
-        const registerAction = extractRegisterAction(resp.actions)
+        const serverInfoLink = Siren.extractInfoLink(resp.links)
+        const battleshipRanksLink = Siren.extractBattleshipRanksLink(resp.links)
+        const tokenAction = Siren.extractTokenAction(resp.actions)
+        const registerAction = Siren.extractRegisterAction(resp.actions)
         if (serverInfoLink)
             logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
         if (battleshipRanksLink)
@@ -35,47 +35,6 @@ function useFetchHome(): Siren | undefined {
         links.setTokenAction(tokenAction)
     }
     return resp
-}
-
-function extractInfoLink(linksArg: Link[]): string | undefined {
-    if (!linksArg) return undefined
-    return extractLink(linksArg, "server-info")
-}
-
-function extractBattleshipRanksLink(linksArg: Link[]): string {
-    return extractLink(linksArg, "user-stats")
-}
-
-function extractLink(linksArg: Link[], rel: string): string {
-    for (let i = 0; i < linksArg.length; i++) {
-        const link = linksArg[i]
-        for (let j = 0; j < link.rel.length; j++) {
-            if (link.rel[j] === rel) {
-                return link.href
-            }
-        }
-    }
-    return undefined
-}
-
-function extractTokenAction(actions: any[]): Action {
-    for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        if (action.name === "create-token") {
-            return action
-        }
-    }
-    return undefined
-}
-
-function extractRegisterAction(actions: any[]): Action {
-    for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        if (action.name === "create-user") {
-            return action
-        }
-    }
-    return undefined
 }
 
 function useFetchServerInfo(): Siren | undefined {
@@ -98,13 +57,13 @@ function fetchBattleshipRanks(): Siren | undefined {
     }
     const resp = useFetchHome()
     if (resp) {
-        const link = extractBattleshipRanksLink(resp.links)
+        const link = Siren.extractBattleshipRanksLink(resp.links)
         return useFetch({ url: link, method: "GET" })
     }
     return undefined
 }
 
-async function fetchToken(fields: ActionInput[]): Promise<string | undefined> {
+async function fetchToken(fields: KeyValuePair[]): Promise<string | undefined> {
     const action = links.getTokenAction()
     const request = action ? {
         url: action.href,
@@ -116,6 +75,11 @@ async function fetchToken(fields: ActionInput[]): Promise<string | undefined> {
         const token = resp.properties.token
         if (token) {
             logger.info("fetchToken: responde sucessfull")
+            const createGameAction = Siren.extractCreateGameAction(resp.actions)
+            if (createGameAction) {
+                links.setCreateGameAction(createGameAction)
+                logger.info("fetchToken: setting up new create game action: ", createGameAction.name)
+            }
             auth.setToken(token)
             logger.info("fetchToken: token set to: ", token)
             return token
@@ -126,9 +90,9 @@ async function fetchToken(fields: ActionInput[]): Promise<string | undefined> {
     }
 }
 
-async function useRegisterNewUser(fields: ActionInput[]) {
-    function useRegisterNewUserInternal(fields: ActionInput[], action: Action) {
-        if (validateFields(fields, action)) {
+async function useRegisterNewUser(fields: KeyValuePair[]) {
+    function useRegisterNewUserInternal(fields: KeyValuePair[], action: Action) {
+        if (Siren.validateFields(fields, action)) {
             const request = {
                 url: action.href,
                 method: action.method,
@@ -147,33 +111,76 @@ async function useRegisterNewUser(fields: ActionInput[]) {
     } else {
         const resp = useFetchHome()
         if (resp) {
-            const action = extractRegisterAction(resp.actions)
+            const action = Siren.extractRegisterAction(resp.actions)
             useRegisterNewUserInternal(fields, action)
         }
     }
-}
-
-
-/**
- * Validates if all necessary fields, in [action], are present in [fields].
- */
-function validateFields(fields: ActionInput[], action: Action): boolean {
-    for (let i = 0; i < fields.length; i++) {
-        const field = fields[i]
-        action.fields.find((f) => f.name === field.name)
-    }
-    return true
 }
 
 function isLogged(): boolean {
     return auth.getToken() !== undefined
 }
 
-export const navigation = {
+async function createGame(request: CreateGameRequest): Promise<CreateGameResponse | string> {
+    const token = auth.getToken()
+    const action = links.getCreateGameAction()
+    if (!token || !action) return undefined // TODO: throw error
+    if (Siren.validateFields(request, action)) {
+        const internalReq = {
+            url: action.href,
+            method: action.method,
+            body: Fetch.toBody(request),
+            token
+        }
+        try {
+            const siren = await doFetch(internalReq)
+            if (siren) {
+                const getGameLink = Siren.extractGetGameLink(siren.links)
+                if (getGameLink) {
+                    links.setGameLink(getGameLink)
+                    logger.info("createGame: setting up new get game link: ", getGameLink)
+                }
+                const createGameResponse = siren.properties
+                if (createGameResponse) {
+                    logger.info("createGame: responde sucessfull")
+                    return createGameResponse
+                } else {
+                    logger.error("createGame: gameId not found in response")
+                    return 'GameId not found in response'
+                }
+            }
+        } catch (e) {
+            logger.error("createGame: error: ", e.title)
+            return e.title
+        }
+    }
+    return 'Token or create-game action not found'
+}
+
+async function getGame(gameId): Promise<Game | string> {
+    const token = auth.getToken()
+    const gameLink = links.getGameLink()
+    if (!token || !gameLink) return undefined // TODO: throw error
+    try {
+        const response = await Fetch.doFetch({ url: gameId, method: "GET" })    
+        if (response) {
+            logger.info("getGame: response sucessfull")
+            return response.properties
+        }
+    } catch (e) {
+        logger.error("getGame: error: ", e)
+        return e.message.toString()
+    }
+    return 'Token or get-game link not found'
+}
+
+export const Services = {
     useFetchHome,
     useFetchServerInfo,
     fetchBattleshipRanks,
     fetchToken,
     useRegisterNewUser,
-    isLogged
+    isLogged,
+    createGame,
+    getGame
 }

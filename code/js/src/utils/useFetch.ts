@@ -8,15 +8,28 @@ import { Logger } from "tslog";
 
 const logger = new Logger({ name: "useFetch" });
 
+const CONTENT_TYPE_JSON = 'application/json'
+
 export type Request = {
     url: string
     method: string
-    body?: ActionInput[]
+    body?: Body,
+    token?: string
 }
 
-export type ActionInput = {
+export type Body = KeyValuePair[]
+
+export type KeyValuePair = {
     name: string,
     value: string
+}
+
+function toBody(obj: any): Body {
+    const body: Body = []
+    for (const key in obj) {
+        body.push({ name: key, value: obj[key] })
+    }
+    return body
 }
 
 function validateRequestMethod(request: Request): boolean {
@@ -56,26 +69,44 @@ export function useFetch(request: Request): Siren | undefined {
 }
 
 // TODO -> receives 415 Unsupported Media Type on POST requests
-export async function doFetch(request: Request): Promise<Siren | undefined> {
+export async function doFetch(request: Request): Promise<Siren> {
     if (request && validateRequestMethod(request)) {
         logger.info("sending request to: ", links.host + request.url)
-        const resp = await fetch(links.host + request.url, {
-            method: request.method,
-            body: request.body ? buildBody(request.body) : undefined,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        const body = await resp.json()
-        return body
+        // console.log("body: ", request.body ? buildBody(request.body) : undefined)
+        try {
+            const resp = await fetch(links.host + request.url, {
+                method: request.method,
+                body: request.body ? buildBody(request.body) : undefined,
+                headers: request.token ? {
+                    'Content-Type': CONTENT_TYPE_JSON,
+                     'Authorization': 'Bearer ' + request.token 
+                    } : {
+                    'Content-Type': CONTENT_TYPE_JSON
+                    }
+            })
+            const body = await resp.json()
+            if (resp.status >= 300) {
+                logger.error("doFetch: ", resp.status)
+                return Promise.reject(body)
+            }
+            return body
+        } catch (error) {
+            logger.error("doFetch: ", error)
+            return Promise.reject(error)
+        }
     }
-    return undefined
 }
 
-function buildBody(fields: ActionInput[]): string {
+function buildBody(fields: KeyValuePair[]): string {
     const body = {}
     fields.forEach(field => {
         body[field.name] = field.value
     })
     return JSON.stringify(body)
+}
+
+export const Fetch = {
+    doFetch,
+    useFetch,
+    toBody
 }
