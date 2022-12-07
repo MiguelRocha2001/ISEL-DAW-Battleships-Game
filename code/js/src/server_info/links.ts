@@ -1,3 +1,9 @@
+import * as React from 'react'
+import {
+    useState,
+    createContext,
+    useContext,
+} from 'react'
 import { Action } from "../utils/siren"
 
 const host = 'http://localhost:8080/api'
@@ -8,6 +14,7 @@ let infoLink: string | undefined
 let battleshipRanksLink: string | undefined
 let tokenAction: Action | undefined
 let registerAction: Action | undefined
+
 
 function getInfoLink() {
     return infoLink

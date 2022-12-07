@@ -16,14 +16,14 @@ export function Auth() {
             <div>
                 <AuthnContainer children={[
                     <InputForm key = '1' title='Login' onClickHandlerParam={ async (username, password) => {
-                        const token = await navigation.fetchToken([
+                        const token = navigation.useFetchToken([
                             {name: "username", value: username},
                             {name: "password", value: password},
                         ])
                         setToken(token)
                     }}/>,
                     <InputForm key = '2' title='Register' onClickHandlerParam={ (username, password) => 
-                        navigation.registerNewUser([
+                        navigation.useRegisterNewUser([
                             {name: "username", value: username},
                             {name: "password", value: password},
                         ])

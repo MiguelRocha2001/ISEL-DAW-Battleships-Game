@@ -19,23 +19,30 @@ export type ActionInput = {
     value: string
 }
 
-/*
+function validateRequestMethod(request: Request): boolean {
+    const method = request.method.toUpperCase()
+    return request.url && (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE')
+}
+
+// TODO -> receives 415 Unsupported Media Type on POST requests
 export function useFetch(request: Request): Siren | undefined {
     const [content, setContent] = useState(undefined)
     useEffect(() => {
         let cancelled = false
         async function doFetch() {
-            if (validateRequestMethod(request.method)) {
-                const resp = await fetch(request.url, {
+            if (request && validateRequestMethod(request)) {
+                logger.info("sending request to: ", links.host + request.url)
+                const resp = await fetch(links.host + request.url, {
                     method: request.method,
-                    body: JSON.stringify(request.body)
+                    body: request.body ? buildBody(request.body) : undefined,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                 })
                 const body = await resp.json()
                 if (!cancelled) {
                     setContent(body)
                 }
-            } else {
-                throw new Error("Invalid request method")
             }
         }
         setContent(undefined)
@@ -43,33 +50,12 @@ export function useFetch(request: Request): Siren | undefined {
         return () => {
             cancelled = true
         }
-    }, [request.url])
+    }, [request.url, request.method, request.body])
     return content
 }
-*/
 
-function validateRequestMethod(method: string) {
-    return method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE'
-}
 
-// TODO -> receives 415 Unsupported Media Type on POST requests
-export async function doFetch(request: Request): Promise<Siren | undefined> {
-    if (validateRequestMethod(request.method)) {
-        logger.info("sending request to: ", links.host + request.url)
-        const resp = await fetch(links.host + request.url, {
-            method: request.method,
-            body: request.body ? buildBody(request.body) : undefined,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        console.log("response: ", resp)
-        return await resp.json()
-    } else {
-        throw new Error("Invalid request method")
-    }
-}
-
+    
 function buildBody(fields: ActionInput[]): string {
     const body = {}
     fields.forEach(field => {

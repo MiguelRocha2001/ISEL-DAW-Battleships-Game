@@ -8,15 +8,7 @@ import { Link } from 'react-router-dom'
 import { navigation } from '../navigation'
 
 export function Home() {
-    const [content, setContent] = useState(undefined)
-    React.useEffect(() => {
-        async function fetchContent() {
-            const content = await navigation.fetchHome()
-            setContent(content)
-        }
-        setContent(undefined)
-        fetchContent()
-    }, [])
+    const content = navigation.useFetchHome()
     return (
         <div>
             <Show content={content} property="title" />

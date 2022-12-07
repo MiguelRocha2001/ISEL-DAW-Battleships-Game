@@ -3,15 +3,17 @@ import { auth } from './server_info/auth'
 import { Siren } from './utils/siren'
 import { Action } from './utils/siren'
 import { Link } from './utils/siren'
-import { doFetch } from './utils/useFetch'
+import { useFetch } from './utils/useFetch'
 import { Logger } from "tslog";
 import { ActionInput } from './utils/useFetch'
 
 const logger = new Logger({ name: "Navigation" });
 
-async function fetchHome(): Promise<Siren> {
+
+function useFetchHome(): Siren | undefined {
     const defaultUrl = links.defaultUrl
-    const resp = await doFetch({ url: defaultUrl, method: "GET" })
+    const resp = useFetch({ url: defaultUrl, method: "GET" })
+    
     if (resp) {
         logger.info("fetchHome: responde sucessfull")
         const serverInfoLink = extractInfoLink(resp.links)
@@ -33,7 +35,8 @@ async function fetchHome(): Promise<Siren> {
     return resp
 }
 
-function extractInfoLink(linksArg: Link[]): string {
+function extractInfoLink(linksArg: Link[]): string | undefined {
+    if (!linksArg) return undefined
     return extractLink(linksArg, "server-info")
 }
 
@@ -73,85 +76,64 @@ function extractRegisterAction(actions: any[]): Action {
     return undefined
 }
 
-async function fetchServerInfo(): Promise<Siren> {
+function useFetchServerInfo(): Siren | undefined {
     const infoLink = links.getInfoLink()
-    if (infoLink) {
-        const resp = await doFetch({ url: infoLink, method: "GET" })
-        if (resp) {
-            logger.info("fetchServerInfo: responde sucessfull")
-            return resp
-        } else return undefined
-    }
-    const resp = await fetchHome()
+    const resp = useFetch({ url: infoLink, method: "GET" })
     if (resp) {
-        const link = extractInfoLink(resp.links)
-        return await doFetch({ url: link, method: "GET" })
-    }
-    return undefined
+        logger.info("fetchServerInfo: responde sucessfull")
+        return resp
+    } else return undefined
 }
 
-async function fetchBattleshipRanks(): Promise<Siren> {
+function fetchBattleshipRanks(): Siren | undefined {
     const ranksLink = links.getBattleshipRanksLink()
     if (ranksLink) {
-        const resp = await doFetch({ url: ranksLink, method: "GET" })
+        const resp = useFetch({ url: ranksLink, method: "GET" })
         if (resp) {
             logger.info("fetchBattleshipRanks: responde sucessfull")
             return resp
         } else return undefined
     }
-    const resp = await fetchHome()
+    const resp = useFetchHome()
     if (resp) {
         const link = extractBattleshipRanksLink(resp.links)
-        return await doFetch({ url: link, method: "GET" })
+        return useFetch({ url: link, method: "GET" })
     }
     return undefined
 }
 
-async function fetchToken(fields: ActionInput[]): Promise<string> {
-    async function fetchTokenInternal(fields: ActionInput[], action: Action): Promise<string> {
-        if (validateFields(fields, action)) {
-            const request = {
-                url: action.href,
-                method: action.method,
-                body: fields
-            }
-            const resp = await doFetch(request)
-            if (resp) {
-                const token = resp.properties.token
-                if (token) {
-                    logger.info("fetchToken: responde sucessfull")
-                    auth.setToken(token)
-                    logger.info("fetchToken: token set to: ", token)
-                    return token
-                } else {
-                    logger.error("fetchToken: token not found in response")
-                    return undefined
-                }
-            }
+function useFetchToken(fields: ActionInput[]): string {
+    const action = links.getTokenAction()
+    const request = action ? {
+        url: action.href,
+        method: action.method,
+        body: fields
+    } : undefined
+    const resp = useFetch(request)
+    if (resp) {
+        const token = resp.properties.token
+        if (token) {
+            logger.info("fetchToken: responde sucessfull")
+            auth.setToken(token)
+            logger.info("fetchToken: token set to: ", token)
+            return token
+        } else {
+            logger.error("fetchToken: token not found in response")
             return undefined
         }
     }
-    const action = links.getTokenAction()
-    if (action) {
-        return await fetchTokenInternal(fields, action)
-    } else {
-        const resp = await fetchHome()
-        if (resp) {
-            const action = extractTokenAction(resp.actions)
-            return await fetchTokenInternal(fields, action)
-        }
-    }
+    return undefined
 }
 
-async function registerNewUser(fields: ActionInput[]) {
-    async function registerNewUserInternal(fields: ActionInput[], action: Action) {
+async function useRegisterNewUser(fields: ActionInput[]) {
+    function useRegisterNewUserInternal(fields: ActionInput[], action: Action) {
         if (validateFields(fields, action)) {
             const request = {
                 url: action.href,
                 method: action.method,
                 body: fields
             }
-            const resp = await doFetch(request)
+            const resp = useFetch(request)
             if (resp) {
                 logger.info("registerUser: responde sucessfull")
                 return resp
@@ -160,12 +142,12 @@ async function registerNewUser(fields: ActionInput[]) {
     }
     const action = links.getRegisterAction()
     if (action) {
-        await registerNewUserInternal(fields, action)
+        useRegisterNewUserInternal(fields, action)
     } else {
-        const resp = await fetchHome()
+        const resp = useFetchHome()
         if (resp) {
             const action = extractRegisterAction(resp.actions)
-            await registerNewUserInternal(fields, action)
+            useRegisterNewUserInternal(fields, action)
         }
     }
 }
@@ -187,10 +169,10 @@ function isLogged(): boolean {
 }
 
 export const navigation = {
-    fetchHome,
-    fetchServerInfo,
+    useFetchHome,
+    useFetchServerInfo,
     fetchBattleshipRanks,
-    fetchToken,
-    registerNewUser,
+    useFetchToken,
+    useRegisterNewUser,
     isLogged
 }
