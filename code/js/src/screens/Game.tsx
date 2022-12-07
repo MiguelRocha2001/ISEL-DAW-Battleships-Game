@@ -4,7 +4,7 @@ import {
     useEffect,
 } from 'react'
 import { Services } from '../services'
-import { CreateGameRequest } from '../domain'
+import { CreateGameRequest, Game } from '../domain'
 import { Logger } from "tslog";
 
 
@@ -62,29 +62,50 @@ function reducer(state: State, action: Action): State {
 
 }
 
+const UPDATE_PERIOD = 1000
+
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'starting'})    
 
     useEffect(() => {
         async function createGame() {
-            if (state.type === "starting") { // start game
-                const createGameResponse = await Services.createGame({
-                    boardSize: 10,
-                    fleet: {
-                        BATTLESHIP: 4
-                    },
-                    nShotsPerRound: 1,
-                    roundTimeout: 1000,
-                })
-                if (createGameResponse) {
-                    if (typeof createGameResponse === 'string') {
-                        dispatch({type:'setWaitingWithMsg', msg: createGameResponse})
-                    } else {
-                        if (createGameResponse.gameId) {
-                            dispatch({type:'setPlaying', gameId: createGameResponse.gameId})
+            switch(state.type) {
+                case 'starting' : {
+                    const createGameResponse = await Services.createGame({
+                        boardSize: 10,
+                        fleet: {
+                            "CARRIER": 5,
+                            "BATTLESHIP": 4,
+                            "CRUISER": 3,
+                            "SUBMARINE": 3,
+                            "DESTROYER": 2
+                        },
+                        nShotsPerRound: 1,
+                        roundTimeout: 1000,
+                    })
+                    if (createGameResponse) {
+                        if (typeof createGameResponse === 'string') {
+                            dispatch({type:'setWaitingWithMsg', msg: createGameResponse})
                         } else {
-                            dispatch({type:'setWaiting'})
+                            if (createGameResponse.gameId) {
+                                dispatch({type:'setPlaying', gameId: createGameResponse.gameId})
+                            } else {
+                                dispatch({type:'setWaiting'})
+                            }
                         }
+                    }
+                }
+                case 'waiting' || 'waitingWithMsg' : {
+                    const tid = setInterval(async ()=>{
+                        const resp = await Services.getCurrentGameId()
+                        if (typeof resp === 'number') {
+                            dispatch({type:'setPlaying', gameId: resp})
+                        } else {
+                            dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
+                        }
+                    }, UPDATE_PERIOD)
+                    return ()=>{
+                        clearInterval(tid)
                     }
                 }
             }
@@ -124,6 +145,18 @@ function WaitingWithMsg({msg} : {msg : string}) {
         <div>
             <h1>Waiting</h1>
             <p>{msg}</p>
+        </div>
+    )
+}
+
+function Playing({game} : {game : Game}) {
+    return (
+        <div>
+            <h1>Playing</h1>
+            <p>{game.id}</p>
+            <p>{game.player1}</p>
+            <p>{game.player2}</p>
+            <p>{game.state}</p>
         </div>
     )
 }

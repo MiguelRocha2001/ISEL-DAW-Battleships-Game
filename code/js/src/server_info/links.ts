@@ -16,6 +16,7 @@ let tokenAction: Action | undefined
 let registerAction: Action | undefined
 let createGameAction: Action | undefined
 let gameLink: string | undefined
+let currentGameId: string | undefined
 
 
 function getInfoLink() {
@@ -60,6 +61,13 @@ function setGameLink(link: string) {
     gameLink = link
 }
 
+function getCurrentGameIdLink() {
+    return currentGameId
+}
+function setCurrentGameIdLink(id: string) {
+    currentGameId = id
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -75,4 +83,6 @@ export const links = {
     setCreateGameAction,
     getGameLink,
     setGameLink,
+    getCurrentGameIdLink,
+    setCurrentGameIdLink,
 }

@@ -136,6 +136,7 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
             const siren = await doFetch(internalReq)
             if (siren) {
                 const getGameLink = Siren.extractGetGameLink(siren.links)
+                const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
                 if (getGameLink) {
                     links.setGameLink(getGameLink)
                     logger.info("createGame: setting up new get game link: ", getGameLink)
@@ -157,12 +158,35 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
     return 'Token or create-game action not found'
 }
 
+async function getCurrentGameId(): Promise<number | string> {
+    const token = auth.getToken()
+    const currentGameIdLink = links.getCurrentGameIdLink()
+    if (!token || !currentGameIdLink) return undefined // TODO: throw error
+    try {
+        const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET" })    
+        if (response) {
+            logger.info("getGame: response sucessfull")
+            const gameId = response.properties.gameId
+            if (gameId) {
+                return gameId
+            } else {
+                logger.error("getCurrentGameId: gameId not found in response")
+                return 'GameId not found in response'
+            }
+        }
+    } catch (e) {
+        logger.error("getCurrentGameId: error: ", e)
+        return e.message.toString()
+    }
+    return 'Token or get-current-game-id link not found'
+}
+
 async function getGame(gameId): Promise<Game | string> {
     const token = auth.getToken()
     const gameLink = links.getGameLink()
     if (!token || !gameLink) return undefined // TODO: throw error
     try {
-        const response = await Fetch.doFetch({ url: gameId, method: "GET" })    
+        const response = await Fetch.doFetch({ url: gameLink, method: "GET" })    
         if (response) {
             logger.info("getGame: response sucessfull")
             return response.properties
@@ -182,5 +206,6 @@ export const Services = {
     useRegisterNewUser,
     isLogged,
     createGame,
+    getCurrentGameId,
     getGame
 }

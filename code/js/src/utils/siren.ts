@@ -96,6 +96,10 @@ function extractGetGameLink(linksArg: Link[]): string {
     return extractLink(linksArg, "game")
 }
 
+function extractGetCurrentGameIdLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "current-game")
+}
+
 /**
  * Validates if all necessary fields, in [action], are present in [fields].
  */
@@ -117,6 +121,7 @@ export const Siren = {
     extractTokenAction,
     extractRegisterAction,
     extractCreateGameAction,
-    validateFields,
-    extractGetGameLink
+    extractGetGameLink,
+    extractGetCurrentGameIdLink,
+    validateFields
 }
