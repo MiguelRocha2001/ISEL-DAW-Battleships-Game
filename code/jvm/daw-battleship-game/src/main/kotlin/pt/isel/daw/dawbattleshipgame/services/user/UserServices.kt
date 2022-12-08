@@ -70,7 +70,7 @@ class UserServices(
     fun getUserRanking() : List<UserRanking> {
         return transactionManager.run {
             val usersRepository = it.usersRepository
-            logger.info("User ranking retrieved")
+            logger.info("User rankings retrieved")
             usersRepository.getUsersRanking()
         }
     }

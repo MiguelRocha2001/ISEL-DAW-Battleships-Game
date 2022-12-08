@@ -103,7 +103,7 @@ class UserCreationTests {
         assertEquals(1, actions.size)
 
         assertEquals("start-game", actions[0].name)
-        assertEquals("/games", actions[0].href)
+        assertEquals("/my/games", actions[0].href)
         assertEquals("POST", actions[0].method)
         assertEquals("application/json", actions[0].type)
 

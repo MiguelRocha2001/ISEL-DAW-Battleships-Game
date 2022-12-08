@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import kotlin.collections.LinkedHashMap
@@ -43,7 +44,7 @@ class HomeTests {
         val siren = client.get().uri(Uris.Home.HOME)
             .exchange()
             .expectStatus().isOk
-            .expectHeader().contentType("application/json")
+            .expectHeader().contentType(SirenMediaType)
             .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody ?: fail("No response body")

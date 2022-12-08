@@ -2,7 +2,13 @@ package pt.isel.daw.dawbattleshipgame.http.infra
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import java.net.URI
+
+private const val APPLICATION_TYPE = "application"
+private const val SIREN_SUBTYPE = "vnd.siren+json"
+
+val SirenMediaType = MediaType.parseMediaType("$APPLICATION_TYPE/$SIREN_SUBTYPE")
 
 data class SirenModel<T>(
     @get:JsonProperty("class")

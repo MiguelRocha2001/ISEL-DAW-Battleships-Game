@@ -14,6 +14,7 @@ import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.createUser
 import pt.isel.daw.dawbattleshipgame.http.createUserAndToken
 import pt.isel.daw.dawbattleshipgame.http.deleteUser
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
@@ -54,7 +55,7 @@ class UserGetTests {
             .header("Authorization", "Bearer $token")
             .exchange()
             .expectStatus().isCreated
-            .expectHeader().contentType("application/json")
+            .expectHeader().contentType(SirenMediaType)
             .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody ?: Assertions.fail("No response body")

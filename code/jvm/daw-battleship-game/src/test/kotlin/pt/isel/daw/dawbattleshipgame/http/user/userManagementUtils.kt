@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.http
 
 import org.junit.jupiter.api.Assertions
 import org.springframework.test.web.reactive.server.WebTestClient
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import java.util.*
 
@@ -26,7 +27,7 @@ internal fun createUser(username: String, password: String, client: WebTestClien
         .expectHeader().value("location") {
             Assertions.assertTrue(it.startsWith("/users/"))
         }
-        .expectHeader().contentType("application/json")
+        .expectHeader().contentType(SirenMediaType)
         .expectBody(SirenModel::class.java)
         .returnResult()
         .responseBody ?: Assertions.fail("Game id is null")

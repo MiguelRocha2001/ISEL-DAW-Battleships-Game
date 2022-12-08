@@ -1,5 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
@@ -9,6 +10,7 @@ import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.domainProblemMapper
@@ -38,6 +40,7 @@ class GamesController(
             val gameId = it.second
             if (gameId != null) {
                 ResponseEntity.status (201) // Games created
+                    .contentType(SirenMediaType)
                     .header(
                             "Location",
                             Uris.Games.byId(gameId).toASCIIString()
@@ -62,6 +65,7 @@ class GamesController(
         val res = gameServices.getGameIdByUser(user.id)
         return res.map {
             ResponseEntity.status(200)
+                .contentType(SirenMediaType)
                 .body(siren(GameIdOutputModel(it)) {
                     gameByIdLinks(user.id)
                     clazz("game")
@@ -144,9 +148,10 @@ class GamesController(
         val res = gameServices.getMyFleetLayout(user.id)
         return res.map {
             ResponseEntity.status(200)
-                    .body(siren(it.toBoardOutputModel()) {
-                        clazz("ships")
-                    })
+                .contentType(SirenMediaType)
+                .body(siren(it.toBoardOutputModel()) {
+                    clazz("ships")
+                })
         }
     }
 
@@ -157,9 +162,10 @@ class GamesController(
         val res = gameServices.getOpponentFleet(user.id)
         return res.map {
             ResponseEntity.status(200)
-                    .body(siren(it.toBoardOutputModel()) {
-                        clazz("ships")
-                    })
+                .contentType(SirenMediaType)
+                .body(siren(it.toBoardOutputModel()) {
+                    clazz("ships")
+                })
         }
     }
 
@@ -189,22 +195,23 @@ class GamesController(
         val res = gameServices.getGameByUser(user.id)
         return res.map {
             ResponseEntity.status(200)
-                    .body(siren(
-                            GameOutputModel(
-                                    gameId = it.id,
-                                    configuration = it.configuration,
-                                    player1 = it.player1,
-                                    player2 = it.player2,
-                                    state = GameStateOutputModel.get(it.state),
-                                    board1 = it.board1.toBoardOutputModel(),
-                                    board2 = it.board2.toBoardOutputModel(),
-                            )
-                    ) {
-                        buildPreparationActions(this)
-                        buildBattleActions(this)
-                        clazz("game")
+                .contentType(SirenMediaType)
+                .body(siren(
+                    GameOutputModel(
+                        gameId = it.id,
+                        configuration = it.configuration,
+                        player1 = it.player1,
+                        player2 = it.player2,
+                        state = GameStateOutputModel.get(it.state),
+                        board1 = it.board1.toBoardOutputModel(),
+                        board2 = it.board2.toBoardOutputModel(),
+                    )
+                ) {
+                    buildPreparationActions(this)
+                    buildBattleActions(this)
+                    clazz("game")
 
-                    })
+                })
         }
     }
 
@@ -215,10 +222,11 @@ class GamesController(
         val res = gameServices.deleteGame(id)
         return res.map {
             ResponseEntity.status(200)
-                    .body(siren(it) {
-                        clazz("game")
+                .contentType(SirenMediaType)
+                .body(siren(it) {
+                    clazz("game")
 
-                    })
+                })
         }
     }
 }

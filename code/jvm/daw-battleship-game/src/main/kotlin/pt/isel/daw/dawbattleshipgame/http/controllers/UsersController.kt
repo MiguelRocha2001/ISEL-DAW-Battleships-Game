@@ -1,11 +1,13 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
+import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.domainProblemMapper
@@ -27,15 +29,16 @@ class UsersController(
         val res = userService.createUser(input.username, input.password)
         return res.map {
             ResponseEntity.status(201)
-                    .header(
-                            "Location",
-                            Uris.Users.byId(it).toASCIIString()
-                    )
-                    .body(siren(UserCreateOutputModel(it)) {
-                        link(Uris.Users.create(), Rels.SELF)
-                        createTokenSirenAction(this)
-                        clazz("user")
-                    })
+                .contentType(SirenMediaType)
+                .header(
+                    "Location",
+                    Uris.Users.byId(it).toASCIIString()
+                )
+                .body(siren(UserCreateOutputModel(it)) {
+                    link(Uris.Users.create(), Rels.SELF)
+                    createTokenSirenAction(this)
+                    clazz("user")
+                })
         }
     }
 
@@ -44,14 +47,16 @@ class UsersController(
         val res = userService.createToken(input.username, input.password)
         return res.map {
             ResponseEntity.status(201)
-                    .body(
-                            siren(TokenOutputModel(it)) {
-                                link(Uris.Users.createToken(), Rels.SELF)
-                                link(Uris.Users.home(), Rels.USER_HOME)
-                                buildStartGameAction(this)
-                                clazz("user-token")
+                .contentType(SirenMediaType)
+                .body(
+                    siren(TokenOutputModel(it)) {
+                        link(Uris.Users.createToken(), Rels.SELF)
+                        link(Uris.Users.home(), Rels.USER_HOME)
+                        buildStartGameAction(this)
+                        clazz("user-token")
 
-                            })
+                    }
+                )
         }
     }
 
@@ -65,6 +70,7 @@ class UsersController(
     @GetMapping(Uris.Users.HOME)
     fun getUserHome(user: User): ResponseEntity<*> {
         return ResponseEntity.status(201)
+            .contentType(SirenMediaType)
             .body(
                 siren(UserHomeOutputModel(user.id, user.username)) {
                     link(Uris.Users.home(), Rels.SELF)
@@ -81,10 +87,10 @@ class UsersController(
         val res = userService.deleteUser(id)
         return res.map {
             ResponseEntity.status(204)
-                    .body(siren(it) {
-                        clazz("user")
-
-                    })
+                .contentType(SirenMediaType)
+                .body(siren(it) {
+                    clazz("user")
+                })
         }
     }
 
@@ -93,9 +99,10 @@ class UsersController(
         val res = userService.getUserRanking()
         val userStats = res.map { UserStatOutputModel(it.username, it.wins, it.gamesPlayed) }
         return ResponseEntity.status(200)
+            .contentType(SirenMediaType)
             .body(siren(UserStatsOutputModel(userStats)) {
-                link(Uris.Users.stats(), Rels.SELF)
-                clazz("users")
+                    link(Uris.Users.stats(), Rels.SELF)
+                    clazz("user-stats")
             })
     }
 }
