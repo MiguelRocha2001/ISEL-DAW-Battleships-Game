@@ -1,6 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.hypermedia.actions
 
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import pt.isel.daw.dawbattleshipgame.http.model.game.GameOutputModel
@@ -12,7 +13,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
         name = "place-ship",
         href = URI(Uris.Games.My.Current.My.Ships.ALL),
         method = HttpMethod.POST,
-        type = "application/json"
+        type = MediaType.APPLICATION_JSON
     ) {
         this.numberField("row")
         this.numberField("column")
@@ -23,7 +24,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
         name = "move-ship",
         href = URI(Uris.Games.My.Current.My.Ships.ALL),
         method = HttpMethod.POST,
-        type = "application/json"
+        type = MediaType.APPLICATION_JSON
     ) {
         this.numberField("origin_row")
         this.numberField("origin_column")
@@ -36,7 +37,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
         name = "rotate-ship",
         href = URI(Uris.Games.My.Current.My.Ships.ALL),
         method = HttpMethod.POST,
-        type = "application/json"
+        type = MediaType.APPLICATION_JSON
     ) {
         this.numberField("row")
         this.numberField("column")
@@ -47,7 +48,7 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
         name = "confirm-fleet",
         href = URI(Uris.Games.My.Current.My.Ships.ALL),
         method = HttpMethod.POST,
-        type = "application/json"
+        type = MediaType.APPLICATION_JSON
     ) {
         // DO NOTHING
     }

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpMethod
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
@@ -82,12 +83,12 @@ class HomeTests {
 
         assertEquals("create-user", actions[0].name)
         assertEquals("/users", actions[0].href)
-        assertEquals("POST", actions[0].method)
+        assertEquals(HttpMethod.POST, actions[0].method)
         assertEquals("application/json", actions[0].type)
 
         assertEquals("create-token", actions[1].name)
         assertEquals("/users/token", actions[1].href)
-        assertEquals("POST", actions[1].method)
+        assertEquals(HttpMethod.POST, actions[1].method)
         assertEquals("application/json", actions[1].type)
     }
 

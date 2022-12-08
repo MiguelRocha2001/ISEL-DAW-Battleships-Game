@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpMethod
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.createUser
@@ -104,7 +105,7 @@ class UserCreationTests {
 
         assertEquals("start-game", actions[0].name)
         assertEquals("/my/games", actions[0].href)
-        assertEquals("POST", actions[0].method)
+        assertEquals(HttpMethod.POST, actions[0].method)
         assertEquals("application/json", actions[0].type)
 
 

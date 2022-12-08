@@ -1,6 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http
 
 import org.junit.jupiter.api.Assertions
+import org.springframework.http.HttpMethod
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
@@ -48,7 +49,7 @@ internal fun createUser(username: String, password: String, client: WebTestClien
     Assertions.assertEquals(1, actions.size)
     Assertions.assertEquals("create-token", actions[0].name)
     Assertions.assertEquals("/users/token", actions[0].href)
-    Assertions.assertEquals("POST", actions[0].method)
+    Assertions.assertEquals(HttpMethod.POST, actions[0].method)
     Assertions.assertEquals("application/json", actions[0].type)
     Assertions.assertEquals(2, actions[0].fields.size)
     Assertions.assertEquals("username", actions[0].fields[0].name)

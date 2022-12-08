@@ -1,6 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.hypermedia.actions
 
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import pt.isel.daw.dawbattleshipgame.http.model.user.TokenOutputModel
@@ -11,7 +12,7 @@ fun buildStartGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
         name = "start-game",
         href = URI(Uris.Games.My.ALL),
         method = HttpMethod.POST,
-        type = "application/json"
+        type = MediaType.APPLICATION_JSON
     ) {
         numberField("boardSize")
         numberField("nShotsPerRound")
