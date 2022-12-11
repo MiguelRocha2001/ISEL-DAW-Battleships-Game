@@ -30,7 +30,7 @@ fun Board.toBoardOutputModel(): BoardOutputModel {
     }
     return BoardOutputModel(cells, this.board.size)
     */
-    return BoardOutputModel(this.toString(), this.board.size, this.isConfirmed())
+    return BoardOutputModel(this.getDbString(), this.board.size, this.isConfirmed())
 }
 
 data class BoardOutputModel(

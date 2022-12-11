@@ -117,6 +117,35 @@ async function useRegisterNewUser(fields: KeyValuePair[]) {
     }
 }
 
+async function fetchUserHome(): Promise<void | string> {
+    const token = auth.getToken()
+    const userHomeLink = links.getUserHomeLink()
+    if (token && userHomeLink) {
+        const request = {
+            url: userHomeLink,
+            method: "GET",
+            token
+        }
+        const resp = await doFetch(request)
+        if (resp) {
+            logger.info("fetchUserHome: response sucessfull")
+            const createGameAction = Siren.extractCreateGameAction(resp.links)
+            const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(resp.links)
+            if (createGameAction) {
+                links.setCreateGameAction(createGameAction)
+                logger.info("fetchUserHome: setting up new create game action: ", createGameAction.name)
+            }
+            if (getCurrentGameIdLink) {
+                links.setCurrentGameIdLink(getCurrentGameIdLink)
+                logger.info("fetchUserHome: setting up new get current game id link: ", getCurrentGameIdLink)
+            }
+            return
+        }
+        return "fetchUserHome: response undefined"
+    }
+    return "fetchUserHome: token or user home link undefined"
+}
+
 function isLogged(): boolean {
     return auth.getToken() !== undefined
 }
@@ -161,9 +190,10 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
 async function getCurrentGameId(): Promise<number | string> {
     const token = auth.getToken()
     const currentGameIdLink = links.getCurrentGameIdLink()
+    // console.log(currentGameIdLink)
     if (!token || !currentGameIdLink) return undefined // TODO: throw error
     try {
-        const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET" })    
+        const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined, token })    
         if (response) {
             logger.info("getGame: response sucessfull")
             const gameId = response.properties.gameId
@@ -181,7 +211,7 @@ async function getCurrentGameId(): Promise<number | string> {
     return 'Token or get-current-game-id link not found'
 }
 
-async function getGame(gameId): Promise<Game | string> {
+async function getGame(): Promise<Game | string> {
     const token = auth.getToken()
     const gameLink = links.getGameLink()
     if (!token || !gameLink) return undefined // TODO: throw error
@@ -207,5 +237,6 @@ export const Services = {
     isLogged,
     createGame,
     getCurrentGameId,
-    getGame
+    getGame,
+    fetchUserHome
 }

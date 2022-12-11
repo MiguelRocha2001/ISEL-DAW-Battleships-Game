@@ -49,7 +49,8 @@ export function useFetch(request: Request): Siren | undefined {
                     method: request.method,
                     body: request.body ? buildBody(request.body) : undefined,
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + request.token
                     },
                 })
                 const body = await resp.json()

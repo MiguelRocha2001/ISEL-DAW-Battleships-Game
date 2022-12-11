@@ -62,8 +62,6 @@ function reducer(state: State, action: Action): State {
 
 }
 
-const UPDATE_PERIOD = 1000
-
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'starting'})    
 
@@ -96,16 +94,11 @@ export function Game() {
                     }
                 }
                 case 'waiting' || 'waitingWithMsg' : {
-                    const tid = setInterval(async ()=>{
-                        const resp = await Services.getCurrentGameId()
-                        if (typeof resp === 'number') {
-                            dispatch({type:'setPlaying', gameId: resp})
-                        } else {
-                            dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
-                        }
-                    }, UPDATE_PERIOD)
-                    return ()=>{
-                        clearInterval(tid)
+                    const resp = await Services.getCurrentGameId()
+                    if (typeof resp === 'number') {
+                        dispatch({type:'setPlaying', gameId: resp})
+                    } else {
+                        dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
                     }
                 }
             }
@@ -122,6 +115,17 @@ export function Game() {
     if (state.type === "waitingWithMsg") {
         return <WaitingWithMsg msg={state.msg} />
     }
+}
+
+
+async function getCurrentGameId(dispatch : React.Dispatch<Action>) {
+    const resp = await Services.getCurrentGameId()
+    if (typeof resp === 'number') {
+        dispatch({type:'setPlaying', gameId: resp})
+    } else {
+        dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
+    }
+    
 }
 
 function Starting() {
@@ -145,6 +149,7 @@ function WaitingWithMsg({msg} : {msg : string}) {
         <div>
             <h1>Waiting</h1>
             <p>{msg}</p>
+            <button type='button' onclick='getCurrentGameId()'>Refresh</button>
         </div>
     )
 }
