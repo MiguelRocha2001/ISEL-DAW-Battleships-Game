@@ -103,7 +103,7 @@ class UserCreationTests {
         val actions = userHome.actions
         assertEquals(1, actions.size)
 
-        assertEquals("start-game", actions[0].name)
+        assertEquals("create-game", actions[0].name)
         assertEquals("/my/games", actions[0].href)
         assertEquals(HttpMethod.POST, actions[0].method)
         assertEquals("application/json", actions[0].type)

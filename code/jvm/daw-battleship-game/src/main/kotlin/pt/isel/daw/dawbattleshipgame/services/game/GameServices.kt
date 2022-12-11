@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
-import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
@@ -63,6 +62,7 @@ class GameServices(
                 return@run Either.Left(GameIdError.GameNotFound)
                     .also { logger.info("User $userId: Game id retrieval failed: game not found") }
             Either.Right(game.id)
+                .also { logger.info("User $userId: Game id successfully") }
         }
     }
 
@@ -196,11 +196,12 @@ class GameServices(
         }
     }
 
-    fun getGameByUser(userId: Int): GameResult {
+    fun getGameByUser(userId: Int): GameByUserResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameError.GameNotFound)
-            Either.Right(game)
+            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameByUserError.GameNotFound)
+            val player = game.getUser(userId)
+            Either.Right(game to player)
         }
     }
 

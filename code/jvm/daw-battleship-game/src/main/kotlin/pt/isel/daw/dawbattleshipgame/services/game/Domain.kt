@@ -4,6 +4,7 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 
 
 sealed class GameCreationError: Error() {
@@ -62,6 +63,11 @@ sealed class GameError : Error(){
     object GameNotFound: GameError()
 }
 typealias GameResult = Either<GameError, Game>
+
+sealed class GameByUserError : Error(){
+    object GameNotFound: GameByUserError()
+}
+typealias GameByUserResult = Either<GameByUserError, Pair<Game, Player>>
 
 sealed class DeleteGameError: Error() {
     object GameNotFound: DeleteGameError()

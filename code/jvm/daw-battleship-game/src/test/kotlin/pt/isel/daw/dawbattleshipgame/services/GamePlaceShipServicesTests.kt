@@ -1,13 +1,14 @@
 package pt.isel.daw.dawbattleshipgame.services
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.services.game.*
+import pt.isel.daw.dawbattleshipgame.services.game.GameServices
+import pt.isel.daw.dawbattleshipgame.services.game.PlaceShipsError
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GamePlaceShipServicesTests {

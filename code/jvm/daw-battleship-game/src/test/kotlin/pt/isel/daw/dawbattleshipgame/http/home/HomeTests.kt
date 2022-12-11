@@ -15,7 +15,6 @@ import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
-import kotlin.collections.LinkedHashMap
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class HomeTests {

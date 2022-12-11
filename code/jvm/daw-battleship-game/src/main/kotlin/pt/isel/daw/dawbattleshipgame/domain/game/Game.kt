@@ -4,10 +4,9 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState.*
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.utils.RealClock
-import java.lang.IllegalArgumentException
+import java.time.Duration
 import java.time.Instant
 import java.util.*
-import java.time.Duration
 
 enum class GameState {
     NOT_STARTED,

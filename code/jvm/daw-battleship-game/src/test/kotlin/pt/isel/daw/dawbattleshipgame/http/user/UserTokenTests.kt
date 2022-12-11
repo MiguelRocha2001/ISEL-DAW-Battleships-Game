@@ -17,7 +17,6 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
-import kotlin.collections.ArrayList
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserTokenTests {

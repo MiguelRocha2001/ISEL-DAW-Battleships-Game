@@ -3,7 +3,6 @@ package pt.isel.daw.dawbattleshipgame.services
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 
 data class ServerInfo(
     val authors: List<Pair<String, String>> = listOf(

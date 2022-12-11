@@ -1,7 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.domain.game
 
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import java.time.Duration
 
 /**
  * Represents the game configuration

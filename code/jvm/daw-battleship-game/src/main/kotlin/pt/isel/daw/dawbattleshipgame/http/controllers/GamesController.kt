@@ -1,10 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import pt.isel.daw.dawbattleshipgame.Either
-import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
@@ -12,8 +9,6 @@ import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
-import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.http.model.domainProblemMapper
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.http.model.map
 import pt.isel.daw.dawbattleshipgame.services.game.*
@@ -30,10 +25,10 @@ class GamesController(
         val res = gameServices.startGame(
             user.id,
             Configuration(
-                    createGameInputModel.boardSize,
-                    createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
-                    createGameInputModel.nShotsPerRound,
-                    createGameInputModel.roundTimeout
+                createGameInputModel.boardSize,
+                createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
+                createGameInputModel.nShotsPerRound,
+                createGameInputModel.roundTimeout
             )
         )
         return res.map {
@@ -42,12 +37,12 @@ class GamesController(
                 ResponseEntity.status (201) // Games created
                     .contentType(SirenMediaType)
                     .header(
-                            "Location",
-                            Uris.Games.byId(gameId).toASCIIString()
+                        "Location",
+                        Uris.Games.byId(gameId).toASCIIString()
                     ).body(
-                            siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
-                                Uris.Games.byId(gameId) to Rels.GAME_ID
-                            }
+                        siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
+                            Uris.Games.byId(gameId) to Rels.GAME_ID
+                        }
                     )
             } else {
                 ResponseEntity.status (202) // Game not created but request was processed
@@ -198,13 +193,14 @@ class GamesController(
                 .contentType(SirenMediaType)
                 .body(siren(
                     GameOutputModel(
-                        gameId = it.id,
-                        configuration = it.configuration,
-                        player1 = it.player1,
-                        player2 = it.player2,
-                        state = GameStateOutputModel.get(it.state),
-                        board1 = it.board1.toBoardOutputModel(),
-                        board2 = it.board2.toBoardOutputModel(),
+                        gameId = it.first.id,
+                        configuration = it.first.configuration,
+                        player1 = it.first.player1,
+                        player2 = it.first.player2,
+                        state = GameStateOutputModel.get(it.first.state),
+                        board1 = it.first.board1.toBoardOutputModel(),
+                        board2 = it.first.board2.toBoardOutputModel(),
+                        myPlayer = PlayerOutputModel.get(it.second)
                     )
                 ) {
                     buildPreparationActions(this)

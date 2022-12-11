@@ -1,13 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
-import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.clearAllTables
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 

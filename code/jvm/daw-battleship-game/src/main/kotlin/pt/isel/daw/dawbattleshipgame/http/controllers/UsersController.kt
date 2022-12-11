@@ -1,23 +1,17 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.http.model.domainProblemMapper
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatsOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.map
 import pt.isel.daw.dawbattleshipgame.http.model.user.*
-import pt.isel.daw.dawbattleshipgame.services.user.TokenCreationError
-import pt.isel.daw.dawbattleshipgame.services.user.UserCreationError
-import pt.isel.daw.dawbattleshipgame.services.user.UserDeletionError
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 @RestController

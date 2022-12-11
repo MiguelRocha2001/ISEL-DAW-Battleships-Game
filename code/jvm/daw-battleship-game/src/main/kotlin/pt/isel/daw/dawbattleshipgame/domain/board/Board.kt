@@ -1,7 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.domain.board
 
-import pt.isel.daw.dawbattleshipgame.domain.game.Game
-import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.Ship
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType

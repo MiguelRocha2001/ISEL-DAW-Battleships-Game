@@ -7,8 +7,14 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.services.game.*
-import pt.isel.daw.dawbattleshipgame.utils.*
+import pt.isel.daw.dawbattleshipgame.services.game.DeleteGameError
+import pt.isel.daw.dawbattleshipgame.services.game.GameError
+import pt.isel.daw.dawbattleshipgame.services.game.GameServices
+import pt.isel.daw.dawbattleshipgame.services.game.GameStateError
+import pt.isel.daw.dawbattleshipgame.utils.createGame
+import pt.isel.daw.dawbattleshipgame.utils.createUserPair
+import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration2
+import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
 
 class GameServicesStatusTests {
     private val configuration = getGameTestConfiguration2()

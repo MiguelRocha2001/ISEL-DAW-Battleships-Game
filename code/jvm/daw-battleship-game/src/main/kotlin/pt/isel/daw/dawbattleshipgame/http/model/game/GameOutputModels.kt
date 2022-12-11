@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 
 /**
  * Represents a list of Users, with their respective number of games played and score
@@ -76,4 +77,19 @@ data class GameOutputModel(
     val state: GameStateOutputModel,
     val board1: BoardOutputModel,
     val board2: BoardOutputModel,
+    val myPlayer: PlayerOutputModel
 )
+
+enum class PlayerOutputModel {
+    ONE, TWO;
+
+    @JsonValue
+    fun getName() = name.lowercase()
+
+    companion object {
+        fun get(value: Player) = when (value) {
+            Player.ONE -> ONE
+            Player.TWO -> TWO
+        }
+    }
+}
