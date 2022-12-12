@@ -10,7 +10,7 @@ import java.net.URI
 fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
     // Place Ship
     sirenBuilderScope.action(
-        name = "place-ship",
+        name = "place-ships",
         href = URI(Uris.Games.My.Current.My.Ships.ALL),
         method = HttpMethod.POST,
         type = MediaType.APPLICATION_JSON

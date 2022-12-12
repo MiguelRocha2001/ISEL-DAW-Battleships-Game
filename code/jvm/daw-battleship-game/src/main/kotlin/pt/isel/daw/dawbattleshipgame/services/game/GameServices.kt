@@ -69,7 +69,11 @@ class GameServices(
     /**
      * @param gameId the game's id, or null if game is the current user game
      */
-    fun placeShips(userId: Int, ships: List<Triple<ShipType, Coordinate, Orientation>>): PlaceShipsResult {
+    fun placeShips(
+        userId: Int,
+        ships: List<Triple<ShipType, Coordinate, Orientation>>,
+        fleetConfirmed: Boolean = false
+    ): PlaceShipsResult {
         return transactionManager.run {
             val db = it.gamesRepository
             var game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShipsError.GameNotFound)
@@ -82,6 +86,11 @@ class GameServices(
                 game = game.placeShip(s.first, s.second, s.third, player)
                     ?: return@run Either.Left(PlaceShipsError.InvalidMove)
                         .also { logger.info("User $userId: Ship placement failed: invalid move") }
+            }
+            if (fleetConfirmed) {
+                game = game.confirmFleet(player)
+                    ?: return@run Either.Left(PlaceShipsError.ActionNotPermitted)
+                        .also { logger.info("User $userId: Ship placement failed: action not permitted") }
             }
             updateGame(db, game)
             logger.info("User $userId: Ship placement successful")

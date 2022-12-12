@@ -74,12 +74,15 @@ data class FleetStateInputModel(val fleetConfirmed: Boolean)
 // @JsonDeserialize(`as` = PlaceShipsInputModel::class)
 @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "operation")
 @JsonSubTypes(
-    JsonSubTypes.Type(value = PlaceShipsInputModel::class, name = "place-ship"),
+    JsonSubTypes.Type(value = PlaceShipsInputModel::class, name = "place-ships"),
     JsonSubTypes.Type(value = AlterShipInputModel::class, name = "alter-ship"),
 )
-sealed class PostShipInputModel(open val operation: String)
+sealed class PostShipsInputModel(open val operation: String)
 
-data class PlaceShipsInputModel(val ships: List<PlaceShipInputModel>): PostShipInputModel("place-ship")
+data class PlaceShipsInputModel(
+    val ships: List<PlaceShipInputModel>,
+    val fleetConfirmed: Boolean
+): PostShipsInputModel("place-ships")
 data class PlaceShipInputModel(
     val shipType: ShipTypeInputModel,
     val position: CoordinateInputModel,
@@ -89,4 +92,4 @@ data class PlaceShipInputModel(
 class AlterShipInputModel(
     val origin: CoordinateInputModel,
     val destination: CoordinateInputModel?, // null if ship is to be rotated
-): PostShipInputModel("alter-ship")
+): PostShipsInputModel("alter-ship")

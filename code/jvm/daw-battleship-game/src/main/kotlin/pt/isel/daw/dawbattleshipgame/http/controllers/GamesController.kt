@@ -45,7 +45,8 @@ class GamesController(
                         }
                     )
             } else {
-                ResponseEntity.status (202) // Game not created but request was processed
+                ResponseEntity.status(202) // Game not created but request was processed
+                    .contentType(SirenMediaType)
                     .body(
                         siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
                             Uris.Games.My.CURRENT to Rels.GAME
@@ -71,14 +72,14 @@ class GamesController(
     @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun postShips(
         user: User,
-        @RequestBody postShipInputModel: PostShipInputModel
+        @RequestBody postShipsInputModel: PostShipsInputModel
     ): ResponseEntity<*> {
-        return when (postShipInputModel) {
+        return when (postShipsInputModel) {
             is PlaceShipsInputModel -> {
-                placeShips(user, postShipInputModel)
+                placeShips(user, postShipsInputModel)
             }
             is AlterShipInputModel -> {
-                updateShip(user, postShipInputModel)
+                updateShip(user, postShipsInputModel)
             }
         }
     }
@@ -93,7 +94,8 @@ class GamesController(
                 it.shipType.toShipType(),
                 it.position.toCoordinate(),
                 it.orientation.toOrientation()
-            ) }
+            )},
+            placeShipsInputModel.fleetConfirmed
         )
         return res.map {
             ResponseEntity.status(201).build<Unit>()
@@ -163,25 +165,6 @@ class GamesController(
                 })
         }
     }
-
-    /*
-    @GetMapping(Uris.Games.BY_ID)
-    fun getGameState(
-        user: User,
-        @PathVariable id: Int
-    ): ResponseEntity<*> {
-        val res = gameServices.getGameState(id)
-        return when (res) {
-            is Either.Right -> ResponseEntity.status(200)
-                .body(siren(GameStateOutputModel.get(res.value)) {
-
-                })
-            is Either.Left -> when (res.value) {
-                GameStateError.GameNotFound -> Problem.response(404, Problem.gameNotFound)
-            }
-        }
-    }
-     */
 
     @GetMapping(Uris.Games.My.CURRENT)
     fun getGame(
