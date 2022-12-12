@@ -164,6 +164,7 @@ class UserServiceTests {
             )
             val userPair = createUserPair(it)
             val gameServices = GameServices(it)
+
             createGame(gameServices, userPair.first, userPair.second, getGameTestConfiguration1())
 
             val rankings = userService.getUserRanking()

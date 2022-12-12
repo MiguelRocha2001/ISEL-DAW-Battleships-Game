@@ -1,4 +1,4 @@
-create function userStatsUpdate() returns trigger as $ustats$
+create or replace function userStatsUpdate() returns trigger as $ustats$
 BEGIN
     if (TG_OP = 'UPDATE') then
         if NEW.state = 'finished' then

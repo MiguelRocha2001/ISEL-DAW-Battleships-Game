@@ -112,13 +112,7 @@ data class Problem(
 val problems = mapOf(
         "UserAlreadyExists" to Problem.response(400, Problem.userAlreadyExists),
 
-        "TUserAlreadyExists" to Problem.response(404, Problem.userAlreadyExists),
-
-        "TInsecurePassword" to Problem.response(405, Problem.insecurePassword),
-
         "InsecurePassword" to Problem.response(400, Problem.insecurePassword),
-
-        "TInvalidUsername" to Problem.response(405, Problem.invalidUsername),
 
         "InvalidUsername" to Problem.response(400, Problem.invalidUsername),
 

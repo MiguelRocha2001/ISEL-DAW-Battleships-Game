@@ -38,7 +38,7 @@ class JdbiUsersRepository(
 
     override fun getUsersRanking(): List<UserRanking> {
         return handle.createQuery(
-            "select username, wins, games_played from _user order by wins limit 20"
+            "select username, wins, games_played from _user order by wins, games_played limit 20"
         ).mapTo<UserRanking>().toList()
     }
 

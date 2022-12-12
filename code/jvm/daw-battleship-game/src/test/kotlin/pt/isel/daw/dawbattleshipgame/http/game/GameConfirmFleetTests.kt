@@ -134,14 +134,11 @@ class GameConfirmFleetTests {
         val gameInfo = createGame(client)
         val gameId = gameInfo.gameId
         val player1Id = gameInfo.player1Id
-        val player1Token = gameInfo.player1Token
         val player2Id = gameInfo.player2Id
-        val player2Token = gameInfo.player2Token
         val fakeToken = "cKrSPcM-onxaqTsUuPKMOCdUjmEfsizpjj5pUgd5C6U="
 
         placeSomeShips(client, gameInfo.player1Token)
         placeSomeShips(client, gameInfo.player2Token)
-
 
         client.put().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
@@ -152,7 +149,6 @@ class GameConfirmFleetTests {
             .header("Authorization", "Bearer $fakeToken")
             .exchange()
             .expectStatus().isUnauthorized
-
 
 
         deleteGame(client, gameId)

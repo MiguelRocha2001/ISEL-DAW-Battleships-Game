@@ -74,7 +74,7 @@ data class FleetStateInputModel(val fleetConfirmed: Boolean)
 // @JsonDeserialize(`as` = PlaceShipsInputModel::class)
 @JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "operation")
 @JsonSubTypes(
-    JsonSubTypes.Type(value = PlaceShipsInputModel::class, name = "place-ships"),
+    JsonSubTypes.Type(value = PlaceShipsInputModel::class, name = "place-ship"),
     JsonSubTypes.Type(value = AlterShipInputModel::class, name = "alter-ship"),
 )
 sealed class PostShipsInputModel(open val operation: String)
@@ -82,7 +82,7 @@ sealed class PostShipsInputModel(open val operation: String)
 data class PlaceShipsInputModel(
     val ships: List<PlaceShipInputModel>,
     val fleetConfirmed: Boolean
-): PostShipsInputModel("place-ships")
+): PostShipsInputModel("place-ship")
 data class PlaceShipInputModel(
     val shipType: ShipTypeInputModel,
     val position: CoordinateInputModel,
