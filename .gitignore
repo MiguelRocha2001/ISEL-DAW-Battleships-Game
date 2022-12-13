@@ -117,3 +117,5 @@ dist
 **/out
 **/bin
 **/build
+
+*.js
