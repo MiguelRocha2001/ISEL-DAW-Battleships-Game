@@ -42,7 +42,7 @@ class GamesController(
                         Uris.Games.byId(gameId).toASCIIString()
                     ).body(
                         siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
-                            Uris.Games.byId(gameId) to Rels.GAME_ID
+                            Uris.Games.My.CURRENT to Rels.GAME
                         }
                     )
             } else {

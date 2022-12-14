@@ -69,6 +69,7 @@ class UsersController(
                 siren(UserHomeOutputModel(user.id, user.username)) {
                     link(Uris.Users.home(), Rels.SELF)
                     link(Uris.Games.My.current(), Rels.GAME_ID)
+                    link(Uris.Games.My.current(), Rels.GAME)
                     buildStartGameAction(this)
                     clazz("user-home")
                 }

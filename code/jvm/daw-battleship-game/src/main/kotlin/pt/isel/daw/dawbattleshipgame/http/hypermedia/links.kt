@@ -18,6 +18,6 @@ fun SirenBuilderScope<HomeOutputModel>.homeLinks() = links(
 fun SirenBuilderScope<GameIdOutputModel>.gameByIdLinks(gameId: Int) = links(
     listOf(
         Uris.Games.byId(gameId) to Rels.SELF,
-        Uris.Games.byId(gameId) to Rels.GAME_INFO,
+        Uris.Games.My.current() to Rels.GAME,
     )
 )

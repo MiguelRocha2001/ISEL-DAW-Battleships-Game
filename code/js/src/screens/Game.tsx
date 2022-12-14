@@ -25,8 +25,12 @@ type State =
     }
     |
     {
+        type : "updatingGame"
+    }
+    |
+    {
         type : "playing",
-        gameId : number
+        game: Game
     }
 
 type Action =     
@@ -36,12 +40,16 @@ type Action =
     |
     {
         type : "setPlaying",
-        gameId : number
+        game : Game
     }
     |
     {
         type : "setWaitingWithMsg",
         msg : string
+    }
+    |
+    {
+        type : "setUpdatingGame"
     }
 
 function reducer(state: State, action: Action): State {
@@ -56,7 +64,11 @@ function reducer(state: State, action: Action): State {
         }
         case 'setPlaying' : {
             logger.info("setPlaying")
-            return {type : 'playing', gameId : action.gameId}
+            return {type : 'playing', game : action.game}
+        }
+        case 'setUpdatingGame' : {
+            logger.info("setUpdatingGame")
+            return {type : 'updatingGame'}
         }
     }
 
@@ -66,9 +78,10 @@ export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'starting'})    
 
     useEffect(() => {
-        async function createGame() {
+        async function stateMachineHandler() {
             switch(state.type) {
                 case 'starting' : {
+                    logger.info("starting")
                     const createGameResponse = await Services.createGame({
                         boardSize: 10,
                         fleet: {
@@ -84,48 +97,32 @@ export function Game() {
                     if (createGameResponse) {
                         if (typeof createGameResponse === 'string') {
                             dispatch({type:'setWaitingWithMsg', msg: createGameResponse})
-                        } else {
-                            if (createGameResponse.gameId) {
-                                dispatch({type:'setPlaying', gameId: createGameResponse.gameId})
-                            } else {
-                                dispatch({type:'setWaiting'})
-                            }
-                        }
+                        } else dispatch({type:'setWaiting'})
                     }
                 }
-                case 'waiting' || 'waitingWithMsg' : {
-                    const resp = await Services.getCurrentGameId()
-                    if (typeof resp === 'number') {
-                        dispatch({type:'setPlaying', gameId: resp})
-                    } else {
+                case 'updatingGame' : {
+                    logger.info("updatingGame")
+                    const resp = await Services.getGame()
+                    if (typeof resp === 'string') {
                         dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
+                    } else {
+                        dispatch({type:'setPlaying', game: resp})
                     }
                 }
             }
         }
-        createGame()
+        stateMachineHandler()
     }, [state])
 
     if (state.type === "starting") {
         return <Starting />
     }
     if (state.type === "waiting") {
-        return <Waiting />
+        return <Waiting dispatch={dispatch} />
     }
     if (state.type === "waitingWithMsg") {
-        return <WaitingWithMsg msg={state.msg} />
+        return <WaitingWithMsg dispatch={dispatch} msg={state.msg} />
     }
-}
-
-
-async function getCurrentGameId(dispatch : React.Dispatch<Action>) {
-    const resp = await Services.getCurrentGameId()
-    if (typeof resp === 'number') {
-        dispatch({type:'setPlaying', gameId: resp})
-    } else {
-        dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
-    }
-    
 }
 
 function Starting() {
@@ -136,20 +133,27 @@ function Starting() {
     )
 }
 
-function Waiting() {
+function Waiting({dispatch} : {dispatch: React.Dispatch<Action>}) {
+    function updateGame() {
+        dispatch({type:'setUpdatingGame'})
+    }
     return (
         <div>
             <h1>Waiting</h1>
+            <p><button onClick={updateGame}>Update Game</button></p>
         </div>
     )
 }
 
-function WaitingWithMsg({msg} : {msg : string}) {
+function WaitingWithMsg({dispatch, msg} : {dispatch: React.Dispatch<Action>, msg : string}) {
+    function updateGame() {
+        dispatch({type:'setUpdatingGame'})
+    }
     return (
         <div>
             <h1>Waiting</h1>
             <p>{msg}</p>
-            <button type='button' onclick='getCurrentGameId()'>Refresh</button>
+            <p><button onClick={updateGame}>Update Game</button></p>
         </div>
     )
 }
