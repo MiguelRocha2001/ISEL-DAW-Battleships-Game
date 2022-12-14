@@ -82,10 +82,14 @@ function extractRegisterAction(actions: any[]): Action {
     return undefined
 }
 
+function extractUserHomeLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "user-home")
+}
+
 function extractCreateGameAction(actions: any[]): Action {
     for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
-        if (action.name === "start-game") {
+        if (action.name === "create-game") {
             return action
         }
     }
@@ -97,7 +101,7 @@ function extractGetGameLink(linksArg: Link[]): string {
 }
 
 function extractGetCurrentGameIdLink(linksArg: Link[]): string {
-    return extractLink(linksArg, "current-game")
+    return extractLink(linksArg, "game-id")
 }
 
 /**
@@ -120,6 +124,7 @@ export const Siren = {
     extractBattleshipRanksLink,
     extractTokenAction,
     extractRegisterAction,
+    extractUserHomeLink,
     extractCreateGameAction,
     extractGetGameLink,
     extractGetCurrentGameIdLink,

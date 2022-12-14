@@ -58,7 +58,7 @@ function setCreateGameAction(action: Action) {
 function getGameLink() {
     return gameLink
 }
-function setGameLink(link: string) {
+function setGetGameLink(link: string) {
     gameLink = link
 }
 
@@ -90,7 +90,7 @@ export const links = {
     getCreateGameAction,
     setCreateGameAction,
     getGameLink,
-    setGameLink,
+    setGetGameLink,
     getCurrentGameIdLink,
     setCurrentGameIdLink,
     getUserHomeLink,
