@@ -3,9 +3,9 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildHomeActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.homeLinks
-import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.home.AuthorOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel

@@ -3,9 +3,9 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
-import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel

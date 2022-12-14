@@ -4,10 +4,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.http.JsonMediaType
+import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
-import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.http.model.map
@@ -98,7 +99,9 @@ class GamesController(
             placeShipsInputModel.fleetConfirmed
         )
         return res.map {
-            ResponseEntity.status(201).build<Unit>()
+            ResponseEntity.status(201)
+                .contentType(JsonMediaType)
+                .build<Unit>()
         }
     }
 
@@ -112,7 +115,9 @@ class GamesController(
             alterShipInputModel.destination?.toCoordinate()
         )
         return res.map {
-            ResponseEntity.status(204).build<Unit>()
+            ResponseEntity.status(204)
+                .contentType(JsonMediaType)
+                .build<Unit>()
         }
     }
 
