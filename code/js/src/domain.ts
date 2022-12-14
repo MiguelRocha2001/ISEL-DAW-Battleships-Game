@@ -8,10 +8,10 @@ export type Game = {
     board2: Board
 }
 
-type Board = {
+export type Board = {
     cells: string,
     nCells: number,
-    isComplete: boolean
+    isConfirmed: boolean
 }
 
 type GameConfiguration = {

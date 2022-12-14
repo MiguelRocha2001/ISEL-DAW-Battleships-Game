@@ -128,7 +128,9 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.updateFleetState(user.id, fleetStateInputModel.fleetConfirmed)
         return res.map {
-            ResponseEntity.status(204).build<Unit>()
+            ResponseEntity.status(204)
+                .contentType(JsonMediaType)
+                .build<Unit>()
         }
     }
 
@@ -139,7 +141,9 @@ class GamesController(
     ): ResponseEntity<*> {
         val res = gameServices.placeShot(user.id, coordinate.toCoordinate())
         return res.map {
-            ResponseEntity.status(204).build<Unit>() // TODO -> add header
+            ResponseEntity.status(204)
+                .contentType(JsonMediaType)
+                .build<Unit>() // TODO -> add header
         }
     }
 
@@ -188,6 +192,8 @@ class GamesController(
                         state = GameStateOutputModel.get(it.first.state),
                         board1 = it.first.board1.toBoardOutputModel(),
                         board2 = it.first.board2.toBoardOutputModel(),
+                        playerTurn = it.first.playerTurn,
+                        winner = it.first.winner,
                         myPlayer = PlayerOutputModel.get(it.second)
                     )
                 ) {

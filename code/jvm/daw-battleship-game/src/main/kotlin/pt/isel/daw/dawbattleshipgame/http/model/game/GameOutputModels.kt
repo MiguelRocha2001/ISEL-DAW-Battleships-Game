@@ -77,6 +77,8 @@ data class GameOutputModel(
     val state: GameStateOutputModel,
     val board1: BoardOutputModel,
     val board2: BoardOutputModel,
+    val playerTurn: Int?,
+    val winner: Int?,
     val myPlayer: PlayerOutputModel
 )
 

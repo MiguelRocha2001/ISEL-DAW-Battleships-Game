@@ -4,7 +4,7 @@ import {
     useEffect,
 } from 'react'
 import { Services } from '../services'
-import { CreateGameRequest, Game } from '../domain'
+import { Board, CreateGameRequest, Game } from '../domain'
 import { Logger } from "tslog";
 
 
@@ -12,7 +12,11 @@ const logger = new Logger({ name: "GameScreen" });
 
 type State = 
     {
-        type : "starting",
+        type : "checkingForExistingOnGoingGame",
+    }
+    |
+    {
+        type : "creatingGame",
     }
     |
     {
@@ -34,6 +38,10 @@ type State =
     }
 
 type Action =     
+    {
+        type : "setCreatingGame"
+    }
+    |
     {
         type : "setWaiting"
     }
@@ -75,13 +83,22 @@ function reducer(state: State, action: Action): State {
 }
 
 export function Game() {
-    const [state, dispatch] = React.useReducer(reducer, {type : 'starting'})    
+    const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})    
 
     useEffect(() => {
         async function stateMachineHandler() {
             switch(state.type) {
-                case 'starting' : {
-                    logger.info("starting")
+                case 'checkingForExistingOnGoingGame' : {
+                    logger.info("checkingForExistingOnGoingGame")
+                    const resp = await Services.getGame()
+                    if (typeof resp === 'string') {
+                        dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
+                    } else {
+                        dispatch({type:'setPlaying', game: resp})
+                    }
+                }
+                case 'creatingGame' : {
+                    logger.info("creatingGame")
                     const createGameResponse = await Services.createGame({
                         boardSize: 10,
                         fleet: {
@@ -114,18 +131,28 @@ export function Game() {
         stateMachineHandler()
     }, [state])
 
-    if (state.type === "starting") {
-        return <Starting />
-    }
-    if (state.type === "waiting") {
+    if (state.type === "checkingForExistingOnGoingGame") {
+        return <CheckingForExistingOnGoingGame />
+    } else if (state.type === "creatingGame") {
+        return <CreatingGame />
+    } else if (state.type === "waiting") {
         return <Waiting dispatch={dispatch} />
-    }
-    if (state.type === "waitingWithMsg") {
-        return <WaitingWithMsg dispatch={dispatch} msg={state.msg} />
+    } else if (state.type === "waitingWithMsg") {
+        return <Waiting dispatch={dispatch} errMsg={state.msg} />
+    } else if (state.type === "playing") {
+        return <Playing game={state.game} />
     }
 }
 
-function Starting() {
+function CheckingForExistingOnGoingGame() {
+    return (
+        <div>
+            <h1>Checking for existing game</h1>
+        </div>
+    )
+}
+
+function CreatingGame() {
     return (
         <div>
             <h1>Starting</h1>
@@ -133,27 +160,19 @@ function Starting() {
     )
 }
 
-function Waiting({dispatch} : {dispatch: React.Dispatch<Action>}) {
+function Waiting({dispatch, errMsg} : {dispatch: React.Dispatch<Action>, errMsg? : string}) {
     function updateGame() {
         dispatch({type:'setUpdatingGame'})
+    }
+    function createNewGame() {
+        dispatch({type:'setCreatingGame'})
     }
     return (
         <div>
             <h1>Waiting</h1>
+            <p>{errMsg}</p>
             <p><button onClick={updateGame}>Update Game</button></p>
-        </div>
-    )
-}
-
-function WaitingWithMsg({dispatch, msg} : {dispatch: React.Dispatch<Action>, msg : string}) {
-    function updateGame() {
-        dispatch({type:'setUpdatingGame'})
-    }
-    return (
-        <div>
-            <h1>Waiting</h1>
-            <p>{msg}</p>
-            <p><button onClick={updateGame}>Update Game</button></p>
+            <p><button onClick={createNewGame}>Create New Game</button></p>
         </div>
     )
 }
@@ -166,6 +185,27 @@ function Playing({game} : {game : Game}) {
             <p>{game.player1}</p>
             <p>{game.player2}</p>
             <p>{game.state}</p>
+            <Board board={game.board1} />
         </div>
     )
+}
+
+function Board({board} : {board : Board}) {
+    <div>
+        <table>
+            <tbody>
+                {board.map((row, i) => {
+                    return (
+                        <tr key={i}>
+                            {row.map((cell, j) => {
+                                return (
+                                    <td key={j}>{cell}</td>
+                                )
+                            })}
+                        </tr>
+                    )
+                })}
+            </tbody>
+        </table>
+    </div>
 }
