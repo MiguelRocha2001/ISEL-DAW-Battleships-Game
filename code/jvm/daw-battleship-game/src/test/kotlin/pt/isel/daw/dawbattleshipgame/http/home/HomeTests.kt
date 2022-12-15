@@ -100,7 +100,7 @@ class HomeTests {
         val siren = client.get().uri(Uris.Home.SERVER_INFO)
             .exchange()
             .expectStatus().isOk
-            .expectHeader().contentType("application/json")
+            .expectHeader().contentType(SirenMediaType)
             .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody ?: fail("No response body")

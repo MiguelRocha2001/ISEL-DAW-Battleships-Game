@@ -10,8 +10,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
-import pt.isel.daw.dawbattleshipgame.http.deleteUser
+import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
+import java.lang.Thread.sleep
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,6 +35,8 @@ class GameMoveShipTests {
 
     @Test
     fun `valid moving`() {
+        sleep(1000)
+
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
@@ -81,8 +84,6 @@ class GameMoveShipTests {
 
         placeSomeShips(client, player1Token)
         placeSomeShips(client, player2Token)
-
-
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(

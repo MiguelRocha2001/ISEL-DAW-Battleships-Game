@@ -7,6 +7,7 @@ import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 
 interface UsersRepository {
 
+    fun clearAll()
     fun storeUser(
         username: String,
         passwordValidation: PasswordValidationInfo,

@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
+import pt.isel.daw.dawbattleshipgame.repository.jdbi.games.clearAllTables
 import pt.isel.daw.dawbattleshipgame.utils.getGameTestConfiguration1
 import pt.isel.daw.dawbattleshipgame.utils.testWithTransactionManagerAndRollback
+import java.lang.Thread.sleep
 
 class UserRepositoryTests {
     private val passwordEncoder = BCryptPasswordEncoder()
@@ -29,26 +31,25 @@ class UserRepositoryTests {
     @Test
     fun `check user stats`() = testWithTransactionManagerAndRollback { transactionManager ->
         transactionManager.run { tr ->
+            tr.gamesRepository.emptyRepository()
+            tr.usersRepository.clearAll()
+            sleep(1000)
             val userRepo = tr.usersRepository
             val passwordValidationInfo1 = PasswordValidationInfo(passwordEncoder.encode("user1password"))
             val passwordValidationInfo2 = PasswordValidationInfo(passwordEncoder.encode("user2password"))
             userRepo.storeUser("user1", passwordValidationInfo1)
             userRepo.storeUser("user2", passwordValidationInfo2)
-            val ur = tr.usersRepository.getUsersRanking()
-            val one = ur.first{it.username == "user1"}
-            assert(one.gamesPlayed == 0)
-            assert(one.wins == 0)
-            println(ur)
 
             val gamesRepo = tr.gamesRepository
             gamesRepo.startGame(InitGame(userRepo.getUserByUsername("user1")!!.id,
                     userRepo.getUserByUsername("user2")!!.id, getGameTestConfiguration1()))
 
-            val ur2 = tr.usersRepository.getUsersRanking()
-            val first = ur2.first{it.username == "user1"}
-            assert(first.gamesPlayed == 1)
-            assert(first.wins == 0)
-            println(ur2)
+            val ur = tr.usersRepository.getUsersRanking()
+            println(ur)
+            val user1 = ur.first{it.username == "user1"}
+            val user2 = ur.first{it.username == "user1"}
+            assert(user1.gamesPlayed == 1 && user2.gamesPlayed == 1)
+            assert(user1.wins == 0 && user2.wins == 0)
 
         }
     }

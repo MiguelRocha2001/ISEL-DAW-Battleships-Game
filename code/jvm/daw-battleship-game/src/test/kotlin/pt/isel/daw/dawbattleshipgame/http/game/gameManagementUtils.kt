@@ -6,6 +6,7 @@ import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
+import java.lang.Thread.sleep
 import java.util.*
 
 
@@ -99,7 +100,6 @@ internal fun createUser( client: WebTestClient): Pair<Int, String> {
         .expectBody(SirenModel::class.java)
         .returnResult()
         .responseBody ?: Assertions.fail("Game id is null")
-
     Assertions.assertNotNull(siren)
     val userId = (siren.properties as LinkedHashMap<String, *>)["userId"] as? Int ?: Assertions.fail("Game id is null")
 
@@ -117,6 +117,7 @@ internal fun createUser( client: WebTestClient): Pair<Int, String> {
         .expectBody(SirenModel::class.java)
         .returnResult()
         .responseBody ?: Assertions.fail("No response body")
+    sleep(500)
 
     val token = (result.properties as LinkedHashMap<String, String>)["token"] ?: Assertions.fail("No token")
     return userId to token
@@ -126,7 +127,7 @@ internal fun placeSomeShips(client: WebTestClient, playerToken: String){
     client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
         .bodyValue(
             mapOf(
-                "operation" to "place-ship",
+                "operation" to "place-ships",
                 "ships" to listOf(
                     mapOf(
                         "shipType" to "CARRIER",
@@ -174,6 +175,7 @@ internal fun placeSomeShips(client: WebTestClient, playerToken: String){
         .header("Authorization", "Bearer $playerToken")
         .exchange()
         .expectStatus().isCreated
+    sleep(500)
 
 }
 
@@ -188,4 +190,5 @@ internal fun confirmPlayerFleet(playerToken:String,client: WebTestClient){
         .header("Authorization", "Bearer $playerToken")
         .exchange()
         .expectStatus().isNoContent
+    sleep(500)
 }

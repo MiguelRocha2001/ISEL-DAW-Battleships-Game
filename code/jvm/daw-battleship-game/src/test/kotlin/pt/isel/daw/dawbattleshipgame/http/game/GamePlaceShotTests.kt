@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
-import pt.isel.daw.dawbattleshipgame.http.deleteUser
+import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 
 
@@ -57,6 +57,7 @@ class GamePlaceShotTests {
 
         val playerOneShot = Pair("1"," 1")
 
+        Thread.sleep(1000)
         // Invalid user will try to add a ship, without success
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(

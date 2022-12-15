@@ -1,9 +1,9 @@
-package pt.isel.daw.dawbattleshipgame.http
+package pt.isel.daw.dawbattleshipgame.http.user
 
 import org.junit.jupiter.api.Assertions
 import org.springframework.http.HttpMethod
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.http.infra.SirenMediaType
+import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 
 internal fun deleteUser(client: WebTestClient, userId: Int) {

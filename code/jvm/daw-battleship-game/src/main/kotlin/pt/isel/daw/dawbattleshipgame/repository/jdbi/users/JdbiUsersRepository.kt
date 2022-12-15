@@ -24,6 +24,14 @@ class JdbiUsersRepository(
                 .mapTo<User>()
                 .singleOrNull()
 
+    override fun clearAll() {
+        handle.createUpdate("""
+            delete from token;
+            delete from user_queue;
+            delete from _user;
+        """.trimIndent()).execute()
+    }
+
     override fun storeUser(username: String, passwordValidation: PasswordValidationInfo): Int =
         handle.createUpdate(
             """
@@ -127,4 +135,6 @@ class JdbiUsersRepository(
             .mapTo<Int>()
             .single() != 0
     }
+
+
 }

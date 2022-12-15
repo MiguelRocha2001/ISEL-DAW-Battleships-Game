@@ -9,7 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
-import pt.isel.daw.dawbattleshipgame.http.deleteUser
+import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 
 

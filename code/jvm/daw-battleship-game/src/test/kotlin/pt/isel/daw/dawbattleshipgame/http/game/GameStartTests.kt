@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
-import pt.isel.daw.dawbattleshipgame.http.deleteUser
+import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
 

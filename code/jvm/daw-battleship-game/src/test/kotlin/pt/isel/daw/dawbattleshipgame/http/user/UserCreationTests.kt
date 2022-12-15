@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpMethod
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
-import pt.isel.daw.dawbattleshipgame.http.createUser
-import pt.isel.daw.dawbattleshipgame.http.deleteUser
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
@@ -48,6 +46,7 @@ class UserCreationTests {
 
     @Test
     fun `can create an user, obtain a token, and access user home`() { //fixme: I think this test is not needed or should be in another class
+        Thread.sleep(1000)
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
         // and: a random user
         val username = UUID.randomUUID().toString()
@@ -76,12 +75,13 @@ class UserCreationTests {
         // when: getting the user home with a valid token
         // then: the response is a 200 with the proper representation
         val userHome = client.get().uri(Uris.Users.HOME)
-            .header("Authorization", "Bearer ${token}")
+            .header("Authorization", "Bearer $token")
             .exchange()
             .expectStatus().isCreated
             .expectBody(SirenModel::class.java)
             .returnResult()
             .responseBody ?: fail("No response body")
+
 
         val properties = userHome.properties as LinkedHashMap<String, *>
         assertEquals(userId, properties["userId"] as? Int)
@@ -89,7 +89,7 @@ class UserCreationTests {
 
         // asserting links
         val links = userHome.links
-        assertEquals(2, links.size)
+        assertEquals(3, links.size)
 
         assertEquals("/me", links[0].href)
         assertEquals(1, links[0].rel.size)

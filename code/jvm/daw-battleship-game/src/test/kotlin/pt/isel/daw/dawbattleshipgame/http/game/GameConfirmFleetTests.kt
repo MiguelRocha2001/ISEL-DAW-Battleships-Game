@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
-import pt.isel.daw.dawbattleshipgame.http.deleteUser
+import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 
 
@@ -128,7 +128,6 @@ class GameConfirmFleetTests {
 
     @Test
     fun `can confirm without authorization`() {
-        // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
         val gameInfo = createGame(client)
