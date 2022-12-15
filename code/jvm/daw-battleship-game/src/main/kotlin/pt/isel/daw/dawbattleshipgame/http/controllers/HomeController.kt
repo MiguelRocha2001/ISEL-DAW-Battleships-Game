@@ -33,6 +33,7 @@ class HomeController(
     fun getServerInfo(): ResponseEntity<*> {
         val res = infoServices.getServerInfo()
         return ResponseEntity.status(200)
+            .contentType(SirenMediaType)
             .body(
                 siren(ServerInfoOutputModel(
                     res.authors.map { AuthorOutputModel(it.first, it.second) },

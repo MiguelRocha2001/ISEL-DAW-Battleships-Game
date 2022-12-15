@@ -45,7 +45,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -114,7 +114,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -150,7 +150,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
@@ -170,7 +170,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -206,7 +206,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -226,7 +226,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -262,7 +262,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -283,7 +283,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "SUBMARINE",
@@ -319,7 +319,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "CARRIER",
@@ -339,7 +339,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "BATTLESHIP",
@@ -359,7 +359,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "BATTLESHIP",
@@ -379,7 +379,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "BATTLESHIP",
@@ -415,7 +415,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "BATTLESHIP",
@@ -436,7 +436,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
@@ -457,7 +457,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
@@ -478,7 +478,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
@@ -499,7 +499,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
@@ -535,7 +535,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "BATTLESHIP",
@@ -555,7 +555,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
@@ -575,7 +575,7 @@ class GamePlaceShipsTests {
         client.post().uri(Uris.Games.My.Current.My.Ships.ALL)
             .bodyValue(
                 mapOf(
-                    "operation" to "place-ship",
+                    "operation" to "place-ships",
                     "ships" to listOf(
                         mapOf(
                             "shipType" to "DESTROYER",
