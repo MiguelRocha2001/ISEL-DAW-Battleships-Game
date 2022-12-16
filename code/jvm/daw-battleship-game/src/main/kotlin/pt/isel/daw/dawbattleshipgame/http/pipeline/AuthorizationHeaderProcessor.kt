@@ -22,8 +22,7 @@ class AuthorizationHeaderProcessor(
         if (parts[0].lowercase() != SCHEME) {
             return null
         }
-        val t = usersService.getUserByToken(parts[1])
-        return t
+        return usersService.getUserByToken(parts[1])
     }
 
     companion object {

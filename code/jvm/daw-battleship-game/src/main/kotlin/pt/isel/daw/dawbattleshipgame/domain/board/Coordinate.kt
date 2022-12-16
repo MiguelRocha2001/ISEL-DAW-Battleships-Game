@@ -1,6 +1,9 @@
 package pt.isel.daw.dawbattleshipgame.domain.board
 
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
+import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
+import pt.isel.daw.dawbattleshipgame.http.model.INVALID_INPUT
+import pt.isel.daw.dawbattleshipgame.http.requireWithException
 
 
 const val ONE = 1
@@ -154,8 +157,14 @@ class Coordinates(private val dim: Int) {
 
 class Coordinate(val row: Int, val column: Int) {
     init {
-        check(row > 0 && column > 0) {
-            "Row or Column cannot be lower than 1"
+        requireWithException(INVALID_ARGUMENT,
+                "Row must be greater then 0"){
+            row > 0
+        }
+
+        requireWithException(INVALID_ARGUMENT,
+                "Column must be greater then 0"){
+            column > 0
         }
     }
     override fun equals(other: Any?): Boolean {

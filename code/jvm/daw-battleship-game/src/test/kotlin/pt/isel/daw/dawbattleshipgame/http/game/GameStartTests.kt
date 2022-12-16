@@ -70,9 +70,9 @@ class GameStartTests {
             .jsonPath("type")
             .isEqualTo("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-in-game")
 
-        deleteGame(client, gameId)
-        deleteUser(client, player1Id)
-        deleteUser(client, player2Id)
+        //deleteGame(client, gameId)
+        //deleteUser(client, player1Id)
+        //deleteUser(client, player2Id)
     }
 
     @Test

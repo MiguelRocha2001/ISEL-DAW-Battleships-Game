@@ -44,9 +44,8 @@ class PipelineConfigurer(
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(userArgumentResolver)
     }
-
-
 }
+
 
 fun main(args: Array<String>) {
     runApplication<BattleshipApplication>(*args)

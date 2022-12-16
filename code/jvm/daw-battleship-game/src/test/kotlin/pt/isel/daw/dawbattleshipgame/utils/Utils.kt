@@ -16,7 +16,7 @@ import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 fun getGameTestConfiguration1() = Configuration(
     boardSize = 15,
-    nShotsPerRound = 10,
+    shots = 5,
     fleet = setOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
@@ -33,7 +33,7 @@ fun getGameTestConfiguration2() = Configuration(
         Pair(ShipType.BATTLESHIP, 4),
         Pair(ShipType.DESTROYER, 2)
     ),
-    nShotsPerRound = 10,
+    shots = 5,
     roundTimeout = 10
 )
 
@@ -42,13 +42,13 @@ fun getGameTestConfiguration3() = Configuration(
     fleet = setOf(
         Pair(ShipType.DESTROYER, 2)
     ),
-    nShotsPerRound = 10,
+    shots = 5,
     roundTimeout = 10
 )
 
 fun getGameTestConfiguration4() = Configuration(
     boardSize = 10,
-    nShotsPerRound = 10,
+    shots = 5,
     fleet = setOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
@@ -61,7 +61,7 @@ fun getGameTestConfiguration4() = Configuration(
 
 fun getGameTestConfiguration5() = Configuration(
     boardSize = 13,
-    nShotsPerRound = 5,
+    shots = 5,
     fleet = setOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
@@ -74,6 +74,7 @@ fun getGameTestConfiguration5() = Configuration(
 
 fun getCreateGameInputModel() = CreateGameInputModel(
     boardSize = 10,
+    shots = 5,
     fleet = mapOf(
         ShipTypeInputModel.CARRIER to 5,
         ShipTypeInputModel.BATTLESHIP to 4,
@@ -81,7 +82,6 @@ fun getCreateGameInputModel() = CreateGameInputModel(
         ShipTypeInputModel.SUBMARINE to 3,
         ShipTypeInputModel.DESTROYER to 2
     ),
-    nShotsPerRound = 10,
     roundTimeout = 10
 )
 

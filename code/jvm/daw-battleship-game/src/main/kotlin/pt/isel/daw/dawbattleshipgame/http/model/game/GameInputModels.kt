@@ -6,30 +6,40 @@ import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
+import pt.isel.daw.dawbattleshipgame.http.model.INVALID_INPUT
+import pt.isel.daw.dawbattleshipgame.http.requireWithException
 
 data class CreateGameInputModel(
         val boardSize: Int,
         val fleet: Map<ShipTypeInputModel, Int>,
-        val nShotsPerRound: Int,
+        val shots: Int,
         val roundTimeout: Long
 ) {
     init {
-        require(boardSize in 8..15) {
-            "Board size must be in range [8..15]"
+        requireWithException(
+                INVALID_INPUT,
+                "Board size must be in range [8..15]") {
+            boardSize in 8..15
         }
-        require(fleet.isNotEmpty()) {
-            "There must be at least one boat"
+        requireWithException(INVALID_INPUT,
+                "There must be at least one boat") {
+            fleet.isNotEmpty()
         }
+        requireWithException(INVALID_INPUT,
+                "Number of shots per round must be in range [1..5]"){
+            shots in (1..5)
+        }
+        requireWithException(INVALID_INPUT,
+                "Round timeout must be in range [10..240]"){
+            roundTimeout in 10..240
+        }
+
     }
 }
 
 data class CoordinateInputModel(val row: Int, val column: Int) {
     fun toCoordinate() = Coordinate(row, column)
-
-    init {
-        require(row > 0) { "Row must be greater than 0" }
-        require(column > 0) { "Column must be greater than 0" }
-    }
 }
 
 enum class OrientationInputModel {

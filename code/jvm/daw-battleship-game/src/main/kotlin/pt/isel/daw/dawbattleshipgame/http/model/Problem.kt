@@ -4,6 +4,9 @@ import org.springframework.http.ResponseEntity
 import java.net.URI
 
 
+const val INVALID_INPUT = "Invalid Input"
+const val INVALID_ARGUMENT = "Invalid argument"
+
 /**
  * {
 "type": "https://example.com/probs/out-of-credit",
@@ -28,9 +31,10 @@ data class Problem(
             .status(status)
             .header("Content-Type", MEDIA_TYPE)
             .body(problem)
+        val DEFAULT_URI = URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/an-error-has-occurred")
 
         val errorHasOccurred = Problem(
-            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/an-error-has-occurred"),
+            DEFAULT_URI,
         "Error",
         "An error has occurred"
         )

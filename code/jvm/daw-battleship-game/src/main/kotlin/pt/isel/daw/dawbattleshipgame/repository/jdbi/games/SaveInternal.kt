@@ -70,7 +70,7 @@ fun insertConfiguration(handle: Handle, gameId: Int, configuration: Configuratio
     )
         .bind("game", gameId)
         .bind("board_size", configuration.boardSize)
-        .bind("n_shots", configuration.nShotsPerRound)
+        .bind("n_shots", configuration.shots)
         .bind("timeout", configuration.roundTimeout)
         .execute()
     insertConfigurationShips(handle, gameId, configuration.fleet)

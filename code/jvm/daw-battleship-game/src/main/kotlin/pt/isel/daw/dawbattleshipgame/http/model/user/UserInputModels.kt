@@ -1,11 +1,20 @@
 package pt.isel.daw.dawbattleshipgame.http.model.user
 
-data class UserCreateInputModel(
-    val username: String,
-    val password: String,
-)
+class UserCreateInputModel(username: String, password: String) {
+    val username: String
+    val password: String
+    init {
+        this.username = username.trim()
+        this.password = password.trim()
+    }
+}
 
-data class UserCreateTokenInputModel(
-    val username: String,
-    val password: String,
-)
+
+class UserCreateTokenInputModel(username: String, password: String) {
+    val username: String
+    val password: String
+    init {
+        this.username = username.trim()
+        this.password = password.trim()
+    }
+}

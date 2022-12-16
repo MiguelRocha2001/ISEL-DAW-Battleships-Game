@@ -28,7 +28,7 @@ class GamesController(
             Configuration(
                 createGameInputModel.boardSize,
                 createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
-                createGameInputModel.nShotsPerRound,
+                createGameInputModel.shots,
                 createGameInputModel.roundTimeout
             )
         )
