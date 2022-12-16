@@ -18,8 +18,8 @@ import java.net.URI
 
 data class Problem(
         val type: URI,
-        val title: String? = null,
-        val detail: String? = null,
+        val title: String,
+        val detail: String,
     ) {
 
     companion object {
@@ -28,6 +28,12 @@ data class Problem(
             .status(status)
             .header("Content-Type", MEDIA_TYPE)
             .body(problem)
+
+        val errorHasOccurred = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/an-error-has-occurred"),
+        "Error",
+        "An error has occurred"
+        )
 
         val userAlreadyExists = Problem(
             URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-already-exists"),

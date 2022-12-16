@@ -20,11 +20,6 @@ data class CreateGameInputModel(
         require(fleet.isNotEmpty()) {
             "There must be at least one boat"
         }
-        /* TODO -> remove later
-        require(nShotsPerRound in 1..10){
-            "Shots must be in range [1..10]"
-        }
-         */
     }
 }
 
