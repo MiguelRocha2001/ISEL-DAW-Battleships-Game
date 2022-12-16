@@ -185,17 +185,20 @@ function Playing({game} : {game : Game}) {
             <p>{game.player1}</p>
             <p>{game.player2}</p>
             <p>{game.state}</p>
-            <Board board={game.board1} />
+            <Board board={game.board1} onClick={()=> console.log('clicked')}/>
+            <Board board={game.board2} />
         </div>
     )
 }
 
-function Board({board} : {board : Board}) {
+function Board({board, onClick} : {board : Board, onClick? : (row: number, col: number) => void}) {
+    console.log(board.cells)
     const boardStr = board.cells
     const rowNumber = Math.sqrt(board.ncells)
     const collNumber = rowNumber
     return (
         <div>
+            <h1>Board</h1>
             <table>
                 <tbody>
                     {Array.from(Array(rowNumber).keys()).map((row) => {
@@ -205,7 +208,7 @@ function Board({board} : {board : Board}) {
                                     const cell = boardStr[row * rowNumber + coll]
                                     return (
                                         <td key={coll}>
-                                            {cell}
+                                            <Cell cell={cell} onClick={() => { onClick(row, coll) }} />
                                         </td>
                                     )
                                 })}
@@ -216,4 +219,21 @@ function Board({board} : {board : Board}) {
             </table>
         </div>
     )
+}
+
+function Cell({cell, onClick} : {cell : string, onClick? : () => void}) {
+    const isWater = cell === ' '
+    if (isWater) {
+        return (
+            <button style={{backgroundColor: "lightblue"}} onClick={onClick}>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </button>
+        )
+    } else {
+        return (
+            <button style={{backgroundColor: "grey"}} onClick={onClick}>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </button>
+        )
+    }
 }
