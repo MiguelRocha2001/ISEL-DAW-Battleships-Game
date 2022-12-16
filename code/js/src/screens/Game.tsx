@@ -191,21 +191,29 @@ function Playing({game} : {game : Game}) {
 }
 
 function Board({board} : {board : Board}) {
-    <div>
-        <table>
-            <tbody>
-                {board.map((row, i) => {
-                    return (
-                        <tr key={i}>
-                            {row.map((cell, j) => {
-                                return (
-                                    <td key={j}>{cell}</td>
-                                )
-                            })}
-                        </tr>
-                    )
-                })}
-            </tbody>
-        </table>
-    </div>
+    const boardStr = board.cells
+    const rowNumber = Math.sqrt(board.ncells)
+    const collNumber = rowNumber
+    return (
+        <div>
+            <table>
+                <tbody>
+                    {Array.from(Array(rowNumber).keys()).map((row) => {
+                        return (
+                            <tr key={row}>
+                                {Array.from(Array(collNumber).keys()).map((coll) => {
+                                    const cell = boardStr[row * rowNumber + coll]
+                                    return (
+                                        <td key={coll}>
+                                            {cell}
+                                        </td>
+                                    )
+                                })}
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+        </div>
+    )
 }

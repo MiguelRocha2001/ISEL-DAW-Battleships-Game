@@ -11,11 +11,11 @@ class Panel(
     /**
      * Gets panel database representation conforming to this table:
      * |----------------------------------|
-     * |-TYPE-     -IS_NOT_HIT-   -I_SHIT-|
+     * |-TYPE-     -IS_NOT_HIT-   -IS_HIT-|
      * | null           ' '         'x'   |
      * | CARRIER        'C'         'c'   |
      * | BATTLESHIP     'B'         'b'   |
-     * | KRUISER        'K'         'k'   |
+     * | CRUISER        'K'         'k'   |
      * | SUBMARINE      'S'         's'   |
      * | DESTROYER      'D'         'd'   |
      * |----------------------------------|

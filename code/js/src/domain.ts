@@ -10,7 +10,7 @@ export type Game = {
 
 export type Board = {
     cells: string,
-    nCells: number,
+    ncells: number,
     isConfirmed: boolean
 }
 

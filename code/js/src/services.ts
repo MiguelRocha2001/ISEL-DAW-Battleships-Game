@@ -245,10 +245,13 @@ async function getGame(): Promise<Game | string> {
         if (response) {
             logger.info("getGame: response sucessfull")
             return response.properties
-        } else return 'Received bad response'
+        } else {
+            logger.error("getGame: bad response")
+            return 'Received bad response'
+        }
     } catch (e) {
         logger.error("getGame: error: ", e)
-        return e.message.toString()
+        return 'Bad response from server'
     }
 }
 
