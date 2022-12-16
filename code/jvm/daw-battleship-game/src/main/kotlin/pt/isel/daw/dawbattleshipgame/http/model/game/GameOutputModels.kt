@@ -30,8 +30,7 @@ fun Board.toBoardOutputModel(): BoardOutputModel {
     }
     return BoardOutputModel(cells, this.board.size)
     */
-    val r = BoardOutputModel(this.getDbString(), this.board.size, this.isConfirmed())
-    return r
+    return BoardOutputModel(getDbString(), board.size, isConfirmed())
 }
 
 data class BoardOutputModel(
