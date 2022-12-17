@@ -24,7 +24,7 @@ type GameConfiguration = {
 export type CreateGameRequest = {
     boardSize: number,
     fleet: any,
-    nShotsPerRound: number,
+    shots: number,
     roundTimeout: number
 }
 

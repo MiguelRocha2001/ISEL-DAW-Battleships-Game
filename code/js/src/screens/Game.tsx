@@ -1,10 +1,9 @@
 import * as React from 'react'
 import {
-    useReducer,
-    useEffect,
+    useEffect, useState,
 } from 'react'
 import { Services } from '../services'
-import { Board, CreateGameRequest, Game } from '../domain'
+import { Board, Game } from '../domain'
 import { Logger } from "tslog";
 
 
@@ -16,20 +15,34 @@ type State =
     }
     |
     {
+        type : "static"
+    }
+    |
+    {
         type : "creatingGame",
     }
     |
     {
-        type : "waiting"
+        type : "creatingGameWithMsg",
+        msg : string
     }
     |
     {
-        type : "waitingWithMsg",
+        type : "matchmaking"
+    }
+    |
+    {
+        type : "matchmakingWithMsg",
         msg : string
     }
     |
     {
         type : "updatingGame"
+    }
+    |
+    {
+        type : "updatingWithMsg",
+        msg : string
     }
     |
     {
@@ -39,11 +52,25 @@ type State =
 
 type Action =     
     {
+        type : "setStatic"
+    }
+    |
+    {
         type : "setCreatingGame"
     }
     |
     {
-        type : "setWaiting"
+        type : "setCreatingGameWithMsg",
+        msg : string
+    }
+    |
+    {
+        type : "setMatchmaking"
+    }
+    |
+    {
+        type : "setMatchmakingWithMsg",
+        msg : string
     }
     |
     {
@@ -52,23 +79,35 @@ type Action =
     }
     |
     {
-        type : "setWaitingWithMsg",
-        msg : string
+        type : "setUpdatingGame"
     }
     |
     {
-        type : "setUpdatingGame"
+        type : "setUpdatingWithMsg",
+        msg : string
     }
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
-        case 'setWaiting' : {
-            logger.info("setWaiting")
-            return {type : 'waiting'}
+        case 'setStatic' : {
+            logger.info("setStatic")
+            return {type : 'static'}
         }
-        case 'setWaitingWithMsg' : {
-            logger.info("setWaitingWithMsg")
-            return {type : 'waitingWithMsg', msg : action.msg}
+        case 'setMatchmaking' : {
+            logger.info("setMatchmaking")
+            return {type : 'matchmaking'}
+        }
+        case 'setMatchmakingWithMsg' : {
+            logger.info("setMatchmakingWithMsg")
+            return {type : 'matchmakingWithMsg', msg : action.msg}
+        }
+        case 'setCreatingGame' : {
+            logger.info("setCreatingGame")
+            return {type : 'creatingGame'}
+        }
+        case 'setCreatingGameWithMsg' : {
+            logger.info("setCreatingGameWithMsg")
+            return {type : 'creatingGameWithMsg', msg : action.msg}
         }
         case 'setPlaying' : {
             logger.info("setPlaying")
@@ -78,12 +117,33 @@ function reducer(state: State, action: Action): State {
             logger.info("setUpdatingGame")
             return {type : 'updatingGame'}
         }
+        case 'setUpdatingWithMsg' : {
+            logger.info("setUpdatingWithMsg")
+            return {type : 'updatingWithMsg', msg : action.msg}
+        }
     }
-
 }
 
 export function Game() {
-    const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})    
+    const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
+    const [selectedShip, setSelectedShip] = useState(null)
+
+    async function onCellTouch(row: number, col: number) {
+        logger.info("cell (" + row + ", " + col + ") touched")
+        /*
+        const resp = await Services.placeShip()
+        if (typeof resp === 'string') {
+            dispatch({type:'setStatic'})
+        } else {
+            dispatch({type:'setPlaying', game: resp})
+        }
+         */
+    }
+
+    async function onShipChange(ship: string) {
+        logger.info("ship " + ship + " selected")
+        setSelectedShip(ship)
+    }
 
     useEffect(() => {
         async function stateMachineHandler() {
@@ -92,10 +152,11 @@ export function Game() {
                     logger.info("checkingForExistingOnGoingGame")
                     const resp = await Services.getGame()
                     if (typeof resp === 'string') {
-                        dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
+                        dispatch({type:'setStatic'})
                     } else {
                         dispatch({type:'setPlaying', game: resp})
                     }
+                    break
                 }
                 case 'creatingGame' : {
                     logger.info("creatingGame")
@@ -108,20 +169,21 @@ export function Game() {
                             "SUBMARINE": 3,
                             "DESTROYER": 2
                         },
-                        nShotsPerRound: 1,
-                        roundTimeout: 1000,
+                        shots: 1,
+                        roundTimeout: 200,
                     })
                     if (createGameResponse) {
                         if (typeof createGameResponse === 'string') {
-                            dispatch({type:'setWaitingWithMsg', msg: createGameResponse})
-                        } else dispatch({type:'setWaiting'})
+                            dispatch({type:'setCreatingGameWithMsg', msg: createGameResponse})
+                        } else dispatch({type:'setMatchmaking'})
                     }
+                    break
                 }
                 case 'updatingGame' : {
                     logger.info("updatingGame")
                     const resp = await Services.getGame()
                     if (typeof resp === 'string') {
-                        dispatch({type:'setWaitingWithMsg', msg: resp as unknown as string})
+                        dispatch({type:'setUpdatingWithMsg', msg: resp as unknown as string})
                     } else {
                         dispatch({type:'setPlaying', game: resp})
                     }
@@ -133,14 +195,22 @@ export function Game() {
 
     if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
+    } if (state.type === "static") {
+        return <Static dispatch={dispatch} />
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
-    } else if (state.type === "waiting") {
-        return <Waiting dispatch={dispatch} />
-    } else if (state.type === "waitingWithMsg") {
-        return <Waiting dispatch={dispatch} errMsg={state.msg} />
+    } else if (state.type === "matchmaking") {
+        return <Matchmaking dispatch={dispatch} />
+    } else if (state.type === "matchmakingWithMsg") {
+        return <MatchmakingWithMsg dispatch={dispatch} errMsg={state.msg} />
     } else if (state.type === "playing") {
-        return <Playing game={state.game} />
+        return <Playing game={state.game} onCellTouch={onCellTouch} onShipChange={onShipChange}/>
+    } else if (state.type === "updatingGame") {
+        return <UpdatingGame />
+    } else if (state.type === "updatingWithMsg") {
+        return <UpdatingWithMsg errMsg={state.msg} />
+    } else {
+        return <div>Unknown state</div>
     }
 }
 
@@ -152,6 +222,23 @@ function CheckingForExistingOnGoingGame() {
     )
 }
 
+function Static({dispatch} : {dispatch: React.Dispatch<Action>}) {
+    function createNewGame() {
+        dispatch({type:'setCreatingGame'})
+    }
+    function updateGame() {
+        dispatch({type:'setUpdatingGame'})
+    }
+    return (
+        <div>
+            <h1>Static</h1>
+            <p><button onClick={createNewGame}>Create New Game</button></p>
+            <p><button onClick={updateGame}>Update Game</button></p>
+        </div>
+    )
+}
+    
+
 function CreatingGame() {
     return (
         <div>
@@ -160,24 +247,56 @@ function CreatingGame() {
     )
 }
 
-function Waiting({dispatch, errMsg} : {dispatch: React.Dispatch<Action>, errMsg? : string}) {
+function Matchmaking({dispatch} : {dispatch: React.Dispatch<Action>}) {
     function updateGame() {
         dispatch({type:'setUpdatingGame'})
     }
-    function createNewGame() {
-        dispatch({type:'setCreatingGame'})
+    return (
+        <div>
+            <h1>Waiting</h1>
+            <p><button onClick={updateGame}>Update Game</button></p>
+        </div>
+    )
+}
+
+function MatchmakingWithMsg({dispatch, errMsg} : {dispatch: React.Dispatch<Action>, errMsg : string}) {
+    function updateGame() {
+        dispatch({type:'setUpdatingGame'})
     }
     return (
         <div>
             <h1>Waiting</h1>
             <p>{errMsg}</p>
             <p><button onClick={updateGame}>Update Game</button></p>
-            <p><button onClick={createNewGame}>Create New Game</button></p>
         </div>
     )
 }
 
-function Playing({game} : {game : Game}) {
+function UpdatingGame() {
+    return (
+        <div>
+            <h1>Updating</h1>
+        </div>
+    )
+}
+
+function UpdatingWithMsg({errMsg} : {errMsg : string}) {
+    return (
+        <div>
+            <h1>Updating</h1>
+            <p>{errMsg}</p>
+        </div>
+    )
+}
+
+function Playing(
+    {game, onCellTouch, onShipChange}
+        : {game : Game, onCellTouch : (x : number, y : number) => void, onShipChange : (ship: string) => void}) {
+
+    function setShip(ship : string) {
+        onShipChange(ship)
+    }
+
     return (
         <div>
             <h1>Playing</h1>
@@ -185,8 +304,26 @@ function Playing({game} : {game : Game}) {
             <p>{game.player1}</p>
             <p>{game.player2}</p>
             <p>{game.state}</p>
-            <Board board={game.board1} onClick={()=> console.log('clicked')}/>
-            <Board board={game.board2} />
+            <Board board={game.board1} onClick={onCellTouch}/>
+            <ShipOptions onShipClick={setShip}/>
+        </div>
+    )
+}
+
+function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
+    function onChangeValue(event) {
+        onShipClick(event.target.value)
+    }
+    return (
+        <div>
+            <h1>ShipOptions</h1>
+            <div onChange={onChangeValue}>
+                <input type="radio" value="Carrier" name="gender" /> Carrier
+                <input type="radio" value="Battleships" name="gender" /> Battleships
+                <input type="radio" value="Cruiser" name="gender" /> Cruiser
+                <input type="radio" value="Submarine" name="gender" /> Submarine
+                <input type="radio" value="Destroyer" name="gender" /> Destroyer
+            </div>
         </div>
     )
 }

@@ -11,7 +11,7 @@ type State =
     }
     |
     {
-        type : "start Game"
+        type : "game screen"
     }
     |
     {
@@ -25,7 +25,7 @@ type Action =
     }
     |
     {
-        type : "setStartGame"
+        type : "setGameScreen"
     }
     |
     {
@@ -38,8 +38,8 @@ function reducer(state: State, action: Action): State {
         case 'setLoading' : {
             return {type : 'loading'}
         }
-        case 'setStartGame' : {
-            return {type : 'start Game'}
+        case 'setGameScreen' : {
+            return {type : 'game screen'}
         }
         case 'setError' : {
             return {type : 'error', msg : action.msg}
@@ -56,7 +56,7 @@ export function Me() {
             if (typeof content == "string") {
                 dispatch({type : "setError", msg : content})
             } else {
-                dispatch({type : "setStartGame"})
+                dispatch({type : "setGameScreen"})
             }
         }
         if (state.type == "loading")
@@ -69,10 +69,10 @@ export function Me() {
                 <div> Loading... </div>
             )
         }
-        case 'start Game' : {
+        case 'game screen' : {
             return (
                 <div>
-                    <li><Link to="/game">Start Game</Link></li>
+                    <li><Link to="/game">Game Screen</Link></li>
                 </div>
             )
         }
