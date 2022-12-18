@@ -3,7 +3,7 @@ import {
     useEffect, useState,
 } from 'react'
 import { Services } from '../services'
-import { Board, Game } from '../domain'
+import {Board, Game, PlaceShipsRequest} from '../domain'
 import { Logger } from "tslog";
 
 
@@ -15,7 +15,7 @@ type State =
     }
     |
     {
-        type : "static"
+        type : "menu"
     }
     |
     {
@@ -49,10 +49,24 @@ type State =
         type : "playing",
         game: Game
     }
+    |
+    {
+        type : "placingShips",
+        row : number,
+        col : number
+    }
+    |
+    {
+        type : "confirmingFleet",
+    }
+    |
+    {
+        type : "updateGame",
+    }
 
 type Action =     
     {
-        type : "setStatic"
+        type : "setMenu"
     }
     |
     {
@@ -86,12 +100,26 @@ type Action =
         type : "setUpdatingWithMsg",
         msg : string
     }
+    |
+    {
+        type : "setPlacingShips",
+        row : number,
+        col : number
+    }
+    |
+    {
+        type : "setConfirmingFleet"
+    }
+    |
+    {
+        type : "setUpdateGame"
+    }
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
-        case 'setStatic' : {
+        case 'setMenu' : {
             logger.info("setStatic")
-            return {type : 'static'}
+            return {type : 'menu'}
         }
         case 'setMatchmaking' : {
             logger.info("setMatchmaking")
@@ -121,6 +149,18 @@ function reducer(state: State, action: Action): State {
             logger.info("setUpdatingWithMsg")
             return {type : 'updatingWithMsg', msg : action.msg}
         }
+        case 'setPlacingShips' : {
+            logger.info("setPlacingShips")
+            return {type : 'placingShips', row : action.row, col : action.col}
+        }
+        case 'setConfirmingFleet' : {
+            logger.info("setConfirmingFleet")
+            return {type : 'confirmingFleet'}
+        }
+        case 'setUpdateGame' : {
+            logger.info("setUpdateGame")
+            return {type : 'updateGame'}
+        }
     }
 }
 
@@ -128,19 +168,80 @@ export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
     const [selectedShip, setSelectedShip] = useState(null)
 
-    async function onCellTouch(row: number, col: number) {
-        logger.info("cell (" + row + ", " + col + ") touched")
-        /*
-        const resp = await Services.placeShip()
+    async function checkForExistingOnGoingGame() {
+        logger.info("checkingForExistingOnGoingGame")
+        const resp = await Services.getGame()
         if (typeof resp === 'string') {
-            dispatch({type:'setStatic'})
+            dispatch({type:'setMenu'})
         } else {
             dispatch({type:'setPlaying', game: resp})
         }
+    }
+
+    async function updateGame() {
+        logger.info("updatingGame")
+        const resp = await Services.getGame()
+        if (typeof resp === 'string') {
+            dispatch({type:'setUpdatingWithMsg', msg: resp as unknown as string})
+        } else {
+            dispatch({type:'setPlaying', game: resp})
+        }
+    }
+
+    async function createGame() {
+        logger.info("creatingGame")
+        const createGameResponse = await Services.createGame({
+            boardSize: 10,
+            fleet: {
+                "CARRIER": 5,
+                "BATTLESHIP": 4,
+                "CRUISER": 3,
+                "SUBMARINE": 3,
+                "DESTROYER": 2
+            },
+            shots: 1,
+            roundTimeout: 200,
+        })
+        if (createGameResponse) {
+            if (typeof createGameResponse === 'string') {
+                dispatch({type:'setCreatingGameWithMsg', msg: createGameResponse})
+            } else dispatch({type:'setMatchmaking'})
+        }
+    }
+
+    async function placeShip(row: number, col: number) {
+        logger.info("placing ship in " + row + " " + col)
+        const ship = selectedShip as string
+        if (ship) {
+            const resp = await Services.placeShips({
+                operation: "place-ships",
+                ships: [
+                    {
+                        shipType: ship, // TODO uppercase
+                        position: {row: row, column: col},
+                        orientation: "HORIZONTAL"
+                    }
+                ],
+                fleetConfirmed: false
+            })
+            dispatch({type:'setUpdateGame'})
+        }
+    }
+
+    async function confirmFleet() {
+        logger.info("confirming fleet")
+        const resp = await Services.confirmFleet()
+        dispatch({type:'setUpdateGame'})
+    }
+
+    async function shoot(row: number, col: number) {
+        logger.info("shooting in " + row + " " + col)
+        /*
+        const resp = await Services.placeShip()
          */
     }
 
-    async function onShipChange(ship: string) {
+    function onShipChange(ship: string) {
         logger.info("ship " + ship + " selected")
         setSelectedShip(ship)
     }
@@ -149,44 +250,19 @@ export function Game() {
         async function stateMachineHandler() {
             switch(state.type) {
                 case 'checkingForExistingOnGoingGame' : {
-                    logger.info("checkingForExistingOnGoingGame")
-                    const resp = await Services.getGame()
-                    if (typeof resp === 'string') {
-                        dispatch({type:'setStatic'})
-                    } else {
-                        dispatch({type:'setPlaying', game: resp})
-                    }
+                    await checkForExistingOnGoingGame()
                     break
                 }
                 case 'creatingGame' : {
-                    logger.info("creatingGame")
-                    const createGameResponse = await Services.createGame({
-                        boardSize: 10,
-                        fleet: {
-                            "CARRIER": 5,
-                            "BATTLESHIP": 4,
-                            "CRUISER": 3,
-                            "SUBMARINE": 3,
-                            "DESTROYER": 2
-                        },
-                        shots: 1,
-                        roundTimeout: 200,
-                    })
-                    if (createGameResponse) {
-                        if (typeof createGameResponse === 'string') {
-                            dispatch({type:'setCreatingGameWithMsg', msg: createGameResponse})
-                        } else dispatch({type:'setMatchmaking'})
-                    }
+                    await createGame()
                     break
                 }
                 case 'updatingGame' : {
-                    logger.info("updatingGame")
-                    const resp = await Services.getGame()
-                    if (typeof resp === 'string') {
-                        dispatch({type:'setUpdatingWithMsg', msg: resp as unknown as string})
-                    } else {
-                        dispatch({type:'setPlaying', game: resp})
-                    }
+                    await updateGame()
+                    break
+                }
+                case 'placingShips' : {
+                    await placeShip(state.row, state.col)
                 }
             }
         }
@@ -195,8 +271,11 @@ export function Game() {
 
     if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
-    } if (state.type === "static") {
-        return <Static dispatch={dispatch} />
+    } if (state.type === "menu") {
+        return <Menu
+            onCreateGameRequest={() => dispatch({type : 'setCreatingGame'})}
+            onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}
+        />
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
     } else if (state.type === "matchmaking") {
@@ -204,12 +283,26 @@ export function Game() {
     } else if (state.type === "matchmakingWithMsg") {
         return <MatchmakingWithMsg dispatch={dispatch} errMsg={state.msg} />
     } else if (state.type === "playing") {
-        return <Playing game={state.game} onCellTouch={onCellTouch} onShipChange={onShipChange}/>
+        return <Playing
+            game={state.game}
+            onPlaceShip={() => dispatch({type : 'setPlacingShips', row : 0, col : 0})}
+            onShipChange={onShipChange}
+            onConfirmFleetRequest={confirmFleet}
+            onShot={shoot}
+            onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}
+        />
     } else if (state.type === "updatingGame") {
         return <UpdatingGame />
     } else if (state.type === "updatingWithMsg") {
         return <UpdatingWithMsg errMsg={state.msg} />
-    } else {
+    } else if (state.type === "placingShips") {
+        return (<div>Placing ships</div>)
+    } else if (state.type === "confirmingFleet") {
+        return (<div>Confirming fleet</div>)
+    } else if (state.type === "updateGame") {
+        return <UpdateGame onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}/>
+    }
+    else {
         return <div>Unknown state</div>
     }
 }
@@ -222,18 +315,12 @@ function CheckingForExistingOnGoingGame() {
     )
 }
 
-function Static({dispatch} : {dispatch: React.Dispatch<Action>}) {
-    function createNewGame() {
-        dispatch({type:'setCreatingGame'})
-    }
-    function updateGame() {
-        dispatch({type:'setUpdatingGame'})
-    }
+function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : () => void, onUpdateRequest : () => void}) {
     return (
         <div>
-            <h1>Static</h1>
-            <p><button onClick={createNewGame}>Create New Game</button></p>
-            <p><button onClick={updateGame}>Update Game</button></p>
+            <h1>Menu</h1>
+            <p><button onClick={onCreateGameRequest}>Create New Game</button></p>
+            <p><button onClick={onUpdateRequest}>Update Game</button></p>
         </div>
     )
 }
@@ -289,25 +376,52 @@ function UpdatingWithMsg({errMsg} : {errMsg : string}) {
     )
 }
 
-function Playing(
-    {game, onCellTouch, onShipChange}
-        : {game : Game, onCellTouch : (x : number, y : number) => void, onShipChange : (ship: string) => void}) {
+function UpdateGame({onUpdateRequest} : {onUpdateRequest : () => void}) {
+    return (
+        <div>
+            <h1>Updating</h1>
+            <p><button onClick={onUpdateRequest}>Update Game</button></p>
+        </div>
+    )
+}
+
+function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot, onUpdateRequest} :
+                     {
+                         game : Game,
+                         onPlaceShip : (x : number, y : number) => void,
+                         onShipChange : (ship: string) => void,
+                         onConfirmFleetRequest : () => void,
+                         onShot : (x : number, y : number) => void,
+                            onUpdateRequest : () => void
+                     }) {
 
     function setShip(ship : string) {
         onShipChange(ship)
     }
 
-    return (
-        <div>
-            <h1>Playing</h1>
-            <p>{game.id}</p>
-            <p>{game.player1}</p>
-            <p>{game.player2}</p>
-            <p>{game.state}</p>
-            <Board board={game.board1} onClick={onCellTouch}/>
-            <ShipOptions onShipClick={setShip}/>
-        </div>
-    )
+    function onConfirmFleet() {
+        setShip(null)
+        onConfirmFleetRequest()
+    }
+
+    const title = <h1>Phase: {game.state}</h1>
+
+    console.log(game)
+    if (game.state === "fleet_setup") {
+        return (
+            <div>
+                {title}
+                <Board board={game.board1} onClick={onPlaceShip}/>
+                <ShipOptions onShipClick={setShip}/>
+                <button onClick={onConfirmFleet}>Confirm Fleet</button>
+                <p><button onClick={onUpdateRequest}>Update Game</button></p>
+            </div>
+        )
+    } else if (game.state === "battle") {
+        // TODO display opponent board
+    } else if (game.state === "finished") {
+        // TODO display winner
+    }
 }
 
 function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {

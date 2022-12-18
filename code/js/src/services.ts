@@ -7,7 +7,7 @@ import { doFetch } from './utils/useFetch'
 import { Fetch } from './utils/useFetch'
 import { Logger } from "tslog";
 import { KeyValuePair } from './utils/useFetch'
-import { CreateGameRequest, CreateGameResponse, Game} from './domain'
+import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest} from './domain'
 
 const logger = new Logger({ name: "Navigation" });
 
@@ -192,7 +192,7 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
             const siren = await doFetch(internalReq)
             if (siren) {
                 const getGameLink = Siren.extractGetGameLink(siren.links)
-                const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
+                // const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
                 if (getGameLink) {
                     links.setGetGameLink(getGameLink)
                     logger.info("createGame: setting up new get game link: ", getGameLink)
@@ -211,7 +211,7 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
             return e.title
         }
     }
-    return 'Token or create-game action not found'
+    return 'createGameRequest not valid'
 }
 
 async function getCurrentGameId(): Promise<number | string> {
@@ -255,6 +255,59 @@ async function getGame(): Promise<Game | string> {
     }
 }
 
+async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | string> {
+    const token = auth.getToken()
+    const action = links.getPlaceShipsAction()
+    if (!token || !action) {
+        logger.error("placeShips: token or place ships action undefined")
+        return "placeShips: token or place ships action undefined"
+    }
+    if (Siren.validateFields(placeShipsRequest, action)) {
+        const internalReq = {
+            url: action.href,
+            method: action.method,
+            body: Fetch.toBody(placeShipsRequest),
+            token
+        }
+        try {
+            const siren = await doFetch(internalReq)
+            if (siren) {
+                logger.info("placeShips: response successful")
+                return
+            }
+        } catch (e) {
+            logger.error("placeShips: error: ", e.title)
+            return e.title
+        }
+    }
+    return 'placeShipsRequest not valid'
+}
+
+async function confirmFleet(): Promise<void | string> {
+    const token = auth.getToken()
+    const action = links.getConfirmFleetAction()
+    if (!token || !action) {
+        logger.error("confirmFleet: token or confirm fleet action undefined")
+        return "confirmFleet: token or confirm fleet action undefined"
+    }
+    const internalReq = {
+        url: action.href,
+        method: action.method,
+        body: undefined,
+        token
+    }
+    try {
+        const siren = await doFetch(internalReq)
+        if (siren) {
+            logger.info("confirmFleet: response successful")
+            return
+        }
+    } catch (e) {
+        logger.error("confirmFleet: error: ", e.title)
+        return e.title
+    }
+}
+
 export const Services = {
     useFetchHome,
     useFetchServerInfo,
@@ -265,5 +318,7 @@ export const Services = {
     createGame,
     getCurrentGameId,
     getGame,
-    fetchUserHome
+    fetchUserHome,
+    placeShips,
+    confirmFleet
 }

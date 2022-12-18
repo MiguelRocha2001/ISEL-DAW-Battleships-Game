@@ -32,3 +32,20 @@ export type CreateGameResponse = {
     gameState: string,
     gameId: number
 }
+
+export type PlaceShipsRequest = {
+    operation: string,
+    ships: PlaceShipRequest[]
+    fleetConfirmed: boolean
+}
+
+type PlaceShipRequest = {
+    shipType: string,
+    position: Position,
+    orientation: string
+}
+
+type Position = {
+    row: number,
+    column: number
+}

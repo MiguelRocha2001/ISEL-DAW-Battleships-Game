@@ -18,6 +18,8 @@ let createGameAction: Action | undefined
 let gameLink: string | undefined
 let currentGameId: string | undefined
 let userHomeLink: string | undefined
+let placeShipsAction: Action | undefined
+let confirmFleetAction: Action | undefined
 
 
 function getInfoLink() {
@@ -76,6 +78,21 @@ function setUserHomeLink(link: string) {
     userHomeLink = link
 }
 
+function getPlaceShipsAction() {
+    return placeShipsAction
+}
+function setPlaceShipsAction(action: Action) {
+    placeShipsAction = action
+}
+
+function getConfirmFleetAction() {
+    return confirmFleetAction
+}
+
+function setConfirmFleetAction(action: Action) {
+    confirmFleetAction = action
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -95,4 +112,8 @@ export const links = {
     setCurrentGameIdLink,
     getUserHomeLink,
     setUserHomeLink,
+    getPlaceShipsAction,
+    setPlaceShipsAction,
+    getConfirmFleetAction,
+    setConfirmFleetAction,
 }
