@@ -5,7 +5,8 @@ export type Game = {
     player2: number,
     state: string,
     board1: Board,
-    board2: Board
+    board2: Board,
+    myPlayer: string,
 }
 
 export type Board = {

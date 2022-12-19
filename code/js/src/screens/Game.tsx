@@ -9,6 +9,7 @@ import { Logger } from "tslog";
 
 const logger = new Logger({ name: "GameScreen" });
 
+// TODO -> states that could have msg, should be one single state with msg that could be undefined
 type State = 
     {
         type : "checkingForExistingOnGoingGame",
@@ -20,34 +21,23 @@ type State =
     |
     {
         type : "creatingGame",
+        msg : string,
     }
     |
     {
-        type : "creatingGameWithMsg",
-        msg : string
+        type : "matchmaking",
+        msg : string,
     }
     |
     {
-        type : "matchmaking"
-    }
-    |
-    {
-        type : "matchmakingWithMsg",
-        msg : string
-    }
-    |
-    {
-        type : "updatingGame"
-    }
-    |
-    {
-        type : "updatingWithMsg",
-        msg : string
+        type : "updatingGame",
+        msg : string,
     }
     |
     {
         type : "playing",
-        game: Game
+        game: Game,
+        msg : string
     }
     |
     {
@@ -62,6 +52,7 @@ type State =
     |
     {
         type : "updateGame",
+        msg : string,
     }
 
 type Action =     
@@ -93,6 +84,12 @@ type Action =
     }
     |
     {
+        type : "setPlayingWithMsg",
+        game : Game,
+        msg : string
+    }
+    |
+    {
         type : "setUpdatingGame"
     }
     |
@@ -114,6 +111,11 @@ type Action =
     {
         type : "setUpdateGame"
     }
+    |
+    {
+        type : "setUpdateGameWithMsg",
+        msg : string
+    }
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
@@ -123,31 +125,35 @@ function reducer(state: State, action: Action): State {
         }
         case 'setMatchmaking' : {
             logger.info("setMatchmaking")
-            return {type : 'matchmaking'}
+            return {type : 'matchmaking', msg : null}
         }
         case 'setMatchmakingWithMsg' : {
             logger.info("setMatchmakingWithMsg")
-            return {type : 'matchmakingWithMsg', msg : action.msg}
+            return {type : 'matchmaking', msg : action.msg}
         }
         case 'setCreatingGame' : {
             logger.info("setCreatingGame")
-            return {type : 'creatingGame'}
+            return {type : 'creatingGame', msg : null}
         }
         case 'setCreatingGameWithMsg' : {
             logger.info("setCreatingGameWithMsg")
-            return {type : 'creatingGameWithMsg', msg : action.msg}
+            return {type : 'creatingGame', msg : action.msg}
         }
         case 'setPlaying' : {
             logger.info("setPlaying")
-            return {type : 'playing', game : action.game}
+            return {type : 'playing', game : action.game, msg : null}
+        }
+        case 'setPlayingWithMsg' : {
+            logger.info("setPlayingWithMsg")
+            return {type : 'playing', game : action.game, msg : action.msg}
         }
         case 'setUpdatingGame' : {
             logger.info("setUpdatingGame")
-            return {type : 'updatingGame'}
+            return {type : 'updatingGame', msg : null}
         }
         case 'setUpdatingWithMsg' : {
             logger.info("setUpdatingWithMsg")
-            return {type : 'updatingWithMsg', msg : action.msg}
+            return {type : 'updatingGame', msg : action.msg}
         }
         case 'setPlacingShips' : {
             logger.info("setPlacingShips")
@@ -159,7 +165,11 @@ function reducer(state: State, action: Action): State {
         }
         case 'setUpdateGame' : {
             logger.info("setUpdateGame")
-            return {type : 'updateGame'}
+            return {type : 'updateGame', msg : null}
+        }
+        case 'setUpdateGameWithMsg' : {
+            logger.info("setUpdateGameWithMsg")
+            return {type : 'updateGame', msg : action.msg}
         }
     }
 }
@@ -211,6 +221,10 @@ export function Game() {
 
     async function placeShip(row: number, col: number) {
         logger.info("placing ship in " + row + " " + col)
+        if (!selectedShip) {
+            logger.warn("no ship selected")
+            return
+        }
         const ship = selectedShip as string
         if (ship) {
             const resp = await Services.placeShips({
@@ -224,14 +238,22 @@ export function Game() {
                 ],
                 fleetConfirmed: false
             })
-            dispatch({type:'setUpdateGame'})
+            if (typeof resp === 'string') {
+                dispatch({type:'setUpdateGameWithMsg', msg: resp})
+            } else {
+                dispatch({type:'setUpdateGame'})
+            }
         }
     }
 
     async function confirmFleet() {
         logger.info("confirming fleet")
         const resp = await Services.confirmFleet()
-        dispatch({type:'setUpdateGame'})
+        if (typeof resp === 'string') {
+            dispatch({type:'setUpdateGameWithMsg', msg: resp})
+        } else {
+            dispatch({type:'setUpdateGame'})
+        }
     }
 
     async function shoot(row: number, col: number) {
@@ -279,9 +301,7 @@ export function Game() {
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
     } else if (state.type === "matchmaking") {
-        return <Matchmaking dispatch={dispatch} />
-    } else if (state.type === "matchmakingWithMsg") {
-        return <MatchmakingWithMsg dispatch={dispatch} errMsg={state.msg} />
+        return <Matchmaking onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})} msg={state.msg} />
     } else if (state.type === "playing") {
         return <Playing
             game={state.game}
@@ -292,15 +312,13 @@ export function Game() {
             onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}
         />
     } else if (state.type === "updatingGame") {
-        return <UpdatingGame />
-    } else if (state.type === "updatingWithMsg") {
-        return <UpdatingWithMsg errMsg={state.msg} />
+        return <UpdatingGame msg={state.msg}/>
     } else if (state.type === "placingShips") {
         return (<div>Placing ships</div>)
     } else if (state.type === "confirmingFleet") {
         return (<div>Confirming fleet</div>)
     } else if (state.type === "updateGame") {
-        return <UpdateGame onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}/>
+        return <UpdateGame msg={state.msg} onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}/>
     }
     else {
         return <div>Unknown state</div>
@@ -334,55 +352,55 @@ function CreatingGame() {
     )
 }
 
-function Matchmaking({dispatch} : {dispatch: React.Dispatch<Action>}) {
-    function updateGame() {
-        dispatch({type:'setUpdatingGame'})
-    }
-    return (
+function Matchmaking({msg, onUpdateRequest} : {msg : string, onUpdateRequest : () => void}) {
+    const mainContent =
         <div>
             <h1>Waiting</h1>
-            <p><button onClick={updateGame}>Update Game</button></p>
-        </div>
-    )
-}
-
-function MatchmakingWithMsg({dispatch, errMsg} : {dispatch: React.Dispatch<Action>, errMsg : string}) {
-    function updateGame() {
-        dispatch({type:'setUpdatingGame'})
-    }
-    return (
-        <div>
-            <h1>Waiting</h1>
-            <p>{errMsg}</p>
-            <p><button onClick={updateGame}>Update Game</button></p>
-        </div>
-    )
-}
-
-function UpdatingGame() {
-    return (
-        <div>
-            <h1>Updating</h1>
-        </div>
-    )
-}
-
-function UpdatingWithMsg({errMsg} : {errMsg : string}) {
-    return (
-        <div>
-            <h1>Updating</h1>
-            <p>{errMsg}</p>
-        </div>
-    )
-}
-
-function UpdateGame({onUpdateRequest} : {onUpdateRequest : () => void}) {
-    return (
-        <div>
-            <h1>Updating</h1>
             <p><button onClick={onUpdateRequest}>Update Game</button></p>
         </div>
-    )
+    if (msg) {
+        return (
+            <div>
+                {mainContent}
+                <ErrorMsg msg={msg}/>
+            </div>
+        )
+    } else {
+        return mainContent
+    }
+}
+
+function UpdatingGame({msg} : {msg : string}) {
+    const mainContent =
+        <div>
+            <h1>Updating</h1>
+        </div>
+    if (msg) {
+        return (
+            <div>
+                {mainContent}
+                <ErrorMsg msg={msg}/>
+            </div>
+        )
+    } else {
+        return mainContent
+    }
+}
+
+function UpdateGame({msg, onUpdateRequest} : {msg: string, onUpdateRequest : () => void}) {
+    const mainContent =
+        <div>
+            <h1>Update Game</h1>
+            <p><button onClick={onUpdateRequest}>Update Game</button></p>
+        </div>
+    if (msg) {
+        return (
+            <div>
+                {mainContent}
+                <ErrorMsg msg={msg}/>
+            </div>
+        )
+    }
 }
 
 function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot, onUpdateRequest} :
@@ -395,24 +413,25 @@ function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot
                             onUpdateRequest : () => void
                      }) {
 
-    function setShip(ship : string) {
-        onShipChange(ship)
-    }
-
     function onConfirmFleet() {
-        setShip(null)
+        onShipChange(null)
         onConfirmFleetRequest()
     }
 
     const title = <h1>Phase: {game.state}</h1>
 
-    console.log(game)
+    console.log('Game:', game)
     if (game.state === "fleet_setup") {
+        let boardComponent
+        if (game.myPlayer === "one")
+            boardComponent = <Board board={game.board1} onCellClick={onPlaceShip} />
+        else
+            boardComponent = <Board board={game.board2} onCellClick={onPlaceShip} />
         return (
             <div>
                 {title}
-                <Board board={game.board1} onClick={onPlaceShip}/>
-                <ShipOptions onShipClick={setShip}/>
+                {boardComponent}
+                <ShipOptions onShipClick={onShipChange}/>
                 <button onClick={onConfirmFleet}>Confirm Fleet</button>
                 <p><button onClick={onUpdateRequest}>Update Game</button></p>
             </div>
@@ -442,8 +461,7 @@ function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
     )
 }
 
-function Board({board, onClick} : {board : Board, onClick? : (row: number, col: number) => void}) {
-    console.log(board.cells)
+function Board({board, onCellClick} : {board : Board, onCellClick? : (row: number, col: number) => void}) {
     const boardStr = board.cells
     const rowNumber = Math.sqrt(board.ncells)
     const collNumber = rowNumber
@@ -459,7 +477,7 @@ function Board({board, onClick} : {board : Board, onClick? : (row: number, col: 
                                     const cell = boardStr[row * rowNumber + coll]
                                     return (
                                         <td key={coll}>
-                                            <Cell cell={cell} onClick={() => { onClick(row + 1, coll + 1) }} />
+                                            <Cell cell={cell} onClick={() => { onCellClick(row + 1, coll + 1) }} />
                                         </td>
                                     )
                                 })}
@@ -487,4 +505,12 @@ function Cell({cell, onClick} : {cell : string, onClick? : () => void}) {
             </button>
         )
     }
+}
+
+function ErrorMsg({msg} : {msg : string}) {
+    return (
+        <div>
+            <p style={{color: "red"}}>{msg}</p>
+        </div>
+    )
 }

@@ -53,7 +53,6 @@ export function useFetch(request: Request): Siren | undefined {
                     },
                 })
                 const body = await resp.json()
-                console.log(body)
                 if (!cancelled) {
                     setContent(body)
                 }
@@ -101,7 +100,6 @@ function buildBody(fields: KeyValuePair[]): string {
     fields.forEach(field => {
         body[field.name] = field.value
     })
-    console.log("body: ", JSON.stringify(body))
     return JSON.stringify(body)
 }
 

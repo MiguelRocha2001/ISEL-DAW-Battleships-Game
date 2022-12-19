@@ -319,25 +319,29 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
 async function confirmFleet(): Promise<void | string> {
     const token = auth.getToken()
     const action = links.getConfirmFleetAction()
+    console.log('Action', action)
     if (!token || !action) {
         logger.error("confirmFleet: token or confirm fleet action undefined")
         return "confirmFleet: token or confirm fleet action undefined"
     }
-    const internalReq = {
-        url: action.href,
-        method: action.method,
-        body: undefined,
-        token
-    }
-    try {
-        const siren = await doFetch(internalReq)
-        if (siren) {
-            logger.info("confirmFleet: response successful")
-            return
+    const request = {fleetConfirmed: true} // request is set here because it is always the same
+    if (Siren.validateFields(request, action)) {
+        const internalReq = {
+            url: action.href,
+            method: action.method,
+            body: Fetch.toBody({fleetConfirmed: true}),
+            token
         }
-    } catch (e) {
-        logger.error("confirmFleet: error: ", e.title)
-        return e.title
+        try {
+            const siren = await doFetch(internalReq)
+            if (siren) {
+                logger.info("confirmFleet: response successful")
+                return
+            }
+        } catch (e) {
+            logger.error("confirmFleet: error: ", e.title)
+            return e.title
+        }
     }
 }
 

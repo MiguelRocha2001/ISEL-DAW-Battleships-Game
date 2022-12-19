@@ -30,38 +30,14 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
         this.booleanField("fleetConfirmed")
     }
 
-    // Move Ship
-    sirenBuilderScope.action(
-        name = "move-ship",
-        href = URI(Uris.Games.My.Current.My.Ships.ALL),
-        method = HttpMethod.POST,
-        type = MediaType.APPLICATION_JSON
-    ) {
-        this.numberField("origin_row")
-        this.numberField("origin_column")
-        this.numberField("destination_row")
-        this.numberField("destination_column")
-    }
-
-    // Rotate Ship
-    sirenBuilderScope.action(
-        name = "rotate-ship",
-        href = URI(Uris.Games.My.Current.My.Ships.ALL),
-        method = HttpMethod.POST,
-        type = MediaType.APPLICATION_JSON
-    ) {
-        this.numberField("row")
-        this.numberField("column")
-    }
-
     // Confirm Fleet
     sirenBuilderScope.action(
         name = "confirm-fleet",
         href = URI(Uris.Games.My.Current.My.Ships.ALL),
-        method = HttpMethod.POST,
+        method = HttpMethod.PUT,
         type = MediaType.APPLICATION_JSON
     ) {
-        // DO NOTHING
+        this.booleanField("fleetConfirmed")
     }
 }
 
