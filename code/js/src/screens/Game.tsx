@@ -285,7 +285,7 @@ export function Game() {
     } else if (state.type === "playing") {
         return <Playing
             game={state.game}
-            onPlaceShip={() => dispatch({type : 'setPlacingShips', row : 0, col : 0})}
+            onPlaceShip={(row, col) => dispatch({type : 'setPlacingShips', row, col})}
             onShipChange={onShipChange}
             onConfirmFleetRequest={confirmFleet}
             onShot={shoot}
@@ -432,11 +432,11 @@ function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
         <div>
             <h1>ShipOptions</h1>
             <div onChange={onChangeValue}>
-                <input type="radio" value="Carrier" name="gender" /> Carrier
-                <input type="radio" value="Battleships" name="gender" /> Battleships
-                <input type="radio" value="Cruiser" name="gender" /> Cruiser
-                <input type="radio" value="Submarine" name="gender" /> Submarine
-                <input type="radio" value="Destroyer" name="gender" /> Destroyer
+                <input type="radio" value="CARRIER" name="gender" /> Carrier
+                <input type="radio" value="BATTLESHIP" name="gender" /> Battleships
+                <input type="radio" value="CRUISER" name="gender" /> Cruiser
+                <input type="radio" value="SUBMARINE" name="gender" /> Submarine
+                <input type="radio" value="DESTROYER" name="gender" /> Destroyer
             </div>
         </div>
     )
@@ -459,7 +459,7 @@ function Board({board, onClick} : {board : Board, onClick? : (row: number, col: 
                                     const cell = boardStr[row * rowNumber + coll]
                                     return (
                                         <td key={coll}>
-                                            <Cell cell={cell} onClick={() => { onClick(row, coll) }} />
+                                            <Cell cell={cell} onClick={() => { onClick(row + 1, coll + 1) }} />
                                         </td>
                                     )
                                 })}

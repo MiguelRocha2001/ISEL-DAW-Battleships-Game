@@ -50,6 +50,42 @@ function extractBattleshipRanksLink(linksArg: Link[]): string {
     return extractLink(linksArg, "user-stats")
 }
 
+function extractTokenAction(actions: any[]): Action {
+    return extractAction(actions, "create-token")
+}
+
+function extractRegisterAction(actions: any[]): Action {
+    return extractAction(actions, "create-user")
+}
+
+function extractUserHomeLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "user-home")
+}
+
+function extractCreateGameAction(actions: any[]): Action {
+    return extractAction(actions, "create-game")
+}
+
+function extractGetGameLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "game")
+}
+
+function extractGetCurrentGameIdLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "game-id")
+}
+
+function extractPlaceShipsAction(actions: any[]): Action {
+    return extractAction(actions, "place-ships")
+}
+
+function extractConfirmFleetAction(actions: any[]): Action {
+    return extractAction(actions, "confirm-fleet")
+}
+
+function extractAttackAction(actions: any[]): Action {
+    return extractAction(actions, "place-shot")
+}
+
 function extractLink(linksArg: Link[], rel: string): string {
     for (let i = 0; i < linksArg.length; i++) {
         const link = linksArg[i]
@@ -62,46 +98,14 @@ function extractLink(linksArg: Link[], rel: string): string {
     return undefined
 }
 
-function extractTokenAction(actions: any[]): Action {
+function extractAction(actions: any[], name: string): Action {
     for (let i = 0; i < actions.length; i++) {
         const action = actions[i]
-        if (action.name === "create-token") {
+        if (action.name === name) {
             return action
         }
     }
     return undefined
-}
-
-function extractRegisterAction(actions: any[]): Action {
-    for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        if (action.name === "create-user") {
-            return action
-        }
-    }
-    return undefined
-}
-
-function extractUserHomeLink(linksArg: Link[]): string {
-    return extractLink(linksArg, "user-home")
-}
-
-function extractCreateGameAction(actions: any[]): Action {
-    for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        if (action.name === "create-game") {
-            return action
-        }
-    }
-    return undefined
-}
-
-function extractGetGameLink(linksArg: Link[]): string {
-    return extractLink(linksArg, "game")
-}
-
-function extractGetCurrentGameIdLink(linksArg: Link[]): string {
-    return extractLink(linksArg, "game-id")
 }
 
 /**
@@ -128,5 +132,8 @@ export const Siren = {
     extractCreateGameAction,
     extractGetGameLink,
     extractGetCurrentGameIdLink,
+    extractPlaceShipsAction,
+    extractConfirmFleetAction,
+    extractAttackAction,
     validateFields
 }

@@ -15,8 +15,19 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
         method = HttpMethod.POST,
         type = MediaType.APPLICATION_JSON
     ) {
-        this.numberField("row")
-        this.numberField("column")
+        this.textField(name = "operation", value = "place-ships")
+        this.arrayField(
+            name = "ships",
+            block = {
+                this.textField("shipType")
+                this.objectField("position") {
+                    this.textField("x")
+                    this.textField("y")
+                }
+                this.textField("orientation")
+            }
+        )
+        this.booleanField("fleetConfirmed")
     }
 
     // Move Ship

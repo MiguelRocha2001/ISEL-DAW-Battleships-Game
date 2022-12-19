@@ -33,11 +33,17 @@ data class ActionModel(
     val fields: List<FieldModel>,
 )
 
-data class FieldModel(
-    val name: String,
-    val type: String,
+open class FieldModel(
+    open val name: String,
+    open val type: String,
     val value: String? = null,
 )
+
+class ObjectFieldModel(
+    override val name: String,
+    override val type: String,
+    val items: List<FieldModel>,
+) : FieldModel(name, type)
 
 class SirenBuilderScope<T>(
     val properties: T,
@@ -107,18 +113,31 @@ class ActionBuilderScope(
 ) {
     private val fields = mutableListOf<FieldModel>()
 
-    fun textField(name: String) {
-        fields.add(FieldModel(name, "text"))
+    fun textField(name: String, value: String? = null) {
+        fields.add(FieldModel(name, "text", value))
     }
 
     fun numberField(name: String) {
         fields.add(FieldModel(name, "number"))
     }
 
+    fun booleanField(name: String) {
+        fields.add(FieldModel(name, "boolean"))
+    }
+
     fun hiddenField(name: String, value: String) {
         fields.add(FieldModel(name, "hidden", value))
     }
-
+    fun arrayField(name: String, block: ActionBuilderScope.() -> Unit) {
+        val scope = ActionBuilderScope(name, href, method, type)
+        scope.block()
+        fields.add(ObjectFieldModel(name, "array", scope.fields))
+    }
+    fun objectField(name: String, block: ActionBuilderScope.() -> Unit) {
+        val scope = ActionBuilderScope(name, href, method, type)
+        scope.block()
+        fields.add(ObjectFieldModel(name, "object", scope.fields))
+    }
     fun build() = ActionModel(name, href.toASCIIString(), method, "${type.type}/${type.subtype}", fields)
 }
 

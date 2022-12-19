@@ -20,6 +20,7 @@ let currentGameId: string | undefined
 let userHomeLink: string | undefined
 let placeShipsAction: Action | undefined
 let confirmFleetAction: Action | undefined
+let attackAction: Action | undefined
 
 
 function getInfoLink() {
@@ -93,6 +94,13 @@ function setConfirmFleetAction(action: Action) {
     confirmFleetAction = action
 }
 
+function getAttackAction() {
+    return attackAction
+}
+function setAttackAction(action: Action) {
+    attackAction = action
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -116,4 +124,6 @@ export const links = {
     setPlaceShipsAction,
     getConfirmFleetAction,
     setConfirmFleetAction,
+    getAttackAction,
+    setAttackAction,
 }

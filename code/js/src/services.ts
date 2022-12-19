@@ -237,12 +237,44 @@ async function getCurrentGameId(): Promise<number | string> {
 }
 
 async function getGame(): Promise<Game | string> {
+
+    function checkLinks(response: Siren): string {
+        const placeShipsAction = Siren.extractPlaceShipsAction(response.actions)
+        const confirmFleetAction = Siren.extractConfirmFleetAction(response.actions)
+        const attackAction = Siren.extractAttackAction(response.actions)
+        if (placeShipsAction) {
+            links.setPlaceShipsAction(placeShipsAction)
+            logger.info("getGame: setting up new place ships action: ", placeShipsAction.name)
+        } else {
+            logger.error("getGame: place ships action not found in response")
+            return "Couldn't find place ships action"
+        }
+        if (confirmFleetAction) {
+            links.setConfirmFleetAction(confirmFleetAction)
+            logger.info("getGame: setting up new confirm fleet action: ", confirmFleetAction.name)
+        } else {
+            logger.error("getGame: confirm fleet action not found in response")
+            return "Couldn't find confirm fleet action"
+        }
+        if (attackAction) {
+            links.setAttackAction(attackAction)
+            logger.info("getGame: setting up new attack action: ", attackAction.name)
+        } else {
+            logger.error("getGame: attack action not found in response")
+            return "Couldn't find attack action"
+        }
+        return undefined
+    }
+
+
     const token = auth.getToken()
     const gameLink = links.getGameLink()
     if (!token || !gameLink) return 'Token or get-game link not found'
     try {
         const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined, token })
         if (response) {
+            const error = checkLinks(response) // returns a string if there is an error
+            if (error) return error
             logger.info("getGame: response sucessfull")
             return response.properties
         } else {
@@ -255,6 +287,7 @@ async function getGame(): Promise<Game | string> {
     }
 }
 
+// TODO -> fails when parsing placeShipsRequest to JSON (but server doesnt responds well)
 async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | string> {
     const token = auth.getToken()
     const action = links.getPlaceShipsAction()

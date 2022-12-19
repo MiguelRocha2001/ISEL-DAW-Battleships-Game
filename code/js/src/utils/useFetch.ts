@@ -37,7 +37,6 @@ function validateRequestMethod(request: Request): boolean {
     return request.url && (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE')
 }
 
-// TODO -> receives 415 Unsupported Media Type on POST requests
 export function useFetch(request: Request): Siren | undefined {
     const [content, setContent] = useState(undefined)
     useEffect(() => {
@@ -69,7 +68,6 @@ export function useFetch(request: Request): Siren | undefined {
     return content
 }
 
-// TODO -> receives 415 Unsupported Media Type on POST requests
 export async function doFetch(request: Request): Promise<Siren> {
     if (request && validateRequestMethod(request)) {
         logger.info("sending request to: ", links.host + request.url)
@@ -81,9 +79,9 @@ export async function doFetch(request: Request): Promise<Siren> {
                 headers: request.token ? {
                     'Content-Type': CONTENT_TYPE_JSON,
                      'Authorization': 'Bearer ' + request.token 
-                    } : {
+                } : {
                     'Content-Type': CONTENT_TYPE_JSON
-                    }
+                }
             })
             const body = await resp.json()
             if (resp.status >= 300) {
@@ -103,6 +101,7 @@ function buildBody(fields: KeyValuePair[]): string {
     fields.forEach(field => {
         body[field.name] = field.value
     })
+    console.log("body: ", JSON.stringify(body))
     return JSON.stringify(body)
 }
 
