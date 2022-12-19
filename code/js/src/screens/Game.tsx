@@ -258,9 +258,12 @@ export function Game() {
 
     async function shoot(row: number, col: number) {
         logger.info("shooting in " + row + " " + col)
-        /*
-        const resp = await Services.placeShip()
-         */
+        const resp = await Services.attack({row: row, column: col})
+        if (typeof resp === 'string') {
+            dispatch({type:'setUpdateGameWithMsg', msg: resp})
+        } else {
+            dispatch({type:'setUpdateGame'})
+        }
     }
 
     function onShipChange(ship: string) {
@@ -400,47 +403,88 @@ function UpdateGame({msg, onUpdateRequest} : {msg: string, onUpdateRequest : () 
                 <ErrorMsg msg={msg}/>
             </div>
         )
+    } else {
+        return mainContent
     }
 }
 
-function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot, onUpdateRequest} :
-                     {
-                         game : Game,
-                         onPlaceShip : (x : number, y : number) => void,
-                         onShipChange : (ship: string) => void,
-                         onConfirmFleetRequest : () => void,
-                         onShot : (x : number, y : number) => void,
-                            onUpdateRequest : () => void
-                     }) {
+function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot, onUpdateRequest} : {
+     game : Game,
+     onPlaceShip : (x : number, y : number) => void,
+     onShipChange : (ship: string) => void,
+     onConfirmFleetRequest : () => void,
+     onShot : (x : number, y : number) => void,
+    onUpdateRequest : () => void
+ }) {
 
     function onConfirmFleet() {
         onShipChange(null)
         onConfirmFleetRequest()
     }
 
-    const title = <h1>Phase: {game.state}</h1>
+    let myBoard
+    let enemyBoard
+    if (game.myPlayer === "one") {
+        myBoard = game.board1
+        enemyBoard = game.board2
+    }
+    else {
+        myBoard = game.board2
+        enemyBoard = game.board1
+    }
+
+    const updateButton = <p><button onClick={onUpdateRequest}>Update Game</button></p>
 
     console.log('Game:', game)
     if (game.state === "fleet_setup") {
-        let boardComponent
-        if (game.myPlayer === "one")
-            boardComponent = <Board board={game.board1} onCellClick={onPlaceShip} />
-        else
-            boardComponent = <Board board={game.board2} onCellClick={onPlaceShip} />
         return (
             <div>
-                {title}
-                {boardComponent}
-                <ShipOptions onShipClick={onShipChange}/>
-                <button onClick={onConfirmFleet}>Confirm Fleet</button>
-                <p><button onClick={onUpdateRequest}>Update Game</button></p>
+                <FleetSetup board={myBoard} onPlaceShip={onPlaceShip} onShipChange={onShipChange} onConfirmFleet={onConfirmFleet}/>
+                {updateButton}
             </div>
         )
     } else if (game.state === "battle") {
-        // TODO display opponent board
+        return (
+            <div>
+                <Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>
+                {updateButton}
+            </div>
+        )
     } else if (game.state === "finished") {
         // TODO display winner
     }
+}
+
+function FleetSetup({board, onPlaceShip, onShipChange, onConfirmFleet}: {
+    board : Board,
+    onPlaceShip: (x : number, y : number) => void,
+    onShipChange : (ship : string) => void,
+    onConfirmFleet : () => void
+}) {
+    return (
+        <div>
+            <h1>Place Your Fleet</h1>
+            <Board board={board} onCellClick={onPlaceShip}/>
+            <ShipOptions onShipClick={onShipChange}/>
+            <button onClick={onConfirmFleet}>Confirm Fleet</button>
+        </div>
+    )
+}
+
+function Battle({myBoard, enemyBoard, onShot} : {myBoard : Board, enemyBoard : Board, onShot : (x : number, y : number) => void}) {
+    return (
+        <div>
+            <h1>Battle</h1>
+            <div>
+                <h2>My Board</h2>
+                <Board board={myBoard} onCellClick={() => {}}/>
+            </div>
+            <div>
+                <h2>Enemy Board</h2>
+                <Board board={enemyBoard} onCellClick={onShot}/>
+            </div>
+        </div>
+    )
 }
 
 function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
@@ -452,7 +496,7 @@ function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
             <h1>ShipOptions</h1>
             <div onChange={onChangeValue}>
                 <input type="radio" value="CARRIER" name="gender" /> Carrier
-                <input type="radio" value="BATTLESHIP" name="gender" /> Battleships
+                <input type="radio" value="BATTLESHIP" name="gender" /> Battleship
                 <input type="radio" value="CRUISER" name="gender" /> Cruiser
                 <input type="radio" value="SUBMARINE" name="gender" /> Submarine
                 <input type="radio" value="DESTROYER" name="gender" /> Destroyer
@@ -491,16 +535,18 @@ function Board({board, onCellClick} : {board : Board, onCellClick? : (row: numbe
 }
 
 function Cell({cell, onClick} : {cell : string, onClick? : () => void}) {
+    const isHit = cell > 'a' && cell < 'z'
     const isWater = cell === ' '
+    const color = isHit ? 'red' : isWater ? 'lightblue' : 'grey'
     if (isWater) {
         return (
-            <button style={{backgroundColor: "lightblue"}} onClick={onClick}>
+            <button style={{backgroundColor: color}} onClick={onClick}>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </button>
         )
     } else {
         return (
-            <button style={{backgroundColor: "grey"}} onClick={onClick}>
+            <button style={{backgroundColor: color}} onClick={onClick}>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </button>
         )

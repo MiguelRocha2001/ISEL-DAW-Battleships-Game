@@ -46,7 +46,7 @@ type PlaceShipRequest = {
     orientation: string
 }
 
-type Position = {
+export type Position = {
     row: number,
     column: number
 }

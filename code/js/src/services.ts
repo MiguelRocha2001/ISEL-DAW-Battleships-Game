@@ -7,7 +7,7 @@ import { doFetch } from './utils/useFetch'
 import { Fetch } from './utils/useFetch'
 import { Logger } from "tslog";
 import { KeyValuePair } from './utils/useFetch'
-import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest} from './domain'
+import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest, Position} from './domain'
 
 const logger = new Logger({ name: "Navigation" });
 
@@ -345,6 +345,34 @@ async function confirmFleet(): Promise<void | string> {
     }
 }
 
+async function attack(attackRequest: Position): Promise<void | string> {
+    const token = auth.getToken()
+    const action = links.getAttackAction()
+    if (!token || !action) {
+        logger.error("attack: token or attack action undefined")
+        return "attack: token or attack action undefined"
+    }
+    if (Siren.validateFields(attackRequest, action)) {
+        const internalReq = {
+            url: action.href,
+            method: action.method,
+            body: Fetch.toBody(attackRequest),
+            token
+        }
+        try {
+            const siren = await doFetch(internalReq)
+            if (siren) {
+                logger.info("attack: response successful")
+                return
+            }
+        } catch (e) {
+            logger.error("attack: error: ", e.title)
+            return e.title
+        }
+    }
+    return 'attackRequest not valid'
+}
+
 export const Services = {
     useFetchHome,
     useFetchServerInfo,
@@ -357,5 +385,6 @@ export const Services = {
     getGame,
     fetchUserHome,
     placeShips,
-    confirmFleet
+    confirmFleet,
+    attack
 }
