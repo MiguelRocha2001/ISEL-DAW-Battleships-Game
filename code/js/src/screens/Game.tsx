@@ -16,22 +16,12 @@ type State =
     }
     |
     {
-        type : "menu"
-    }
-    |
-    {
-        type : "creatingGame",
+        type : "menu",
         msg : string,
     }
     |
     {
-        type : "matchmaking",
-        msg : string,
-    }
-    |
-    {
-        type : "updatingGame",
-        msg : string,
+        type : "creatingGame"
     }
     |
     {
@@ -51,31 +41,25 @@ type State =
     }
     |
     {
-        type : "updateGame",
-        msg : string,
+        type : "shooting",
+        row : number,
+        col : number
+    }
+    |
+    {
+        type : "updatingGameWhileNecessary",
+        game : Game,
+        msg : string
     }
 
 type Action =     
     {
-        type : "setMenu"
+        type : "setMenu",
+        msg : string,
     }
     |
     {
         type : "setCreatingGame"
-    }
-    |
-    {
-        type : "setCreatingGameWithMsg",
-        msg : string
-    }
-    |
-    {
-        type : "setMatchmaking"
-    }
-    |
-    {
-        type : "setMatchmakingWithMsg",
-        msg : string
     }
     |
     {
@@ -90,15 +74,6 @@ type Action =
     }
     |
     {
-        type : "setUpdatingGame"
-    }
-    |
-    {
-        type : "setUpdatingWithMsg",
-        msg : string
-    }
-    |
-    {
         type : "setPlacingShips",
         row : number,
         col : number
@@ -109,11 +84,14 @@ type Action =
     }
     |
     {
-        type : "setUpdateGame"
+        type : "setShooting",
+        row : number,
+        col : number
     }
     |
     {
-        type : "setUpdateGameWithMsg",
+        type : "setUpdatingGameWhileNecessary",
+        game : Game,
         msg : string
     }
 
@@ -121,23 +99,11 @@ function reducer(state: State, action: Action): State {
     switch(action.type) {
         case 'setMenu' : {
             logger.info("setStatic")
-            return {type : 'menu'}
-        }
-        case 'setMatchmaking' : {
-            logger.info("setMatchmaking")
-            return {type : 'matchmaking', msg : null}
-        }
-        case 'setMatchmakingWithMsg' : {
-            logger.info("setMatchmakingWithMsg")
-            return {type : 'matchmaking', msg : action.msg}
+            return {type : 'menu', msg: action.msg}
         }
         case 'setCreatingGame' : {
             logger.info("setCreatingGame")
-            return {type : 'creatingGame', msg : null}
-        }
-        case 'setCreatingGameWithMsg' : {
-            logger.info("setCreatingGameWithMsg")
-            return {type : 'creatingGame', msg : action.msg}
+            return {type : 'creatingGame'}
         }
         case 'setPlaying' : {
             logger.info("setPlaying")
@@ -147,14 +113,6 @@ function reducer(state: State, action: Action): State {
             logger.info("setPlayingWithMsg")
             return {type : 'playing', game : action.game, msg : action.msg}
         }
-        case 'setUpdatingGame' : {
-            logger.info("setUpdatingGame")
-            return {type : 'updatingGame', msg : null}
-        }
-        case 'setUpdatingWithMsg' : {
-            logger.info("setUpdatingWithMsg")
-            return {type : 'updatingGame', msg : action.msg}
-        }
         case 'setPlacingShips' : {
             logger.info("setPlacingShips")
             return {type : 'placingShips', row : action.row, col : action.col}
@@ -163,13 +121,13 @@ function reducer(state: State, action: Action): State {
             logger.info("setConfirmingFleet")
             return {type : 'confirmingFleet'}
         }
-        case 'setUpdateGame' : {
-            logger.info("setUpdateGame")
-            return {type : 'updateGame', msg : null}
+        case 'setShooting' : {
+            logger.info("setShooting")
+            return {type : 'shooting', row : action.row, col : action.col}
         }
-        case 'setUpdateGameWithMsg' : {
-            logger.info("setUpdateGameWithMsg")
-            return {type : 'updateGame', msg : action.msg}
+        case 'setUpdatingGameWhileNecessary' : {
+            logger.info("setUpdatingGameWhileNecessary")
+            return {type : 'updatingGameWhileNecessary', game : action.game, msg : action.msg}
         }
     }
 }
@@ -182,19 +140,9 @@ export function Game() {
         logger.info("checkingForExistingOnGoingGame")
         const resp = await Services.getGame()
         if (typeof resp === 'string') {
-            dispatch({type:'setMenu'})
+            dispatch({type:'setMenu', msg: resp})
         } else {
-            dispatch({type:'setPlaying', game: resp})
-        }
-    }
-
-    async function updateGame() {
-        logger.info("updatingGame")
-        const resp = await Services.getGame()
-        if (typeof resp === 'string') {
-            dispatch({type:'setUpdatingWithMsg', msg: resp as unknown as string})
-        } else {
-            dispatch({type:'setPlaying', game: resp})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: resp, msg : undefined})
         }
     }
 
@@ -214,8 +162,8 @@ export function Game() {
         })
         if (createGameResponse) {
             if (typeof createGameResponse === 'string') {
-                dispatch({type:'setCreatingGameWithMsg', msg: createGameResponse})
-            } else dispatch({type:'setMatchmaking'})
+                dispatch({type:'setMenu', msg: createGameResponse})
+            } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : undefined})
         }
     }
 
@@ -231,7 +179,7 @@ export function Game() {
                 operation: "place-ships",
                 ships: [
                     {
-                        shipType: ship, // TODO uppercase
+                        shipType: ship,
                         position: {row: row, column: col},
                         orientation: "HORIZONTAL"
                     }
@@ -239,9 +187,9 @@ export function Game() {
                 fleetConfirmed: false
             })
             if (typeof resp === 'string') {
-                dispatch({type:'setUpdateGameWithMsg', msg: resp})
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
             } else {
-                dispatch({type:'setUpdateGame'})
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
             }
         }
     }
@@ -250,9 +198,9 @@ export function Game() {
         logger.info("confirming fleet")
         const resp = await Services.confirmFleet()
         if (typeof resp === 'string') {
-            dispatch({type:'setUpdateGameWithMsg', msg: resp})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
-            dispatch({type:'setUpdateGame'})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
         }
     }
 
@@ -260,9 +208,32 @@ export function Game() {
         logger.info("shooting in " + row + " " + col)
         const resp = await Services.attack({row: row, column: col})
         if (typeof resp === 'string') {
-            dispatch({type:'setUpdateGameWithMsg', msg: resp})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
-            dispatch({type:'setUpdateGame'})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+        }
+    }
+
+    async function updateGameWhileNecessary() {
+        function isMyTurn(game: Game) {
+            const myPlayer = game.myPlayer
+            const playerTurn = game.playerTurn
+            if (playerTurn === game.player1 && myPlayer === 'ONE') return true
+            return playerTurn === game.player2 && myPlayer === 'TWO';
+        }
+
+        logger.info("updatingGameWhileNotMyTurn")
+        while (true) {
+            const resp = await Services.getGame()
+            if (typeof resp !== 'string') {
+                if (resp.state != 'battle' || isMyTurn(resp)) {
+                    dispatch({type: 'setPlaying', game: resp})
+                    break
+                }
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: undefined})
+                return
+            }
+            setTimeout(function() {}, 800);
         }
     }
 
@@ -282,12 +253,16 @@ export function Game() {
                     await createGame()
                     break
                 }
-                case 'updatingGame' : {
-                    await updateGame()
+                case 'matchmaking' || 'updatingGameWhileNecessary': {
+                    await updateGameWhileNecessary()
                     break
                 }
                 case 'placingShips' : {
                     await placeShip(state.row, state.col)
+                    break
+                }
+                case 'shooting' : {
+                    await shoot(state.row, state.col)
                 }
             }
         }
@@ -299,31 +274,42 @@ export function Game() {
     } if (state.type === "menu") {
         return <Menu
             onCreateGameRequest={() => dispatch({type : 'setCreatingGame'})}
-            onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}
+            onUpdateRequest={() => dispatch({type : 'setUpdatingGameWhileNecessary', game : undefined, msg: undefined})}
         />
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
-    } else if (state.type === "matchmaking") {
-        return <Matchmaking onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})} msg={state.msg} />
     } else if (state.type === "playing") {
         return <Playing
             game={state.game}
             onPlaceShip={(row, col) => dispatch({type : 'setPlacingShips', row, col})}
             onShipChange={onShipChange}
-            onConfirmFleetRequest={confirmFleet}
-            onShot={shoot}
-            onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}
+            onConfirmFleetRequest={() => dispatch({type : 'setConfirmingFleet'})}
+            onShot={(row, col) => dispatch({type : 'setShooting', row, col})}
+            onUpdateRequest={() => dispatch({type : 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})}
         />
-    } else if (state.type === "updatingGame") {
-        return <UpdatingGame msg={state.msg}/>
+    } else if (state.type === "updatingGameWhileNecessary") {
+        if (state.game) {
+            return <Playing
+                game={state.game}
+                onPlaceShip={() => {}}
+                onShipChange={() => {}}
+                onConfirmFleetRequest={() => {}}
+                onShot={() => {}}
+                onUpdateRequest={() => {}}
+            />
+        } else {
+            return (
+                <div>
+                    <h1>Updating Game</h1>
+                    <p>{state.msg}</p>
+                </div>
+            )
+        }
     } else if (state.type === "placingShips") {
         return (<div>Placing ships</div>)
     } else if (state.type === "confirmingFleet") {
         return (<div>Confirming fleet</div>)
-    } else if (state.type === "updateGame") {
-        return <UpdateGame msg={state.msg} onUpdateRequest={() => dispatch({type : 'setUpdatingGame'})}/>
-    }
-    else {
+    } else {
         return <div>Unknown state</div>
     }
 }
@@ -355,22 +341,12 @@ function CreatingGame() {
     )
 }
 
-function Matchmaking({msg, onUpdateRequest} : {msg : string, onUpdateRequest : () => void}) {
-    const mainContent =
+function Matchmaking() {
+    return (
         <div>
-            <h1>Waiting</h1>
-            <p><button onClick={onUpdateRequest}>Update Game</button></p>
+            <h1>Matchmaking</h1>
         </div>
-    if (msg) {
-        return (
-            <div>
-                {mainContent}
-                <ErrorMsg msg={msg}/>
-            </div>
-        )
-    } else {
-        return mainContent
-    }
+    )
 }
 
 function UpdatingGame({msg} : {msg : string}) {
@@ -451,7 +427,9 @@ function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot
             </div>
         )
     } else if (game.state === "finished") {
-        // TODO display winner
+        return (
+            <Finished winner={game.winner} />
+        )
     }
 }
 
@@ -483,6 +461,15 @@ function Battle({myBoard, enemyBoard, onShot} : {myBoard : Board, enemyBoard : B
                 <h2>Enemy Board</h2>
                 <Board board={enemyBoard} onCellClick={onShot}/>
             </div>
+        </div>
+    )
+}
+
+function Finished({winner} : {winner : string}) {
+    return (
+        <div>
+            <h1>Finished</h1>
+            <p>Player {winner} has won</p>
         </div>
     )
 }
