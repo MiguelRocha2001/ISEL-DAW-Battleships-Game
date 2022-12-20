@@ -3,22 +3,14 @@ import {
     useState,
     useEffect,
 } from 'react'
-import { Show } from '../utils/Show'
+import { ShowSirenProperties } from '../utils/ShowSirenProperties'
 import { Services } from '../services'
 
 export function Rankings() {
-    const [content, setContent] = useState(undefined)
-    React.useEffect(() => {
-        async function fetchContent() {
-            const content = await Services.fetchBattleshipRanks()
-            setContent(content)
-        }
-        setContent(undefined)
-        fetchContent()
-    }, [])
+    const content = Services.fetchBattleshipRanks()
     return (
         <div>
-            <Show content={content} property="users" />
-        </div>
+            <ShowSirenProperties content={content} properties={['users']} />
+        </div >
     )
 }

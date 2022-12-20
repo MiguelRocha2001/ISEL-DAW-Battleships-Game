@@ -2,26 +2,25 @@ import { links } from './server_info/links'
 import { auth } from './server_info/auth'
 import { Siren } from './utils/siren'
 import { Action } from './utils/siren'
-import { useFetch } from './utils/useFetch'
 import { doFetch } from './utils/useFetch'
 import { Fetch } from './utils/useFetch'
 import { Logger } from "tslog";
 import { KeyValuePair } from './utils/useFetch'
 import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest, Position} from './domain'
+import {State, useFetchNew} from "./utils/useFetch-reducer";
 
 const logger = new Logger({ name: "Navigation" });
 
 
-function useFetchHome(): Siren | undefined {
+function useFetchHome(): any | string {
     const defaultUrl = links.defaultUrl
-    const resp = useFetch({ url: defaultUrl, method: "GET" })
-    
-    if (resp) {
-        logger.info("fetchHome: responde sucessfull")
-        const serverInfoLink = Siren.extractInfoLink(resp.links)
-        const battleshipRanksLink = Siren.extractBattleshipRanksLink(resp.links)
-        const tokenAction = Siren.extractTokenAction(resp.actions)
-        const registerAction = Siren.extractRegisterAction(resp.actions)
+    const state = useFetchNew({ url: defaultUrl, method: "GET" })
+    return handlerOrError(state, (siren: Siren) => {
+        logger.info("fetchHome: response sucessfull")
+        const serverInfoLink = Siren.extractInfoLink(siren.links)
+        const battleshipRanksLink = Siren.extractBattleshipRanksLink(siren.links)
+        const tokenAction = Siren.extractTokenAction(siren.actions)
+        const registerAction = Siren.extractRegisterAction(siren.actions)
         if (serverInfoLink)
             logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
         if (battleshipRanksLink)
@@ -33,34 +32,30 @@ function useFetchHome(): Siren | undefined {
         links.setInfoLink(serverInfoLink)
         links.setBattleshipRanksLink(battleshipRanksLink)
         links.setTokenAction(tokenAction)
-    }
-    return resp
+        return siren.properties
+    })
 }
 
-function useFetchServerInfo(): Siren | undefined {
+function useFetchServerInfo(): Siren | string {
     const infoLink = links.getInfoLink()
-    const resp = useFetch({ url: infoLink, method: "GET" })
-    if (resp) {
-        logger.info("fetchServerInfo: responde sucessfull")
-        return resp
-    } else return undefined
+    const state = useFetchNew({ url: infoLink, method: "GET" })
+    return handlerOrError(state, (siren: Siren) => {
+        logger.info("fetchServerInfo: response sucessfull")
+        return siren.properties
+    })
 }
 
-function fetchBattleshipRanks(): Siren | undefined {
+function useFetchBattleshipRanks(): Siren | string {
     const ranksLink = links.getBattleshipRanksLink()
     if (ranksLink) {
-        const resp = useFetch({ url: ranksLink, method: "GET" })
-        if (resp) {
-            logger.info("fetchBattleshipRanks: responde sucessfull")
-            return resp
-        } else return undefined
+        const state = useFetchNew({url: ranksLink, method: "GET"})
+        return handlerOrError(state, (siren: Siren) => {
+            logger.info("fetchServerInfo: response successful")
+            return siren.properties
+        })
     }
-    const resp = useFetchHome()
-    if (resp) {
-        const link = Siren.extractBattleshipRanksLink(resp.links)
-        return useFetch({ url: link, method: "GET" })
-    }
-    return undefined
+    logger.error("useFetchBattleshipRanks: link not found")
+    return 'Please, return to home page'
 }
 
 async function fetchToken(fields: KeyValuePair[]): Promise<string | undefined> {
@@ -100,30 +95,7 @@ async function fetchToken(fields: KeyValuePair[]): Promise<string | undefined> {
 }
 
 async function useRegisterNewUser(fields: KeyValuePair[]) {
-    function useRegisterNewUserInternal(fields: KeyValuePair[], action: Action) {
-        if (Siren.validateFields(fields, action)) {
-            const request = {
-                url: action.href,
-                method: action.method,
-                body: fields
-            }
-            const resp = useFetch(request)
-            if (resp) {
-                logger.info("registerUser: responde sucessfull")
-                return resp
-            }
-        }
-    }
-    const action = links.getRegisterAction()
-    if (action) {
-        useRegisterNewUserInternal(fields, action)
-    } else {
-        const resp = useFetchHome()
-        if (resp) {
-            const action = Siren.extractRegisterAction(resp.actions)
-            useRegisterNewUserInternal(fields, action)
-        }
-    }
+    
 }
 
 async function fetchUserHome(): Promise<void | string> {
@@ -287,6 +259,7 @@ async function getGame(): Promise<Game | string> {
     }
 }
 
+
 // TODO -> fails when parsing placeShipsRequest to JSON (but server doesnt responds well)
 async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | string> {
     const token = auth.getToken()
@@ -315,7 +288,6 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
     }
     return 'placeShipsRequest not valid'
 }
-
 async function confirmFleet(): Promise<void | string> {
     const token = auth.getToken()
     const action = links.getConfirmFleetAction()
@@ -373,10 +345,27 @@ async function attack(attackRequest: Position): Promise<void | string> {
     return 'attackRequest not valid'
 }
 
+function handlerOrError(state: State, handler: (siren: Siren) => any): any | string {
+    switch (state.type) {
+        case 'response' : {
+            return handler(state.response)
+        }
+        case "fetching" : {
+            return 'Loading'
+        }
+        case "error" : {
+            return 'Error'
+        }
+        case 'started' : {
+            return 'Loading'
+        }
+    }
+}
+
 export const Services = {
     useFetchHome,
     useFetchServerInfo,
-    fetchBattleshipRanks,
+    fetchBattleshipRanks: useFetchBattleshipRanks,
     fetchToken,
     useRegisterNewUser,
     isLogged,

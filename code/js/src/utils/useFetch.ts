@@ -13,7 +13,7 @@ const CONTENT_TYPE_JSON = 'application/json'
 export type Request = {
     url: string
     method: string
-    body?: Body,
+    body?: Body
     token?: string
 }
 
@@ -35,36 +35,6 @@ function toBody(obj: any): Body {
 function validateRequestMethod(request: Request): boolean {
     const method = request.method.toUpperCase()
     return request.url && (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE')
-}
-
-export function useFetch(request: Request): Siren | undefined {
-    const [content, setContent] = useState(undefined)
-    useEffect(() => {
-        let cancelled = false
-        async function doFetch() {
-            if (request && validateRequestMethod(request)) {
-                logger.info("sending request to: ", links.host + request.url)
-                const resp = await fetch(links.host + request.url, {
-                    method: request.method,
-                    body: request.body ? buildBody(request.body) : undefined,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + request.token
-                    },
-                })
-                const body = await resp.json()
-                if (!cancelled) {
-                    setContent(body)
-                }
-            }
-        }
-        setContent(undefined)
-        doFetch()
-        return () => {
-            cancelled = true
-        }
-    }, [request.url, request.method, request.body])
-    return content
 }
 
 export async function doFetch(request: Request): Promise<Siren> {
@@ -105,6 +75,5 @@ function buildBody(fields: KeyValuePair[]): string {
 
 export const Fetch = {
     doFetch,
-    useFetch,
     toBody
 }

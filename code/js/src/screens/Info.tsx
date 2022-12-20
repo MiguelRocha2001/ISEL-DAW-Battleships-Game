@@ -1,16 +1,13 @@
 import * as React from 'react'
-import {
-    useState,
-    useEffect,
-} from 'react'
-import { Show } from '../utils/Show'
+import { ShowSirenProperties } from '../utils/ShowSirenProperties'
 import { Services } from '../services'
 
 export function Info() {
     const content = Services.useFetchServerInfo()
+    console.log(content)
     return (
         <div>
-            <Show content={content} property="authors" />
+            <ShowSirenProperties content={content} properties={['authors', 'systemVersion']} />
         </div >
     )
 }
