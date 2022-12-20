@@ -1,9 +1,5 @@
-import {
-    useReducer,
-    useEffect,
-} from 'react'
+import {useEffect, useReducer,} from 'react'
 import {links} from "../server_info/links";
-import * as repl from "repl";
 import {Logger} from "tslog";
 import {Siren} from "./siren";
 

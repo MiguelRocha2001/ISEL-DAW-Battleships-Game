@@ -1,4 +1,4 @@
-import { Logger } from "tslog";
+import {Logger} from "tslog";
 
 const logger = new Logger({ name: "Siren" });
 

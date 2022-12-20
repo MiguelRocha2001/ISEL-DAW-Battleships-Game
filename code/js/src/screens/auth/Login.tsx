@@ -1,9 +1,8 @@
 import * as React from "react"
-import { useState } from "react"
-import { flushSync, unstable_batchedUpdates } from "react-dom"
-import { Navigate, useLocation, useNavigate } from "react-router-dom"
-import { Services } from "../../services"
-import { useSetUser } from "./Authn"
+import {useState} from "react"
+import {Navigate, useLocation, useNavigate} from "react-router-dom"
+import {Services} from "../../services"
+import {useSetUser} from "./Authn"
 
 function delay(delayInMs: number) {
     return new Promise((resolve, reject) => {

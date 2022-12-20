@@ -1,10 +1,8 @@
 import * as React from 'react'
-import {
-    useEffect, useState,
-} from 'react'
-import { Services } from '../services'
-import {Board, Game, PlaceShipsRequest} from '../domain'
-import { Logger } from "tslog";
+import {useEffect, useState} from 'react'
+import {Services} from '../services'
+import {Board, Game} from '../domain'
+import {Logger} from "tslog";
 
 
 const logger = new Logger({ name: "GameScreen" });

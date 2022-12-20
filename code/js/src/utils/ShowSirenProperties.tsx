@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Siren } from './siren'
 
 /**
  * Shows the properties of a Siren object, or just the string, if obj is a string.
@@ -18,7 +17,7 @@ export function ShowSirenProperties({ content, properties }: { content: any | st
         .filter(key => properties.includes(key))
         .map(key =>
             <div key = {key}>
-                <h1>{key.toUpperCase()}</h1>
+                <h3>{key.toUpperCase()}</h3>
                 <p>{JSON.stringify(content[key])}</p>
             </div>
         )

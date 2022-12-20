@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { ShowSirenProperties } from '../utils/ShowSirenProperties'
-import { Services } from '../services'
+import {ShowSirenProperties} from '../utils/ShowSirenProperties'
+import {Services} from '../services'
 
 export function Info() {
     const content = Services.useFetchServerInfo()

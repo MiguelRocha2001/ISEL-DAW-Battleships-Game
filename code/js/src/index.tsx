@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { createRoot } from 'react-dom/client'
-import { Router } from './App'	
-import { TopBar } from './AppBar'
+import {createRoot} from 'react-dom/client'
+import {Router} from './App'
+import {TopBar} from './AppBar'
 
 const root = createRoot(document.getElementById("the-div"))
 

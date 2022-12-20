@@ -1,14 +1,12 @@
 import * as React from 'react'
-import {
-    createBrowserRouter, Link, RouterProvider, useParams, Outlet
-} from 'react-router-dom'
-import { Info } from './screens/Info'
-import { Home } from './screens/Home'
-import { Rankings } from './screens/Rankings'
-import { AuthnContainer } from './screens/auth/Authn'
-import { Me } from './screens/Me'
-import { Game } from './screens/Game'
-import { Login } from './screens/auth/Login'
+import {createBrowserRouter, Outlet, RouterProvider} from 'react-router-dom'
+import {Info} from './screens/Info'
+import {Home} from './screens/Home'
+import {Rankings} from './screens/Rankings'
+import {AuthnContainer} from './screens/auth/Authn'
+import {Me} from './screens/Me'
+import {Game} from './screens/Game'
+import {Login} from './screens/auth/Login'
 
 
 const router = createBrowserRouter([

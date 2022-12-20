@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import { useCurrentUser } from './Authn'
+import {Navigate, useLocation} from 'react-router-dom'
+import {useCurrentUser} from './Authn'
 
 export function RequireAuthn({ children }: { children: React.ReactNode }): React.ReactElement {
     const currentUser = useCurrentUser()
