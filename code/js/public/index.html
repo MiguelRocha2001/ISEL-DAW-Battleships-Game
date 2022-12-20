@@ -1,11 +1,93 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Intro</title>
-        <script src="/main.js" type="module"></script>
-    </head>
-    <body>
-        <h1>Battleships Game</h1>
-        <div id="the-div"></div>
-    </body>
+<html lang="en">
+<head>
+    <!--  Required meta tags always come first  -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Battleship</title>
+    <!--  Font Awesome  -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <style>
+        html,
+        body,
+        header,
+        .jarallax {
+            height: 100px;
+        }
+        @media (max-width: 740px) {
+            html,
+            body,
+            header,
+            .jarallax {
+                height: 100vh;
+            }
+        }
+
+        @media (min-width: 800px) and (max-width: 850px) {
+            html,
+            body,
+            header
+        }
+
+        .navbar:not {
+            background: blue;
+        }
+
+        .top-nav-collapse {
+            background-color: #3f51b5!important;
+        }
+        .navbar:not(.top-nav-collapse) {
+            background: blue;
+        }
+        @media (max-width: 768px) {
+            .navbar:not(.top-nav-collapse) {
+                background: #3f51b5!important;
+            }
+        }
+        @media (min-width: 800px) and (max-width: 850px) {
+            .navbar:not(.top-nav-collapse) {
+                background: #3f51b5!important;
+            }
+        }
+        h5 {
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Main Navigation -->
+<header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container smooth-scroll">
+            <a class="navbar-brand" href="./"><strong>Battleships</strong></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-7" aria-controls="navbarSupportedContent-7" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent-7">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="../info">Info <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../ranking" data-offset="60">Rankings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../auth" data-offset="60">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- Main Layout -->
+<main>
+    <div class="container" id="the-div"></div>
+</main>
+
+</body>
+
 </html>
