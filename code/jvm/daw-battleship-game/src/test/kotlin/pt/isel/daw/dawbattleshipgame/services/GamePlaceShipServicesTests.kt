@@ -50,7 +50,7 @@ class GamePlaceShipServicesTests {
     }
 
     @Test
-    fun placeTwoShipsOfSameType() { //IT IS INVALID TO HAVE TWO SHIPS OF THE SAME TYPE
+    fun placeTwoShipsOfSameType() {
         testWithTransactionManagerAndRollback {
             val gameServices = GameServices(it)
             val userPair = createUserPair(it)

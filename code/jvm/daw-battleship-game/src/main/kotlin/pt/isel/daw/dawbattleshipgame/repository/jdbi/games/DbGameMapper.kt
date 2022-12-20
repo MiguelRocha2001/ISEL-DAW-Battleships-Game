@@ -23,7 +23,7 @@ data class DbBoardMapper(val game: Int, val _user: Int, val confirmed: Boolean, 
 data class DbConfigurationMapper(
         val game: Int,
         val board_size: Int,
-        val n_shots: Int,
+        val n_shots: Long,
         val fleet : String,
         val timeout: Long
         ){

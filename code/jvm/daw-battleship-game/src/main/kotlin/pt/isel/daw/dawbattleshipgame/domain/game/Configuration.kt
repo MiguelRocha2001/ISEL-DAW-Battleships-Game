@@ -16,7 +16,7 @@ data class Configuration(
         @JsonProperty("fleet")
     val fleet: Map<ShipType, Int>, // List<Ship:Occupation>
         @JsonProperty("shots")
-    val shots: Int,
+    val shots: Long,
         @JsonProperty("roundTimeout")
     val roundTimeout: Long
 ) {

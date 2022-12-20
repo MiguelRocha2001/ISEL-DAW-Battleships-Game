@@ -14,7 +14,7 @@ import pt.isel.daw.dawbattleshipgame.http.requireWithException
 data class CreateGameInputModel(
         val boardSize: Int,
         val fleet: Map<ShipTypeInputModel, Int>,
-        val shots: Int,
+        val shots: Long,
         val roundTimeout: Long
 ) {
     init {
@@ -28,7 +28,7 @@ data class CreateGameInputModel(
             fleet.isNotEmpty()
         }
         requireWithException(INVALID_INPUT,
-                "Number of shots per round must be in range [1..5]"){
+                "Number of shots per round must be in range [1..5] shots = $shots"){
             shots in (1..5)
         }
         requireWithException(INVALID_INPUT,
