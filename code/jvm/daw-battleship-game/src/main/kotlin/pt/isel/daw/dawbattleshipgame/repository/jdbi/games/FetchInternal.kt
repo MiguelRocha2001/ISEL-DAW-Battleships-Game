@@ -22,7 +22,7 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
     val dbConfigurationMapper = getDbConfigurationMapper(handle, gameId) ?:
         throw IllegalStateException("Game $gameId has no configuration")
 
-    val configuration = buildConfiguration(dbConfigurationMapper, getDbShipMapper(handle, gameId))
+    val configuration = dbConfigurationMapper.toConfiguration()
     val player1Board = Board(player1DbBoardMapper.grid, player1DbBoardMapper.confirmed)
     val player2Board = Board(player2DbBoardMapper.grid, player2DbBoardMapper.confirmed)
 
@@ -52,19 +52,6 @@ private fun getGameIdByUser(handle: Handle, userId: Int): Int? {
         .firstOrNull() ?: return null
     return dbGameMapper.id
 }
-
-private fun buildConfiguration(
-    dbConfigurationMapper: DbConfigurationMapper,
-    dbShipMapperList: List<DbShipMapper>
-): Configuration {
-    return Configuration(
-        dbConfigurationMapper.board_size,
-        dbShipMapperList.map { it.name.toShipType() to it.length }.toSet(),
-        dbConfigurationMapper.n_shots,
-        dbConfigurationMapper.timeout
-    )
-}
-
 private fun getDbGameMapper(handle: Handle, gameId: Int): DbGameMapper? {
     return handle.createQuery("select * from GAME where id = :id")
         .bind("id", gameId)

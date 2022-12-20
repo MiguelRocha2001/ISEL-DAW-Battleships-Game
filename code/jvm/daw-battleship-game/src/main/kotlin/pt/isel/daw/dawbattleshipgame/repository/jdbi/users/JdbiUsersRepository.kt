@@ -2,12 +2,12 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.users
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 import pt.isel.daw.dawbattleshipgame.repository.UsersRepository
-
 class JdbiUsersRepository(
     private val handle: Handle
 ) : UsersRepository {
@@ -87,6 +87,22 @@ class JdbiUsersRepository(
             .firstOrNull()
     }
 
+    override fun getFirstUserWithSameConfigInQueue(config: Configuration): Int? {
+        return handle.createQuery("select _user from USER_QUEUE where config_hash = :hash order by priority limit 1")
+                .bind("hash", config.hashCode())
+                .mapTo<Int>()
+                .firstOrNull()
+    }
+
+    override fun getConfigFromUserQueue(userId: Int): Configuration? {
+        val jsonConfig = handle.createQuery("select config from USER_QUEUE where _user = :userid")
+                .bind("userid", userId)
+                .mapTo<String>()
+                .firstOrNull() ?: return null
+        println(jsonConfig)
+        return Configuration.mapper.readValue(jsonConfig, Configuration::class.java)
+    }
+
     override fun removeUserFromQueue(userWaiting: Int) {
         handle.createUpdate("delete from USER_QUEUE where _user = :_user")
             .bind("_user", userWaiting)
@@ -100,10 +116,12 @@ class JdbiUsersRepository(
             .single() != 0
     }
 
-    override fun insertInGameQueue(userId: Int): Boolean {
+    override fun insertInGameQueue(userId: Int, config : Configuration): Boolean {
         if (!isAlreadyInQueue(userId)) {
-            handle.createUpdate("insert into USER_QUEUE(_user) values (:_user)")
+            handle.createUpdate("insert into USER_QUEUE(_user, config_hash, config) values (:_user, :config_hash, :config)")
                 .bind("_user", userId)
+                .bind("config_hash", config.hashCode().also { println(it) }) //will generate a hash that is equal if two configs are equal
+                .bind("config", Configuration.mapper.writeValueAsString(config))
                 .execute()
             return true
         }

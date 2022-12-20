@@ -16,8 +16,7 @@ class DefaultErrorHandler {
     @ResponseBody
     fun handleException(ex: Exception): ResponseEntity<Problem> {
         return when(ex) {
-            is ApiException -> Problem.response(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(), Problem(
+            is ApiException -> Problem.response(ex.status, Problem(
                         ex.type, ex.title, ex.detail
                     ))
             else -> Problem.response(

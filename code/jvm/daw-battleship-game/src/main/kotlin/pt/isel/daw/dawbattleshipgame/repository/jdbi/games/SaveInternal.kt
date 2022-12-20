@@ -1,5 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
@@ -13,7 +14,7 @@ internal fun insertGame(handle: Handle, game: Game) {
         """
                 insert into GAME(id, player1, player2, state, winner, player_turn, created, updated, deadline)
                 values(:id, :player1, :player2, :state, :winner, :player_turn, :created, :updated, :deadline) 
-            """
+            """.trimMargin()
     )
         .bind("id", game.id)
         .bind("player1", game.player1)
@@ -32,7 +33,7 @@ internal fun makeGame(handle: Handle, game: InitGame): Int? {
             """
                 insert into GAME(player1, player2)
                 values(:player1, :player2) 
-            """
+            """.trimMargin()
     )
             .bind("player1", game.player1)
             .bind("player2", game.player2)
@@ -51,7 +52,7 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
         """
                      insert into BOARD(game, _user, confirmed, grid)
                      values(:game, :_user, :confirmed, :grid)
-                    """
+                    """.trimMargin()
     )
         .bind("game", gameId)
         .bind("_user", user)
@@ -64,46 +65,17 @@ internal fun insertBoard(handle: Handle, gameId: Int, user: Int, board: Board) {
 fun insertConfiguration(handle: Handle, gameId: Int, configuration: Configuration) {
     handle.createUpdate(
         """
-                        insert into CONFIGURATION(game, board_size, n_shots, timeout)
-                        values(:game, :board_size, :n_shots, :timeout)
-                    """
+                        insert into CONFIGURATION(game, board_size, n_shots, timeout, fleet)
+                        values(:game, :board_size, :n_shots, :timeout, :fleet)
+                    """.trimMargin()
     )
         .bind("game", gameId)
         .bind("board_size", configuration.boardSize)
         .bind("n_shots", configuration.shots)
         .bind("timeout", configuration.roundTimeout)
-        .execute()
-    insertConfigurationShips(handle, gameId, configuration.fleet)
-}
-
-fun insertConfigurationShips(handle: Handle, gameId: Int, ships: Set<Pair<ShipType, Int>>) {
-    ships.forEach { (shipType, length) ->
-        handle.createUpdate(
-            """
-                        insert into SHIP(configuration, name, length)
-                        values(:configuration, :name, :length)
-                    """
-        )
-            .bind("configuration", gameId)
-            .bind("name", shipType.name.lowercase())
-            .bind("length", length)
-            .execute()
-    }
-}
-
-fun confirmBoard(handle: Handle, gameId: Int, playerId: Int) {
-    handle.createUpdate(
-        """
-                update BOARD
-                set confirmed = true
-                where game = :game and user = :_user
-                    """
-    )
-        .bind("game", gameId)
-        .bind("user", playerId)
+        .bind("fleet", Configuration.mapper.writeValueAsString(configuration.fleet))
         .execute()
 }
-
 
 fun updateGame(handle: Handle, game: Game) {
     handle.createUpdate(
@@ -136,15 +108,12 @@ fun updateBoard(handle: Handle, board: Board, userId : Int, gameId: Int) {
 }
 
 fun deleteGame(handle: Handle, gameId: Int) {
-    handle.createUpdate("""delete from SHIP where configuration = :configuration""").bind("configuration", gameId)
-        .execute()
     handle.createUpdate("""delete from CONFIGURATION where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from BOARD where game = :game""").bind("game", gameId).execute()
     handle.createUpdate("""delete from GAME where id = :id""").bind("id", gameId).execute()
 }
 
 fun clearAllTables(handle: Handle) {
-    handle.createUpdate("""delete from SHIP""").execute()
     handle.createUpdate("""delete from BOARD""").execute()
     handle.createUpdate("""delete from CONFIGURATION""").execute()
     handle.createUpdate("""delete from GAME""").execute()

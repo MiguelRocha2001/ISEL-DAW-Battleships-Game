@@ -6,7 +6,8 @@ import java.net.URI
 class ApiException(
         val type : URI,
         val title : String,
-        val detail : String
+        val detail : String,
+        val status : Int = 400,
         ) : Exception(detail)
 
 fun requireWithException(title: String, detail: String,

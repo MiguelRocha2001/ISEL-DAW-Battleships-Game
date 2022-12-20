@@ -103,12 +103,7 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
 
 
 fun Game.confirmFleet(player: Player): Game? {
-    /*
-    require(getBoard(player).allShipsPlaced(configuration.fleet.toMap())) {
-        "All ships must be placed"
-    } */
-   if(!getBoard(player).allShipsPlaced(configuration.fleet.toMap())) { return null }
-
+   if(!getBoard(player).allShipsPlaced(configuration.fleet)) { return null }
     val isOtherConfirmed = getBoard(player.other()).isConfirmed()
     return this.updateGame(
             getBoard(player).confirm(),
@@ -176,7 +171,7 @@ private fun isShipNearCoordinate(c: Coordinate, board: Board, shipType: ShipType
  * Retrieves the ship length according to class game configuration.
  */
 private fun Game.getShipLength(shipType: ShipType) =
-        configuration.fleet.first { it.first === shipType }.second
+        configuration.fleet.getValue(shipType)
 
 private fun Game.isShipPlaced(shipType: ShipType, player: Player) =
         getBoard(player).getShips().map { it.type }.any { it === shipType }
@@ -202,8 +197,8 @@ fun Game.generateShips(): Game {
     }
 
     configuration.fleet.forEach {
-        tryRandomCoordinate(board1, it.second, it.first, Player.ONE)
-        tryRandomCoordinate(board2, it.second, it.first, Player.TWO)
+        tryRandomCoordinate(board1, it.value, it.key, Player.ONE)
+        tryRandomCoordinate(board2, it.value, it.key, Player.TWO)
     }
     return game
 }

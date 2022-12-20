@@ -17,7 +17,7 @@ import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 fun getGameTestConfiguration1() = Configuration(
     boardSize = 15,
     shots = 5,
-    fleet = setOf(
+    fleet = mapOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
         Pair(ShipType.CRUISER, 3),
@@ -29,9 +29,9 @@ fun getGameTestConfiguration1() = Configuration(
 
 fun getGameTestConfiguration2() = Configuration(
     boardSize = 10,
-    fleet = setOf(
-        Pair(ShipType.BATTLESHIP, 4),
-        Pair(ShipType.DESTROYER, 2)
+    fleet = mapOf(
+        ShipType.BATTLESHIP to 4,
+        ShipType.DESTROYER to 2
     ),
     shots = 5,
     roundTimeout = 10
@@ -39,7 +39,7 @@ fun getGameTestConfiguration2() = Configuration(
 
 fun getGameTestConfiguration3() = Configuration(
     boardSize = 8,
-    fleet = setOf(
+    fleet = mapOf(
         Pair(ShipType.DESTROYER, 2)
     ),
     shots = 5,
@@ -49,7 +49,7 @@ fun getGameTestConfiguration3() = Configuration(
 fun getGameTestConfiguration4() = Configuration(
     boardSize = 10,
     shots = 5,
-    fleet = setOf(
+    fleet = mapOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
         Pair(ShipType.CRUISER, 3),
@@ -62,7 +62,7 @@ fun getGameTestConfiguration4() = Configuration(
 fun getGameTestConfiguration5() = Configuration(
     boardSize = 13,
     shots = 5,
-    fleet = setOf(
+    fleet = mapOf(
         Pair(ShipType.CARRIER, 5),
         Pair(ShipType.BATTLESHIP, 4),
         Pair(ShipType.CRUISER, 3),

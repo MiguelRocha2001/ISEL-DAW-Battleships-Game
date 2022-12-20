@@ -4,16 +4,17 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinates
+import pt.isel.daw.dawbattleshipgame.http.ApiException
 
 internal class CoordinateTest {
 
     @Test
     fun creation_of_invalid_coordinate() {
-        val thrown: IllegalStateException = assertThrows(IllegalStateException::class.java) {
+        val thrown: ApiException = assertThrows(ApiException::class.java) {
             Coordinate(-2, 4)
         }
 
-        assertTrue(thrown.message == "Row or Column cannot be lower than 1")
+        assertTrue(thrown.message == "Row must be greater then 0")
 
     }
 

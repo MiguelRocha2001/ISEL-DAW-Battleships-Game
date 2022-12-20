@@ -21,7 +21,8 @@ class GameServices(
      * Initiates a new game with some other user, awaiting. If there's none,
      * joins a queue and waits for another user to join.
      */
-    fun startGame(userId: Int, configuration: Configuration): GameCreationResult {
+    fun startGame(userId: Int, configuration: Configuration?): GameCreationResult {
+        val quickGame = configuration == null
         return transactionManager.run {
             val gameDb = it.gamesRepository
             val userDb = it.usersRepository
@@ -33,14 +34,19 @@ class GameServices(
                 logger.info("User $userId: Game creation failed: user is already in game")
                 return@run Either.Left(GameCreationError.UserAlreadyInGame)
             }
-            val userWaiting = userDb.getFirstUserInQueue()
+
+            val userWaiting = if(quickGame) userDb.getFirstUserInQueue()
+            else userDb.getFirstUserWithSameConfigInQueue(configuration!!) //safe double bang
+
             if (userWaiting == null) {
-                userDb.insertInGameQueue(userId)
+                userDb.insertInGameQueue(userId,configuration ?: Configuration.DEFAULT)
                 logger.info("User $userId: Game creation successful: user is now in queue")
                 Either.Right(GameState.NOT_STARTED to null)
             } else {
+                val conf = if(quickGame) userDb.getConfigFromUserQueue(userWaiting)
+                else configuration
                 userDb.removeUserFromQueue(userWaiting)
-                val newGame = Game.startGame(userWaiting, userId, configuration)
+                val newGame = Game.startGame(userWaiting, userId, conf!!)
                 val gameId = gameDb.startGame(newGame)
                 gameId ?: Either.Left(GameCreationError.GameNotFound)
                     .also { logger.info("User $userId: Game creation failed: game not found") }
@@ -70,9 +76,9 @@ class GameServices(
      * @param gameId the game's id, or null if game is the current user game
      */
     fun placeShips(
-        userId: Int,
-        ships: List<Triple<ShipType, Coordinate, Orientation>>,
-        fleetConfirmed: Boolean = false
+            userId: Int,
+            ships: List<Triple<ShipType, Coordinate, Orientation>>,
+            confirmFleet: Boolean = false
     ): PlaceShipsResult {
         return transactionManager.run {
             val db = it.gamesRepository
@@ -87,7 +93,7 @@ class GameServices(
                     ?: return@run Either.Left(PlaceShipsError.InvalidMove)
                         .also { logger.info("User $userId: Ship placement failed: invalid move") }
             }
-            if (fleetConfirmed) {
+            if (confirmFleet) {
                 game = game.confirmFleet(player)
                     ?: return@run Either.Left(PlaceShipsError.ActionNotPermitted)
                         .also { logger.info("User $userId: Ship placement failed: action not permitted") }

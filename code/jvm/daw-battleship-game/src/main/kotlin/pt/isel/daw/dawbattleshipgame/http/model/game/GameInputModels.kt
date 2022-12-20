@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
@@ -34,8 +35,15 @@ data class CreateGameInputModel(
                 "Round timeout must be in range [10..240]"){
             roundTimeout in 10..240
         }
-
     }
+
+    fun toConfiguration() =
+            Configuration(
+                    boardSize,
+                    fleet.map { it.key.toShipType() to it.value }.toMap(),
+                    shots,
+                    roundTimeout
+            )
 }
 
 data class CoordinateInputModel(val row: Int, val column: Int) {

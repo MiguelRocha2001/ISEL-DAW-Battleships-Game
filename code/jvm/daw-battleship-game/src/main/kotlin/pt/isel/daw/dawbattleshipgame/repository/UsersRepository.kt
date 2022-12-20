@@ -1,5 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.repository
 
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
@@ -19,9 +20,11 @@ interface UsersRepository {
     fun isUserStoredByUsername(username: String): Boolean
     fun createToken(userId: Int, token: TokenValidationInfo)
     fun getFirstUserInQueue(): Int?
+    fun getFirstUserWithSameConfigInQueue(config: Configuration) : Int?
+    fun getConfigFromUserQueue(userId: Int) : Configuration?
     fun removeUserFromQueue(userWaiting: Int)
     fun isAlreadyInQueue(userId: Int): Boolean
-    fun insertInGameQueue(userId: Int): Boolean
+    fun insertInGameQueue(userId: Int, config : Configuration): Boolean
     fun deleteUser(userId: Int)
     fun isUserStoredById(userId: Int): Boolean
     fun deleteToken(userId: Int)

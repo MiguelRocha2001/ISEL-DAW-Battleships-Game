@@ -2,7 +2,6 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.JsonMediaType
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
@@ -18,19 +17,19 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 class GamesController(
     private val gameServices: GameServices
 ) {
+
+    /**
+     * Create a game, if there is no request body makes a quick game
+     */
     @PostMapping(Uris.Games.My.ALL)
     fun createGame(
         user: User,
-        @RequestBody createGameInputModel: CreateGameInputModel
+        @RequestBody(required = false)
+        createGameInputModel: CreateGameInputModel?
     ): ResponseEntity<*> {
         val res = gameServices.startGame(
-            user.id,
-            Configuration(
-                createGameInputModel.boardSize,
-                createGameInputModel.fleet.map { it.key.toShipType() to it.value }.toSet(),
-                createGameInputModel.shots,
-                createGameInputModel.roundTimeout
-            )
+                user.id,
+                createGameInputModel?.toConfiguration()
         )
         return res.map {
             val gameId = it.second

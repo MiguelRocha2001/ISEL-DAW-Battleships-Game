@@ -1,5 +1,10 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
+
 
 data class DbGameMapper(
     val id: Int,
@@ -15,6 +20,22 @@ data class DbGameMapper(
 
 data class DbBoardMapper(val game: Int, val _user: Int, val confirmed: Boolean, val grid : String)
 
-data class DbConfigurationMapper(val game: Int, val board_size: Int, val n_shots: Int, val timeout: Long)
+data class DbConfigurationMapper(
+        val game: Int,
+        val board_size: Int,
+        val n_shots: Int,
+        val fleet : String,
+        val timeout: Long
+        ){
+    fun toConfiguration(): Configuration {
+        val typeRef = object : TypeReference<Map<ShipType, Int>>() {}
+        return Configuration(
+                board_size,
+                ObjectMapper().readValue(fleet, typeRef),
+                n_shots,
+                timeout
+        )
+    }
+}
 
 data class DbShipMapper(val configuration: Int, val name: String, val length: Int)
