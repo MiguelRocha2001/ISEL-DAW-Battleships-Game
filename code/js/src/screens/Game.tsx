@@ -218,22 +218,24 @@ export function Game() {
         function isMyTurn(game: Game) {
             const myPlayer = game.myPlayer
             const playerTurn = game.playerTurn
-            if (playerTurn === game.player1 && myPlayer === 'ONE') return true
-            return playerTurn === game.player2 && myPlayer === 'TWO';
+                if (playerTurn === game.player1 && myPlayer === 'one') return true
+            return playerTurn === game.player2 && myPlayer === 'two';
         }
 
-        logger.info("updatingGameWhileNotMyTurn")
-        while (true) {
-            const resp = await Services.getGame()
-            if (typeof resp !== 'string') {
-                if (resp.state != 'battle' || isMyTurn(resp)) {
-                    dispatch({type: 'setPlaying', game: resp})
-                    break
-                }
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: undefined})
+        logger.info("updateGameWhileNecessary")
+        const resp = await Services.getGame()
+        if (typeof resp !== 'string') {
+            if (resp.state != 'battle' || isMyTurn(resp)) {
+                dispatch({type: 'setPlaying', game: resp})
                 return
             }
-            setTimeout(function() {}, 800);
+            setTimeout(() => {
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: undefined})
+            }, 1000)
+        } else {
+            setTimeout(() => {
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
+            }, 1000)
         }
     }
 
@@ -253,12 +255,16 @@ export function Game() {
                     await createGame()
                     break
                 }
-                case 'matchmaking' || 'updatingGameWhileNecessary': {
+                case 'updatingGameWhileNecessary': {
                     await updateGameWhileNecessary()
                     break
                 }
                 case 'placingShips' : {
                     await placeShip(state.row, state.col)
+                    break
+                }
+                case 'confirmingFleet' : {
+                    await confirmFleet()
                     break
                 }
                 case 'shooting' : {
