@@ -61,10 +61,11 @@ class GamePlaceShotTests {
         // Invalid user will try to add a ship, without success
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
-                listOf(mapOf(
+                mapOf(
+                        "shots" to listOf(mapOf(
                     "row" to playerOneShot.first,
                     "column" to playerOneShot.second
-                ))
+                )))
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -101,10 +102,11 @@ class GamePlaceShotTests {
         // Invalid user will try to add a ship, without success
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
-                listOf(mapOf(
+                mapOf(
+                       "shots" to listOf(mapOf(
                     "row" to playerOneShot.first,
                     "column" to playerOneShot.second
-                ))
+                )))
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -113,10 +115,11 @@ class GamePlaceShotTests {
 
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
-                listOf(mapOf(
+                mapOf("shots" to
+                        listOf(mapOf(
                     "row" to playerOneShotAgain.first,
                     "column" to playerOneShotAgain.second
-                ))
+                )))
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -154,10 +157,11 @@ class GamePlaceShotTests {
         // Invalid user will try to add a ship, without success
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
-                    listOf(mapOf(
+                    mapOf(
+                    "shots" to listOf(mapOf(
                     "row" to playerOneShot.first,
                     "column" to playerOneShot.second
-                ))
+                )))
             )
             .header("Authorization", "Bearer $invalidToken")
             .exchange()
@@ -192,10 +196,11 @@ class GamePlaceShotTests {
         // Invalid user will try to add a ship, without success
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
-                listOf(mapOf(
+                mapOf(
+                        "shots" to listOf(mapOf(
                     "row" to playerOneShot.first,
                     "column" to playerOneShot.second
-                ))
+                )))
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()

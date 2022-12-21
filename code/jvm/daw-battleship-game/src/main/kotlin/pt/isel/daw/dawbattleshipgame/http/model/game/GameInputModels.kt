@@ -46,8 +46,15 @@ data class CreateGameInputModel(
             )
 }
 
+
 data class CoordinateInputModel(val row: Int, val column: Int) {
     fun toCoordinate() = Coordinate(row, column)
+}
+
+data class ShotsInputModel(val shots : List<CoordinateInputModel>){
+    fun toListCoordinate() = shots.map {
+        it.toCoordinate()
+    }
 }
 
 enum class OrientationInputModel {
