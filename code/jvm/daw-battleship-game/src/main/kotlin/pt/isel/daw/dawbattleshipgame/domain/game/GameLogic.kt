@@ -135,6 +135,8 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
 
 fun Game.placeShots(userId: Int, shots: List<Coordinate>, player: Player) : Game? {
     var game : Game? = this
+    println(shots)
+    if(shots.size != configuration.shots.toInt()) return null
     shots.forEach {
         game = placeShot(userId, it, player) ?: return null
     }
