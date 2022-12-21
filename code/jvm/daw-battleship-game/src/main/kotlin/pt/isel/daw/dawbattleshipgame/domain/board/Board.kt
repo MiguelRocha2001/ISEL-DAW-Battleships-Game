@@ -138,7 +138,6 @@ class Board {
                 this[getIdx(c)] = this[c].hit()
             }, confirmed)
 
-
     /**
      * Check if all ships are sunk
      */

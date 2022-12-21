@@ -134,11 +134,11 @@ class GamesController(
     }
 
     @PostMapping(Uris.Games.My.Current.My.Shots.ALL)
-    fun placeShot(
+    fun placeShots(
         user: User,
-        @RequestBody coordinate: CoordinateInputModel
+        @RequestBody coordinate: List<CoordinateInputModel>
     ): ResponseEntity<*> {
-        val res = gameServices.placeShot(user.id, coordinate.toCoordinate())
+        val res = gameServices.placeShots(user.id, coordinate.map { it.toCoordinate() })
         return res.map {
             ResponseEntity.status(204)
                 .contentType(JsonMediaType)

@@ -152,7 +152,7 @@ class GameServices(
     /**
      * @param gameId the game's id, or null if game is the current user game
      */
-    fun placeShot(userId: Int, c: Coordinate): PlaceShotResult {
+    fun placeShots(userId: Int, c: List<Coordinate>): PlaceShotResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
@@ -161,7 +161,7 @@ class GameServices(
                 logger.info("User $userId: Place shot failed: action not permitted")
                 return@run Either.Left(PlaceShotError.ActionNotPermitted)
             }
-            val newGame = game.placeShot(userId, c, game.getUser(userId))
+            val newGame = game.placeShots(userId, c, game.getUser(userId))
                 ?: return@run Either.Left(PlaceShotError.InvalidMove)
                     .also { logger.info("User $userId: Place shot failed: invalid move") }
             updateGame(db, newGame)

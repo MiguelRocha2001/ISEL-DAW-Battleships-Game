@@ -37,9 +37,9 @@ class GamePlaceShotServicesTests {
             assertTrue(game is Either.Right)
 
             //place all the shots with the objective of sinking all player two ships
-            gameServices.placeShot(userPair.first, Coordinate(1,1))
-            gameServices.placeShot(userPair.second, Coordinate(3,2))
-            gameServices.placeShot(userPair.first, Coordinate(1,2))
+            gameServices.placeShots(userPair.first, listOf(Coordinate(1,1)))
+            gameServices.placeShots(userPair.second, listOf(Coordinate(3,2)))
+            gameServices.placeShots(userPair.first, listOf(Coordinate(1,2)))
 
 
             //game before last shot
@@ -68,15 +68,15 @@ class GamePlaceShotServicesTests {
             gameServices.updateFleetState(userPair.first, true)
             gameServices.updateFleetState(userPair.second, true)
 
-            val placeShotResult1 = gameServices.placeShot(userPair.first, Coordinate(1, 1)) // valid
+            val placeShotResult1 = gameServices.placeShots(userPair.first, listOf(Coordinate(1, 1))) // valid
             assertEquals(Either.Right(Unit), placeShotResult1)
-            val placeShotResult2 = gameServices.placeShot(userPair.second, Coordinate(2, 2)) // valid
+            val placeShotResult2 = gameServices.placeShots(userPair.second, listOf(Coordinate(2, 2))) // valid
             assertEquals(Either.Right(Unit), placeShotResult2)
 
-            val result = gameServices.placeShot(userPair.first, Coordinate(1, 1)) // same coordinate
+            val result = gameServices.placeShots(userPair.first, listOf(Coordinate(1, 1))) // same coordinate
             assertEquals(Either.Left(PlaceShotError.InvalidMove), result)
 
-            val result2 = gameServices.placeShot(userPair.second, Coordinate(3, 3)) // not its turn
+            val result2 = gameServices.placeShots(userPair.second, listOf(Coordinate(3, 3))) // not its turn
             assertEquals(Either.Left(PlaceShotError.InvalidMove), result2) // TODO should be ActionNotPermitted
         }
     }
