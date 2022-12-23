@@ -14,4 +14,5 @@ interface GamesRepository {
     fun isInGame(userId: Int): Boolean
     fun removeUserFromGame(userId: Int)
     fun updateGame(game: Game)
+    fun quitCurrentGame() : Int
 }

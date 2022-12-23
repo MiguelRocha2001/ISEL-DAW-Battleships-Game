@@ -48,7 +48,7 @@ class GamesController(
                 ResponseEntity.status(202) // Game not created but request was processed
                     .contentType(SirenMediaType)
                     .body(
-                        siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), it.second)) {
+                        siren(GameInfoOutputModel(GameStateOutputModel.get(it.first), null)) {
                             Uris.Games.My.CURRENT to Rels.GAME
                         }
                     )
@@ -66,6 +66,16 @@ class GamesController(
                     gameByIdLinks(user.id)
                     clazz("game")
                 })
+        }
+    }
+
+    @PostMapping(Uris.Games.My.CURRENT_ID)
+    fun quitCurrentGame(user: User): ResponseEntity<*> {
+        val res = gameServices.getGameIdByUser(user.id)
+        return res.map {
+            ResponseEntity.status(200)
+                    .contentType(SirenMediaType)
+                    TODO()
         }
     }
 

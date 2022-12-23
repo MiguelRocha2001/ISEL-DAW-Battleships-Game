@@ -39,7 +39,9 @@ typealias FleetConfirmationResult = Either<FleetConfirmationError, Unit>
 sealed class PlaceShotError : Error(){
     object GameNotFound : PlaceShotError()
     object ActionNotPermitted : PlaceShotError()
-    object InvalidMove: PlaceShotError()
+    object InvalidShot : PlaceShotError()
+
+    object EmptyShotsList : PlaceShotError()
 }
 typealias PlaceShotResult = Either<PlaceShotError, Unit>
 
@@ -58,6 +60,14 @@ sealed class GameIdError : Error(){
     object UserInGameQueue: GameIdError()
 }
 typealias GameIdResult = Either<GameIdError, Int>
+
+
+
+sealed class GameQuitError : Error(){
+    object GameNotFound: GameQuitError()
+    object UserInGameQueue: GameQuitError()
+}
+typealias GameQuitResult = Either<GameQuitError, Int>
 
 sealed class GameError : Error(){
     object GameNotFound: GameError()

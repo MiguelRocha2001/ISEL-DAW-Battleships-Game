@@ -9,6 +9,8 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.domain.ship.getOrientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.getShip
+import pt.isel.daw.dawbattleshipgame.http.ApiException
+import pt.isel.daw.dawbattleshipgame.http.model.Problem
 
 /**
  * Tries to place [shipType] on the Board, on give in [position].
@@ -136,7 +138,11 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
 fun Game.placeShots(userId: Int, shots: List<Coordinate>, player: Player) : Game? {
     var game : Game? = this
     println(shots)
-    if(shots.size != configuration.shots.toInt()) return null
+    if(shots.size != configuration.shots.toInt()) throw ApiException(
+            Problem.DEFAULT_URI,
+            "Not all shots were placed",
+            "Not all shots were placed, try again",
+    )
     shots.forEach {
         game = placeShot(userId, it, player) ?: return null
     }

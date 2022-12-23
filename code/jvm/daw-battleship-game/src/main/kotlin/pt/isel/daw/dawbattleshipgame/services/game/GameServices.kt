@@ -20,6 +20,8 @@ class GameServices(
     /**
      * Initiates a new game with some other user, awaiting. If there's none,
      * joins a queue and waits for another user to join.
+     * When [configuration] is null starts a quick game with the first player in queue
+     * If there is no one in queue adds the player to queue with [Configuration.DEFAULT]
      */
     fun startGame(userId: Int, configuration: Configuration?): GameCreationResult {
         val quickGame = configuration == null
@@ -71,6 +73,22 @@ class GameServices(
                 .also { logger.info("User $userId: Game id successfully") }
         }
     }
+
+    /**
+     * If user is in a game quit game by finishing and giving the win to the other player
+     */
+    fun quitCurrentGame(userId : Int) : GameQuitResult{
+        return transactionManager.run {
+            val gamesDb = it.gamesRepository
+            val usersDb = it.usersRepository
+            if (usersDb.isInQueue(userId)) {
+                logger.info("User $userId: Game id retrieval failed: user is in queue")
+                return@run Either.Left(GameQuitError.UserInGameQueue)
+            }
+            TODO("To implement in games repository")
+        }
+    }
+
 
     /**
      * @param gameId the game's id, or null if game is the current user game
@@ -157,13 +175,18 @@ class GameServices(
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
                 .also { logger.info("User $userId: Place shot failed: game not found") }
+
             if(game.state != GameState.BATTLE) {
                 logger.info("User $userId: Place shot failed: action not permitted")
                 return@run Either.Left(PlaceShotError.ActionNotPermitted)
             }
+
+            if(c.isEmpty()) return@run Either.Left(PlaceShotError.EmptyShotsList)
+
             val newGame = game.placeShots(userId, c, game.getUser(userId))
-                ?: return@run Either.Left(PlaceShotError.InvalidMove)
-                    .also { logger.info("User $userId: Place shot failed: invalid move") }
+                ?: return@run Either.Left(PlaceShotError.InvalidShot)
+                    .also { logger.info("User $userId: Place shot failed: invalid shot") }
+
             updateGame(db, newGame)
             logger.info("User $userId: Place shot successful")
             return@run Either.Right(Unit)

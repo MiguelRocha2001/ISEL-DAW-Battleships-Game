@@ -61,4 +61,8 @@ class JdbiGamesRepository(
         updateBoard(handle, game.board1, game.player1, game.id)
         updateBoard(handle, game.board2, game.player2, game.id)
     }
+
+    override fun quitCurrentGame(): Int {
+        TODO("Not yet implemented")
+    }
 }

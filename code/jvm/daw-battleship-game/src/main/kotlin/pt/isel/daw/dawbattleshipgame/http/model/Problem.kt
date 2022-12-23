@@ -99,6 +99,18 @@ data class Problem(
             "Invalid move"
         )
 
+        val invalidShot = Problem(
+                URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/action-not-permitted"),
+                "Invalid Shot",
+                "Invalid Shot"
+        )
+
+        val noShotWasSelected = Problem(
+                URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/action-not-permitted"),
+                "Empty shot",
+                "No shot was selected"
+        )
+
         val userNotFound = Problem(
             URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-not-found"),
             "Invalid user id",
@@ -138,7 +150,11 @@ val problems = mapOf(
 
         "ActionNotPermitted" to Problem.response(405, Problem.actionNotPermitted),
 
+        "EmptyShotsList" to Problem.response(400, Problem.noShotWasSelected),
+
         "InvalidMove" to Problem.response(405, Problem.invalidMove),
+
+        "InvalidShot" to Problem.response(405, Problem.invalidShot),
 
         "UserNotFound" to Problem.response(404, Problem.userNotFound),
 
