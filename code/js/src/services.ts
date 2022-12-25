@@ -33,11 +33,19 @@ function useFetchHome(): any | string {
     })
 }
 
-function useFetchServerInfo(): Siren | string {
+export type ServerInfo = {
+    authors: Array<Author>
+    systemVersion: String
+}
+export type Author = {
+    name: string
+    email: string
+}
+function useFetchServerInfo(): ServerInfo | string {
     const infoLink = links.getInfoLink()
     const state = useFetchNew({ url: infoLink, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
-        logger.info("fetchServerInfo: response sucessfull")
+        logger.info("fetchServerInfo: response successfully")
         return siren.properties
     })
 }
@@ -107,7 +115,7 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
         if (resp) {
             const token = resp.properties.token
             if (token) {
-                logger.info("createUser: response sucessfull")
+                logger.info("createUser: response successfully")
                 const createGameAction = Siren.extractCreateGameAction(resp.actions)
                 const userHomeLink = Siren.extractUserHomeLink(resp.links)
                 if (createGameAction) {

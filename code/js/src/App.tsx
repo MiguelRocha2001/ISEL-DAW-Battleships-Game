@@ -9,6 +9,7 @@ import {Game} from './screens/Game'
 import {Authentication} from './screens/auth/Authentication'
 import {auth} from "./server_info/auth";
 import Navbar from "./NavBar";
+import style from "../static-files/css/battleships/commons.css";
 
 export function LogInfo() {
     const authenticated = auth.useAuthentication(undefined)
@@ -21,19 +22,21 @@ export function LogInfo() {
 
 export function App() {
     return (
-        <BrowserRouter>
-            <Navbar />
-            <Routes>
-                <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
-                    <Route path='/' element={<Home />} />
-                    <Route path='/info' element={<Info />} />
-                    <Route path='/rankings' element={<Rankings />} />
-                    <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
-                    <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
-                    <Route path='/me' element={<Me />} />
-                    <Route path='/game' element={<Game />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <div className={style}>
+            <BrowserRouter>
+                <Navbar />
+                <Routes>
+                    <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
+                        <Route path='/' element={<Home />} />
+                        <Route path='/info' element={<Info />} />
+                        <Route path='/rankings' element={<Rankings />} />
+                        <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
+                        <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
+                        <Route path='/me' element={<Me />} />
+                        <Route path='/game' element={<Game />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </div>
     );
 }
