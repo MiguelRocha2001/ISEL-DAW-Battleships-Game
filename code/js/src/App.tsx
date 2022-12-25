@@ -25,17 +25,19 @@ export function App() {
         <div className={style}>
             <BrowserRouter>
                 <Navbar />
-                <Routes>
-                    <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
-                        <Route path='/' element={<Home />} />
-                        <Route path='/info' element={<Info />} />
-                        <Route path='/rankings' element={<Rankings />} />
-                        <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
-                        <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
-                        <Route path='/me' element={<Me />} />
-                        <Route path='/game' element={<Game />} />
-                    </Route>
-                </Routes>
+                <div className={"content"}>
+                    <Routes>
+                        <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
+                            <Route path='/' element={<Home />} />
+                            <Route path='/info' element={<Info />} />
+                            <Route path='/rankings' element={<Rankings />} />
+                            <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
+                            <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
+                            <Route path='/me' element={<Me />} />
+                            <Route path='/game' element={<Game />} />
+                        </Route>
+                    </Routes>
+                </div>
             </BrowserRouter>
         </div>
     );

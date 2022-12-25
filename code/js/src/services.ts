@@ -35,7 +35,7 @@ function useFetchHome(): any | string {
 
 export type ServerInfo = {
     authors: Array<Author>
-    systemVersion: String
+    systemVersion: string
 }
 export type Author = {
     name: string
