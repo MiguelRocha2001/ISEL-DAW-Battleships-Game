@@ -3,6 +3,7 @@ import {useState} from "react"
 import {Navigate, useLocation, useNavigate} from "react-router-dom"
 import {Services} from "../../services"
 import {useSetUser} from "./Authn"
+import styles from './Auth.module.css'
 
 export async function authenticate(username: string, password: string): Promise<string | undefined> {
     return Services.fetchToken([
@@ -75,19 +76,19 @@ export function Authentication({title, action}: { title: string, action: Action 
     
     return (
         <div>
-            <h3>{title}</h3>
-            <form onSubmit={handleSubmit}>
-                <fieldset disabled={isSubmitting}>
+            <h2 id={styles.title}>{title}</h2>
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <fieldset className={styles.fieldset} disabled={isSubmitting}>
                     <div>
-                        <label htmlFor="username">Username</label>
-                        <input id="username" type="text" name="username" value={inputs.username} onChange={handleChange} />
+                        <label htmlFor="username" className={styles.label}>USERNAME</label>
+                        <input id="username" className={styles.input} type="text" name="username" value={inputs.username} onChange={handleChange} />
                     </div>
                     <div>
-                        <label htmlFor="password">Password</label>
-                        <input id="password" type="text" name="password" value={inputs.password} onChange={handleChange} />
+                        <label htmlFor="password" className={styles.label}>PASSWORD</label>
+                        <input id="password" className={styles.input} type="text" name="password" value={inputs.password} onChange={handleChange} />
                     </div>
                     <div>
-                        <button type="submit">Login</button>
+                        <button className={styles.confirmButton} type="submit">{title}</button>
                     </div>
                 </fieldset>
                 {error}
