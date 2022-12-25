@@ -50,7 +50,15 @@ function useFetchServerInfo(): ServerInfo | string {
     })
 }
 
-function useFetchBattleshipRanks(): Siren | string {
+export type Rankings = {
+    users: Array<Stats>
+}
+export type Stats = {
+    username: string
+    gamesPlayed: number
+    wins: number
+}
+function useFetchBattleshipRanks(): Rankings | string {
     const ranksLink = links.getBattleshipRanksLink()
     if (ranksLink) {
         const state = useFetchNew({url: ranksLink, method: "GET"})

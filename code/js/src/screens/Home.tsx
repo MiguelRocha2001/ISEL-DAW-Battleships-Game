@@ -12,7 +12,7 @@ export function Home() {
             <div id={styles.content}>
                 <h1 id={styles.overviewTitle}>Overview</h1>
                 <p id={styles.overviewBody}>
-                    Just create an account, or log in, and start playing with your friends, the newly Battleships game
+                    Just create an account and start playing with your friends the newly Battleships game...
                 </p>
             </div>
         </div>
