@@ -1,0 +1,29 @@
+#mainDiv {
+    color: black;
+    text-align: center;
+    position: relative;
+}
+
+#mainImg {
+    opacity: 40%;
+    width: 100%;
+    height: auto;
+}
+
+/* Centered text */
+#content {
+    color: black;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#overviewTitle {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+#overviewBody {
+    font-size: 2em;
+}
