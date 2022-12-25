@@ -26,8 +26,7 @@ export type State =
         response : Siren
     }
 
-type Action = 
-    
+type Action =
     {
         type : "startFetch",
     }
@@ -43,13 +42,12 @@ type Action =
     }
 
 
-function reducer(state:State, action:Action): State{
+function reducer(state:State, action:Action): State {
     switch(action.type){
         case 'startFetch' : return {type : 'fetching'}
         case 'setError' : return {type : 'error' , message : action.message}
         case 'setResponse' : return {type : 'response' , response : action.response}
     }
-
 }
 
 export type Request = {
@@ -67,12 +65,10 @@ export type KeyValuePair = {
 }
 
 export function useFetchNew(request: Request) : State {
-    
     const [state, dispatcher] = useReducer(reducer, {type : "started"})
 
     useEffect(() =>{
         let cancelled = false
-
         async function doFetch() {
             dispatcher({type : 'startFetch'})
             if (request && validateRequestMethod(request)) {

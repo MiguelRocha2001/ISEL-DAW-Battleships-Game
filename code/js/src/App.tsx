@@ -1,49 +1,39 @@
 import * as React from 'react'
-import {createBrowserRouter, Outlet, RouterProvider} from 'react-router-dom'
+import {BrowserRouter, createBrowserRouter, Link, Outlet, Route, Router, RouterProvider, Routes} from 'react-router-dom'
 import {Info} from './screens/Info'
 import {Home} from './screens/Home'
 import {Rankings} from './screens/Rankings'
 import {AuthnContainer} from './screens/auth/Authn'
 import {Me} from './screens/Me'
 import {Game} from './screens/Game'
-import {Login} from './screens/auth/Login'
+import {Authentication} from './screens/auth/Authentication'
+import {auth} from "./server_info/auth";
+import Navbar from "./NavBar";
 
-
-const router = createBrowserRouter([
-    {
-        "path": "/",
-        "element": <AuthnContainer><Outlet /></AuthnContainer>,
-        "children": [
-            {
-                "path": "/",
-                "element": <Home />
-            },
-            {
-                "path": "/info",
-                "element": <Info />
-            },
-            {
-                "path": "/rankings",
-                "element": <Rankings />
-            },
-            {
-                "path": "/auth",
-                "element": <Login />
-            },
-            {
-                "path": "/me",
-                "element": <Me />,
-            },
-            {
-                "path": "/game",
-                "element": <Game />,
-            }
-        ]
-    }
-])
-
-export function Router() {
+export function LogInfo() {
+    const authenticated = auth.useAuthentication(undefined)
     return (
-        <RouterProvider router={router} />
+        <div>
+            <p>{authenticated ? "Logged" : "NotLogged"}</p>
+        </div>
     )
+}
+
+export function App() {
+    return (
+        <BrowserRouter>
+            <Navbar />
+            <Routes>
+                <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
+                    <Route path='/' element={<Home />} />
+                    <Route path='/info' element={<Info />} />
+                    <Route path='/rankings' element={<Rankings />} />
+                    <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
+                    <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
+                    <Route path='/me' element={<Me />} />
+                    <Route path='/game' element={<Game />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }

@@ -95,8 +95,44 @@ async function fetchToken(fields: KeyValuePair[]): Promise<string | undefined> {
     return undefined
 }
 
-async function useRegisterNewUser(fields: KeyValuePair[]) {
-    
+async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
+    const action = links.getRegisterAction()
+    if (action) {
+        const request = action ? {
+            url: action.href,
+            method: action.method,
+            body: fields
+        } : undefined
+        const resp = await doFetch(request)
+        if (resp) {
+            const token = resp.properties.token
+            if (token) {
+                logger.info("createUser: response sucessfull")
+                const createGameAction = Siren.extractCreateGameAction(resp.actions)
+                const userHomeLink = Siren.extractUserHomeLink(resp.links)
+                if (createGameAction) {
+                    links.setCreateGameAction(createGameAction)
+                    logger.info("createUser: setting up new create game action: ", createGameAction.name)
+                } else {
+                    logger.error("createUser: create game action not found in response")
+                }
+                if (userHomeLink) {
+                    links.setUserHomeLink(userHomeLink)
+                    logger.info("createUser: setting up new user home link: ", userHomeLink)
+                } else {
+                    logger.error("createUser: user home link not found in response")
+                }
+                auth.setToken(token)
+                logger.info("createUser: token set to: ", token)
+                return token
+            } else {
+                logger.error("createUser: token not found in response")
+                return undefined
+            }
+        }
+    }
+    logger.error("createUser: register action not found")
+    return undefined
 }
 
 function useFetchUserHome(): Siren | string {
@@ -367,7 +403,7 @@ export const Services = {
     useFetchServerInfo,
     fetchBattleshipRanks: useFetchBattleshipRanks,
     fetchToken,
-    useRegisterNewUser,
+    createUser,
     isLogged,
     createGame,
     getCurrentGameId,

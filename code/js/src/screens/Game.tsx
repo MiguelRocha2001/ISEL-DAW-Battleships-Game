@@ -7,8 +7,7 @@ import {Logger} from "tslog";
 
 const logger = new Logger({ name: "GameScreen" });
 
-// TODO -> states that could have msg, should be one single state with msg that could be undefined
-type State = 
+type State =
     {
         type : "checkingForExistingOnGoingGame",
     }
@@ -343,49 +342,6 @@ function CreatingGame() {
             <h1>Starting</h1>
         </div>
     )
-}
-
-function Matchmaking() {
-    return (
-        <div>
-            <h1>Matchmaking</h1>
-        </div>
-    )
-}
-
-function UpdatingGame({msg} : {msg : string}) {
-    const mainContent =
-        <div>
-            <h1>Updating</h1>
-        </div>
-    if (msg) {
-        return (
-            <div>
-                {mainContent}
-                <ErrorMsg msg={msg}/>
-            </div>
-        )
-    } else {
-        return mainContent
-    }
-}
-
-function UpdateGame({msg, onUpdateRequest} : {msg: string, onUpdateRequest : () => void}) {
-    const mainContent =
-        <div>
-            <h1>Update Game</h1>
-            <p><button onClick={onUpdateRequest}>Update Game</button></p>
-        </div>
-    if (msg) {
-        return (
-            <div>
-                {mainContent}
-                <ErrorMsg msg={msg}/>
-            </div>
-        )
-    } else {
-        return mainContent
-    }
 }
 
 function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot, onUpdateRequest} : {

@@ -17,8 +17,7 @@ export function ShowSirenProperties({ content, properties }: { content: any | st
         .filter(key => properties.includes(key))
         .map(key =>
             <div key = {key}>
-                <h3>{key.toUpperCase()}</h3>
-                <p>{JSON.stringify(content[key])}</p>
+                <p>{JSON.stringify(content[key]).replace('"', '').replace('"', '')}</p>
             </div>
         )
     return (
