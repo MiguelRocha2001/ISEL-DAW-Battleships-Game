@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react'
 import {Services} from '../services'
 import {Board, Game} from '../domain'
 import {Logger} from "tslog";
+import styles from './Game.module.css'
 
 
 const logger = new Logger({ name: "GameScreen" });
@@ -327,10 +328,9 @@ function CheckingForExistingOnGoingGame() {
 
 function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : () => void, onUpdateRequest : () => void}) {
     return (
-        <div>
-            <h1>Menu</h1>
-            <p><button onClick={onCreateGameRequest}>Create New Game</button></p>
-            <p><button onClick={onUpdateRequest}>Update Game</button></p>
+        <div id = {styles.buttonsToPlay}>
+            <p><button id={styles.newGame} className={styles.bigButton} role="button" onClick={onCreateGameRequest}>Create New</button></p>
+            <p><button id={styles.joinGame} className={styles.bigButton} role="button" onClick={onUpdateRequest}>Join</button></p>
         </div>
     )
 }
