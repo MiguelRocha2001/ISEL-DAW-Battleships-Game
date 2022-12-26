@@ -41,7 +41,7 @@ function Content({info}: { info: UserHome }) {
                 </td>
                 <span className={style.spacer} />
                 <td className={style.value}>
-                    {info.userId}
+                    {info.id}
                 </td>
             </tr>
             <tr>
