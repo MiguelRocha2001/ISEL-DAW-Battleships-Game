@@ -18,6 +18,7 @@ sealed class PlaceShipsError : Error() {
     object GameNotFound: PlaceShipsError()
     object ActionNotPermitted : PlaceShipsError()
     object InvalidMove: PlaceShipsError()
+    object BoardIsConfirmed : PlaceShipsError()
 }
 typealias PlaceShipsResult = Either<PlaceShipsError, Unit>
 
