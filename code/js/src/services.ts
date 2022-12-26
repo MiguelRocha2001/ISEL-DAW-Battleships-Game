@@ -143,7 +143,11 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
     return undefined
 }
 
-function useFetchUserHome(): Siren | string {
+export type UserHome = {
+    userId: number
+    username: string
+}
+function useFetchUserHome(): UserHome | string {
     const token = auth.getToken()
     const userHomeLink = links.getUserHomeLink()
     if (token && userHomeLink) {
