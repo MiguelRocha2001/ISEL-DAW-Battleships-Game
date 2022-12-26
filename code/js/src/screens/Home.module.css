@@ -8,7 +8,10 @@
 #mainImg {
     opacity: 40%;
     width: 100%;
-    height: auto;
+    height: 80vh;
+    background-position: center;
+    /* Make the background image cover the area of the <div>, and clip the excess */
+    object-fit: cover;
 }
 
 /* Centered text */
@@ -16,7 +19,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     color: black;
     position: absolute;
-    top: 30%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
 }

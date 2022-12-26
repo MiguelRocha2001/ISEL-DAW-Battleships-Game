@@ -10,15 +10,7 @@ import {Authentication} from './screens/auth/Authentication'
 import {auth} from "./server_info/auth";
 import Navbar from "./NavBar";
 import style from "../static-files/css/battleships/commons.css";
-
-export function LogInfo() {
-    const authenticated = auth.useAuthentication(undefined)
-    return (
-        <div>
-            <p>{authenticated ? "Logged" : "NotLogged"}</p>
-        </div>
-    )
-}
+import {LogInfo} from "./LogInfo";
 
 export function App() {
     return (
@@ -39,6 +31,7 @@ export function App() {
                     </Routes>
                 </div>
             </BrowserRouter>
+            <LogInfo />
         </div>
     );
 }

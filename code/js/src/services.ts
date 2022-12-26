@@ -6,7 +6,7 @@ import {Logger} from "tslog";
 import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest, Position} from './domain'
 import {State, useFetchNew} from "./utils/useFetch-reducer";
 
-const logger = new Logger({ name: "Navigation" });
+const logger = new Logger({ name: "Services" });
 
 
 function useFetchHome(): any | string {
@@ -29,6 +29,7 @@ function useFetchHome(): any | string {
         links.setInfoLink(serverInfoLink)
         links.setBattleshipRanksLink(battleshipRanksLink)
         links.setTokenAction(tokenAction)
+        links.setRegisterAction(registerAction)
         return siren.properties
     })
 }
@@ -83,7 +84,7 @@ async function fetchToken(fields: KeyValuePair[]): Promise<string | undefined> {
         if (resp) {
             const token = resp.properties.token
             if (token) {
-                logger.info("fetchToken: responde sucessfull")
+                logger.info("fetchToken: response successfully")
                 const createGameAction = Siren.extractCreateGameAction(resp.actions)
                 const userHomeLink = Siren.extractUserHomeLink(resp.links)
                 if (createGameAction) {
@@ -121,26 +122,17 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
         } : undefined
         const resp = await doFetch(request)
         if (resp) {
-            const token = resp.properties.token
-            if (token) {
+            const userId = resp.properties.userId
+            if (userId) {
                 logger.info("createUser: response successfully")
-                const createGameAction = Siren.extractCreateGameAction(resp.actions)
-                const userHomeLink = Siren.extractUserHomeLink(resp.links)
-                if (createGameAction) {
-                    links.setCreateGameAction(createGameAction)
-                    logger.info("createUser: setting up new create game action: ", createGameAction.name)
+                const tokenAction = Siren.extractTokenAction(resp.actions)
+                if (tokenAction) {
+                    links.setTokenAction(tokenAction)
+                    logger.info("createUser: setting up new token action: ", tokenAction.name)
                 } else {
-                    logger.error("createUser: create game action not found in response")
+                    logger.error("createUser: token action not found in response")
                 }
-                if (userHomeLink) {
-                    links.setUserHomeLink(userHomeLink)
-                    logger.info("createUser: setting up new user home link: ", userHomeLink)
-                } else {
-                    logger.error("createUser: user home link not found in response")
-                }
-                auth.setToken(token)
-                logger.info("createUser: token set to: ", token)
-                return token
+                return userId
             } else {
                 logger.error("createUser: token not found in response")
                 return undefined
@@ -162,7 +154,7 @@ function useFetchUserHome(): Siren | string {
         }
         const resp = useFetchNew(request)
         return handlerOrError(resp, (siren: Siren) => {
-            logger.info("fetchUserHome: response sucessfull")
+            logger.info("fetchUserHome: response successfully")
             const createGameAction = Siren.extractCreateGameAction(siren.actions)
             const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
             const getGameLink = Siren.extractGetGameLink(siren.links)

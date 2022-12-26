@@ -1,0 +1,19 @@
+.text {
+    position: absolute;
+    top: 35em;
+    right: 1em;
+    width: 7em;
+    height: 2em;
+    font-weight: bold;
+    color: black;
+    font-size: larger;
+    border-radius: 0.2em;
+}
+
+#logged {
+
+}
+
+#notLogged {
+
+}

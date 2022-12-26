@@ -5,12 +5,10 @@ import {ShowSirenProperties} from "../utils/ShowSirenProperties";
 
 export function Me() {
     const response = Services.fetchUserHome()
-
+    console.log(response)
     if (typeof response === "string") {
         return (
-            <div>
-                <ShowSirenProperties content={response} properties={[]} />
-            </div>
+            <p>{response}</p>
         )
     } else {
         return (
