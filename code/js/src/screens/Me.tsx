@@ -1,13 +1,19 @@
 import * as React from 'react'
 import {Services, UserHome} from '../services'
-import {Link, Navigate} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import {ShowSirenProperties} from "../utils/ShowSirenProperties";
 import style from "./Me.module.css"
+import {UserDetail} from "./Commons";
+import {Loading} from "./Loading";
+import {useEffect, useState} from "react";
 
 export function Me() {
     const response = Services.fetchUserHome()
     console.log(response)
     if (typeof response === "string") {
+        if (response === "Loading") {
+            return <Loading />
+        }
         //redirects to login page
         return (
             <div>
@@ -19,7 +25,7 @@ export function Me() {
     } else {
         return (
             <div>
-                <Content info={response}/>
+                <UserDetail user={response}/>
                 <Link to="/game" className={style.link}>Game Screen</Link>
             </div>
         )

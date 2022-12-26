@@ -6,6 +6,7 @@ const defaultUrl = '/'
 
 let infoLink: string | undefined
 let battleshipRanksLink: string | undefined
+let userLink: string | undefined
 let tokenAction: Action | undefined
 let registerAction: Action | undefined
 let createGameAction: Action | undefined
@@ -29,6 +30,13 @@ function getBattleshipRanksLink() {
 }
 function setBattleshipRanksLink(link: string) {
     battleshipRanksLink = link
+}
+
+function getUserLink() {
+    return userLink
+}
+function setUserLink(link: string) {
+    userLink = link
 }
 
 function getTokenAction() {
@@ -102,6 +110,8 @@ export const links = {
     setInfoLink,
     getBattleshipRanksLink,
     setBattleshipRanksLink,
+    getUserLink,
+    setUserLink,
     getTokenAction,
     setTokenAction,
     getRegisterAction,

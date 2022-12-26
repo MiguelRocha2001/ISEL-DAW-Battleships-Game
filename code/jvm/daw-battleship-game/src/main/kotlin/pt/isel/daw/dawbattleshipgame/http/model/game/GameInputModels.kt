@@ -20,8 +20,8 @@ data class CreateGameInputModel(
     init {
         requireWithException(
                 INVALID_INPUT,
-                "Board size must be in range [8..15]") {
-            boardSize in 8..15
+                "Board size must be in range [8..13]") {
+            boardSize in 8..13
         }
         requireWithException(INVALID_INPUT,
                 "There must be at least one boat") {

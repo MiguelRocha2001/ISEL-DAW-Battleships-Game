@@ -50,6 +50,10 @@ function extractBattleshipRanksLink(linksArg: Link[]): string {
     return extractLink(linksArg, "user-stats")
 }
 
+function extractGetUserLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "user")
+}
+
 function extractTokenAction(actions: any[]): Action {
     return extractAction(actions, "create-token")
 }
@@ -126,6 +130,7 @@ function extractAction(actions: any[], name: string): Action {
 export const Siren = {
     extractInfoLink,
     extractBattleshipRanksLink,
+    extractGetUserLink,
     extractTokenAction,
     extractRegisterAction,
     extractUserHomeLink,

@@ -54,11 +54,31 @@ class UsersController(
         }
     }
 
-    @GetMapping(Uris.Users.BY_ID)
+    @GetMapping(Uris.Users.ALL)
+    fun getAll(): ResponseEntity<*> {
+        val res = userService.getAllUsers()
+        return ResponseEntity.status(200)
+            .contentType(SirenMediaType)
+            .body(
+                siren(UserListOutputModel(res.map { it.toUserOutputModel() })) {
+                    link(Uris.Users.all(), Rels.SELF)
+                    clazz("user-list")
+                }
+            )
+    }
+
+    @GetMapping(Uris.Users.BY_ID1)
     fun getById(@PathVariable id: Int) : ResponseEntity<*>{
-        val user = userService.getUserById(id) ?:
+        val user = userService.getUserById(id)?.toUserOutputModel() ?:
             return Problem.response(404, Problem.userNotFound)
-        return TODO()
+        return ResponseEntity.status(200)
+            .contentType(SirenMediaType)
+            .body(
+                siren(user) {
+                    link(Uris.Users.byId(id), Rels.SELF)
+                    clazz("user")
+                }
+            )
     }
 
     @GetMapping(Uris.Users.HOME)
@@ -77,7 +97,7 @@ class UsersController(
         //TODO( see errors related to this -- Unauthorized 401 )
     }
 
-    @DeleteMapping(Uris.Users.BY_ID)
+    @DeleteMapping(Uris.Users.BY_ID1)
     fun deleteUser(@PathVariable id: Int): ResponseEntity<*> {
         val res = userService.deleteUser(id)
         return res.map {
@@ -92,7 +112,7 @@ class UsersController(
     @GetMapping(Uris.Users.STATS)
     fun getUserStatistics(): ResponseEntity<*> {
         val res = userService.getUserRanking()
-        val userStats = res.map { UserStatOutputModel(it.username, it.wins, it.gamesPlayed) }
+        val userStats = res.map { UserStatOutputModel(it.id, it.username, it.wins, it.gamesPlayed) }
         return ResponseEntity.status(200)
             .contentType(SirenMediaType)
             .body(siren(UserStatsOutputModel(userStats)) {

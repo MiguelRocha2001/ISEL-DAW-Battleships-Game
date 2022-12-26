@@ -6,9 +6,10 @@ export function LogInfo() {
     const authenticated = auth.useAuthentication(undefined)
     if (authenticated) {
         return (
-            <span id={style.logged} className={style.text}>
-                LOGGED
-            </span>
+            <div id={style.logged} className={style.text}>
+                <text id={style.loggedText}>LOGGED</text>
+                <button className={style.logoutLink} onClick={() => auth.setToken(undefined)}>LOGOUT</button>
+            </div>
         )
     } else {
         return (

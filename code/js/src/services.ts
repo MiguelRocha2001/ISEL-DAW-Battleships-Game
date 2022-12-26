@@ -16,18 +16,22 @@ function useFetchHome(): any | string {
         logger.info("fetchHome: response successful")
         const serverInfoLink = Siren.extractInfoLink(siren.links)
         const battleshipRanksLink = Siren.extractBattleshipRanksLink(siren.links)
+        const getUserLink = Siren.extractGetUserLink(siren.links)
         const tokenAction = Siren.extractTokenAction(siren.actions)
         const registerAction = Siren.extractRegisterAction(siren.actions)
         if (serverInfoLink)
             logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
         if (battleshipRanksLink)
             logger.info("fetchHome: setting up new battleship ranks endpoint: ", battleshipRanksLink)
+        if (getUserLink)
+            logger.info("fetchHome: setting up new get user endpoint: ", getUserLink)
         if (tokenAction)
             logger.info("fetchHome: setting up new token action: ", tokenAction.name)
         if (registerAction)
             logger.info("fetchHome: setting up new register action: ", registerAction.name)
         links.setInfoLink(serverInfoLink)
         links.setBattleshipRanksLink(battleshipRanksLink)
+        links.setUserLink(getUserLink)
         links.setTokenAction(tokenAction)
         links.setRegisterAction(registerAction)
         return siren.properties
@@ -55,6 +59,7 @@ export type Rankings = {
     users: Array<Stats>
 }
 export type Stats = {
+    id: number
     username: string
     gamesPlayed: number
     wins: number
@@ -69,6 +74,24 @@ function useFetchBattleshipRanks(): Rankings | string {
         })
     }
     logger.error("useFetchBattleshipRanks: link not found")
+    return 'Please, return to home page'
+}
+
+export type User = {
+    id: number
+    username: string
+}
+function getUser(userId: number): User | string {
+    const oldLink = links.getUserLink()
+    const userLink = oldLink.replace(':id', userId.toString())
+    if (userLink) {
+        const state = useFetchNew({url: userLink, method: "GET"})
+        return handlerOrError(state, (siren: Siren) => {
+            logger.info("fetchServerInfo: response successful")
+            return siren.properties
+        })
+    }
+    logger.error("getUser: link not found")
     return 'Please, return to home page'
 }
 
@@ -144,7 +167,7 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
 }
 
 export type UserHome = {
-    userId: number
+    id: number
     username: string
 }
 function useFetchUserHome(): UserHome | string {
@@ -187,7 +210,7 @@ function useFetchUserHome(): UserHome | string {
             return siren.properties
         })
     }
-    return "Please, return to home page"
+    return "Token at fault, or user home link not found"
 }
 
 function isLogged(): boolean {
@@ -414,6 +437,7 @@ export const Services = {
     useFetchHome,
     useFetchServerInfo,
     fetchBattleshipRanks: useFetchBattleshipRanks,
+    getUser,
     fetchToken,
     createUser,
     isLogged,

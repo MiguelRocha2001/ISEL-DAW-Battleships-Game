@@ -1,18 +1,21 @@
 import * as React from 'react'
 import {Author, ServerInfo, Services} from '../services'
 import styles from './Info.module.css'
+import {Loading} from "./Loading";
 
 export function Info() {
-    const content = Services.useFetchServerInfo()
-    console.log('content: ', content)
-    if (typeof content == "string") {
-        return (
-            <div>Loading...</div>
-        )
+    const response = Services.useFetchServerInfo()
+    if (typeof response === "string") {
+        if (response === "Loading") {
+            return <Loading />
+        }
+        else {
+            return <p>{response}</p>
+        }
     }
     else {
         return (
-            <ServerInfo info={content}/>
+            <ServerInfo info={response}/>
         )
     }
 }

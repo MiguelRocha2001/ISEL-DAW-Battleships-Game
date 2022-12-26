@@ -9,6 +9,7 @@ import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.UserLogic
 import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.domain.player.UserInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 import pt.isel.daw.dawbattleshipgame.repository.TransactionManager
 import pt.isel.daw.dawbattleshipgame.utils.TokenEncoder
@@ -21,6 +22,13 @@ class UserServices(
     private val tokenEncoder: TokenEncoder,
 ) {
     private val logger: Logger = LoggerFactory.getLogger("UserServices")
+
+    fun getAllUsers(): List<UserInfo> {
+        return transactionManager.run {
+            val usersRepository = it.usersRepository
+            usersRepository.getAllUsers()
+        }
+    }
 
     fun createUser(username: String, password: String): UserCreationResult {
         if (!userLogic.isSafePassword(password)) {
@@ -86,7 +94,7 @@ class UserServices(
         }
     }
 
-    fun getUserById(id: Int): User? {
+    fun getUserById(id: Int): UserInfo? {
         if(id < 0) return null
         return transactionManager.run {
             val usersRepository = it.usersRepository

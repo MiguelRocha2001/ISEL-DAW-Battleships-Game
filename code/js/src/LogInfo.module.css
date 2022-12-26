@@ -1,8 +1,8 @@
 .text {
     position: absolute;
-    top: 35em;
+    top: 34em;
     right: 1em;
-    width: 7em;
+    width: 9em;
     height: 2em;
     font-weight: bold;
     color: black;
@@ -11,7 +11,25 @@
 }
 
 #logged {
+    display: inline-block;
+}
 
+#loggedText {
+    margin-right: 0.5em;
+}
+
+.logoutLink {
+    background-color: #26FFDF;
+    padding: 1em;
+    color: black;
+    width: 6em;
+    border-radius: 0.5em;
+    text-decoration: none;
+}
+
+.logoutLink:hover {
+    background-color: coral;
+    color: white;
 }
 
 #notLogged {

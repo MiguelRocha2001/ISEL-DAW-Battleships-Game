@@ -23,8 +23,8 @@ data class Configuration(
     init {
         requireWithException(
                 INVALID_ARGUMENT,
-                "Board size must be in range [8..15]") {
-            boardSize in 8..15
+                "Board size must be in range [8..13]") {
+            boardSize in 8..13
         }
         requireWithException(INVALID_ARGUMENT,
                 "There must be at least one boat") {

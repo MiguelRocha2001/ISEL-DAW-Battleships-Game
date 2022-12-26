@@ -29,12 +29,13 @@ export function Authentication({title, action}: { title: string, action: Action 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState(undefined)
     const [checkUsername, setCheckUsername] = useState("")
-    const [redirect, setRedirect] = useState(false)
+    const [redirect, setRedirect] = useState<string>(undefined)
     const setUser = useSetUser()
     const navigate = useNavigate()
     const location = useLocation()
+    console.log(redirect)
     if(redirect) {
-        return <Navigate to={location.state?.source?.pathname || "/me"} replace={true}/>
+        return <Navigate to={redirect} replace={true}/>
     }
     function handleChange(ev: React.FormEvent<HTMLInputElement>) {
         const name = ev.currentTarget.name
@@ -58,8 +59,7 @@ export function Authentication({title, action}: { title: string, action: Action 
                 .then(token => {
                     setIsSubmitting(false)
                     if (token) {
-                        const redirect = location.state?.source?.pathname || "/me"
-                        setRedirect(true)
+                        setRedirect(location.state?.source?.pathname || "/me")
                     } else {
                         setError("Invalid username or password")
                     }
@@ -72,7 +72,7 @@ export function Authentication({title, action}: { title: string, action: Action 
             createUser(username, password)
                 .then(() => {
                     setIsSubmitting(false)
-                    // Nothing to do
+                    // setRedirect(location.state?.source?.pathname || "/sign-in") // fixme - results in endless loop
                 })
                 .catch(error => {
                     setIsSubmitting(false)
@@ -86,13 +86,15 @@ export function Authentication({title, action}: { title: string, action: Action 
             <h2 id={styles.title}>{title}</h2>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <fieldset className={styles.fieldset} disabled={isSubmitting}>
-                    <div>
-                        <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"USERNAME"} onChange={handleChange} />
-                        <p>{checkUsername}</p>
-                    </div>
-                    <div>
-                        <input
-                            id="password" className={styles.input} type="password" minLength={8} required={true} name="password" placeholder={"PASSWORD"} value={inputs.password} onChange={handleChange} />
+                    <div id={styles.fieldDiv}>
+                        <div>
+                            <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"USERNAME"} onChange={handleChange} />
+                            <p>{checkUsername}</p>
+                        </div>
+                        <div>
+                            <input
+                                id="password" className={styles.input} type="password" minLength={8} required={true} name="password" placeholder={"PASSWORD"} value={inputs.password} onChange={handleChange} />
+                        </div>
                     </div>
                     <div id={styles.signButton}>
                         <button className={styles.confirmButton} type="submit">{title}</button>
