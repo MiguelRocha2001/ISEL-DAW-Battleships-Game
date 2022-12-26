@@ -2,16 +2,21 @@ import * as React from 'react'
 import {Rankings, Services, Stats} from '../services'
 import styles from './Leaderboard.module.css'
 import {Link} from "react-router-dom";
+import {Loading} from "./Loading";
 
 export function Leaderboard() {
-    const rankings = Services.fetchBattleshipRanks()
-    console.log(rankings)
-    if (typeof rankings === 'string') {
-        return <p>Loading...</p>
+    const response = Services.fetchBattleshipRanks()
+    if (typeof response === "string") {
+        if (response === "Loading") {
+            return <Loading />
+        }
+        else {
+            return <p>{response}</p>
+        }
     }
     else {
         return (
-            <LeaderboardInternal rankings={rankings}/>
+            <LeaderboardInternal rankings={response}/>
         )
     }
 }
@@ -39,7 +44,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
 function Stats({stats}: { stats: Stats }) {
     const userLink = `/users/${stats.id}`
     return (
-        <tr>
+        <tr key={stats.id}>
             <td>
                 <Link to={userLink}>{stats.username}</Link>
             </td>

@@ -210,7 +210,7 @@ function useFetchUserHome(): UserHome | string {
             return siren.properties
         })
     }
-    return "Please, return to home page"
+    return "Token at fault, or user home link not found"
 }
 
 function isLogged(): boolean {

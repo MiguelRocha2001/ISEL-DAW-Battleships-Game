@@ -1,17 +1,21 @@
 import * as React from 'react'
 import {Services, User, UserHome} from '../services'
 import {Link} from 'react-router-dom'
-import {ShowSirenProperties} from "../utils/ShowSirenProperties";
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
+import {Loading} from "./Loading";
+import {useEffect, useState} from "react";
 
 export function Me() {
     const response = Services.fetchUserHome()
-    console.log(response)
+
     if (typeof response === "string") {
-        return (
-            <p>{response}</p>
-        )
+        if (response === "Loading") {
+            return <Loading />
+        }
+        else {
+            return <p>{response}</p>
+        }
     } else {
         return (
             <div>
