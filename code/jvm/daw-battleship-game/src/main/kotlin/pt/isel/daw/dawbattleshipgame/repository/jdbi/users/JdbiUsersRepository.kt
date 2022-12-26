@@ -15,12 +15,11 @@ class JdbiUsersRepository(
             .mapTo<User>()
             .singleOrNull()
 
-    override fun getUserById(id: Int): UserInfo? =
-        handle.createQuery("select * from _USER where id = :id")
+    override fun getUserById(id: Int): UserRanking? =
+        handle.createQuery("select id, username, wins, games_played from _USER where id = :id")
                 .bind("id", id)
-                .mapTo<User>()
+                .mapTo<UserRanking>()
                 .singleOrNull()
-                ?.toUserInfo()
 
     override fun getAllUsers(): List<UserInfo> {
         return handle.createQuery("select * from _USER")

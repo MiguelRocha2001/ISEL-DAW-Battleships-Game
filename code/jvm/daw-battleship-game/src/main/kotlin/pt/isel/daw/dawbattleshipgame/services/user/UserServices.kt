@@ -94,7 +94,7 @@ class UserServices(
         }
     }
 
-    fun getUserById(id: Int): UserInfo? {
+    fun getUserById(id: Int): UserRanking? {
         if(id < 0) return null
         return transactionManager.run {
             val usersRepository = it.usersRepository

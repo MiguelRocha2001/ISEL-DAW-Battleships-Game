@@ -8,8 +8,6 @@ import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createGameSirenActi
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
-import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatOutputModel
-import pt.isel.daw.dawbattleshipgame.http.model.game.UserStatsOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.map
 import pt.isel.daw.dawbattleshipgame.http.model.user.*
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
@@ -48,7 +46,6 @@ class UsersController(
                         link(Uris.Users.home(), Rels.USER_HOME)
                         createGameSirenAction(this)
                         clazz("user-token")
-
                     }
                 )
         }
@@ -69,7 +66,7 @@ class UsersController(
 
     @GetMapping(Uris.Users.BY_ID1)
     fun getById(@PathVariable id: Int) : ResponseEntity<*>{
-        val user = userService.getUserById(id)?.toUserOutputModel() ?:
+        val user = userService.getUserById(id)?.toUserStatOutputModel() ?:
             return Problem.response(404, Problem.userNotFound)
         return ResponseEntity.status(200)
             .contentType(SirenMediaType)
@@ -86,7 +83,7 @@ class UsersController(
         return ResponseEntity.status(201)
             .contentType(SirenMediaType)
             .body(
-                siren(UserHomeOutputModel(user.id, user.username)) {
+                siren(UserStatOutputModel(user.id, user.username, user.wins, user.gamesPlayed)) {
                     link(Uris.Users.home(), Rels.SELF)
                     link(Uris.Games.My.current(), Rels.GAME_ID)
                     link(Uris.Games.My.current(), Rels.GAME)
@@ -110,7 +107,7 @@ class UsersController(
     }
 
     @GetMapping(Uris.Users.STATS)
-    fun getUserStatistics(): ResponseEntity<*> {
+    fun getUserStats(): ResponseEntity<*> {
         val res = userService.getUserRanking()
         val userStats = res.map { UserStatOutputModel(it.id, it.username, it.wins, it.gamesPlayed) }
         return ResponseEntity.status(200)

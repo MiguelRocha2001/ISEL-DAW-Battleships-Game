@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Rankings, Services, Stats} from '../services'
+import {Rankings, Services, UserStats} from '../services'
 import styles from './Leaderboard.module.css'
 import {Link} from "react-router-dom";
 import {Loading} from "./Loading";
@@ -41,7 +41,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
     )
 }
 
-function Stats({stats}: { stats: Stats }) {
+function Stats({stats}: { stats: UserStats }) {
     const userLink = `/users/${stats.id}`
     return (
         <tr key={stats.id}>

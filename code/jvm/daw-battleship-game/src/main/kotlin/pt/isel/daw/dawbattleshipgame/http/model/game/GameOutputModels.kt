@@ -6,13 +6,6 @@ import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 
-/**
- * Represents a list of Users, with their respective number of games played and score
- */
-data class UserStatsOutputModel(val users: List<UserStatOutputModel>)
-data class UserStatOutputModel(val id: Int, val username: String, val wins: Int, val gamesPlayed: Int)
-
-
 
 data class GameInfoOutputModel(val state: GameStateOutputModel, val gameId: Int?)
 

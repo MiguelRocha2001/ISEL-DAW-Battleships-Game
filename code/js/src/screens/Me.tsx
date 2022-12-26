@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Services, UserHome} from '../services'
+import {Services} from '../services'
 import {Link} from 'react-router-dom'
 import {ShowSirenProperties} from "../utils/ShowSirenProperties";
 import style from "./Me.module.css"

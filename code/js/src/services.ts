@@ -68,9 +68,9 @@ function useFetchServerInfo(): ServerInfo | string {
 }
 
 export type Rankings = {
-    users: Array<Stats>
+    users: Array<UserStats>
 }
-export type Stats = {
+export type UserStats = {
     id: number
     username: string
     gamesPlayed: number
@@ -89,11 +89,7 @@ function useFetchBattleshipRanks(): Rankings | string {
     return 'Please, return to home page'
 }
 
-export type User = {
-    id: number
-    username: string
-}
-function getUser(userId: number): User | string {
+function getUser(userId: number): UserStats | string {
     const oldLink = links.getUserLink()
     const userLink = oldLink.replace(':id', userId.toString())
     if (userLink) {
@@ -178,11 +174,7 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
     return undefined
 }
 
-export type UserHome = {
-    id: number
-    username: string
-}
-function useFetchUserHome(): UserHome | string {
+function useFetchUserHome(): UserStats | string {
     const token = auth.getToken()
     const userHomeLink = links.getUserHomeLink()
     if (token && userHomeLink) {
