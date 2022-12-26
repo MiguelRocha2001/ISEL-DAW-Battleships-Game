@@ -32,7 +32,7 @@ function Authors({authors}: { authors: Author[] }) {
         <div>
             <h2>Backend Devs</h2>
             <ul className={styles.list}>
-                {authors.map((author) => <Author author={author}/>)}
+                {authors.map((author) => <p><Author author={author}/></p>)}
             </ul>
         </div>
     )

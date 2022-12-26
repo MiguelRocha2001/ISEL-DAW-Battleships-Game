@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Services, UserHome} from '../services'
-import {Link} from 'react-router-dom'
+import {Link, Navigate} from 'react-router-dom'
 import {ShowSirenProperties} from "../utils/ShowSirenProperties";
 import style from "./Me.module.css"
 
@@ -8,9 +8,14 @@ export function Me() {
     const response = Services.fetchUserHome()
     console.log(response)
     if (typeof response === "string") {
+        //redirects to login page
         return (
-            <p>{response}</p>
+            <div>
+                <p><h2>Please Login before accessing your profile</h2></p>
+                <p><Link id={style.login} to="/sign-in">Login</Link></p>
+            </div>
         )
+
     } else {
         return (
             <div>

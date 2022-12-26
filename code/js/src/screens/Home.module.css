@@ -1,9 +1,14 @@
 #mainDiv {
+    margin-top:20rem;
     margin-left: -1.5em;
     color: black;
     text-align: center;
-    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    animation: fadein 2s;
 }
+
 
 #mainImg {
     opacity: 40%;
@@ -27,7 +32,18 @@
 #overviewTitle {
     font-size: 3em;
     font-weight: bold;
+    animation-name: example;
+    animation-duration: 4s;
+    animation-iteration-count: 3;
+    font-family: Arial, serif;
+    animation: fadeIn 5s infinite;
+
 }
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
 
 #overviewBody {
     font-size: 2em;

@@ -26,18 +26,43 @@
     padding: 0.2em 0.7em;
 }
 
-.confirmButton {
-    background-color: #26FFDF;
-    font-weight: bold;
-    font-size: larger;
-    color: black;
+.confirmButton{
     width: 50%;
-    height: 2em;
-    border-radius: 0.5em;
+    margin: 0 auto;
+    align-items: center;
+    background: #f5f5fa;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: -10px -10px 30px 0 #fff,10px 10px 30px 0 #1d0dca17;
+    box-sizing: border-box;
+    color: #2a1f62;
+    cursor: pointer;
+    display: flex;
+    font-family: "Cascadia Code",Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;
+    font-size: 1rem;
+    justify-content: center;
+    line-height: 1.5rem;
+    padding: 15px;
+    position: relative;
+    text-align: left;
+    transition: .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: pre;
+    word-break: normal;
+    word-spacing: normal;
 }
 
 .confirmButton:hover {
-    background-color: #66ffe8;
+    background: #00E6FF;
+    transform: scale(1.1);
+}
+
+@media (min-width: 768px) {
+    .button-67 {
+        padding: 24px;
+    }
 }
 
 #signButton{
