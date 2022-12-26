@@ -3,10 +3,7 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.users
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
-import pt.isel.daw.dawbattleshipgame.domain.player.PasswordValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.player.TokenValidationInfo
-import pt.isel.daw.dawbattleshipgame.domain.player.User
-import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
+import pt.isel.daw.dawbattleshipgame.domain.player.*
 import pt.isel.daw.dawbattleshipgame.repository.UsersRepository
 class JdbiUsersRepository(
     private val handle: Handle
@@ -18,11 +15,19 @@ class JdbiUsersRepository(
             .mapTo<User>()
             .singleOrNull()
 
-    override fun getUserById(id: Int): User? =
+    override fun getUserById(id: Int): UserInfo? =
         handle.createQuery("select * from _USER where id = :id")
                 .bind("id", id)
                 .mapTo<User>()
                 .singleOrNull()
+                ?.toUserInfo()
+
+    override fun getAllUsers(): List<UserInfo> {
+        return handle.createQuery("select * from _USER")
+                .mapTo<User>()
+                .map { it.toUserInfo() }
+                .list()
+    }
 
     override fun clearAll() {
         handle.createUpdate("""
@@ -46,7 +51,7 @@ class JdbiUsersRepository(
 
     override fun getUsersRanking(): List<UserRanking> {
         return handle.createQuery(
-            "select username, wins, games_played from _user order by wins, games_played DESC limit 20"
+            "select id, username, wins, games_played from _USER order by wins, games_played DESC limit 20"
         ).mapTo<UserRanking>().toList()
     }
 

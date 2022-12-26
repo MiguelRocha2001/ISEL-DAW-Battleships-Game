@@ -17,12 +17,15 @@ object Uris {
     object Users {
         const val ALL = "/users"
         const val TOKEN = "/users/token"
-        const val BY_ID = "/users/{id}"
+        const val BY_ID1 = "/users/{id}"
+        private const val BY_ID2 = "/users/:id"
         const val STATS = "/users/all/statistics"
         const val HOME = "/me"
 
+        fun all(): URI = URI(ALL)
         fun create() = URI(ALL)
-        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+        fun byId() = URI(BY_ID2)
+        fun byId(id: Int) = UriTemplate(BY_ID1).expand(id)
         fun createToken(): URI = URI(TOKEN)
         fun home(): URI = URI(HOME)
         fun logout(): URI = URI(TOKEN)

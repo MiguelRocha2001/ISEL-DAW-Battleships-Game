@@ -3,16 +3,15 @@ import {Author, ServerInfo, Services} from '../services'
 import styles from './Info.module.css'
 
 export function Info() {
-    const content = Services.useFetchServerInfo()
-    console.log('content: ', content)
-    if (typeof content == "string") {
+    const resp = Services.useFetchServerInfo()
+    if (typeof resp == "string") {
         return (
-            <div>Loading...</div>
+            <p>{resp}</p>
         )
     }
     else {
         return (
-            <ServerInfo info={content}/>
+            <ServerInfo info={resp}/>
         )
     }
 }

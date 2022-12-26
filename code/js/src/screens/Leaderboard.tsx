@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {Rankings, Services, Stats} from '../services'
 import styles from './Leaderboard.module.css'
+import {Link} from "react-router-dom";
 
 export function Leaderboard() {
     const rankings = Services.fetchBattleshipRanks()
@@ -36,9 +37,12 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
 }
 
 function Stats({stats}: { stats: Stats }) {
+    const userLink = `/users/${stats.id}`
     return (
         <tr>
-            <td>{stats.username}</td>
+            <td>
+                <Link to={userLink}>{stats.username}</Link>
+            </td>
             <td>{stats.wins}</td>
             <td>{stats.gamesPlayed}</td>
         </tr>

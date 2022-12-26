@@ -10,5 +10,12 @@ data class User(
     val wins : Int = 0,
 )
 
+fun User.toUserInfo() = UserInfo(id, username)
 
-data class UserRanking(val username: String, val wins: Int, val gamesPlayed: Int)
+data class UserInfo(
+    val id: Int,
+    val username: String,
+)
+
+
+data class UserRanking(val id: Int, val username: String, val wins: Int, val gamesPlayed: Int)
