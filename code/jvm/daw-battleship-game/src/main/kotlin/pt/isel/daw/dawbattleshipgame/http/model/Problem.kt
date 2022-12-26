@@ -126,13 +126,21 @@ data class Problem(
         val notAllShipsPlaced = Problem(
             URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/user-not-found"),
             "Not all ships placed",
-            "Cannot proceed with the confirmation while all of the ships are not placed")
+            "Cannot proceed with the confirmation while all of the ships are not placed"
+        )
+        val boardIsConfirmed = Problem(
+                URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/confirmed-board"),
+                "Board is already confirmed",
+                "Unable to perform operation, board is already confirmed"
+        )
     }
 }
 
 
 val problems = mapOf(
         "UserAlreadyExists" to Problem.response(400, Problem.userAlreadyExists),
+
+        "BoardIsConfirmed" to Problem.response(405, Problem.boardIsConfirmed),
 
         "InsecurePassword" to Problem.response(400, Problem.insecurePassword),
 

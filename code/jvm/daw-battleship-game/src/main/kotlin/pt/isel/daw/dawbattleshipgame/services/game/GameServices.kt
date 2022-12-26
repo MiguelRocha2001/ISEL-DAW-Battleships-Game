@@ -106,6 +106,8 @@ class GameServices(
             if (game.state != GameState.FLEET_SETUP)
                 return@run Either.Left(PlaceShipsError.ActionNotPermitted)
                     .also { logger.info("User $userId: Place ships failed: action not permitted") }
+            if(game.getBoard(player).isConfirmed())
+                return@run Either.Left(PlaceShipsError.BoardIsConfirmed)
             ships.forEach { s ->
                 game = game.placeShip(s.first, s.second, s.third, player)
                     ?: return@run Either.Left(PlaceShipsError.InvalidMove)

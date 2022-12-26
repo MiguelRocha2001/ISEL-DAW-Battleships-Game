@@ -42,7 +42,7 @@ create table GAME
 create table CONFIGURATION
 (
     game       int primary key,
-    board_size int          not null check (board_size >= 8 and board_size <= 15) default 10,
+    board_size int          not null check (board_size >= 8 and board_size <= 13) default 10,
     n_shots    int          not null                                              default 1,
     timeout    int          not null                                              default 120,
     fleet      varchar(300) not null                                              default (
