@@ -17,24 +17,22 @@ const Navbar = () => {
                     Home
                 </NavLink>
                 <NavLink to='/info' activeStyle>
-                    Info
+                    About
                 </NavLink>
                 <NavLink to='/leadership' activeStyle>
                     Rankings
                 </NavLink>
-                <NavLink to='/sign-up' activeStyle>
-                    Sign Up
-                </NavLink>
                 <NavLink to='/me' activeStyle>
-                    Me
+                    Profile
                 </NavLink>
                 <NavLink to='/game' activeStyle>
-                    Game
+                    Play
                 </NavLink>
                 {/* Second Nav */}
                 {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
             </NavMenu>
             <NavBtn>
+                <NavBtnLink to= '/sign-up'>Sign Up</NavBtnLink>
                 <NavBtnLink to='/sign-in'>Sign In</NavBtnLink>
             </NavBtn>
         </Nav>
