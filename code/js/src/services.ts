@@ -19,6 +19,9 @@ function useFetchHome(): any | string {
         const getUserLink = Siren.extractGetUserLink(siren.links)
         const tokenAction = Siren.extractTokenAction(siren.actions)
         const registerAction = Siren.extractRegisterAction(siren.actions)
+        const createGameAction = Siren.extractCreateGameAction(siren.actions)
+        const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
+        const getGameLink = Siren.extractGetGameLink(siren.links)
         if (serverInfoLink)
             logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
         if (battleshipRanksLink)
@@ -29,11 +32,20 @@ function useFetchHome(): any | string {
             logger.info("fetchHome: setting up new token action: ", tokenAction.name)
         if (registerAction)
             logger.info("fetchHome: setting up new register action: ", registerAction.name)
+        if (createGameAction)
+            logger.info("fetchHome: setting up new create game action: ", createGameAction.name)
+        if (getCurrentGameIdLink)
+            logger.info("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
+        if (getGameLink)
+            logger.info("fetchHome: setting up new get game link: ", getGameLink)
         links.setInfoLink(serverInfoLink)
         links.setBattleshipRanksLink(battleshipRanksLink)
         links.setUserLink(getUserLink)
         links.setTokenAction(tokenAction)
         links.setRegisterAction(registerAction)
+        links.setCreateGameAction(createGameAction)
+        links.setCurrentGameIdLink(getCurrentGameIdLink)
+        links.setGetGameLink(getGameLink)
         return siren.properties
     })
 }
@@ -388,7 +400,7 @@ async function confirmFleet(): Promise<void | string> {
     }
 }
 
-async function attack(attackRequest: Position): Promise<void | string> {
+async function attack(attackRequest: Array<Position>): Promise<void | string> {
     const token = auth.getToken()
     const action = links.getAttackAction()
     if (!token || !action) {

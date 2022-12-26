@@ -4,7 +4,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildHomeActions
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createUserSirenAction
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createGameSirenAction
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.homeLinks
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.home.AuthorOutputModel
@@ -22,9 +24,11 @@ class HomeController(
             .contentType(SirenMediaType)
             .body(
                 siren(HomeOutputModel("Welcome to the Battleship Game API")) {
-                    homeLinks()
-                    buildHomeActions(this)
                     clazz("home")
+                    homeLinks()
+                    createUserSirenAction(this)
+                    createGameSirenAction(this)
+                    createTokenSirenAction(this)
                 }
             )
     }

@@ -6,7 +6,7 @@ import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import java.net.URI
 
-fun buildStartGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
+fun createGameSirenAction(sirenBuilderScope: SirenBuilderScope<*>) {
     sirenBuilderScope.action(
         name = "create-game",
         href = URI(Uris.Games.My.ALL),

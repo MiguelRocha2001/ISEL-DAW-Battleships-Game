@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildStartGameAction
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createGameSirenAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.Problem
@@ -46,7 +46,7 @@ class UsersController(
                     siren(TokenOutputModel(it)) {
                         link(Uris.Users.createToken(), Rels.SELF)
                         link(Uris.Users.home(), Rels.USER_HOME)
-                        buildStartGameAction(this)
+                        createGameSirenAction(this)
                         clazz("user-token")
 
                     }
@@ -90,7 +90,7 @@ class UsersController(
                     link(Uris.Users.home(), Rels.SELF)
                     link(Uris.Games.My.current(), Rels.GAME_ID)
                     link(Uris.Games.My.current(), Rels.GAME)
-                    buildStartGameAction(this)
+                    createGameSirenAction(this)
                     clazz("user-home")
                 }
             )

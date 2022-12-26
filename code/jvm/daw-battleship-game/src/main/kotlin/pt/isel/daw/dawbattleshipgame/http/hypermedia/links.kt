@@ -12,7 +12,9 @@ fun SirenBuilderScope<HomeOutputModel>.homeLinks() = links(
         Uris.Users.stats() to Rels.USERS_STATS,
         Uris.Home.serverInfo() to Rels.SERVER_INFO,
         Uris.Users.home() to Rels.USER_HOME, // TODO -> see later
-        Uris.Users.byId() to Rels.USER_BY_ID
+        Uris.Users.byId() to Rels.USER_BY_ID,
+        Uris.Games.My.current() to Rels.GAME_ID,
+        Uris.Games.My.current() to Rels.GAME
     )
 )
 

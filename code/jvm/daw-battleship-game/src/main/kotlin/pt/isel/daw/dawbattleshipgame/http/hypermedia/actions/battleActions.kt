@@ -7,7 +7,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import pt.isel.daw.dawbattleshipgame.http.model.game.GameOutputModel
 import java.net.URI
 
-fun buildBattleActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
+fun buildBattleActions(sirenBuilderScope: SirenBuilderScope<*>) {
     sirenBuilderScope.action(
         name = "place-shot",
         href = URI(Uris.Games.My.Current.My.Shots.ALL),

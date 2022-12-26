@@ -7,7 +7,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
 import java.net.URI
 
-fun buildHomeActions(sirenBuilderScope: SirenBuilderScope<HomeOutputModel>) {
+fun createUserSirenAction(sirenBuilderScope: SirenBuilderScope<HomeOutputModel>) {
     // Create User
     sirenBuilderScope.action(
         name = "create-user",

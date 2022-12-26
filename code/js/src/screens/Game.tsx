@@ -204,7 +204,7 @@ export function Game() {
 
     async function shoot(row: number, col: number) {
         logger.info("shooting in " + row + " " + col)
-        const resp = await Services.attack({row: row, column: col})
+        const resp = await Services.attack(Array({row: row, column: col}))
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
