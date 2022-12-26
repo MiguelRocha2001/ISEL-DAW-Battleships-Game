@@ -24,7 +24,7 @@ class HomeController(
                 siren(HomeOutputModel("Welcome to the Battleship Game API")) {
                     homeLinks()
                     buildHomeActions(this)
-                    clazz("home") //fixme: i think this is the info the class of siren object need(according to the projects I saw),but if not, change it
+                    clazz("home")
                 }
             )
     }

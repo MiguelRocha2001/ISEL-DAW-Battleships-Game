@@ -11,15 +11,14 @@
 }
 
 .fieldset {
-    border: 0;
-    width: 25%;
+    border:0;
 }
 
-.input, .label, .confirmButton {
+.input, .label {
     font-size: 1em;
     height: 2em;
-    width: 100%;
-    margin: 0.5em;
+    width: 80%;
+    margin: 0.5em 0.5em 0.5em 8%;
     border-radius: 0.5em;
 }
 
@@ -32,8 +31,26 @@
     font-weight: bold;
     font-size: larger;
     color: black;
+    width: 50%;
+    height: 2em;
+    border-radius: 0.5em;
 }
 
 .confirmButton:hover {
     background-color: #66ffe8;
 }
+
+#signButton{
+    text-align: center;
+}
+
+#signPage{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-60%, -50%);
+    border: #0b2e13 solid 2px;
+}
+

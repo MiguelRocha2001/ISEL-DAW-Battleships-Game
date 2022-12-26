@@ -13,7 +13,7 @@ function useFetchHome(): any | string {
     const defaultUrl = links.defaultUrl
     const state = useFetchNew({ url: defaultUrl, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
-        logger.info("fetchHome: response sucessfull")
+        logger.info("fetchHome: response successful")
         const serverInfoLink = Siren.extractInfoLink(siren.links)
         const battleshipRanksLink = Siren.extractBattleshipRanksLink(siren.links)
         const tokenAction = Siren.extractTokenAction(siren.actions)

@@ -17,11 +17,11 @@ export function Leaderboard() {
 
 function LeaderboardInternal({rankings}: { rankings: Rankings }) {
     return (
-        <div>
-            <h2>Leadership</h2>
+        <div id ={styles.leaderBoard}>
+            <h2 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h2>
             <table className={styles.table}>
-                <thead className={styles.thead}>
-                    <tr className={styles.tr}>
+                <thead>
+                    <tr>
                         <th>Username</th>
                         <th>Wins</th>
                         <th>Games Played</th>
@@ -37,7 +37,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
 
 function Stats({stats}: { stats: Stats }) {
     return (
-        <tr className={styles.tr}>
+        <tr>
             <td>{stats.username}</td>
             <td>{stats.wins}</td>
             <td>{stats.gamesPlayed}</td>

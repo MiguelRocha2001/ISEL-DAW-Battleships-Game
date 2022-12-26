@@ -28,6 +28,7 @@ export function Authentication({title, action}: { title: string, action: Action 
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState(undefined)
+    const [checkUsername, setCheckUsername] = useState("")
     const [redirect, setRedirect] = useState(false)
     const setUser = useSetUser()
     const navigate = useNavigate()
@@ -37,6 +38,12 @@ export function Authentication({title, action}: { title: string, action: Action 
     }
     function handleChange(ev: React.FormEvent<HTMLInputElement>) {
         const name = ev.currentTarget.name
+        if(name === "username") {
+            if( ev.currentTarget.value.length > 20)  {
+                setCheckUsername("Username must be less less than 20 characters")
+                ev.currentTarget.value = ev.currentTarget.value.substring(0, 20)
+            } else setCheckUsername("")
+        }
         setInputs({ ...inputs, [name]: ev.currentTarget.value })
         setError(undefined)
     }
@@ -80,14 +87,14 @@ export function Authentication({title, action}: { title: string, action: Action 
             <form onSubmit={handleSubmit} className={styles.form}>
                 <fieldset className={styles.fieldset} disabled={isSubmitting}>
                     <div>
-                        <label htmlFor="username" className={styles.label}>USERNAME</label>
-                        <input id="username" className={styles.input} type="text" name="username" value={inputs.username} onChange={handleChange} />
+                        <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"USERNAME"} onChange={handleChange} />
+                        <p>{checkUsername}</p>
                     </div>
                     <div>
-                        <label htmlFor="password" className={styles.label}>PASSWORD</label>
-                        <input id="password" className={styles.input} type="text" name="password" value={inputs.password} onChange={handleChange} />
+                        <input
+                            id="password" className={styles.input} type="password" minLength={8} required={true} name="password" placeholder={"PASSWORD"} value={inputs.password} onChange={handleChange} />
                     </div>
-                    <div>
+                    <div id={styles.signButton}>
                         <button className={styles.confirmButton} type="submit">{title}</button>
                     </div>
                 </fieldset>
