@@ -1,0 +1,9 @@
+gradlew clean
+gradlew build
+gradlew copyRuntimeDependencies
+
+gradlew jar
+java -jar build\libs\daw-battleship-game-0.0.1-SNAPSHOT.jar
+
+docker build --tag battleships .
+docker run -d --publish 9000:9000 --name battleships1 battleships

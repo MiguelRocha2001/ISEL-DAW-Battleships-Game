@@ -85,6 +85,15 @@ fun getCreateGameInputModel() = CreateGameInputModel(
     roundTimeout = 10
 )
 
+fun getGameTestConfiguration6() = Configuration(
+    boardSize = 8,
+    fleet = mapOf(
+        Pair(ShipType.DESTROYER, 2)
+    ),
+    shots = 1,
+    roundTimeout = 10
+)
+
 
 fun generateGameId(): Int = (Math.random() * 100000).toInt()
 

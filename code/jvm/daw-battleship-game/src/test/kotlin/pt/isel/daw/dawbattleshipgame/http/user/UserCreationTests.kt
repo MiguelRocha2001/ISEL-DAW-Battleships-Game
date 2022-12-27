@@ -84,7 +84,7 @@ class UserCreationTests {
 
 
         val properties = userHome.properties as LinkedHashMap<String, *>
-        assertEquals(userId, properties["userId"] as? Int)
+        assertEquals(userId, properties["id"] as? Int)
         assertEquals(username, properties["username"])
 
         // asserting links

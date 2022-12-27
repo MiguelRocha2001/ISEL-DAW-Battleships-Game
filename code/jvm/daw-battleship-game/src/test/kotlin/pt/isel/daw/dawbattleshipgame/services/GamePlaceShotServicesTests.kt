@@ -18,11 +18,12 @@ class GamePlaceShotServicesTests {
     @Test
     fun placeShot() {
         testWithTransactionManagerAndRollback { transactionManager ->
+            val gameConfig = getGameTestConfiguration6()
             val userPair = createUserPair(transactionManager)
             val gameServices = GameServices(transactionManager)
 
             // Create Game
-            val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
+            val gameId = createGame(gameServices, userPair.first, userPair.second, gameConfig)
 
             // apply some actions with player_1
             placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(1, 1), Orientation.HORIZONTAL)
@@ -68,15 +69,56 @@ class GamePlaceShotServicesTests {
             gameServices.updateFleetState(userPair.first, true)
             gameServices.updateFleetState(userPair.second, true)
 
-            val placeShotResult1 = gameServices.placeShots(userPair.first, listOf(Coordinate(1, 1))) // valid
+            // valid
+            val placeShotResult1 = gameServices.placeShots(
+                userPair.first,
+                listOf(
+                    Coordinate(1, 1),
+                    Coordinate(1, 2),
+                    Coordinate(1, 3),
+                    Coordinate(1, 4),
+                    Coordinate(1, 5),
+                )
+            )
             assertEquals(Either.Right(Unit), placeShotResult1)
-            val placeShotResult2 = gameServices.placeShots(userPair.second, listOf(Coordinate(2, 2))) // valid
+
+            // valid
+            val placeShotResult2 = gameServices.placeShots(
+                userPair.second,
+                listOf(
+                    Coordinate(2, 2),
+                    Coordinate(2, 3),
+                    Coordinate(2, 4),
+                    Coordinate(2, 5),
+                    Coordinate(2, 6),
+                )
+            )
             assertEquals(Either.Right(Unit), placeShotResult2)
 
-            val result = gameServices.placeShots(userPair.first, listOf(Coordinate(1, 1))) // same coordinate
+            // same coordinate
+            val result = gameServices.placeShots(
+                userPair.first,
+                listOf(
+                    Coordinate(1, 1),
+                    Coordinate(2, 2),
+                    Coordinate(2, 3),
+                    Coordinate(2, 4),
+                    Coordinate(2, 5),
+                )
+            )
             assertEquals(Either.Left(PlaceShotError.InvalidShot), result)
 
-            val result2 = gameServices.placeShots(userPair.second, listOf(Coordinate(3, 3))) // not its turn
+            // not its turn
+            val result2 = gameServices.placeShots(
+                userPair.second,
+                listOf(
+                    Coordinate(3, 3),
+                    Coordinate(3, 4),
+                    Coordinate(3, 5),
+                    Coordinate(3, 6),
+                    Coordinate(3, 7),
+                )
+            )
             assertEquals(Either.Left(PlaceShotError.ActionNotPermitted), result2) // TODO should be ActionNotPermitted
         }
     }

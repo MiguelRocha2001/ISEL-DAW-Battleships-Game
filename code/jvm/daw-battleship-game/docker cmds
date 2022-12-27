@@ -1,2 +1,0 @@
-docker build --tag battleships .
-docker run -d --publish 9000:9000 --name battleships1 battleships

@@ -110,7 +110,7 @@ class GameServicesStatusTests {
     }
 
     @Test
-    fun getGame(){
+    fun getGame() {
         testWithTransactionManagerAndRollback { transactionManager ->
             val userPair = createUserPair(transactionManager)
             val gameServices = GameServices(transactionManager)
@@ -118,7 +118,7 @@ class GameServicesStatusTests {
             // Create Game
             val gameId = createGame(gameServices, userPair.first, userPair.second, conf)
 
-            // apply some actions with player_1
+            // places some ships...
             placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(1, 3), Orientation.VERTICAL)
             placeShip(gameServices, userPair.second, ShipType.BATTLESHIP, Coordinate(5, 1), Orientation.HORIZONTAL)
             placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)

@@ -42,11 +42,11 @@ class GameServicesConfirmLayoutTests {
             val res2 = gameServices.placeShips(
                 userPair.second,
                 listOf(
-                    Triple(ShipType.BATTLESHIP, Coordinate(3, 5), Orientation.HORIZONTAL),
-                    Triple(ShipType.DESTROYER, Coordinate(1, 15), Orientation.VERTICAL),
+                    Triple(ShipType.BATTLESHIP, Coordinate(1, 5), Orientation.HORIZONTAL),
+                    Triple(ShipType.DESTROYER, Coordinate(1, 12), Orientation.VERTICAL),
                     Triple(ShipType.CARRIER, Coordinate(1, 1), Orientation.VERTICAL),
                     Triple(ShipType.CRUISER, Coordinate(12, 6), Orientation.HORIZONTAL),
-                    Triple(ShipType.SUBMARINE, Coordinate(15, 8), Orientation.HORIZONTAL),
+                    Triple(ShipType.SUBMARINE, Coordinate(10, 8), Orientation.HORIZONTAL),
                 )
             )
             assertTrue(res2 is Either.Right)
@@ -54,11 +54,15 @@ class GameServicesConfirmLayoutTests {
             var game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
 
-            gameServices.updateFleetState(userPair.first, true)
+            val confRes1 = gameServices.updateFleetState(userPair.first, true)
+            assertTrue(confRes1 is Either.Right)
+
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.FLEET_SETUP, game.value.state)
 
-            gameServices.updateFleetState(userPair.second, true)
+            val confRes2 = gameServices.updateFleetState(userPair.second, true)
+            assertTrue(confRes2 is Either.Right)
+
             game = gameServices.getGame(gameId) as Either.Right
             assertEquals(GameState.BATTLE, game.value.state)
         }
