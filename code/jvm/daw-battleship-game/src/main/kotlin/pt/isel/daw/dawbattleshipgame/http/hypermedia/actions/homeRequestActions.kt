@@ -18,5 +18,4 @@ fun createUserSirenAction(sirenBuilderScope: SirenBuilderScope<HomeOutputModel>)
         this.textField("username")
         this.textField("password")
     }
-    createTokenSirenAction(sirenBuilderScope)
 }

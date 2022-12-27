@@ -16,7 +16,7 @@ class JdbiUsersRepository(
             .singleOrNull()
 
     override fun getUserById(id: Int): UserRanking? =
-        handle.createQuery("select id, username, wins, games_played from _USER where id = :id")
+        handle.createQuery("select id, username, wins, gamesPlayed from _USER where id = :id")
                 .bind("id", id)
                 .mapTo<UserRanking>()
                 .singleOrNull()
@@ -50,7 +50,7 @@ class JdbiUsersRepository(
 
     override fun getUsersRanking(): List<UserRanking> {
         return handle.createQuery(
-            "select id, username, wins, games_played from _USER order by wins, games_played DESC limit 20"
+            "select id, username, wins, gamesPlayed from _USER order by wins, gamesPlayed DESC limit 20"
         ).mapTo<UserRanking>().toList()
     }
 

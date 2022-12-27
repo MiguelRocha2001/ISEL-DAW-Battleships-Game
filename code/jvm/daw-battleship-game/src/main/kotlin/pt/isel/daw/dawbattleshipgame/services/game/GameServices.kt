@@ -45,8 +45,9 @@ class GameServices(
                 logger.info("User $userId: Game creation successful: user is now in queue")
                 Either.Right(GameState.NOT_STARTED to null)
             } else {
-                val conf = if(quickGame) userDb.getConfigFromUserQueue(userWaiting)
-                else configuration
+                val conf =
+                    if(quickGame) userDb.getConfigFromUserQueue(userWaiting)
+                    else configuration
                 userDb.removeUserFromQueue(userWaiting)
                 val newGame = Game.startGame(userWaiting, userId, conf!!)
                 val gameId = gameDb.startGame(newGame)

@@ -1,6 +1,5 @@
 package pt.isel.daw.dawbattleshipgame.http.model.user
 
-import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.domain.player.UserInfo
 import pt.isel.daw.dawbattleshipgame.domain.player.UserRanking
 

@@ -1,13 +1,11 @@
 package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.InitGame
-import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 
 internal fun insertGame(handle: Handle, game: Game) {
     handle.createUpdate(

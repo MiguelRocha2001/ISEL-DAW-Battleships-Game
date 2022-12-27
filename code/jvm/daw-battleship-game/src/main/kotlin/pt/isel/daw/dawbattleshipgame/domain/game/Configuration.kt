@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
 import pt.isel.daw.dawbattleshipgame.http.requireWithException
-import kotlin.reflect.jvm.internal.impl.renderer.DescriptorRenderer.ValueParametersHandler.DEFAULT
 
 /**
  * Represents the game configuration

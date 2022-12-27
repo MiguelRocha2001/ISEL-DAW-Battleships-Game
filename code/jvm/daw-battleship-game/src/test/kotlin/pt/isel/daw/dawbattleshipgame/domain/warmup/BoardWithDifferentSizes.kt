@@ -18,31 +18,6 @@ class BoardWithDifferentSizes {
     private var configuration = getGameTestConfiguration1()
 
     @Test
-    fun config_15_size() {
-        val game = Game.newGame(gameId, player1, player2, configuration)
-        var gameResult = game.placeShip(ShipType.DESTROYER, "A1".toCoordinate(), Orientation.HORIZONTAL)
-        gameResult = gameResult?.moveShip("A1".toCoordinate(), "B4".toCoordinate())
-        assertEquals("    | A  | B  | C  | D  | E  | F  | G  | H  | I  | J  | K  | L  | M  | N  | O  |\n" +
-                "| 1 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 2 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 3 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 4 |    | [] | [] |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 5 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 6 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 7 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 8 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 9 |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 10|    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 11|    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 12|    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 13|    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 14|    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n" +
-                "| 15|    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |\n",
-            gameResult?.getBoard().toString()
-        )
-    }
-
-    @Test
     fun config_10_size() {
         configuration = getGameTestConfiguration2()
         val game = Game.newGame(gameId, player1, player2, configuration)

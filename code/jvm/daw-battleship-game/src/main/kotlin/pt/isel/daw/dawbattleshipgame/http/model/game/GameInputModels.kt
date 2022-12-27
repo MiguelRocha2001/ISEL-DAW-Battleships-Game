@@ -7,7 +7,6 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
 import pt.isel.daw.dawbattleshipgame.http.model.INVALID_INPUT
 import pt.isel.daw.dawbattleshipgame.http.requireWithException
 

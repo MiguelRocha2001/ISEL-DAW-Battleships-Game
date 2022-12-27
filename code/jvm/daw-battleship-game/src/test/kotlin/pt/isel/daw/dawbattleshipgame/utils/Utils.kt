@@ -15,7 +15,7 @@ import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 fun getGameTestConfiguration1() = Configuration(
-    boardSize = 15,
+    boardSize = 13,
     shots = 5,
     fleet = mapOf(
         Pair(ShipType.CARRIER, 5),

@@ -106,8 +106,10 @@ class GameRepositoryTests {
                 assert(gameFromDb.state == GameState.FLEET_SETUP)
                 assert(gameFromDb.instants.created == instant)
                 assert(gameFromDb.instants.updated == instant)
+
                 val user1Updated = usersRepo.getUserByUsername("user1")!!
                 val user2Updated = usersRepo.getUserByUsername("user2")!!
+
                 assert(user1Updated.gamesPlayed == 1 && user1Updated.wins == 0)
                 assert(user2Updated.gamesPlayed == 1 && user2Updated.wins == 0)
             }

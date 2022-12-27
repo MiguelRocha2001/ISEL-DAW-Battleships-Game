@@ -55,17 +55,40 @@ class GamePlaceShotTests {
         confirmPlayerFleet(player1Token,client)
         confirmPlayerFleet(player2Token,client)
 
-        val playerOneShot = Pair("1"," 1")
+        val playerOneShot1 = Pair("1"," 1")
+        val playerOneShot2 = Pair("1"," 2")
+        val playerOneShot3 = Pair("1"," 3")
+        val playerOneShot4 = Pair("1"," 4")
+        val playerOneShot5 = Pair("1"," 5")
 
         Thread.sleep(1000)
-        // Invalid user will try to add a ship, without success
+
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
                 mapOf(
-                        "shots" to listOf(mapOf(
-                    "row" to playerOneShot.first,
-                    "column" to playerOneShot.second
-                )))
+                        "shots" to listOf(
+                            mapOf(
+                                "row" to playerOneShot1.first,
+                                "column" to playerOneShot1.second
+                            ),
+                            mapOf(
+                                "row" to playerOneShot2.first,
+                                "column" to playerOneShot2.second
+                            ),
+                            mapOf(
+                                "row" to playerOneShot3.first,
+                                "column" to playerOneShot3.second
+                            ),
+                            mapOf(
+                                "row" to playerOneShot4.first,
+                                "column" to playerOneShot4.second
+                            ),
+                            mapOf(
+                                "row" to playerOneShot5.first,
+                                "column" to playerOneShot5.second
+                            )
+                        )
+                )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
@@ -99,31 +122,37 @@ class GamePlaceShotTests {
         val playerOneShot = Pair("1"," 1")
         val playerOneShotAgain = Pair("1"," 2")
 
-        // Invalid user will try to add a ship, without success
+        // tries to place only one shot (requires two)
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
                 mapOf(
-                       "shots" to listOf(mapOf(
-                    "row" to playerOneShot.first,
-                    "column" to playerOneShot.second
-                )))
+                       "shots" to listOf(
+                           mapOf(
+                               "row" to playerOneShot.first,
+                               "column" to playerOneShot.second
+                           )
+                       )
+                )
             )
             .header("Authorization", "Bearer $player1Token")
             .exchange()
-            .expectStatus().isNoContent
+            .expectStatus().isBadRequest
 
 
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
-                mapOf("shots" to
-                        listOf(mapOf(
-                    "row" to playerOneShotAgain.first,
-                    "column" to playerOneShotAgain.second
-                )))
+                mapOf(
+                    "shots" to listOf(
+                        mapOf(
+                            "row" to playerOneShotAgain.first,
+                            "column" to playerOneShotAgain.second
+                        )
+                    )
+                )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header("Authorization", "Bearer $player2Token")
             .exchange()
-            .expectStatus().is4xxClientError
+            .expectStatus().isBadRequest
 
 
         deleteGame(client, gameId)

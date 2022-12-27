@@ -74,10 +74,10 @@ class GamePlaceShotServicesTests {
             assertEquals(Either.Right(Unit), placeShotResult2)
 
             val result = gameServices.placeShots(userPair.first, listOf(Coordinate(1, 1))) // same coordinate
-            assertEquals(Either.Left(PlaceShotError.InvalidMove), result)
+            assertEquals(Either.Left(PlaceShotError.InvalidShot), result)
 
             val result2 = gameServices.placeShots(userPair.second, listOf(Coordinate(3, 3))) // not its turn
-            assertEquals(Either.Left(PlaceShotError.InvalidMove), result2) // TODO should be ActionNotPermitted
+            assertEquals(Either.Left(PlaceShotError.ActionNotPermitted), result2) // TODO should be ActionNotPermitted
         }
     }
 }

@@ -4,7 +4,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
-import pt.isel.daw.dawbattleshipgame.http.model.game.GameOutputModel
 import java.net.URI
 
 fun buildBattleActions(sirenBuilderScope: SirenBuilderScope<*>) {

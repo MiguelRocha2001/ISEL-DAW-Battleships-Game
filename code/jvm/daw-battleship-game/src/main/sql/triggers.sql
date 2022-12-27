@@ -7,7 +7,7 @@ BEGIN
     end if;
 
     if (TG_OP = 'INSERT') then
-        update _user set games_played = games_played + 1
+        update _user set gamesPlayed = gamesPlayed + 1
         where id = NEW.player1 or id = NEW.player2;
     end if;
 

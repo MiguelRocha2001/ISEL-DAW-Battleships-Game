@@ -58,7 +58,7 @@ class HomeTests {
 
         // asserting links
         val links = siren.links
-        assertEquals(4, links.size)
+        assertEquals(7, links.size)
 
         assertEquals("/", links[0].href)
         assertEquals(1, links[0].rel.size)
@@ -76,9 +76,21 @@ class HomeTests {
         assertEquals(1, links[3].rel.size)
         assertEquals("user-home", links[3].rel[0])
 
+        assertEquals("/users/:id", links[4].href)
+        assertEquals(1, links[4].rel.size)
+        assertEquals("user", links[4].rel[0])
+
+        assertEquals("/my/games/current", links[5].href)
+        assertEquals(1, links[5].rel.size)
+        assertEquals("game-id", links[5].rel[0])
+
+        assertEquals("/my/games/current", links[6].href)
+        assertEquals(1, links[6].rel.size)
+        assertEquals("game", links[6].rel[0])
+
         // asserting actions
         val actions = siren.actions
-        assertEquals(2, actions.size)
+        assertEquals(3, actions.size)
 
         assertEquals("create-user", actions[0].name)
         assertEquals("/users", actions[0].href)
@@ -89,6 +101,11 @@ class HomeTests {
         assertEquals("/users/token", actions[1].href)
         assertEquals(HttpMethod.POST, actions[1].method)
         assertEquals("application/json", actions[1].type)
+
+        assertEquals("create-game", actions[2].name)
+        assertEquals("/my/games", actions[2].href)
+        assertEquals(HttpMethod.POST, actions[2].method)
+        assertEquals("application/json", actions[2].type)
     }
 
     @Test
