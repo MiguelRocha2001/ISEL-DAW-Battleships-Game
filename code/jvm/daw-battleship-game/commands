@@ -5,5 +5,6 @@ gradlew copyRuntimeDependencies
 gradlew jar
 java -jar build\libs\daw-battleship-game-0.0.1-SNAPSHOT.jar
 
-docker build --tag battleships .
-docker run -d --publish 9000:9000 --name battleships1 battleships
+docker build --tag battleships . && docker run -d --env-file myvars.txt --publish 9000:9000 --name battleships1 battleships
+
+docker stop battleships1 && docker rm battleships1

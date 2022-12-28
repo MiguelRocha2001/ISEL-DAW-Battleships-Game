@@ -1,0 +1,2 @@
+DB_POSTGRES_CONNECTION=jdbc:postgresql://localhost:5432/postgres?user=postgres&password=postgrespassword
+DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://localhost:5432/BattleshipsTests?user=postgres&password=postgrespassword
