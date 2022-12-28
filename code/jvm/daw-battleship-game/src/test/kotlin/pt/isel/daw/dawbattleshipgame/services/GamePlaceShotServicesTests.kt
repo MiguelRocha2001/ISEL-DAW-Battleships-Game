@@ -54,7 +54,7 @@ class GamePlaceShotServicesTests {
         }
     }
 
-    // @Test
+    @Test
     fun invalidPlaceShot() {
         testWithTransactionManagerAndRollback { transactionManager ->
             val userPair = createUserPair(transactionManager)
@@ -119,7 +119,7 @@ class GamePlaceShotServicesTests {
                     Coordinate(3, 7),
                 )
             )
-            assertEquals(Either.Left(PlaceShotError.ActionNotPermitted), result2) // TODO should be ActionNotPermitted
+            assertEquals(Either.Left(PlaceShotError.ActionNotPermitted), result2)
         }
     }
 }

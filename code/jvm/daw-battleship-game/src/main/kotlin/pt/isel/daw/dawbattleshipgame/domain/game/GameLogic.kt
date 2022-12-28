@@ -105,7 +105,9 @@ fun Game.rotateShip(position: Coordinate, player: Player = Player.ONE): Game? {
 
 
 fun Game.confirmFleet(player: Player): Game? {
-   if(!getBoard(player).allShipsPlaced(configuration.fleet)) { return null }
+    if (!getBoard(player).allShipsPlaced(configuration.fleet)) {
+        return null
+    }
     val isOtherConfirmed = getBoard(player.other()).isConfirmed()
     return this.updateGame(
             getBoard(player).confirm(),
@@ -123,8 +125,13 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
     return try {
         val opponentBoard = getBoard(player.other())
         if (playerTurn != userId || opponentBoard.isHit(shot)) return null
-        val gameResult =
-                this.updateGame(opponentBoard.placeShot(shot), player.other(), getPlayerId(player.other()), GameState.BATTLE)
+        val gameResult = updateGame(
+                opponentBoard.placeShot(shot),
+                player.other(),
+                getPlayerId(player),
+                GameState.BATTLE
+        )
+        println("gameResult = ${gameResult.getBoard(player.other())}")
         if (gameResult.getBoard(player.other()).allShipsSunk()) {
             gameResult.setWinner(userId)
         } else {
@@ -135,18 +142,19 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
     }
 }
 
-fun Game.placeShots(userId: Int, shots: List<Coordinate>, player: Player) : Game? {
-    var game : Game? = this
-    println(shots)
-    if(shots.size != configuration.shots.toInt()) throw ApiException(
+fun Game.placeShots(userId: Int, shots: List<Coordinate>, player: Player): Game? {
+    var game: Game = this
+    if (shots.size != configuration.shots.toInt()) throw ApiException(
             Problem.DEFAULT_URI,
             "Not all shots were placed",
             "Not all shots were placed, try again",
     )
     shots.forEach {
-        game = placeShot(userId, it, player) ?: return null
+        println(it)
+        println(game.getBoard(player.other()))
+        game = game.placeShot(userId, it, player) ?: return null
     }
-    return game
+    return game.updateTurn()
 }
 
 /** ------------------------------------------ Auxiliary functions ---------------------------------------**/

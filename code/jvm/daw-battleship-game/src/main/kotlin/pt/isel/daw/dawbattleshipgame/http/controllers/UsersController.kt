@@ -91,7 +91,6 @@ class UsersController(
                     clazz("user-home")
                 }
             )
-        //TODO( see errors related to this -- Unauthorized 401 )
     }
 
     @DeleteMapping(Uris.Users.BY_ID1)

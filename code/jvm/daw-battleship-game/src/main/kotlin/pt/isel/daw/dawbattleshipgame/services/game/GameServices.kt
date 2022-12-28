@@ -179,7 +179,7 @@ class GameServices(
             val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
                 .also { logger.info("User $userId: Place shot failed: game not found") }
 
-            if(game.state != GameState.BATTLE) {
+            if(game.state != GameState.BATTLE || game.playerTurn != userId) {
                 logger.info("User $userId: Place shot failed: action not permitted")
                 return@run Either.Left(PlaceShotError.ActionNotPermitted)
             }
