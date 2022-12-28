@@ -1,5 +1,15 @@
 import * as React from 'react'
-import {BrowserRouter, createBrowserRouter, Link, Outlet, Route, Router, RouterProvider, Routes} from 'react-router-dom'
+import {
+    BrowserRouter,
+    createBrowserRouter,
+    Link,
+    Navigate,
+    Outlet,
+    Route,
+    Router,
+    RouterProvider,
+    Routes
+} from 'react-router-dom'
 import {Info} from './screens/Info'
 import {Home} from './screens/Home'
 import {Leaderboard} from './screens/Leaderboard'
@@ -10,13 +20,18 @@ import style from "../static-files/css/battleships/commons.css";
 import {LogInfo} from "./LogInfo";
 import {User} from "./screens/User";
 import {Authentication} from "./screens/auth/Authentication";
-import Navbar from "./NavBar";
+import {Navbar} from "./NavBar";
+import {PageNotFound} from "./screens/auth/PageNotFound";
+import {useState} from "react";
 
 export function App() {
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
     return (
         <div className={style}>
-            <BrowserRouter>
-                <Navbar />
+            <BrowserRouter >
+                <Navbar isActive={activeIndex}/>
                 <div className={"content"}>
                     <Routes>
                         <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
@@ -28,11 +43,12 @@ export function App() {
                             <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
                             <Route path='/me' element={<Me />} />
                             <Route path='/game' element={<Game />} />
+                            <Route path='*' element={<PageNotFound />} />
                         </Route>
                     </Routes>
                 </div>
             </BrowserRouter>
-            <LogInfo />
+            <LogInfo onShow={() => setActiveIndex(1)} stopOnShow={() => setActiveIndex(0)} />
         </div>
     );
 }

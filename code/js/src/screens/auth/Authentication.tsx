@@ -21,7 +21,7 @@ export async function createUser(username: string, password: string): Promise<st
 
 type Action = "login" | "register"
 
-export function Authentication({title, action}: { title: string, action: Action }) {
+export function Authentication({title, action}: { title: string, action: Action}) {
     const [inputs, setInputs] = useState({
         username: "",
         password: "",

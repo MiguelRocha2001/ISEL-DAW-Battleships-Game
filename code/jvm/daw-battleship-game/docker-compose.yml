@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+  battleship:
+    build:
+      context: src
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_POSTGRES_CONNECTION=jdbc:postgresql://db:5432/battleship?user=postgres&password=password
+      - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://dbtest:5433/battle_shiptest?user=postgres&password=password
+    depends_on:
+      - db
+  battleship2:
+    build:
+      context: src
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_POSTGRES_CONNECTION=jdbc:postgresql://db:5432/battleship?user=postgres&password=password
+      - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://dbtest:5433/battle_shiptest?user=postgres&password=password
+    depends_on:
+      - db
+  db:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=battleship
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
+  dbtest:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=battle_shiptest
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
+  nginx:
+    container_name: nginx
+    image: nginx
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/etc/nginx
+    depends_on:
+      - battleship
+      - battleship2
+volumes:
+  db-data:

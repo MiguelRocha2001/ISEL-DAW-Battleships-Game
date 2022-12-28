@@ -1,5 +1,6 @@
 .bigButton,
 .bigButton:after {
+   cursor:pointer;
    width: 150px;
    height: 76px;
    line-height: 78px;

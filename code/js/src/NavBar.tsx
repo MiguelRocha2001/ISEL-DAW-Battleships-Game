@@ -7,8 +7,22 @@ import {
     NavBtn,
     NavBtnLink,
 } from './NavbarElements';
+import {auth} from "./server_info/auth";
+import style from "../static-files/css/battleships/commons.css";
 
-const Navbar = () => {
+export function Navbar ({isActive}) {
+    const content =(isActive)?(
+        <NavBtn>
+            <NavBtnLink style={{ display: "none" }} to= '/sign-up'>Sign Up</NavBtnLink>
+            <NavBtnLink style={{ display: "none" }} to='/sign-in'>Sign In</NavBtnLink>
+        </NavBtn>
+    ):(
+        <NavBtn>
+            <NavBtnLink to= '/sign-up'>Sign Up</NavBtnLink>
+            <NavBtnLink to='/sign-in'>Sign In</NavBtnLink>
+        </NavBtn>
+    )
+
     return (
         <Nav>
             <Bars />
@@ -28,15 +42,9 @@ const Navbar = () => {
                 <NavLink to='/game' activeStyle>
                     Play
                 </NavLink>
-                {/* Second Nav */}
-                {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
             </NavMenu>
-            <NavBtn>
-                <NavBtnLink to= '/sign-up'>Sign Up</NavBtnLink>
-                <NavBtnLink to='/sign-in'>Sign In</NavBtnLink>
-            </NavBtn>
+            {content}
         </Nav>
     );
 };
 
-export default Navbar;

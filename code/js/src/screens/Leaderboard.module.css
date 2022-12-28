@@ -37,13 +37,17 @@
 
 #leaderBoard {
     text-align: center;
-    border: 5px solid #26FFDF;
+    border: 5px solid black;
     border-radius: 10px;
     padding: 10px;
     margin: 10px;
-    background-color: lightblue;
+    background-color: white;
 }
 
 #topPlayers{
     display: inline;
 }
+#emptyTableRankings{
+    animation: tilt 1s ease-in-out infinite alternate;
+}
+

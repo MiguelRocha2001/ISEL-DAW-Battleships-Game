@@ -22,7 +22,9 @@ export function Leaderboard() {
 }
 
 function LeaderboardInternal({rankings}: { rankings: Rankings }) {
-    return (
+    if(rankings.users.length === 0) {
+        return <div><h2>No one is here <em>(yet)</em></h2></div>
+    }else return (
         <div id ={styles.leaderBoard}>
             <h2 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h2>
             <table className={styles.table}>
