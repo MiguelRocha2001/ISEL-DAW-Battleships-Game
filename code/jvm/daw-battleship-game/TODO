@@ -1,4 +1,3 @@
-- Usar Docker;
 - Fazer testes ao Battle (domain);
 - Implementar temporização nos pedidos;
 - Mesmo que os testes http falhem, apagar os users e games criados;
