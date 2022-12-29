@@ -1,10 +1,4 @@
 gradlew clean
-gradlew build
-gradlew copyRuntimeDependencies
-
-gradlew jar
-java -jar build\libs\daw-battleship-game-0.0.1-SNAPSHOT.jar
-
-docker build --tag battleships . && docker run -d --env-file myvars.txt --publish 9000:9000 --name battleships1 battleships
-
-docker stop battleships1 && docker rm battleships1
+gradlew build   #ou gradlew build -x test para ignorar os testes
+docker compose up -d  #iniciar os containers
+docker compose down -v #parar os containers
