@@ -130,7 +130,7 @@ function reducer(state: State, action: Action): State {
     }
 }
 
-export function Game() {
+export function Game({isActive}) {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
     const [selectedShip, setSelectedShip] = useState(null)
 
@@ -169,7 +169,7 @@ export function Game() {
         logger.info("placing ship in " + row + " " + col)
         if (!selectedShip) {
             logger.warn("no ship selected")
-            return
+            return dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
         }
         const ship = selectedShip as string
         if (ship) {
@@ -272,8 +272,8 @@ export function Game() {
         }
         stateMachineHandler()
     }, [state])
-
-    if (state.type === "checkingForExistingOnGoingGame") {
+    if(!isActive) return <h1>Login first, then you can finally play!</h1>
+    else if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
     } if (state.type === "menu") {
         return <Menu

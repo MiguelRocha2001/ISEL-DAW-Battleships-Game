@@ -11,7 +11,7 @@ export function Leaderboard() {
             return <Loading />
         }
         else {
-            return <p>{response}</p>
+            return <h1>{response}</h1>
         }
     }
     else {

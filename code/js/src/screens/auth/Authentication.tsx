@@ -29,6 +29,7 @@ export function Authentication({title, action}: { title: string, action: Action}
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState(undefined)
     const [checkUsername, setCheckUsername] = useState("")
+    const [successSignUp, setSuccessSignUp] = useState("")
     const [redirect, setRedirect] = useState<string>(undefined)
     const setUser = useSetUser()
     const navigate = useNavigate()
@@ -61,47 +62,59 @@ export function Authentication({title, action}: { title: string, action: Action}
                     if (token) {
                         setRedirect(location.state?.source?.pathname || "/me")
                     } else {
-                        setError("Invalid username or password")
+                        setError("Some error has occurred, please go to the home page and try again")
                     }
                 })
                 .catch(error => {
                     setIsSubmitting(false)
-                    setError(error.message)
+                    setError("Invalid username or password")
                 })
         } else {
             createUser(username, password)
-                .then(() => {
+                .then((userId) => {
                     setIsSubmitting(false)
+                    if(userId) {
+                        setSuccessSignUp("User created successfully, you can now sign in")
+                        navigate("/sign-in")
+                    }
+                    else setError("Some error has occurred, please go to the home page and try again")
                     // setRedirect(location.state?.source?.pathname || "/sign-in") // fixme - results in endless loop
                 })
                 .catch(error => {
                     setIsSubmitting(false)
-                    setError(error.message)
+                    console.log("here")
+                    setError("Unfortunately, this username already exists")
                 })
         }
     }
     
     return (
         <div>
-            <h2 id={styles.title}>{title}</h2>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <fieldset className={styles.fieldset} disabled={isSubmitting}>
-                    <div id={styles.fieldDiv}>
-                        <div>
-                            <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"USERNAME"} onChange={handleChange} />
-                            <p>{checkUsername}</p>
+            <div id={styles.signPage}>
+                <h2 id={styles.title}>{title}</h2>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <fieldset className={styles.fieldset} disabled={isSubmitting}>
+                        <div id={styles.fieldDiv}>
+                            <div>
+                                <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"USERNAME"} onChange={handleChange} />
+                                <p>{checkUsername}</p>
+                            </div>
+                            <div>
+                                <input
+                                    id="password" className={styles.input} pattern="(?=.*[a-z])(?=.*[A-Z]).{5,}" title="Must contain at least one uppercase and lowercase letter, and at least 5 or more characters" type="password" required={true} name="password" placeholder={"PASSWORD"} value={inputs.password} onChange={handleChange} />
+                            </div>
                         </div>
-                        <div>
-                            <input
-                                id="password" className={styles.input} type="password" minLength={8} required={true} name="password" placeholder={"PASSWORD"} value={inputs.password} onChange={handleChange} />
+                        <div id={styles.signButton}>
+                            <button className={styles.confirmButton} type="submit">{title}</button>
                         </div>
-                    </div>
-                    <div id={styles.signButton}>
-                        <button className={styles.confirmButton} type="submit">{title}</button>
-                    </div>
-                </fieldset>
-                {error}
-            </form>
+                    </fieldset>
+                </form>
+            </div>
+            <div>
+                <p><h4>{error}</h4></p>
+                <p><h4>{successSignUp}</h4></p>
+            </div>
+
         </div>
     )
 }

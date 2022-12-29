@@ -21,6 +21,7 @@ class BattleshipApplication {
     fun jdbi() = Jdbi.create(
         PGSimpleDataSource().apply {
             setURL(System.getenv("DB_POSTGRES_CONNECTION"))
+           // println("DB_POSTGRES_CONNECTION: ${System.getenv("DB_POSTGRES_CONNECTION")}")
         }
     ).configure()
 

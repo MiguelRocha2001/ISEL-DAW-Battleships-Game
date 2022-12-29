@@ -29,7 +29,7 @@ export function Me() {
             //redirects to login page
             return (
                 <div>
-                    <p><h2>Please Login before accessing your profile</h2></p>
+                    <p><h2>Please login before accessing your profile</h2></p>
                     <p><Link id={style.login} to="/sign-in">Login</Link></p>
                 </div>
             )

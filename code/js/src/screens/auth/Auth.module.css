@@ -59,7 +59,8 @@
 }
 
 .confirmButton:hover {
-    background: #00E6FF;
+    background: black;
+    color: #00bcd4;
     transform: scale(1.1);
 }
 
@@ -80,6 +81,7 @@
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-60%, -50%);
-    border: #0b2e13 solid 2px;
+    border: #0b2e13 solid 10px;
+    border-radius: 25px;
 }
 

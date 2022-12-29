@@ -7,7 +7,7 @@ export function UserDetail({user}: { user: UserStats }) {
         <table id={style.userInfoDiv}>
             <tr>
                 <td className={style.key}>
-                    USER_ID
+                    USER Nº
                 </td>
                 <span className={style.spacer} />
                 <td className={style.value}>

@@ -42,7 +42,7 @@ export function App() {
                             <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
                             <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
                             <Route path='/me' element={<Me />} />
-                            <Route path='/game' element={<Game />} />
+                            <Route path='/game' element={<Game isActive={activeIndex}/>} />
                             <Route path='*' element={<PageNotFound />} />
                         </Route>
                     </Routes>
