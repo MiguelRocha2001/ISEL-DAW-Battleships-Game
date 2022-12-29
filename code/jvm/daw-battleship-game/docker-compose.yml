@@ -1,28 +1,39 @@
 version: '3.8'
+networks:
+  app_network:
 services:
-  battleship:
+  battleship-service-1:
+    container_name: battleship-service-1
     build:
-      context: src
-      dockerfile: Dockerfile
+      context: ./
+    image: battleship-service-1
     ports:
-      - "8081:8081"
+      - "8081:9000"
     environment:
       - DB_POSTGRES_CONNECTION=jdbc:postgresql://db:5432/battleship?user=postgres&password=password
       - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://dbtest:5433/battle_shiptest?user=postgres&password=password
     depends_on:
       - db
-  battleship2:
+      - dbtest
+    networks:
+      - app_network
+  battleship-service-2:
+    container_name: battleship-service-2
     build:
-      context: src
-      dockerfile: Dockerfile
+      context: ./
+    image: battleship-service-2
     ports:
-      - "8082:8082"
+      - "8082:9000"
     environment:
       - DB_POSTGRES_CONNECTION=jdbc:postgresql://db:5432/battleship?user=postgres&password=password
       - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://dbtest:5433/battle_shiptest?user=postgres&password=password
     depends_on:
       - db
+      - dbtest
+    networks:
+      - app_network
   db:
+    container_name: db
     image: postgres:14.1-alpine
     environment:
       - POSTGRES_USER=postgres
@@ -40,13 +51,14 @@ services:
       - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
       - ./sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
   dbtest:
+    container_name: dbtest
     image: postgres:14.1-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=battle_shiptest
     ports:
-      - "5432:5432"
+      - "5433:5433"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
@@ -60,11 +72,14 @@ services:
     container_name: nginx
     image: nginx
     ports:
-      - 8080:8080
+      - "9000:9000"
     volumes:
       - ./:/etc/nginx
     depends_on:
-      - battleship
-      - battleship2
+      - battleship-service-1
+      - battleship-service-2
+    networks:
+      - app_network
 volumes:
   db-data:
+    driver: local

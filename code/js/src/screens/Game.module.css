@@ -1,3 +1,5 @@
+
+
 .bigButton,
 .bigButton:after {
    cursor:pointer;
@@ -33,8 +35,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 3%, #26FFDF 3%, #26FFDF 5%, black 5%);
+    background: linear-gradient(45deg, transparent 3%, #26FFDF 3%, #26FFDF 5%, #26FFDF 5%);
     text-shadow: -3px -3px 0px #F8F005, 3px 3px 0px #00E6F6;
+    clip-path: var(--slice-0);
 }
 
 .bigButton:hover:after {
@@ -44,37 +47,47 @@
 
 @keyframes glitch {
     0% {
+        clip-path: var(--slice-1);
         transform: translate(-20px, -10px);
     }
     10% {
+        clip-path: var(--slice-3);
         transform: translate(10px, 10px);
     }
     20% {
+        clip-path: var(--slice-1);
         transform: translate(-10px, 10px);
     }
     30% {
+        clip-path: var(--slice-3);
         transform: translate(0px, 5px);
     }
     40% {
-
+        clip-path: var(--slice-2);
         transform: translate(-5px, 0px);
     }
     50% {
+        clip-path: var(--slice-3);
         transform: translate(5px, 0px);
     }
     60% {
+        clip-path: var(--slice-4);
         transform: translate(5px, 10px);
     }
     70% {
+        clip-path: var(--slice-2);
         transform: translate(-10px, 10px);
     }
     80% {
+        clip-path: var(--slice-5);
         transform: translate(20px, -10px);
     }
     90% {
+        clip-path: var(--slice-1);
         transform: translate(-10px, 0px);
     }
     100% {
+        clip-path: var(--slice-1);
         transform: translate(0);
     }
 }
