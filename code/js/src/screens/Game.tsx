@@ -10,6 +10,14 @@ const logger = new Logger({ name: "GameScreen" });
 
 type State =
     {
+        type : "checkingForToken",
+    }
+    |
+    {
+        type : "tokenAtFault",
+    }
+    |
+    {
         type : "checkingForExistingOnGoingGame",
     }
     |
@@ -50,7 +58,15 @@ type State =
         msg : string
     }
 
-type Action =     
+type Action =
+    {
+        type : "setTokenAtFault",
+    }
+    |
+    {
+        type : "setCheckingForExistingOnGoingGame",
+    }
+    |
     {
         type : "setMenu",
         msg : string,
@@ -95,6 +111,14 @@ type Action =
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
+        case 'setTokenAtFault' : {
+            logger.info("setTokenAtFault")
+            return {type : 'tokenAtFault'}
+        }
+        case 'setCheckingForExistingOnGoingGame' : {
+            logger.info("setCheckingForExistingOnGoingGame")
+            return {type : 'checkingForExistingOnGoingGame'}
+        }
         case 'setMenu' : {
             logger.info("setStatic")
             return {type : 'menu', msg: action.msg}
@@ -134,6 +158,13 @@ export function Game({isActive}) {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
     const [selectedShip, setSelectedShip] = useState(null)
 
+    function checkForToken() {
+        logger.info("checkingForToken")
+        const resp = Services.isLogged()
+        if (resp) dispatch({type:'setCheckingForExistingOnGoingGame'})
+        else dispatch({type:'setTokenAtFault'})
+    }
+
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
         const resp = await Services.getGame()
@@ -158,18 +189,17 @@ export function Game({isActive}) {
             shots: 1,
             roundTimeout: 200,
         })
-        if (createGameResponse) {
-            if (typeof createGameResponse === 'string') {
-                dispatch({type:'setMenu', msg: createGameResponse})
-            } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : undefined})
-        }
+        if (typeof createGameResponse === 'string') {
+            dispatch({type:'setMenu', msg: createGameResponse})
+        } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
     }
 
     async function placeShip(row: number, col: number) {
         logger.info("placing ship in " + row + " " + col)
         if (!selectedShip) {
             logger.warn("no ship selected")
-            return dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: 'Please select a ship'})
+            return
         }
         const ship = selectedShip as string
         if (ship) {
@@ -204,7 +234,9 @@ export function Game({isActive}) {
 
     async function shoot(row: number, col: number) {
         logger.info("shooting in " + row + " " + col)
-        const resp = await Services.attack(Array({row: row, column: col}))
+        const resp = await Services.attack(
+            {shots: Array({row: row, column: col})}
+        )
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
@@ -245,6 +277,10 @@ export function Game({isActive}) {
     useEffect(() => {
         async function stateMachineHandler() {
             switch(state.type) {
+                case 'checkingForToken' : {
+                    await checkForToken()
+                    break
+                }
                 case 'checkingForExistingOnGoingGame' : {
                     await checkForExistingOnGoingGame()
                     break
@@ -272,8 +308,13 @@ export function Game({isActive}) {
         }
         stateMachineHandler()
     }, [state])
+
     if(!isActive) return <h1>Login first, then you can finally play!</h1>
-    else if (state.type === "checkingForExistingOnGoingGame") {
+    else if (state.type === "checkingForToken") {
+        return < CheckingForSession/>
+    } else if (state.type === "tokenAtFault") {
+        return < NotLogged/>
+    } else if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
     } if (state.type === "menu") {
         return <Menu
@@ -318,6 +359,22 @@ export function Game({isActive}) {
     }
 }
 
+function CheckingForSession() {
+    return (
+        <div>
+            <h1>Checking Session</h1>
+        </div>
+    )
+}
+
+function NotLogged() {
+    return (
+        <div>
+            <h1>Please Login before accessing your profile</h1>
+        </div>
+    )
+}
+
 function CheckingForExistingOnGoingGame() {
     return (
         <div>
@@ -329,8 +386,8 @@ function CheckingForExistingOnGoingGame() {
 function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : () => void, onUpdateRequest : () => void}) {
     return (
         <div id = {styles.buttonsToPlay}>
-            <p><button id={styles.newGame} className={styles.bigButton} role="button" onClick={onCreateGameRequest}>Create New</button></p>
-            <p><button id={styles.joinGame} className={styles.bigButton} role="button" onClick={onUpdateRequest}>Join</button></p>
+            <p><button id={styles.newGame} className={styles.bigButton} role="button" onClick={onCreateGameRequest}>Start New Match</button></p>
+            <p><button id={styles.joinGame} className={styles.bigButton} role="button" onClick={onUpdateRequest}>Resume Match</button></p>
         </div>
     )
 }

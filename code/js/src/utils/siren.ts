@@ -116,6 +116,7 @@ function extractAction(actions: any[], name: string): Action {
  * Validates if all necessary fields, in [action], are present in [fields].
  */
  function validateFields(obj: any, action: Action): boolean {
+     console.log("Validating fields: " + JSON.stringify(obj) + " against action: " + JSON.stringify(action))
     const keys = Object.keys(obj)
     for (let i = 0; i < action.fields.length; i++) {
         const field = action.fields[i]

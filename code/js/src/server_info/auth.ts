@@ -48,6 +48,7 @@ function getToken() {
     if (state && dispatcher) {
         return state.type === "logged" ? state.token : undefined
     }
+    return undefined
 }
 
 function setToken(tokenArg: string) {

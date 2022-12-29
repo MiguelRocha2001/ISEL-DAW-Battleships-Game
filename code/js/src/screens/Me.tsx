@@ -39,7 +39,7 @@ export function Me() {
             return (
                 <div>
                     <UserDetail user={response}/>
-                    <Link to="/game" className={style.link}>Game Screen</Link>
+                    <Link to="/game" className={style.link}>Resume Match</Link>
                 </div>
             )
         } else {

@@ -13,7 +13,12 @@ fun buildBattleActions(sirenBuilderScope: SirenBuilderScope<*>) {
         method = HttpMethod.POST,
         type = MediaType.APPLICATION_JSON
     ) {
-        this.numberField("row")
-        this.numberField("column")
+        this.arrayField(
+            name = "shots",
+            block = {
+                this.numberField("row")
+                this.numberField("column")
+            }
+        )
     }
 }

@@ -392,7 +392,7 @@ async function confirmFleet(): Promise<void | string> {
     }
 }
 
-async function attack(attackRequest: Array<Position>): Promise<void | string> {
+async function attack(attackRequest: any): Promise<void | string> {
     const token = auth.getToken()
     const action = links.getAttackAction()
     if (!token || !action) {

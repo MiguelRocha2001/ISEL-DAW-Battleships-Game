@@ -1,13 +1,8 @@
 import * as React from 'react'
 import {
     BrowserRouter,
-    createBrowserRouter,
-    Link,
-    Navigate,
     Outlet,
     Route,
-    Router,
-    RouterProvider,
     Routes
 } from 'react-router-dom'
 import {Info} from './screens/Info'
