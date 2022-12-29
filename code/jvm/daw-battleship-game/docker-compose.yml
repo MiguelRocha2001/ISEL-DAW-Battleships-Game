@@ -10,8 +10,8 @@ services:
     ports:
       - "8081:9000"
     environment:
-      - DB_POSTGRES_CONNECTION=jdbc:postgresql://db:5432/battleship?user=postgres&password=password
-      - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://dbtest:5433/battle_shiptest?user=postgres&password=password
+      - DB_POSTGRES_CONNECTION=jdbc:postgresql://localhost:5432/postgres?user=postgres&password=postgrespassword
+      - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://localhost:5432/BattleshipsTests?user=postgres&password=postgrespassword
     depends_on:
       - db
       - dbtest
@@ -25,8 +25,8 @@ services:
     ports:
       - "8082:9000"
     environment:
-      - DB_POSTGRES_CONNECTION=jdbc:postgresql://db:5432/battleship?user=postgres&password=password
-      - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://dbtest:5433/battle_shiptest?user=postgres&password=password
+      - DB_POSTGRES_CONNECTION=jdbc:postgresql://localhost:5432/postgres?user=postgres&password=postgrespassword
+      - DB_POSTGRES_BATTLESHIPS_TESTS_CONNECTION=jdbc:postgresql://localhost:5432/BattleshipsTests?user=postgres&password=postgrespassword
     depends_on:
       - db
       - dbtest
@@ -37,8 +37,8 @@ services:
     image: postgres:14.1-alpine
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=battleship
+      - POSTGRES_PASSWORD=postgrespassword
+      - POSTGRES_DB=postgres
     ports:
       - "5432:5432"
     healthcheck:
@@ -47,16 +47,16 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
-      - ./sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
+      - db-data:/var/lib/postgresql/data1
+      - ./src/main/sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./src/main/sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
   dbtest:
     container_name: dbtest
     image: postgres:14.1-alpine
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=battle_shiptest
+      - POSTGRES_PASSWORD=postgrespassword
+      - POSTGRES_DB=BattleshipsTests
     ports:
       - "5433:5433"
     healthcheck:
@@ -65,9 +65,9 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./sql/create.sql:/docker-entrypoint-initdb.d/create.sql
-      - ./sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
+      - db-data:/var/lib/postgresql/data2
+      - ./src/main/sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./src/main/sql/triggers.sql:/docker-entrypoint-initdb.d/triggers.sql
   nginx:
     container_name: nginx
     image: nginx
