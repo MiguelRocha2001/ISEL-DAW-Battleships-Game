@@ -18,6 +18,7 @@ import {Authentication} from "./screens/auth/Authentication";
 import {Navbar} from "./NavBar";
 import {PageNotFound} from "./screens/auth/PageNotFound";
 import {useState} from "react";
+import {RequireAuthn} from "./screens/auth/RequireAuthn";
 
 export function App() {
 
@@ -36,14 +37,14 @@ export function App() {
                             <Route path='/users/:id' element={<User />} />
                             <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
                             <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />
-                            <Route path='/me' element={<Me />} />
-                            <Route path='/game' element={<Game isActive={activeIndex}/>} />
+                            <Route path='me' element={<RequireAuthn children={<Me />} />} />
+                            <Route path='game' element={<RequireAuthn children={<Game/>} />} />
                             <Route path='*' element={<PageNotFound />} />
                         </Route>
                     </Routes>
                 </div>
+                <LogInfo onShow={() => setActiveIndex(1)} stopOnShow={() => setActiveIndex(0)}/>
             </BrowserRouter>
-            <LogInfo onShow={() => setActiveIndex(1)} stopOnShow={() => setActiveIndex(0)} />
         </div>
     );
 }

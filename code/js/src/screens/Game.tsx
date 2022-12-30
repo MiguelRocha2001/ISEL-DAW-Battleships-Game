@@ -154,7 +154,7 @@ function reducer(state: State, action: Action): State {
     }
 }
 
-export function Game({isActive}) {
+export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
     const [selectedShip, setSelectedShip] = useState(null)
 
@@ -309,8 +309,7 @@ export function Game({isActive}) {
         stateMachineHandler()
     }, [state])
 
-    if(!isActive) return <h1>Login first, then you can finally play!</h1>
-    else if (state.type === "checkingForToken") {
+    if (state.type === "checkingForToken") {
         return < CheckingForSession/>
     } else if (state.type === "tokenAtFault") {
         return < NotLogged/>

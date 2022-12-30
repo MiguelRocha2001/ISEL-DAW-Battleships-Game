@@ -6,6 +6,7 @@ import styles from './Home.module.css'
 
 
 export function Home() {
+    console.log("Home")
     Services.useFetchHome() // Fetch the home resource
     return (
         <div id={styles.mainDiv}>

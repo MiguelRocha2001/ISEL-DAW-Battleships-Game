@@ -4,6 +4,9 @@ import {Navigate, useLocation, useNavigate} from "react-router-dom"
 import {Services} from "../../services"
 import {useSetUser} from "./Authn"
 import styles from './Auth.module.css'
+import {Logger} from "tslog";
+
+const logger = new Logger({ name: "Authentication" });
 
 export async function authenticate(username: string, password: string): Promise<string | undefined> {
     return Services.fetchToken([
@@ -60,12 +63,14 @@ export function Authentication({title, action}: { title: string, action: Action}
                 .then(token => {
                     setIsSubmitting(false)
                     if (token) {
+                        setUser(token)
                         setRedirect(location.state?.source?.pathname || "/me")
                     } else {
                         setError("Some error has occurred, please go to the home page and try again")
                     }
                 })
                 .catch(error => {
+                    logger.error('Login: ', error)
                     setIsSubmitting(false)
                     setError("Invalid username or password")
                 })
@@ -81,8 +86,8 @@ export function Authentication({title, action}: { title: string, action: Action}
                     // setRedirect(location.state?.source?.pathname || "/sign-in") // fixme - results in endless loop
                 })
                 .catch(error => {
+                    logger.error('Create user: ', error)
                     setIsSubmitting(false)
-                    console.log("here")
                     setError("Unfortunately, this username already exists")
                 })
         }

@@ -6,10 +6,11 @@ import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
 import {useEffect, useState} from "react";
+import {useCurrentUser} from "./auth/Authn";
 
 export function Me() {
-    const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
     const response = Services.fetchUserHome()
+    const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
 
     useEffect(() => {
         async function setGameButtonIfGameIsOngoing() {
