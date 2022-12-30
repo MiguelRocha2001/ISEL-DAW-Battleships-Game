@@ -19,7 +19,7 @@ export function UserDetail({user}: { user: UserStats }) {
                     USERNAME
                 </td>
                 <span className={style.spacer} />
-                <td className={style.value}>
+                <td id = {style.username} className={style.value}>
                     {user.username}
                 </td>
             </tr>

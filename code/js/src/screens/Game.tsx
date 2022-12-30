@@ -349,8 +349,8 @@ function CheckingForExistingOnGoingGame() {
 function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : () => void, onUpdateRequest : () => void}) {
     return (
         <div id = {styles.buttonsToPlay}>
-            <p><button id={styles.newGame} className={styles.bigButton} role="button" onClick={onCreateGameRequest}>Start New Match</button></p>
-            <p><button id={styles.joinGame} className={styles.bigButton} role="button" onClick={onUpdateRequest}>Resume Match</button></p>
+            <p><button id={styles.newGame} className={styles.cybrBtn} role="button" onClick={onCreateGameRequest}>Create New</button></p>
+            <p><button id={styles.joinGame} className={styles.cybrBtn} role="button" onClick={onUpdateRequest}>Join</button></p>
         </div>
     )
 }
@@ -420,24 +420,32 @@ function FleetSetup({board, onPlaceShip, onShipChange, onConfirmFleet}: {
     onConfirmFleet : () => void
 }) {
     return (
-        <div>
-            <h1>Place Your Fleet</h1>
-            <Board board={board} onCellClick={onPlaceShip}/>
-            <ShipOptions onShipClick={onShipChange}/>
-            <button onClick={onConfirmFleet}>Confirm Fleet</button>
+        <div className={styles.fullWidth}>
+            <p><h1 className={styles.h1}>Place Your Fleet</h1></p>
+            <div className={styles.left}>
+                <Board board={board} onCellClick={onPlaceShip}/></div>
+            <div className={styles.right}>
+                <button className={styles.cybrBtn} onClick={onConfirmFleet}>
+                    Ready!<span aria-hidden>_</span>
+                    <span aria-hidden className={styles.cybrbtn__glitch}>Ready</span>
+                </button>
+                <div id={styles.buttonsForSelectShips}>
+                    <ShipOptions onShipClick={onShipChange}/>
+                </div>
+            </div>
         </div>
     )
 }
 
 function Battle({myBoard, enemyBoard, onShot} : {myBoard : Board, enemyBoard : Board, onShot : (x : number, y : number) => void}) {
     return (
-        <div>
-            <h1>Battle</h1>
-            <div>
+        <div className={styles.fullWidth}>
+            <h1 className={styles.h1}>Battle Phase</h1>
+            <div id={styles.myBoard}>
                 <h2>My Board</h2>
                 <Board board={myBoard} onCellClick={() => {}}/>
             </div>
-            <div>
+            <div id={styles.enemyBoard}>
                 <h2>Enemy Board</h2>
                 <Board board={enemyBoard} onCellClick={onShot}/>
             </div>
@@ -459,15 +467,37 @@ function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
         onShipClick(event.target.value)
     }
     return (
-        <div>
-            <h1>ShipOptions</h1>
-            <div onChange={onChangeValue}>
-                <input type="radio" value="CARRIER" name="gender" /> Carrier
-                <input type="radio" value="BATTLESHIP" name="gender" /> Battleship
-                <input type="radio" value="CRUISER" name="gender" /> Cruiser
-                <input type="radio" value="SUBMARINE" name="gender" /> Submarine
-                <input type="radio" value="DESTROYER" name="gender" /> Destroyer
-            </div>
+        <div onChange={onChangeValue}>
+
+            <label  className={styles.radLabel} >
+                <input type="radio" className={styles.radInput} value="CARRIER" name="gender"  />
+                <div className={styles.radDesign}></div>
+                <div className={styles.radText}>Carrier</div>
+            </label>
+
+            <label className={styles.radLabel}>
+                <input type="radio" className={styles.radInput} value="BATTLESHIP" name="gender"  />
+                <div className={styles.radDesign}></div>
+                <div className={styles.radText}>Battleship</div>
+            </label>
+
+            <label className={styles.radLabel}>
+                <input type="radio" className={styles.radInput} value="CRUISER" name="gender" />
+                <div className={styles.radDesign}></div>
+                <div className={styles.radText}>Cruiser</div>
+            </label>
+
+            <label className={styles.radLabel} >
+                <input type="radio" className={styles.radInput} value="SUBMARINE" name="gender" />
+                <div className={styles.radDesign}></div>
+                <div className={styles.radText}>Submarine</div>
+            </label>
+            <label className={styles.radLabel}>
+                <input type="radio" className={styles.radInput} value="DESTROYER" name="gender" />
+                <div className={styles.radDesign}></div>
+                <div className={styles.radText}>Destroyer</div>
+            </label>
+
         </div>
     )
 }
@@ -478,23 +508,22 @@ function Board({board, onCellClick} : {board : Board, onCellClick? : (row: numbe
     const collNumber = rowNumber
     return (
         <div>
-            <h1>Board</h1>
             <table>
                 <tbody>
-                    {Array.from(Array(rowNumber).keys()).map((row) => {
-                        return (
-                            <tr key={row}>
-                                {Array.from(Array(collNumber).keys()).map((coll) => {
-                                    const cell = boardStr[row * rowNumber + coll]
-                                    return (
-                                        <td key={coll}>
-                                            <Cell cell={cell} onClick={() => { onCellClick(row + 1, coll + 1) }} />
-                                        </td>
-                                    )
-                                })}
-                            </tr>
-                        )
-                    })}
+                {Array.from(Array(rowNumber).keys()).map((row) => {
+                    return (
+                        <tr key={row}>
+                            {Array.from(Array(collNumber).keys()).map((coll) => {
+                                const cell = boardStr[row * rowNumber + coll]
+                                return (
+                                    <td key={coll}>
+                                        <Cell cell={cell} onClick={() => { onCellClick(row + 1, coll + 1) }} />
+                                    </td>
+                                )
+                            })}
+                        </tr>
+                    )
+                })}
                 </tbody>
             </table>
         </div>
@@ -505,19 +534,12 @@ function Cell({cell, onClick} : {cell : string, onClick? : () => void}) {
     const isHit = cell > 'a' && cell < 'z'
     const isWater = cell === ' '
     const color = isHit ? 'red' : isWater ? 'lightblue' : 'grey'
-    if (isWater) {
-        return (
-            <button style={{backgroundColor: color}} onClick={onClick}>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </button>
-        )
-    } else {
-        return (
-            <button style={{backgroundColor: color}} onClick={onClick}>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </button>
-        )
-    }
+    const idNameCell = isHit ? styles.hit : isWater ? styles.water : styles.ship
+    return (
+        <button className={styles.cell} id={idNameCell} onClick={onClick}>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </button>
+    )
 }
 
 function ErrorMsg({msg} : {msg : string}) {

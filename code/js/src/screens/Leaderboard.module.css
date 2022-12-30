@@ -18,6 +18,8 @@
     text-align: left;
 }
 
+
+
 .table tbody tr {
     border-bottom: 1px solid #dddddd;
 }
@@ -50,4 +52,16 @@
 #emptyTableRankings{
     animation: tilt 1s ease-in-out infinite alternate;
 }
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    color: #26FFDF;
+}
+
+#rankingsUsername{
+    text-align: center;
+}
+
 

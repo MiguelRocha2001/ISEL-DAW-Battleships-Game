@@ -30,7 +30,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>Username</th>
+                        <th id = {styles.rankingsUsername} >Username</th>
                         <th>Wins</th>
                         <th>Games Played</th>
                     </tr>
