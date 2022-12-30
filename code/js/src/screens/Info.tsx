@@ -33,7 +33,7 @@ function ServerInfo({info}: { info: ServerInfo }) {
 function Authors({authors}: { authors: Author[] }) {
     return (
         <div>
-            <h2>Backend Devs</h2>
+            <h2>The Developers</h2>
             <ul className={styles.list}>
                 {authors.map((author) => <p><Author author={author}/></p>)}
             </ul>
