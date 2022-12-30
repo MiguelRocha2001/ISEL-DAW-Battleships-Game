@@ -1,10 +1,11 @@
 import {UserStats} from "../services";
 import style from "./Me.module.css";
+import leaderboard from "./Leaderboard.module.css"
 import * as React from "react";
 
 export function UserDetail({user}: { user: UserStats }) {
     return (
-        <table id={style.userInfoDiv}>
+        <table className={leaderboard.table}>
             <tr>
                 <td className={style.key}>
                     USER Nº

@@ -350,7 +350,7 @@ function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : ()
     return (
         <div id = {styles.buttonsToPlay}>
             <p><button id={styles.newGame} className={styles.cybrBtn} role="button" onClick={onCreateGameRequest}>Create New</button></p>
-            <p><button id={styles.joinGame} className={styles.cybrBtn} role="button" onClick={onUpdateRequest}>Join</button></p>
+            <p><button id={styles.joinGame} className={styles.cybrBtn} role="button" onClick={onUpdateRequest}>Resume</button></p>
         </div>
     )
 }
