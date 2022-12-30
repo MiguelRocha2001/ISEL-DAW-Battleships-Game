@@ -1,14 +1,7 @@
 import * as React from 'react'
-import {
-    Nav,
-    NavLink,
-    Bars,
-    NavMenu,
-    NavBtn,
-    NavBtnLink,
-} from './NavbarElements';
+import {Bars, Nav, NavBtn, NavBtnLink, NavLink, NavMenu,} from './NavbarElements';
 import {useCurrentUser, useSetUser} from "./screens/auth/Authn";
-import style from "./LogInfo.module.css";
+import style from "./LogoutButton.module.css";
 
 export function Navbar () {
     const currentUser = useCurrentUser()

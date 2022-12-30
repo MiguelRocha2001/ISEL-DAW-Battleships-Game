@@ -5,7 +5,6 @@ import {Board, Game} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
-import {LogInfo} from "../LogInfo";
 
 
 const logger = new Logger({ name: "GameScreen" });

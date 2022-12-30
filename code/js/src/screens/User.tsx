@@ -1,5 +1,5 @@
 import {useParams} from "react-router-dom";
-import {ServerInfo, Services} from "../services";
+import {Services} from "../services";
 import * as React from "react";
 import {UserDetail} from "./Commons";
 

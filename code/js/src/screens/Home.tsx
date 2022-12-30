@@ -1,6 +1,4 @@
 import * as React from 'react'
-import {ShowSirenProperties} from '../utils/ShowSirenProperties'
-import {Link} from 'react-router-dom'
 import {Services} from '../services'
 import styles from './Home.module.css'
 

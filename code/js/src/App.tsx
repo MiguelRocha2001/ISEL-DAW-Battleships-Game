@@ -1,10 +1,5 @@
 import * as React from 'react'
-import {
-    BrowserRouter,
-    Outlet,
-    Route,
-    Routes
-} from 'react-router-dom'
+import {BrowserRouter, Outlet, Route, Routes} from 'react-router-dom'
 import {Info} from './screens/Info'
 import {Home} from './screens/Home'
 import {Leaderboard} from './screens/Leaderboard'
@@ -12,12 +7,10 @@ import {AuthnContainer} from './screens/auth/Authn'
 import {Me} from './screens/Me'
 import {Game} from './screens/Game'
 import style from "../static-files/css/battleships/commons.css";
-import {LogInfo} from "./LogInfo";
 import {User} from "./screens/User";
 import {Authentication} from "./screens/auth/Authentication";
 import {Navbar} from "./NavBar";
 import {PageNotFound} from "./screens/auth/PageNotFound";
-import {useState} from "react";
 import {RequireAuthn} from "./screens/auth/RequireAuthn";
 
 export function App() {

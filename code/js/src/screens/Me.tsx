@@ -1,10 +1,10 @@
 import * as React from 'react'
+import {useEffect, useState} from 'react'
 import {Services} from '../services'
 import {Link} from 'react-router-dom'
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
-import {useEffect, useState} from "react";
 import {useCurrentUser} from "./auth/Authn";
 
 export function Me() {

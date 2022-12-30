@@ -2,7 +2,7 @@ import {links} from './server_info/links'
 import {Action, Siren} from './utils/siren'
 import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
-import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest, Position} from './domain'
+import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest} from './domain'
 import {State, useFetchNew} from "./utils/useFetch-reducer";
 
 const logger = new Logger({ name: "Services" });
