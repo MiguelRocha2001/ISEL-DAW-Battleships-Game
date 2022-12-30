@@ -1,7 +1,6 @@
 import * as React from 'react'
 import {Services} from '../services'
 import {Link} from 'react-router-dom'
-import {ShowSirenProperties} from "../utils/ShowSirenProperties";
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
@@ -9,12 +8,13 @@ import {useEffect, useState} from "react";
 import {useCurrentUser} from "./auth/Authn";
 
 export function Me() {
-    const response = Services.fetchUserHome()
+    const currentUser = useCurrentUser()
+    const response = Services.fetchUserHome(currentUser)
     const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
 
     useEffect(() => {
         async function setGameButtonIfGameIsOngoing() {
-            const gameId = await Services.getCurrentGameId()
+            const gameId = await Services.getCurrentGameId(currentUser)
             if (typeof gameId === 'number') {
                 setJoinPrevGameButton(true)
             }
@@ -24,7 +24,9 @@ export function Me() {
 
     if (typeof response === "string") {
         if (response === "Loading") {
-            return <Loading />
+            return (
+                <Loading />
+            )
         }
         else if (response === "Token at fault, or user home link not found") {
             //redirects to login page

@@ -4,19 +4,13 @@ import {Services} from '../services'
 import {Board, Game} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
+import {useCurrentUser} from "./auth/Authn";
+import {LogInfo} from "../LogInfo";
 
 
 const logger = new Logger({ name: "GameScreen" });
 
 type State =
-    {
-        type : "checkingForToken",
-    }
-    |
-    {
-        type : "tokenAtFault",
-    }
-    |
     {
         type : "checkingForExistingOnGoingGame",
     }
@@ -59,14 +53,6 @@ type State =
     }
 
 type Action =
-    {
-        type : "setTokenAtFault",
-    }
-    |
-    {
-        type : "setCheckingForExistingOnGoingGame",
-    }
-    |
     {
         type : "setMenu",
         msg : string,
@@ -111,14 +97,6 @@ type Action =
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
-        case 'setTokenAtFault' : {
-            logger.info("setTokenAtFault")
-            return {type : 'tokenAtFault'}
-        }
-        case 'setCheckingForExistingOnGoingGame' : {
-            logger.info("setCheckingForExistingOnGoingGame")
-            return {type : 'checkingForExistingOnGoingGame'}
-        }
         case 'setMenu' : {
             logger.info("setStatic")
             return {type : 'menu', msg: action.msg}
@@ -157,17 +135,11 @@ function reducer(state: State, action: Action): State {
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
     const [selectedShip, setSelectedShip] = useState(null)
-
-    function checkForToken() {
-        logger.info("checkingForToken")
-        const resp = Services.isLogged()
-        if (resp) dispatch({type:'setCheckingForExistingOnGoingGame'})
-        else dispatch({type:'setTokenAtFault'})
-    }
+    const currentUser = useCurrentUser()
 
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
-        const resp = await Services.getGame()
+        const resp = await Services.getGame(currentUser)
         if (typeof resp === 'string') {
             dispatch({type:'setMenu', msg: resp})
         } else {
@@ -188,7 +160,7 @@ export function Game() {
             },
             shots: 1,
             roundTimeout: 200,
-        })
+        }, currentUser)
         if (typeof createGameResponse === 'string') {
             dispatch({type:'setMenu', msg: createGameResponse})
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
@@ -213,7 +185,7 @@ export function Game() {
                     }
                 ],
                 fleetConfirmed: false
-            })
+            }, currentUser)
             if (typeof resp === 'string') {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
             } else {
@@ -224,7 +196,7 @@ export function Game() {
 
     async function confirmFleet() {
         logger.info("confirming fleet")
-        const resp = await Services.confirmFleet()
+        const resp = await Services.confirmFleet(currentUser)
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
@@ -235,7 +207,8 @@ export function Game() {
     async function shoot(row: number, col: number) {
         logger.info("shooting in " + row + " " + col)
         const resp = await Services.attack(
-            {shots: Array({row: row, column: col})}
+            {shots: Array({row: row, column: col})},
+            currentUser
         )
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
@@ -253,7 +226,7 @@ export function Game() {
         }
 
         logger.info("updateGameWhileNecessary")
-        const resp = await Services.getGame()
+        const resp = await Services.getGame(currentUser)
         if (typeof resp !== 'string') {
             if (resp.state != 'battle' || isMyTurn(resp)) {
                 dispatch({type: 'setPlaying', game: resp})
@@ -277,10 +250,6 @@ export function Game() {
     useEffect(() => {
         async function stateMachineHandler() {
             switch(state.type) {
-                case 'checkingForToken' : {
-                    await checkForToken()
-                    break
-                }
                 case 'checkingForExistingOnGoingGame' : {
                     await checkForExistingOnGoingGame()
                     break
@@ -309,11 +278,7 @@ export function Game() {
         stateMachineHandler()
     }, [state])
 
-    if (state.type === "checkingForToken") {
-        return < CheckingForSession/>
-    } else if (state.type === "tokenAtFault") {
-        return < NotLogged/>
-    } else if (state.type === "checkingForExistingOnGoingGame") {
+    if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
     } if (state.type === "menu") {
         return <Menu

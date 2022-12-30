@@ -7,11 +7,13 @@ import {
     NavBtn,
     NavBtnLink,
 } from './NavbarElements';
-import {auth} from "./server_info/auth";
-import style from "../static-files/css/battleships/commons.css";
+import {useCurrentUser, useSetUser} from "./screens/auth/Authn";
+import style from "./LogInfo.module.css";
 
-export function Navbar ({isActive}) {
-    const content =(isActive)?(
+export function Navbar () {
+    const currentUser = useCurrentUser()
+    const setUser = useSetUser()
+    const loginOrRegister = (currentUser) ? (
         <NavBtn>
             <NavBtnLink style={{ display: "none" }} to= '/sign-up'>Sign Up</NavBtnLink>
             <NavBtnLink style={{ display: "none" }} to='/sign-in'>Sign In</NavBtnLink>
@@ -21,6 +23,16 @@ export function Navbar ({isActive}) {
             <NavBtnLink to= '/sign-up'>Sign Up</NavBtnLink>
             <NavBtnLink to='/sign-in'>Sign In</NavBtnLink>
         </NavBtn>
+    )
+
+    const logout = (currentUser) ? (
+        <button className={style.logoutLink} onClick={() => {
+            setUser(undefined)
+        }}>LOGOUT</button>
+    ):(
+        <button style={{ display: "none" }} className={style.logoutLink} onClick={() => {
+            setUser(undefined)
+        }}>LOGOUT</button>
     )
 
     return (
@@ -43,8 +55,9 @@ export function Navbar ({isActive}) {
                     Play
                 </NavLink>
             </NavMenu>
-            {content}
+            {loginOrRegister}
+            {logout}
         </Nav>
     );
-};
+}
 

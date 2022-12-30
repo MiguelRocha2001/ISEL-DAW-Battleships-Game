@@ -1,5 +1,4 @@
 import {links} from './server_info/links'
-import {auth} from './server_info/auth'
 import {Action, Siren} from './utils/siren'
 import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
@@ -130,7 +129,6 @@ async function fetchToken(fields: KeyValuePair[]): Promise<string | undefined> {
                 } else {
                     logger.error("fetchToken: user home link not found in response")
                 }
-                auth.setToken(token)
                 logger.info("fetchToken: token set to: ", token)
                 return token
             } else {
@@ -174,14 +172,13 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
     return undefined
 }
 
-function useFetchUserHome(): UserStats | string {
-    const token = auth.getToken()
+function useFetchUserHome(user: string): UserStats | string {
     const userHomeLink = links.getUserHomeLink()
-    if (token && userHomeLink) {
+    if (user && userHomeLink) {
         const request = {
             url: userHomeLink,
             method: "GET",
-            token
+            token: user
         }
         const resp = useFetchNew(request)
         return handlerOrError(resp, (siren: Siren) => {
@@ -217,14 +214,9 @@ function useFetchUserHome(): UserStats | string {
     return "Token at fault, or user home link not found"
 }
 
-function isLogged(): boolean {
-    return auth.getToken() !== undefined
-}
-
-async function createGame(request: CreateGameRequest): Promise<CreateGameResponse | string> {
-    const token = auth.getToken()
+async function createGame(request: CreateGameRequest, user: string): Promise<CreateGameResponse | string> {
     const action = links.getCreateGameAction()
-    if (!token || !action) {
+    if (!user || !action) {
         logger.error("createGame: token or create game action undefined")
         return "createGame: token or create game action undefined"
     }
@@ -233,7 +225,7 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
             url: action.href,
             method: action.method,
             body: Fetch.toBody(request),
-            token
+            user
         }
         try {
             const siren = await doFetch(internalReq)
@@ -261,12 +253,11 @@ async function createGame(request: CreateGameRequest): Promise<CreateGameRespons
     return 'createGameRequest not valid'
 }
 
-async function getCurrentGameId(): Promise<number | string> {
-    const token = auth.getToken()
+async function getCurrentGameId(user: string): Promise<number | string> {
     const currentGameIdLink = links.getCurrentGameIdLink()
-    if (!token || !currentGameIdLink) return 'Token or get-current-game-id link undefined'
+    if (!user || !currentGameIdLink) return 'Token or get-current-game-id link undefined'
     try {
-        const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined, token })
+        const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined, token: user })
         if (response) {
             logger.info("getGame: response sucessfull")
             const gameId = response.properties.gameId
@@ -283,7 +274,7 @@ async function getCurrentGameId(): Promise<number | string> {
     }
 }
 
-async function getGame(): Promise<Game | string> {
+async function getGame(user: string): Promise<Game | string> {
 
     function checkLinks(response: Siren): string {
         const placeShipsAction = Siren.extractPlaceShipsAction(response.actions)
@@ -314,11 +305,10 @@ async function getGame(): Promise<Game | string> {
     }
 
 
-    const token = auth.getToken()
     const gameLink = links.getGameLink()
-    if (!token || !gameLink) return 'Token or get-game link not found'
+    if (!user || !gameLink) return 'Token or get-game link not found'
     try {
-        const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined, token })
+        const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined, token: user })
         if (response) {
             const error = checkLinks(response) // returns a string if there is an error
             if (error) return error
@@ -336,10 +326,9 @@ async function getGame(): Promise<Game | string> {
 
 
 // TODO -> fails when parsing placeShipsRequest to JSON (but server doesnt responds well)
-async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | string> {
-    const token = auth.getToken()
+async function placeShips(placeShipsRequest: PlaceShipsRequest, user: string): Promise<void | string> {
     const action = links.getPlaceShipsAction()
-    if (!token || !action) {
+    if (!user || !action) {
         logger.error("placeShips: token or place ships action undefined")
         return "placeShips: token or place ships action undefined"
     }
@@ -348,7 +337,7 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
             url: action.href,
             method: action.method,
             body: Fetch.toBody(placeShipsRequest),
-            token
+            token: user
         }
         try {
             const siren = await doFetch(internalReq)
@@ -363,11 +352,10 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
     }
     return 'placeShipsRequest not valid'
 }
-async function confirmFleet(): Promise<void | string> {
-    const token = auth.getToken()
+async function confirmFleet(user: string): Promise<void | string> {
     const action = links.getConfirmFleetAction()
     console.log('Action', action)
-    if (!token || !action) {
+    if (!user || !action) {
         logger.error("confirmFleet: token or confirm fleet action undefined")
         return "confirmFleet: token or confirm fleet action undefined"
     }
@@ -377,7 +365,7 @@ async function confirmFleet(): Promise<void | string> {
             url: action.href,
             method: action.method,
             body: Fetch.toBody({fleetConfirmed: true}),
-            token
+            token: user
         }
         try {
             const siren = await doFetch(internalReq)
@@ -392,10 +380,9 @@ async function confirmFleet(): Promise<void | string> {
     }
 }
 
-async function attack(attackRequest: any): Promise<void | string> {
-    const token = auth.getToken()
+async function attack(attackRequest: any, user: string): Promise<void | string> {
     const action = links.getAttackAction()
-    if (!token || !action) {
+    if (!user || !action) {
         logger.error("attack: token or attack action undefined")
         return "attack: token or attack action undefined"
     }
@@ -404,7 +391,7 @@ async function attack(attackRequest: any): Promise<void | string> {
             url: action.href,
             method: action.method,
             body: Fetch.toBody(attackRequest),
-            token
+            token: user
         }
         try {
             const siren = await doFetch(internalReq)
@@ -444,7 +431,6 @@ export const Services = {
     getUser,
     fetchToken,
     createUser,
-    isLogged,
     createGame,
     getCurrentGameId,
     getGame,

@@ -21,16 +21,13 @@ import {useState} from "react";
 import {RequireAuthn} from "./screens/auth/RequireAuthn";
 
 export function App() {
-
-    const [activeIndex, setActiveIndex] = useState(0);
-
     return (
         <div className={style}>
-            <BrowserRouter >
-                <Navbar isActive={activeIndex}/>
-                <div className={"content"}>
-                    <Routes>
-                        <Route path='/' element={<AuthnContainer><Outlet /></AuthnContainer>}>
+            <AuthnContainer><Outlet />
+                <BrowserRouter >
+                    <Navbar />
+                    <div className={"content"}>
+                        <Routes>
                             <Route path='/' element={<Home />} />
                             <Route path='/info' element={<Info />} />
                             <Route path='/leadership' element={<Leaderboard />} />
@@ -40,11 +37,10 @@ export function App() {
                             <Route path='me' element={<RequireAuthn children={<Me />} />} />
                             <Route path='game' element={<RequireAuthn children={<Game/>} />} />
                             <Route path='*' element={<PageNotFound />} />
-                        </Route>
-                    </Routes>
-                </div>
-                <LogInfo onShow={() => setActiveIndex(1)} stopOnShow={() => setActiveIndex(0)}/>
-            </BrowserRouter>
+                        </Routes>
+                    </div>
+                </BrowserRouter>
+            </AuthnContainer>
         </div>
     );
 }
