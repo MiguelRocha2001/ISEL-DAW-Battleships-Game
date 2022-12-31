@@ -350,11 +350,11 @@ function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : ()
     return (
         <div id = {styles.buttonsToPlay}>
             <button id={styles.newGame} className={styles.cybrBtn} onClick={onCreateGameRequest}>
-                Ready!<span aria-hidden>_</span>
+                Create New<span aria-hidden>_</span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Create New</span>
             </button>
             <button id={styles.joinGame} className={styles.cybrBtn} onClick={onUpdateRequest}>
-                Ready!<span aria-hidden>_</span>
+                Resume<span aria-hidden>_</span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Resume</span>
             </button>
         </div>
