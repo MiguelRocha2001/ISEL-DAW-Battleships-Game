@@ -88,19 +88,13 @@
 #enemyBoard{
     float: left;
     width: 50%;
-    text-align: left;
+    text-align: center;
 }
 
 #myBoard{
     float: left;
     width: 50%;
-    text-align: left;
-}
-
-@font-face {
-    font-family: Cyber;
-    src: url("https://assets.codepen.io/605876/Blender-Pro-Bold.otf");
-    font-display: swap;
+    text-align: center;
 }
 
 .cybrBtn {
@@ -338,5 +332,30 @@
     text-transform: uppercase;
     color: hsl(0, 0%, 40%);
     margin: 0 0 20px;
+    text-decoration: underline;
+
+}
+
+.h2{
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: hsl(0, 0%, 40%);
+    margin: 0 0 20px;
+}
+
+#boardGame{
+    display:flex;
+    justify-content: center;
+}
+
+#gameTable{
+    padding-bottom: 0;
+    border: solid 10px black;
+    border-radius: 25px;
+    width: 500px;
+    height: 500px;
+
 
 }

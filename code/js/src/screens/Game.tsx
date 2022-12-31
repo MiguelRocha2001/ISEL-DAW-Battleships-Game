@@ -442,11 +442,11 @@ function Battle({myBoard, enemyBoard, onShot} : {myBoard : Board, enemyBoard : B
         <div className={styles.fullWidth}>
             <h1 className={styles.h1}>Battle Phase</h1>
             <div id={styles.myBoard}>
-                <h2>My Board</h2>
+                <h2 className={styles.h2}>My Board</h2>
                 <Board board={myBoard} onCellClick={() => {}}/>
             </div>
             <div id={styles.enemyBoard}>
-                <h2>Enemy Board</h2>
+                <h2 className={styles.h2}>Enemy Board</h2>
                 <Board board={enemyBoard} onCellClick={onShot}/>
             </div>
         </div>
@@ -507,8 +507,8 @@ function Board({board, onCellClick} : {board : Board, onCellClick? : (row: numbe
     const rowNumber = Math.sqrt(board.ncells)
     const collNumber = rowNumber
     return (
-        <div>
-            <table>
+        <div id={styles.boardGame}>
+            <table id={styles.gameTable}>
                 <tbody>
                 {Array.from(Array(rowNumber).keys()).map((row) => {
                     return (

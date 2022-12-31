@@ -6,6 +6,7 @@ import {useSetUser} from "./Authn"
 import styles from './Auth.module.css'
 import {Logger} from "tslog";
 
+
 const logger = new Logger({ name: "Authentication" });
 
 export async function authenticate(username: string, password: string): Promise<string | undefined> {
@@ -101,12 +102,12 @@ export function Authentication({title, action}: { title: string, action: Action}
                     <fieldset className={styles.fieldset} disabled={isSubmitting}>
                         <div id={styles.fieldDiv}>
                             <div>
-                                <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"USERNAME"} onChange={handleChange} />
+                                <input id="username" className={styles.input} type="text" name="username" value={inputs.username} required={true} placeholder={"Username"} onChange={handleChange} />
                                 <p>{checkUsername}</p>
                             </div>
                             <div>
                                 <input
-                                    id="password" className={styles.input} pattern="(?=.*[a-z])(?=.*[A-Z]).{5,}" title="Must contain at least one uppercase and lowercase letter, and at least 5 or more characters" type="password" required={true} name="password" placeholder={"PASSWORD"} value={inputs.password} onChange={handleChange} />
+                                    id="password" className={styles.input} pattern="(?=.*[a-z])(?=.*[A-Z]).{5,}" title="Must contain at least one uppercase and lowercase letter, and at least 5 or more characters" type="password" required={true} name="password" placeholder={"Password"} value={inputs.password} onChange={handleChange} />
                             </div>
                         </div>
                         <div id={styles.signButton}>

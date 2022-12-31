@@ -40,8 +40,10 @@ export function Me() {
     } else {
         if (joinPrevGameButton) {
             return (
-                <div className={style.alignCenter}>
-                    <UserDetail user={response}/>
+                <div id={style.userProfile}>
+                    <div className={style.alignCenter}>
+                        <UserDetail user={response}/>
+                    </div>
                     <Link to="/game" className={style.link}>Resume Match</Link>
                 </div>
             )
