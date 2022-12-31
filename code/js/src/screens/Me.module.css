@@ -78,7 +78,7 @@
 }
 
 .alignCenter{
-    margin: auto;
+    margin: 2em auto auto;
     width: 50%;
     border: 5px solid black;
     border-radius: 25px;

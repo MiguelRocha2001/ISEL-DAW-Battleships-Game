@@ -349,8 +349,14 @@ function CheckingForExistingOnGoingGame() {
 function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : () => void, onUpdateRequest : () => void}) {
     return (
         <div id = {styles.buttonsToPlay}>
-            <p><button id={styles.newGame} className={styles.cybrBtn} role="button" onClick={onCreateGameRequest}>Create New</button></p>
-            <p><button id={styles.joinGame} className={styles.cybrBtn} role="button" onClick={onUpdateRequest}>Resume</button></p>
+            <button id={styles.newGame} className={styles.cybrBtn} onClick={onCreateGameRequest}>
+                Ready!<span aria-hidden>_</span>
+                <span aria-hidden className={styles.cybrbtn__glitch}>Create New</span>
+            </button>
+            <button id={styles.joinGame} className={styles.cybrBtn} onClick={onUpdateRequest}>
+                Ready!<span aria-hidden>_</span>
+                <span aria-hidden className={styles.cybrbtn__glitch}>Resume</span>
+            </button>
         </div>
     )
 }
