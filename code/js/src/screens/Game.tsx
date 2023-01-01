@@ -7,7 +7,7 @@ import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
 
 
-const logger = new Logger({ name: "GameScreen" });
+const logger = new Logger({ name: "GameComponent" });
 
 type State =
     {
@@ -135,10 +135,15 @@ export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
     const [selectedShip, setSelectedShip] = useState(null)
     const currentUser = useCurrentUser()
+    let cancelRequest = false
 
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
         const resp = await Services.getGame(currentUser)
+        if (cancelRequest) {
+            logger.info("checkForExistingOnGoingGame cancelled")
+            return
+        }
         if (typeof resp === 'string') {
             dispatch({type:'setMenu', msg: resp})
         } else {
@@ -160,6 +165,10 @@ export function Game() {
             shots: 1,
             roundTimeout: 200,
         }, currentUser)
+        if (cancelRequest) {
+            logger.info("createGame cancelled")
+            return
+        }
         if (typeof createGameResponse === 'string') {
             dispatch({type:'setMenu', msg: createGameResponse})
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
@@ -185,6 +194,10 @@ export function Game() {
                 ],
                 fleetConfirmed: false
             }, currentUser)
+            if (cancelRequest) {
+                logger.info("placeShip cancelled")
+                return
+            }
             if (typeof resp === 'string') {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
             } else {
@@ -196,6 +209,10 @@ export function Game() {
     async function confirmFleet() {
         logger.info("confirming fleet")
         const resp = await Services.confirmFleet(currentUser)
+        if (cancelRequest) {
+            logger.info("confirmFleet cancelled")
+            return
+        }
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
@@ -209,6 +226,10 @@ export function Game() {
             {shots: Array({row: row, column: col})},
             currentUser
         )
+        if (cancelRequest) {
+            logger.info("shoot cancelled")
+            return
+        }
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
@@ -226,6 +247,10 @@ export function Game() {
 
         logger.info("updateGameWhileNecessary")
         const resp = await Services.getGame(currentUser)
+        if (cancelRequest) {
+            logger.info("updateGameWhileNecessary cancelled")
+            return
+        }
         if (typeof resp !== 'string') {
             if (resp.state != 'battle' || isMyTurn(resp)) {
                 dispatch({type: 'setPlaying', game: resp})
@@ -275,6 +300,10 @@ export function Game() {
             }
         }
         stateMachineHandler()
+        return () => {
+            cancelRequest = true
+            logger.info("Game unmounted")
+        };
     }, [state])
 
     if (state.type === "checkingForExistingOnGoingGame") {

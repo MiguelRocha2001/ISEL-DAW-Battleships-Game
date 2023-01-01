@@ -64,7 +64,7 @@ export type KeyValuePair = {
     value: string
 }
 
-export function useFetchNew(request: Request) : State {
+export function useFetchReducer(request: Request) : State {
     const [state, dispatcher] = useReducer(reducer, {type : "started"})
 
     useEffect(() =>{
@@ -85,9 +85,9 @@ export function useFetchNew(request: Request) : State {
                             'Content-Type': CONTENT_TYPE_JSON
                         }
                     })
-                    if(cancelled) return
+                    if (cancelled) return
                     const body = await response.json()
-                    if (!cancelled){
+                    if (!cancelled) {
                         if (response.status >= 300) {
                             logger.error("doFetch: ", response.status)
                             dispatcher({type:'setError', message: body})
@@ -97,7 +97,7 @@ export function useFetchNew(request: Request) : State {
                     return body
                 } catch (error) {
                     logger.error("doFetch: ", error)
-                    if(cancelled) return
+                    if (cancelled) return
                     dispatcher({type:'setError', message:error.message})
                 }
             }
@@ -105,7 +105,7 @@ export function useFetchNew(request: Request) : State {
         
         doFetch()
         return ()=>{
-            cancelled=true
+            cancelled = true
         }
         
     }, [request.url, request.method, request.body])

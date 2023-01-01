@@ -1,5 +1,6 @@
 package pt.isel.daw.dawbattleshipgame.http.controllers
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -12,6 +13,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.home.AuthorOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.home.HomeOutputModel
 import pt.isel.daw.dawbattleshipgame.http.model.home.ServerInfoOutputModel
+import pt.isel.daw.dawbattleshipgame.http.pipeline.LoggerInterceptor
 import pt.isel.daw.dawbattleshipgame.services.InfoServices
 
 @RestController

@@ -6,6 +6,9 @@ import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
 import {useCurrentUser} from "./auth/Authn";
+import {Logger} from "tslog";
+
+const logger = new Logger({ name: "MeComponent" });
 
 export function Me() {
     const currentUser = useCurrentUser()
@@ -13,13 +16,21 @@ export function Me() {
     const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
 
     useEffect(() => {
+        let cancelled = false
         async function setGameButtonIfGameIsOngoing() {
             const gameId = await Services.getCurrentGameId(currentUser)
+            if (cancelled) {
+                return
+            }
             if (typeof gameId === 'number') {
                 setJoinPrevGameButton(true)
             }
         }
         setGameButtonIfGameIsOngoing()
+        return () => {
+            cancelled = true
+            logger.debug("Me component unmounted")
+        }
     }, [joinPrevGameButton, setJoinPrevGameButton])
 
     if (typeof response === "string") {

@@ -3,14 +3,14 @@ import {Action, Siren} from './utils/siren'
 import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
 import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest} from './domain'
-import {State, useFetchNew} from "./utils/useFetch-reducer";
+import {State, useFetchReducer} from "./utils/useFetch-reducer";
 
 const logger = new Logger({ name: "Services" });
 
 
 function useFetchHome(): any | string {
     const defaultUrl = links.defaultUrl
-    const state = useFetchNew({ url: defaultUrl, method: "GET" })
+    const state = useFetchReducer({ url: defaultUrl, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
         logger.info("fetchHome: response successful")
         const serverInfoLink = Siren.extractInfoLink(siren.links)
@@ -59,7 +59,7 @@ export type Author = {
 }
 function useFetchServerInfo(): ServerInfo | string {
     const infoLink = links.getInfoLink()
-    const state = useFetchNew({ url: infoLink, method: "GET" })
+    const state = useFetchReducer({ url: infoLink, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
         logger.info("fetchServerInfo: response successfully")
         return siren.properties
@@ -78,7 +78,7 @@ export type UserStats = {
 function useFetchBattleshipRanks(): Rankings | string {
     const ranksLink = links.getBattleshipRanksLink()
     if (ranksLink) {
-        const state = useFetchNew({url: ranksLink, method: "GET"})
+        const state = useFetchReducer({url: ranksLink, method: "GET"})
         return handlerOrError(state, (siren: Siren) => {
             logger.info("fetchServerInfo: response successful")
             return siren.properties
@@ -92,7 +92,7 @@ function getUser(userId: number): UserStats | string {
     const oldLink = links.getUserLink()
     const userLink = oldLink.replace(':id', userId.toString())
     if (userLink) {
-        const state = useFetchNew({url: userLink, method: "GET"})
+        const state = useFetchReducer({url: userLink, method: "GET"})
         return handlerOrError(state, (siren: Siren) => {
             logger.info("fetchServerInfo: response successful")
             return siren.properties
@@ -180,7 +180,7 @@ function useFetchUserHome(user: string): UserStats | string {
             method: "GET",
             token: user
         }
-        const resp = useFetchNew(request)
+        const resp = useFetchReducer(request)
         return handlerOrError(resp, (siren: Siren) => {
             logger.info("fetchUserHome: response successfully")
             const createGameAction = Siren.extractCreateGameAction(siren.actions)
@@ -225,7 +225,7 @@ async function createGame(request: CreateGameRequest, user: string): Promise<Cre
             url: action.href,
             method: action.method,
             body: Fetch.toBody(request),
-            user
+            token: user
         }
         try {
             const siren = await doFetch(internalReq)
@@ -259,7 +259,7 @@ async function getCurrentGameId(user: string): Promise<number | string> {
     try {
         const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined, token: user })
         if (response) {
-            logger.info("getGame: response sucessfull")
+            logger.info("getGame: response successful")
             const gameId = response.properties.gameId
             if (gameId) {
                 return gameId
@@ -270,7 +270,7 @@ async function getCurrentGameId(user: string): Promise<number | string> {
         }
     } catch (e) {
         logger.error("getCurrentGameId: error: ", e)
-        return e.message.toString()
+        return e.title
     }
 }
 

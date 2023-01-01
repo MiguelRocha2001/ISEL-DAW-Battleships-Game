@@ -6,7 +6,6 @@ import {UserDetail} from "./Commons";
 export function User() {
     const { id } = useParams()
     const resp = Services.getUser(+id)
-    console.log(resp)
 
     if (typeof resp == "string") {
         return (
