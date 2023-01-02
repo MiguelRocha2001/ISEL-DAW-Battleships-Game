@@ -5,6 +5,7 @@ import {Board, Game} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
+import {Loading} from "./Loading";
 
 
 const logger = new Logger({ name: "GameComponent" });
@@ -170,7 +171,11 @@ export function Game() {
             return
         }
         if (typeof createGameResponse === 'string') {
-            dispatch({type:'setMenu', msg: createGameResponse})
+            if (createGameResponse === 'User already in a queue') {
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
+            } else {
+                dispatch({type:'setMenu', msg: createGameResponse})
+            }
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
     }
 
@@ -237,6 +242,9 @@ export function Game() {
         }
     }
 
+    /**
+     * Fetches game from data and updates state accordingly.
+     */
     async function updateGameWhileNecessary() {
         function isMyTurn(game: Game) {
             const myPlayer = game.myPlayer
@@ -257,11 +265,17 @@ export function Game() {
                 return
             }
             setTimeout(() => {
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: undefined})
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: 'Waiting for opponent'})
             }, 1000)
         } else {
+            let msg;
+            if (state.type === 'updatingGameWhileNecessary' && state.msg === 'Matchmaking') {
+                msg = 'Matchmaking'
+            } else {
+                msg = undefined
+            }
             setTimeout(() => {
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: msg})
             }, 1000)
         }
     }
@@ -309,10 +323,7 @@ export function Game() {
     if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
     } if (state.type === "menu") {
-        return <Menu
-            onCreateGameRequest={() => dispatch({type : 'setCreatingGame'})}
-            onUpdateRequest={() => dispatch({type : 'setUpdatingGameWhileNecessary', game : undefined, msg: undefined})}
-        />
+        return <Menu onCreateGameRequest={() => dispatch({type : 'setCreatingGame'})}/>
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
     } else if (state.type === "playing") {
@@ -325,20 +336,26 @@ export function Game() {
             onUpdateRequest={() => dispatch({type : 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})}
         />
     } else if (state.type === "updatingGameWhileNecessary") {
+        const title = state.msg ? state.msg : "Updating game"
         if (state.game) {
-            return <Playing
-                game={state.game}
-                onPlaceShip={() => {}}
-                onShipChange={() => {}}
-                onConfirmFleetRequest={() => {}}
-                onShot={() => {}}
-                onUpdateRequest={() => {}}
-            />
+            return (
+                <div>
+                    <h1>{title}</h1>
+                    <Playing
+                        game={state.game}
+                        onPlaceShip={() => {}}
+                        onShipChange={() => {}}
+                        onConfirmFleetRequest={() => {}}
+                        onShot={() => {}}
+                        onUpdateRequest={() => {}}
+                    />
+                </div>
+            )
         } else {
             return (
                 <div>
-                    <h1>Updating Game</h1>
-                    <p>{state.msg}</p>
+                    <h1>{title}</h1>
+                    <Loading />
                 </div>
             )
         }
@@ -351,22 +368,6 @@ export function Game() {
     }
 }
 
-function CheckingForSession() {
-    return (
-        <div>
-            <h1>Checking Session</h1>
-        </div>
-    )
-}
-
-function NotLogged() {
-    return (
-        <div>
-            <h1>Please Login before accessing your profile</h1>
-        </div>
-    )
-}
-
 function CheckingForExistingOnGoingGame() {
     return (
         <div>
@@ -375,16 +376,12 @@ function CheckingForExistingOnGoingGame() {
     )
 }
 
-function Menu({onCreateGameRequest, onUpdateRequest} : {onCreateGameRequest : () => void, onUpdateRequest : () => void}) {
+function Menu({onCreateGameRequest} : {onCreateGameRequest : () => void}) {
     return (
         <div id = {styles.buttonsToPlay}>
             <button id={styles.newGame} className={styles.cybrBtn} onClick={onCreateGameRequest}>
                 Create New<span aria-hidden>_</span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Create New</span>
-            </button>
-            <button id={styles.joinGame} className={styles.cybrBtn} onClick={onUpdateRequest}>
-                Resume<span aria-hidden>_</span>
-                <span aria-hidden className={styles.cybrbtn__glitch}>Resume</span>
             </button>
         </div>
     )
@@ -413,24 +410,27 @@ function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot
         onConfirmFleetRequest()
     }
 
-    let myBoard
-    let enemyBoard
+    let myBoard: Board
+    let fleetConfirmed: boolean
+    let enemyBoard: Board
     if (game.myPlayer === "one") {
         myBoard = game.board1
+        fleetConfirmed = game.board1.isConfirmed
         enemyBoard = game.board2
     }
     else {
         myBoard = game.board2
+        fleetConfirmed = game.board2.isConfirmed
         enemyBoard = game.board1
     }
 
     const updateButton = <p><button onClick={onUpdateRequest}>Update Game</button></p>
 
-    console.log('Game:', game)
+    console.log("myBoard", myBoard)
     if (game.state === "fleet_setup") {
         return (
             <div>
-                <FleetSetup board={myBoard} onPlaceShip={onPlaceShip} onShipChange={onShipChange} onConfirmFleet={onConfirmFleet}/>
+                <FleetSetup board={myBoard} fleetConfirmed={fleetConfirmed} onPlaceShip={onPlaceShip} onShipChange={onShipChange} onConfirmFleet={onConfirmFleet}/>
                 {updateButton}
             </div>
         )
@@ -448,26 +448,32 @@ function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot
     }
 }
 
-function FleetSetup({board, onPlaceShip, onShipChange, onConfirmFleet}: {
+function FleetSetup({board, fleetConfirmed, onPlaceShip, onShipChange, onConfirmFleet}: {
     board : Board,
+    fleetConfirmed : boolean,
     onPlaceShip: (x : number, y : number) => void,
     onShipChange : (ship : string) => void,
     onConfirmFleet : () => void
 }) {
+    const title = fleetConfirmed == false ? "Await For Opponent" : "Place your ships"
+    const onPlaceShipAux = fleetConfirmed == true ? () => {} : onPlaceShip
+    const options = fleetConfirmed == false ? (
+        <div className={styles.right}>
+            <button className={styles.cybrBtn} onClick={onConfirmFleet}>
+                Ready!<span aria-hidden>_</span>
+                <span aria-hidden className={styles.cybrbtn__glitch}>Ready</span>
+            </button>
+            <div id={styles.buttonsForSelectShips}>
+                <ShipOptions onShipClick={onShipChange}/>
+            </div>
+        </div>
+    ) : null
     return (
         <div className={styles.fullWidth}>
-            <p><h1 className={styles.h1}>Place Your Fleet</h1></p>
+            <p><h1 className={styles.h1}>{title}</h1></p>
             <div className={styles.left}>
-                <Board board={board} onCellClick={onPlaceShip}/></div>
-            <div className={styles.right}>
-                <button className={styles.cybrBtn} onClick={onConfirmFleet}>
-                    Ready!<span aria-hidden>_</span>
-                    <span aria-hidden className={styles.cybrbtn__glitch}>Ready</span>
-                </button>
-                <div id={styles.buttonsForSelectShips}>
-                    <ShipOptions onShipClick={onShipChange}/>
-                </div>
-            </div>
+                <Board board={board} onCellClick={onPlaceShipAux}/></div>
+            {options}
         </div>
     )
 }

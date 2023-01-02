@@ -150,8 +150,8 @@ fun Game.placeShots(userId: Int, shots: List<Coordinate>, player: Player): Game?
             "Not all shots were placed, try again",
     )
     shots.forEach {
-        println(it)
-        println(game.getBoard(player.other()))
+        // println(it)
+        // println(game.getBoard(player.other()))
         game = game.placeShot(userId, it, player) ?: return null
     }
     return game.updateTurn()
