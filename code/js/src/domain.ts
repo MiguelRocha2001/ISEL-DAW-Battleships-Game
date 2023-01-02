@@ -45,8 +45,10 @@ export type PlaceShipsRequest = {
 type PlaceShipRequest = {
     shipType: string,
     position: Position,
-    orientation: string
+    orientation: Orientation
 }
+
+export type Orientation = 'HORIZONTAL' | 'VERTICAL'
 
 export type Position = {
     row: number,

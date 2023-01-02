@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
 import {Services} from '../services'
-import {Board, Game} from '../domain'
+import {Board, Game, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
@@ -32,8 +32,10 @@ type State =
     |
     {
         type : "placingShips",
+        ship : string,
         row : number,
-        col : number
+        col : number,
+        orient : Orientation,
     }
     |
     {
@@ -75,8 +77,10 @@ type Action =
     |
     {
         type : "setPlacingShips",
+        ship : string,
         row : number,
-        col : number
+        col : number,
+        orient : Orientation,
     }
     |
     {
@@ -115,7 +119,7 @@ function reducer(state: State, action: Action): State {
         }
         case 'setPlacingShips' : {
             logger.info("setPlacingShips")
-            return {type : 'placingShips', row : action.row, col : action.col}
+            return {type : 'placingShips', ship : action.ship, row : action.row, col : action.col, orient : action.orient}
         }
         case 'setConfirmingFleet' : {
             logger.info("setConfirmingFleet")
@@ -134,7 +138,6 @@ function reducer(state: State, action: Action): State {
 
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
-    const [selectedShip, setSelectedShip] = useState(null)
     const currentUser = useCurrentUser()
     let cancelRequest = false
 
@@ -179,14 +182,9 @@ export function Game() {
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
     }
 
-    async function placeShip(row: number, col: number) {
-        logger.info("placing ship in " + row + " " + col)
-        if (!selectedShip) {
-            logger.warn("no ship selected")
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: 'Please select a ship'})
-            return
-        }
-        const ship = selectedShip as string
+
+    async function placeShip(ship: string, row: number, col: number, orientation: Orientation) {
+        logger.info("placingShip: " + ship + " at " + row + "," + col + " " + orientation)
         if (ship) {
             const resp = await Services.placeShips({
                 operation: "place-ships",
@@ -194,7 +192,7 @@ export function Game() {
                     {
                         shipType: ship,
                         position: {row: row, column: col},
-                        orientation: "HORIZONTAL"
+                        orientation: orientation
                     }
                 ],
                 fleetConfirmed: false
@@ -280,11 +278,6 @@ export function Game() {
         }
     }
 
-    function onShipChange(ship: string) {
-        logger.info("ship " + ship + " selected")
-        setSelectedShip(ship)
-    }
-
     useEffect(() => {
         async function stateMachineHandler() {
             switch(state.type) {
@@ -301,7 +294,7 @@ export function Game() {
                     break
                 }
                 case 'placingShips' : {
-                    await placeShip(state.row, state.col)
+                    await placeShip(state.ship, state.row, state.col, state.orient)
                     break
                 }
                 case 'confirmingFleet' : {
@@ -329,8 +322,7 @@ export function Game() {
     } else if (state.type === "playing") {
         return <Playing
             game={state.game}
-            onPlaceShip={(row, col) => dispatch({type : 'setPlacingShips', row, col})}
-            onShipChange={onShipChange}
+            onPlaceShip={(ship, row, col, orient) => dispatch({type : 'setPlacingShips', ship, row, col, orient})}
             onConfirmFleetRequest={() => dispatch({type : 'setConfirmingFleet'})}
             onShot={(row, col) => dispatch({type : 'setShooting', row, col})}
             onUpdateRequest={() => dispatch({type : 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})}
@@ -344,7 +336,6 @@ export function Game() {
                     <Playing
                         game={state.game}
                         onPlaceShip={() => {}}
-                        onShipChange={() => {}}
                         onConfirmFleetRequest={() => {}}
                         onShot={() => {}}
                         onUpdateRequest={() => {}}
@@ -396,17 +387,15 @@ function CreatingGame() {
     )
 }
 
-function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot, onUpdateRequest} : {
-     game : Game,
-     onPlaceShip : (x : number, y : number) => void,
-     onShipChange : (ship: string) => void,
-     onConfirmFleetRequest : () => void,
-     onShot : (x : number, y : number) => void,
+function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequest} : {
+    game : Game,
+    onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
+    onConfirmFleetRequest : () => void,
+    onShot : (x : number, y : number) => void,
     onUpdateRequest : () => void
  }) {
 
     function onConfirmFleet() {
-        onShipChange(null)
         onConfirmFleetRequest()
     }
 
@@ -430,7 +419,7 @@ function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot
     if (game.state === "fleet_setup") {
         return (
             <div>
-                <FleetSetup board={myBoard} fleetConfirmed={fleetConfirmed} onPlaceShip={onPlaceShip} onShipChange={onShipChange} onConfirmFleet={onConfirmFleet}/>
+                <FleetSetup board={myBoard} fleetConfirmed={fleetConfirmed} onPlaceShip={onPlaceShip} onConfirmFleet={onConfirmFleet}/>
                 {updateButton}
             </div>
         )
@@ -448,23 +437,46 @@ function Playing({game, onPlaceShip, onShipChange, onConfirmFleetRequest, onShot
     }
 }
 
-function FleetSetup({board, fleetConfirmed, onPlaceShip, onShipChange, onConfirmFleet}: {
+function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     board : Board,
     fleetConfirmed : boolean,
-    onPlaceShip: (x : number, y : number) => void,
-    onShipChange : (ship : string) => void,
+    onPlaceShip: (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleet : () => void
 }) {
+    const [selectedShip, setSelectedShip] = useState(null)
+    const [selectedOrientation, setSelectedOrientation] = useState<Orientation>('HORIZONTAL')
+
+    function onConfirmFleetAux() {
+        setSelectedShip(null)
+        onConfirmFleet()
+    }
+
+    function onOrientationChange() {
+        if (selectedOrientation === "HORIZONTAL") setSelectedOrientation("VERTICAL")
+        else setSelectedOrientation("HORIZONTAL")
+    }
+
+    function onPlaceShipAux(x : number, y : number) {
+        if (fleetConfirmed != true) {
+            onPlaceShip(selectedShip, x, y, selectedOrientation)
+            selectedShip(null)
+        }
+    }
+
     const title = fleetConfirmed == false ? "Await For Opponent" : "Place your ships"
-    const onPlaceShipAux = fleetConfirmed == true ? () => {} : onPlaceShip
+
     const options = fleetConfirmed == false ? (
         <div className={styles.right}>
-            <button className={styles.cybrBtn} onClick={onConfirmFleet}>
+            <button className={styles.cybrBtn} onClick={onConfirmFleetAux}>
                 Ready!<span aria-hidden>_</span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Ready</span>
             </button>
             <div id={styles.buttonsForSelectShips}>
-                <ShipOptions onShipClick={onShipChange}/>
+                <ShipOptions
+                    curOrientation={selectedOrientation}
+                    onShipClick={(ship: string) => setSelectedShip(ship)}
+                    onOrientationChange={onOrientationChange}
+                />
             </div>
         </div>
     ) : null
@@ -478,38 +490,16 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onShipChange, onConfirm
     )
 }
 
-function Battle({myBoard, enemyBoard, onShot} : {myBoard : Board, enemyBoard : Board, onShot : (x : number, y : number) => void}) {
-    return (
-        <div className={styles.fullWidth}>
-            <h1 className={styles.h1}>Battle Phase</h1>
-            <div id={styles.myBoard}>
-                <h2 className={styles.h2}>My Board</h2>
-                <Board board={myBoard} onCellClick={() => {}}/>
-            </div>
-            <div id={styles.enemyBoard}>
-                <h2 className={styles.h2}>Enemy Board</h2>
-                <Board board={enemyBoard} onCellClick={onShot}/>
-            </div>
-        </div>
-    )
-}
-
-function Finished({winner} : {winner : string}) {
-    return (
-        <div>
-            <h1>Finished</h1>
-            <p>Player {winner} has won</p>
-        </div>
-    )
-}
-
-function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
+function ShipOptions({curOrientation, onShipClick, onOrientationChange} : {
+    curOrientation: Orientation,
+    onShipClick : (ship : string) => void,
+    onOrientationChange : () => void
+}) {
     function onChangeValue(event) {
         onShipClick(event.target.value)
     }
     return (
         <div onChange={onChangeValue}>
-
             <label  className={styles.radLabel} >
                 <input type="radio" className={styles.radInput} value="CARRIER" name="gender"  />
                 <div className={styles.radDesign}></div>
@@ -539,6 +529,38 @@ function ShipOptions({onShipClick} : {onShipClick : (ship : string) => void}) {
                 <div className={styles.radText}>Destroyer</div>
             </label>
 
+            <p>{curOrientation}</p>
+            <label className={styles.switch}>
+                <input type="checkbox" onClick={onOrientationChange}/>
+                <span className={styles.slider}></span>
+            </label>
+        </div>
+    )
+}
+
+function Battle({myBoard, enemyBoard, onShot} : {
+    myBoard : Board, enemyBoard : Board, onShot : (x : number, y : number) => void
+}) {
+    return (
+        <div className={styles.fullWidth}>
+            <h1 className={styles.h1}>Battle Phase</h1>
+            <div id={styles.myBoard}>
+                <h2 className={styles.h2}>My Board</h2>
+                <Board board={myBoard} onCellClick={() => {}}/>
+            </div>
+            <div id={styles.enemyBoard}>
+                <h2 className={styles.h2}>Enemy Board</h2>
+                <Board board={enemyBoard} onCellClick={onShot}/>
+            </div>
+        </div>
+    )
+}
+
+function Finished({winner} : {winner : string}) {
+    return (
+        <div>
+            <h1>Finished</h1>
+            <p>Player {winner} has won</p>
         </div>
     )
 }
