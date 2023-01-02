@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  app:
+    image: app
+    container_name: app
+    build:
+      context: ../../js
+    ports:
+      - "8080:8080"
+    environment:
+        - API_PROXY_TARGET='http://host.docker.internal:9000/'
   battleship-service-1:
     container_name: battleship-service-1
     build:
@@ -86,6 +95,7 @@ services:
     depends_on:
       - battleship-service-1
       - battleship-service-2
+      - app
 volumes:
   db-data:
     driver: local

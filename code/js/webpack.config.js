@@ -10,7 +10,7 @@ module.exports = {
         historyApiFallback: true,
         proxy: {
             '/api': {
-              target: 'http://localhost:9000/',
+              target: process.env.API_PROXY_TARGET || 'http://localhost:9000/',
               pathRewrite: { '^/api': '' },
             },
           },
