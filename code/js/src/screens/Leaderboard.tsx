@@ -26,13 +26,13 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
         return <div><h2>No one is here <em>(yet)</em></h2></div>
     }else return (
         <div id ={styles.leaderBoard}>
-            <h2 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h2>
+            <h1 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h1>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th id = {styles.rankingsUsername} >Username</th>
-                        <th>Wins</th>
-                        <th>Games Played</th>
+                        <th className={styles.centered} >Username</th>
+                        <th className={styles.centered} >Wins</th>
+                        <th className={styles.centered} >Games Played</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,11 +47,11 @@ function Stats({stats}: { stats: UserStats }) {
     const userLink = `/users/${stats.id}`
     return (
         <tr key={stats.id}>
-            <td>
-                <Link to={userLink}>{stats.username}</Link>
+            <td className={styles.td}>
+                <Link id={styles.username} to={userLink}>{stats.username}</Link>
             </td>
-            <td>{stats.wins}</td>
-            <td>{stats.gamesPlayed}</td>
+            <td className={styles.td}>{stats.wins}</td>
+            <td className={styles.td}>{stats.gamesPlayed}</td>
         </tr>
     )
 }

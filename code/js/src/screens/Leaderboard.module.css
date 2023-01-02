@@ -1,10 +1,12 @@
 .table {
+    width: 100%;
     border-collapse: collapse;
     font-size: 0.9em;
     font-family: sans-serif;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    margin-left: auto;
+    margin-left: -1%;
+    margin-top: 3%;
     margin-right: auto;
 }
 .table thead tr {
@@ -39,7 +41,6 @@
 
 #leaderBoard {
     text-align: center;
-    border: 5px solid black;
     border-radius: 10px;
     padding: 10px;
     margin: 10px;
@@ -47,7 +48,15 @@
 }
 
 #topPlayers{
-    display: inline;
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color:  black;
+    text-decoration: underline;
+    text-decoration-color: #26FFDF;
+    text-decoration-style: wavy;
+    text-decoration-thickness: 3px;
 }
 #emptyTableRankings{
     animation: tilt 1s ease-in-out infinite alternate;
@@ -60,8 +69,23 @@ a:hover {
     color: #26FFDF;
 }
 
-#rankingsUsername{
+.centered{
+    width: 33%;
+    font-size: 1.5rem;
+    font-weight: 90;
+    letter-spacing: 3px;
+    text-transform: uppercase;
     text-align: center;
+    background-color: #26FFDF;
 }
 
+
+.td{
+    border-left: 2px dashed #26FFDF;
+    border-right: 2px dashed #26FFDF;
+}
+
+#username{
+    font-weight: 700;
+}
 

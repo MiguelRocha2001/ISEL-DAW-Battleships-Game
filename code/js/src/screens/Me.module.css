@@ -9,8 +9,8 @@
 }
 
 .key {
+    text-align: center;
     font-weight: bold;
-    text-align: left;
     width: 50%;
 }
 
@@ -80,7 +80,6 @@
 .alignCenter{
     margin: 2em auto auto;
     width: 50%;
-    border: 5px solid black;
     border-radius: 25px;
     padding: 10px;
     text-align: center;
@@ -94,4 +93,15 @@
     justify-content: center;
     height: 100%;
 }
-/* Parent background */
+
+#me{
+    border-collapse: separate;
+    border-radius: 50px;
+    border: solid 5px black;
+    border-left: solid 5px #26FFDF;
+    border-right: solid 5px #26FFDF;
+    width: 100%;
+    height: 100%;
+
+
+}
