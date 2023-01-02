@@ -1,0 +1,5 @@
+docker build . -t dockerized-react
+
+docker run -d --publish 3000:3000 --name webserver dockerized-react
+
+docker container stop webserver && docker container rm webserver
