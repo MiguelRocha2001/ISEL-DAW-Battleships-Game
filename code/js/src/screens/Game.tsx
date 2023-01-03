@@ -419,7 +419,12 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequ
     if (game.state === "fleet_setup") {
         return (
             <div>
-                <FleetSetup board={myBoard} fleetConfirmed={fleetConfirmed} onPlaceShip={onPlaceShip} onConfirmFleet={onConfirmFleet}/>
+                <FleetSetup
+                    board={myBoard}
+                    fleetConfirmed={fleetConfirmed}
+                    onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
+                    onConfirmFleet={onConfirmFleet}
+                />
                 {updateButton}
             </div>
         )
@@ -440,7 +445,7 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequ
 function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     board : Board,
     fleetConfirmed : boolean,
-    onPlaceShip: (ship: string, x : number, y : number, o: Orientation) => void,
+    onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleet : () => void
 }) {
     const [selectedShip, setSelectedShip] = useState(null)
@@ -459,7 +464,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     function onPlaceShipAux(x : number, y : number) {
         if (fleetConfirmed != true && selectedShip != null && selectedShip != "on") {
             onPlaceShip(selectedShip, x, y, selectedOrientation)
-            selectedShip(null)
+            setSelectedShip(null)
         }
     }
 
