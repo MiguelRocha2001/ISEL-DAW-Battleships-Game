@@ -457,7 +457,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     }
 
     function onPlaceShipAux(x : number, y : number) {
-        if (fleetConfirmed != true) {
+        if (fleetConfirmed != true && selectedShip != null && selectedShip != "on") {
             onPlaceShip(selectedShip, x, y, selectedOrientation)
             selectedShip(null)
         }
