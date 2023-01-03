@@ -34,8 +34,7 @@
 }
 
 #login{
-
-    align-items: center;
+   align-items: center;
    background: black;
    border: 0;
    border-radius: 8px;
@@ -100,8 +99,7 @@
     border: solid 5px black;
     border-left: solid 5px #26FFDF;
     border-right: solid 5px #26FFDF;
-    width: 100%;
+    width: 50%;
     height: 100%;
-
-
+    margin: 0 auto;
 }

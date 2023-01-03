@@ -38,7 +38,7 @@ export function Authentication({title, action}: { title: string, action: Action}
     const setUser = useSetUser()
     const navigate = useNavigate()
     const location = useLocation()
-    console.log(redirect)
+    const styleId = (title === "Sign in")? styles.signIn : styles.signUp
     if(redirect) {
         return <Navigate to={redirect} replace={true}/>
     }
@@ -60,6 +60,7 @@ export function Authentication({title, action}: { title: string, action: Action}
         const username = inputs.username
         const password = inputs.password
         if (action === "login") {
+            console.log("Logging in")
             authenticate(username, password)
                 .then(token => {
                     setIsSubmitting(false)
@@ -76,11 +77,13 @@ export function Authentication({title, action}: { title: string, action: Action}
                     setError("Invalid username or password")
                 })
         } else {
+            console.log("Registering")
             createUser(username, password)
                 .then((userId) => {
                     setIsSubmitting(false)
                     if(userId) {
                         setSuccessSignUp("User created successfully, you can now sign in")
+                        setError("")
                         navigate("/sign-in")
                     }
                     else setError("Some error has occurred, please go to the home page and try again")
@@ -93,10 +96,10 @@ export function Authentication({title, action}: { title: string, action: Action}
                 })
         }
     }
-    
+
     return (
         <div>
-            <div id={styles.signPage}>
+            <div id={styleId} className={styles.signPage}>
                 <h2 id={styles.title}>{title}</h2>
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <fieldset className={styles.fieldset} disabled={isSubmitting}>

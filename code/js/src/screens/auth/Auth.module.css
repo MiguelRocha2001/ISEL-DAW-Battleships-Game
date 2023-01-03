@@ -1,13 +1,17 @@
 #title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color:  white;
     text-align: center;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    height: 100%;
+    text-align: center;
 }
 
 .fieldset {
@@ -19,6 +23,9 @@
 }
 
 .input, .label {
+    border: #26FFDF solid 1px;
+    background-color: black;
+    color: white;
     font-size: 1em;
     height: 2em;
     width: 80%;
@@ -29,21 +36,21 @@
 .input {
     padding: 0.2em 0.7em;
 }
+.input:hover{
+    background-color: white;
+    color: black;
+}
 
 .confirmButton{
     width: 50%;
-    margin: 0 auto;
+
+    margin: 2rem auto;
     align-items: center;
-    background: #f5f5fa;
-    border: 0;
+
     border-radius: 8px;
-    box-shadow: -10px -10px 30px 0 #fff,10px 10px 30px 0 #1d0dca17;
-    box-sizing: border-box;
-    color: #2a1f62;
     cursor: pointer;
     display: flex;
-    font-family: "Cascadia Code",Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;
-    font-size: 1rem;
+    font-size: 1.5rem;
     justify-content: center;
     line-height: 1.5rem;
     padding: 15px;
@@ -56,13 +63,16 @@
     white-space: pre;
     word-break: normal;
     word-spacing: normal;
+    background: black;
+    color: white;
+    border: 1px solid #26FFDF;
 }
 
-.confirmButton:hover {
-    background: black;
-    color: #00bcd4;
-    transform: scale(1.1);
+.confirmButton:hover{
+    background: #26FFDF;
+    color: black;
 }
+
 
 @media (min-width: 768px) {
     .button-67 {
@@ -74,14 +84,28 @@
     text-align: center;
 }
 
-#signPage{
+.signPage{
+    background-color: black;
+    height: 50%;
+    width: 50%;
     margin: 0;
     position: absolute;
     top: 50%;
     left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-60%, -50%);
-    border: #0b2e13 solid 10px;
+    transform: translate(-50%, -50%);
+    border: #26FFDF solid 4px;
     border-radius: 25px;
 }
+
+#signIn {
+
+}
+
+
+#signUp{
+
+
+}
+
+p{color: white}
 
