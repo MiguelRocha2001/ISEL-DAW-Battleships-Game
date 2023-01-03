@@ -529,10 +529,10 @@ function ShipOptions({curOrientation, onShipClick, onOrientationChange} : {
                 <div className={styles.radText}>Destroyer</div>
             </label>
 
-            <p>{curOrientation}</p>
             <label className={styles.switch}>
                 <input type="checkbox" onClick={onOrientationChange}/>
                 <span className={styles.slider}></span>
+                <div id={styles.orientation} className={styles.radText}>{curOrientation}</div>
             </label>
         </div>
     )

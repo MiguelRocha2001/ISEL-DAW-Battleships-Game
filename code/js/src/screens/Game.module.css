@@ -99,13 +99,14 @@
 }
 
 .cybrBtn {
+    border-radius: 5px;
     margin-bottom: 4%;
     background-color: black;
     color: #26FFDF;
     --primary: hsl(var(--primary-hue), 85%, calc(var(--primary-lightness, 50) * 1%));
     --shadow-primary: hsl(var(--shadow-primary-hue), 90%, 50%);
     --primary-hue: 0;
-    --primary-lightness: 50;
+    --primary-lightness: #26FFDF;
     --font-size: 26px;
     --shadow-primary-hue: 180;
     --label-size: 9px;
@@ -365,10 +366,15 @@
 
 /* The switch - the box around the slider */
 .switch {
+    cursor: pointer;
+    transition: .3s;
     position: relative;
-    display: inline-block;
     width: 60px;
     height: 34px;
+    display: flex;
+    align-items: center;
+
+
 }
 
 /* Hide default HTML checkbox */
@@ -424,4 +430,8 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+#orientation{
+   margin-left: 60px;
 }
