@@ -1,1 +1,14 @@
-Please edit this file with instructions on how to build and run the project.
+
+
+
+## Build
+
+```
+gradlew clean build
+```
+
+## Run
+
+```
+java -jar daw-battleship-game-0.0.1-SNAPSHOT.jar
+```
