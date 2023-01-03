@@ -448,8 +448,10 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleet : () => void
 }) {
-    const [selectedShip, setSelectedShip] = useState(null)
+    const [selectedShip, setSelectedShip] = useState<string>(null)
     const [selectedOrientation, setSelectedOrientation] = useState<Orientation>('HORIZONTAL')
+    console.log("selectedShip", selectedShip)
+    console.log("selectedOrientation", selectedOrientation)
 
     function onConfirmFleetAux() {
         setSelectedShip(null)
@@ -457,6 +459,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     }
 
     function onOrientationChange() {
+        console.log("insixde selectedShip", selectedShip)
         if (selectedOrientation === "HORIZONTAL") setSelectedOrientation("VERTICAL")
         else setSelectedOrientation("HORIZONTAL")
     }
@@ -501,39 +504,41 @@ function ShipOptions({curOrientation, onShipClick, onOrientationChange} : {
     onOrientationChange : () => void
 }) {
     function onChangeValue(event) {
+        console.log("event.target.value", event.target.value)
         onShipClick(event.target.value)
     }
     return (
-        <div onChange={onChangeValue}>
-            <label  className={styles.radLabel} >
-                <input type="radio" className={styles.radInput} value="CARRIER" name="gender"  />
-                <div className={styles.radDesign}></div>
-                <div className={styles.radText}>Carrier</div>
-            </label>
+        <div>
+            <div onChange={onChangeValue}>
+                <label  className={styles.radLabel} >
+                    <input type="radio" className={styles.radInput} value="CARRIER" name="gender"  />
+                    <div className={styles.radDesign}></div>
+                    <div className={styles.radText}>Carrier</div>
+                </label>
 
-            <label className={styles.radLabel}>
-                <input type="radio" className={styles.radInput} value="BATTLESHIP" name="gender"  />
-                <div className={styles.radDesign}></div>
-                <div className={styles.radText}>Battleship</div>
-            </label>
+                <label className={styles.radLabel}>
+                    <input type="radio" className={styles.radInput} value="BATTLESHIP" name="gender"  />
+                    <div className={styles.radDesign}></div>
+                    <div className={styles.radText}>Battleship</div>
+                </label>
 
-            <label className={styles.radLabel}>
-                <input type="radio" className={styles.radInput} value="CRUISER" name="gender" />
-                <div className={styles.radDesign}></div>
-                <div className={styles.radText}>Cruiser</div>
-            </label>
+                <label className={styles.radLabel}>
+                    <input type="radio" className={styles.radInput} value="CRUISER" name="gender" />
+                    <div className={styles.radDesign}></div>
+                    <div className={styles.radText}>Cruiser</div>
+                </label>
 
-            <label className={styles.radLabel} >
-                <input type="radio" className={styles.radInput} value="SUBMARINE" name="gender" />
-                <div className={styles.radDesign}></div>
-                <div className={styles.radText}>Submarine</div>
-            </label>
-            <label className={styles.radLabel}>
-                <input type="radio" className={styles.radInput} value="DESTROYER" name="gender" />
-                <div className={styles.radDesign}></div>
-                <div className={styles.radText}>Destroyer</div>
-            </label>
-
+                <label className={styles.radLabel} >
+                    <input type="radio" className={styles.radInput} value="SUBMARINE" name="gender" />
+                    <div className={styles.radDesign}></div>
+                    <div className={styles.radText}>Submarine</div>
+                </label>
+                <label className={styles.radLabel}>
+                    <input type="radio" className={styles.radInput} value="DESTROYER" name="gender" />
+                    <div className={styles.radDesign}></div>
+                    <div className={styles.radText}>Destroyer</div>
+                </label>
+            </div>
             <label className={styles.switch}>
                 <input type="checkbox" onClick={onOrientationChange}/>
                 <span className={styles.slider}></span>
@@ -601,7 +606,6 @@ function Board({board, onCellClick} : {board : Board, onCellClick? : (row: numbe
 function Cell({cell, onClick} : {cell : string, onClick? : () => void}) {
     const isHit = cell > 'a' && cell < 'z'
     const isWater = cell === ' '
-    const color = isHit ? 'red' : isWater ? 'lightblue' : 'grey'
     const idNameCell = isHit ? styles.hit : isWater ? styles.water : styles.ship
     return (
         <button className={styles.cell} id={idNameCell} onClick={onClick}>
