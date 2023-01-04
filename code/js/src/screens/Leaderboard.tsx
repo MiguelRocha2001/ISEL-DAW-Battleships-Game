@@ -22,9 +22,9 @@ export function Leaderboard() {
 }
 
 function LeaderboardInternal({rankings}: { rankings: Rankings }) {
-    if(rankings.users.length === 0) {
+    if (rankings.users.length === 0) {
         return <div><h2>No one is here <em>(yet)</em></h2></div>
-    }else return (
+    } else return (
         <div id ={styles.leaderBoard}>
             <h1 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h1>
             <table className={styles.table}>
@@ -36,7 +36,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
                     </tr>
                 </thead>
                 <tbody>
-                {rankings.users.map((stats) => <Stats stats={stats}/>)}
+                    {rankings.users.map((stats) => <Stats key={stats.id} stats={stats}/>)}
                 </tbody>
             </table>
         </div>
@@ -46,7 +46,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
 function Stats({stats}: { stats: UserStats }) {
     const userLink = `/users/${stats.id}`
     return (
-        <tr key={stats.id}>
+        <tr>
             <td className={styles.td}>
                 <Link id={styles.username} to={userLink}>{stats.username}</Link>
             </td>

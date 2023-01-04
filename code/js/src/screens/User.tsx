@@ -2,6 +2,8 @@ import {useParams} from "react-router-dom";
 import {Services} from "../services";
 import * as React from "react";
 import {UserDetail} from "./Commons";
+import styles from './User.module.css'
+
 
 export function User() {
     const { id } = useParams()

@@ -35,15 +35,15 @@ function Authors({authors}: { authors: Author[] }) {
         <div>
             <h2>The Developers</h2>
             <ul className={styles.list}>
-                {authors.map((author) => <p><Author author={author}/></p>)}
+                {authors.map((author, index) => <p><Author id={index} author={author}/></p>)}
             </ul>
         </div>
     )
 }
 
-function Author({author}: { author: Author }) {
+function Author({id, author}: { id: number, author: Author }) {
     return (
-        <li className={styles.element}>
+        <li key={id} className={styles.element}>
             <text className={styles.name}>{author.name}</text>
             <br/><br/>
             <text className={styles.email}>{author.email}</text>

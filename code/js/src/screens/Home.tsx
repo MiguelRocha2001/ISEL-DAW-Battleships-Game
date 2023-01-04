@@ -9,9 +9,9 @@ export function Home() {
     return (
         <div id={styles.mainDiv}>
             <div id={styles.content}>
-                <p id={styles.overviewBody}>
+                <div id={styles.overviewBody}>
                     <h2>The best Battleship Game on the web</h2>
-                </p>
+                </div>
                 <h1 id={styles.overviewTitle}>(Probably)</h1>
             </div>
         </div>

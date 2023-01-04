@@ -8,21 +8,21 @@ export function Navbar () {
     const setUser = useSetUser()
 
     const profile = (currentUser) ? (
-        <NavLink to='/me' activeStyle>
+        <NavLink to='/me' activestyle="true">
             Profile
         </NavLink>
     ):(
-        <NavLink style={{ display: "none" }} to='/me' activeStyle>
+        <NavLink style={{ display: "none" }} to='/me' activestyle="true">
             Profile
         </NavLink>
     )
 
     const play = (currentUser) ? (
-        <NavLink to='/game' activeStyle>
+        <NavLink to='/game' activestyle="true">
             Play
         </NavLink>
     ):(
-        <NavLink to='/game' style={{ display: "none" }} activeStyle>
+        <NavLink to='/game' style={{ display: "none" }} activestyle="true">
             Play
         </NavLink>
     )
@@ -53,13 +53,13 @@ export function Navbar () {
         <Nav>
             <Bars />
             <NavMenu>
-                <NavLink to='/' activeStyle>
+                <NavLink to='/' activestyle="true">
                     Home
                 </NavLink>
-                <NavLink to='/info' activeStyle>
+                <NavLink to='/info' activestyle="true">
                     About
                 </NavLink>
-                <NavLink to='/leadership' activeStyle>
+                <NavLink to='/leadership' activestyle="true">
                     Rankings
                 </NavLink>
                 {profile}
