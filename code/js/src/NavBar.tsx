@@ -6,6 +6,27 @@ import style from "./LogoutButton.module.css";
 export function Navbar () {
     const currentUser = useCurrentUser()
     const setUser = useSetUser()
+
+    const profile = (currentUser) ? (
+        <NavLink to='/me' activeStyle>
+            Profile
+        </NavLink>
+    ):(
+        <NavLink style={{ display: "none" }} to='/me' activeStyle>
+            Profile
+        </NavLink>
+    )
+
+    const play = (currentUser) ? (
+        <NavLink to='/game' activeStyle>
+            Play
+        </NavLink>
+    ):(
+        <NavLink to='/game' style={{ display: "none" }} activeStyle>
+            Play
+        </NavLink>
+    )
+
     const loginOrRegister = (currentUser) ? (
         <NavBtn>
             <NavBtnLink style={{ display: "none" }} to= '/sign-up'>Sign Up</NavBtnLink>
@@ -41,12 +62,8 @@ export function Navbar () {
                 <NavLink to='/leadership' activeStyle>
                     Rankings
                 </NavLink>
-                <NavLink to='/me' activeStyle>
-                    Profile
-                </NavLink>
-                <NavLink to='/game' activeStyle>
-                    Play
-                </NavLink>
+                {profile}
+                {play}
             </NavMenu>
             {loginOrRegister}
             {logout}
