@@ -18,8 +18,20 @@ class JdbiGamesRepository(
         return fetchGameByUser(handle, userId)
     }
 
+    override fun getNotFinishedGamesByUser(userId: Int): List<Int> {
+        return handle.createQuery(
+            """
+                SELECT id FROM GAME
+                WHERE (player1 = :userId OR player2 = :userId) AND state != 'FINISHED'
+            """.trimIndent()
+        )
+            .bind("userId", userId)
+            .mapTo<Int>()
+            .list()
+    }
+
     override fun isInGame(userId: Int): Boolean {
-        return handle.createQuery("select count(*) from game where player1 = :player1 or player2 = :player2")
+        return handle.createQuery("select count(*) from GAME where player1 = :player1 or player2 = :player2")
             .bind("player1", userId)
             .bind("player2", userId)
             .mapTo<Int>()
@@ -48,8 +60,14 @@ class JdbiGamesRepository(
         clearAllTables(handle)
     }
 
+    override fun getAllGames(): List<Int> {
+        return handle.createQuery("select id from GAME")
+            .mapTo<Int>()
+            .list()
+    }
+
     override fun removeUserFromGame(userId: Int) {
-        handle.createUpdate("delete from user_queue where _user = :_user")
+        handle.createUpdate("delete from USER_QUEUE where _user = :_user")
             .bind("_user", userId)
             .execute()
         val game = getGameByUser(userId) ?: return
@@ -60,9 +78,5 @@ class JdbiGamesRepository(
         updateGame(handle, game)
         updateBoard(handle, game.board1, game.player1, game.id)
         updateBoard(handle, game.board2, game.player2, game.id)
-    }
-
-    override fun quitCurrentGame(): Int {
-        TODO("Not yet implemented")
     }
 }

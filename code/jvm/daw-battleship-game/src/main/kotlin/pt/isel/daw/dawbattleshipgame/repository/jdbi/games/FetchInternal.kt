@@ -3,11 +3,9 @@ package pt.isel.daw.dawbattleshipgame.repository.jdbi.games
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
-import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.Instants
 import pt.isel.daw.dawbattleshipgame.domain.game.getDbState
-import pt.isel.daw.dawbattleshipgame.domain.ship.toShipType
 
 
 internal fun fetchGameByUser(handle: Handle, userId: Int): Game? {
@@ -43,7 +41,7 @@ internal fun fetchGameInternal(handle: Handle, gameId: Int): Game? {
 private fun getGameIdByUser(handle: Handle, userId: Int): Int? {
     val dbGameMapper = handle.createQuery(
         """
-            SELECT * FROM game
+            SELECT * FROM GAME
             WHERE player1 = :userId OR player2 = :userId
         """.trimIndent()
     )

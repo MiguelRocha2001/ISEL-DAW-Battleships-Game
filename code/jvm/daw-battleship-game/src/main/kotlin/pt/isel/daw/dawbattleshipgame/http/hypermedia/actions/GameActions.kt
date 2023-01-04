@@ -7,7 +7,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import pt.isel.daw.dawbattleshipgame.http.model.game.GameOutputModel
 import java.net.URI
 
-fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
+fun preparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
     // Place Ship
     sirenBuilderScope.action(
         name = "place-ships",
@@ -41,3 +41,28 @@ fun buildPreparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel
     }
 }
 
+fun battleActions(sirenBuilderScope: SirenBuilderScope<*>) {
+    sirenBuilderScope.action(
+        name = "place-shot",
+        href = URI(Uris.Games.My.Current.My.Shots.ALL),
+        method = HttpMethod.POST,
+        type = MediaType.APPLICATION_JSON
+    ) {
+        this.arrayField(
+            name = "shots",
+            block = {
+                this.numberField("row")
+                this.numberField("column")
+            }
+        )
+    }
+}
+
+fun quitGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
+    sirenBuilderScope.action(
+        name = "quit-game",
+        href = URI(Uris.Games.BY_ID),
+        method = HttpMethod.PUT,
+        type = MediaType.APPLICATION_JSON
+    ) {}
+}

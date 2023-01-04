@@ -6,8 +6,9 @@ import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.JsonMediaType
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.*
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildBattleActions
-import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.buildPreparationActions
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.battleActions
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.preparationActions
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.quitGameAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.http.model.map
@@ -17,6 +18,36 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 class GamesController(
     private val gameServices: GameServices
 ) {
+
+    @GetMapping(Uris.Games.My.CURRENT)
+    fun getGame(
+        user: User,
+    ): ResponseEntity<*> {
+        val res = gameServices.getCurrentGameByUser(user.id)
+        return res.map {
+            ResponseEntity.status(200)
+                .contentType(SirenMediaType)
+                .body(siren(
+                    GameOutputModel(
+                        gameId = it.first.id,
+                        configuration = it.first.configuration,
+                        player1 = it.first.player1,
+                        player2 = it.first.player2,
+                        state = GameStateOutputModel.get(it.first.state),
+                        board1 = it.first.board1.toBoardOutputModel(),
+                        board2 = it.first.board2.toBoardOutputModel(),
+                        playerTurn = it.first.playerTurn,
+                        winner = it.first.winner,
+                        myPlayer = PlayerOutputModel.get(it.second)
+                    )
+                ) {
+                    preparationActions(this)
+                    battleActions(this)
+                    quitGameAction(this)
+                    clazz("game")
+                })
+        }
+    }
 
     /**
      * Create a game, if there is no request body makes a quick game
@@ -185,33 +216,16 @@ class GamesController(
         }
     }
 
-    @GetMapping(Uris.Games.My.CURRENT)
-    fun getGame(
+    @PostMapping(Uris.Games.BY_ID)
+    fun quitGame(
         user: User,
+        gameId: Int
     ): ResponseEntity<*> {
-        val res = gameServices.getGameByUser(user.id)
+        val res = gameServices.quitGame(user.id, gameId)
         return res.map {
-            ResponseEntity.status(200)
-                .contentType(SirenMediaType)
-                .body(siren(
-                    GameOutputModel(
-                        gameId = it.first.id,
-                        configuration = it.first.configuration,
-                        player1 = it.first.player1,
-                        player2 = it.first.player2,
-                        state = GameStateOutputModel.get(it.first.state),
-                        board1 = it.first.board1.toBoardOutputModel(),
-                        board2 = it.first.board2.toBoardOutputModel(),
-                        playerTurn = it.first.playerTurn,
-                        winner = it.first.winner,
-                        myPlayer = PlayerOutputModel.get(it.second)
-                    )
-                ) {
-                    buildPreparationActions(this)
-                    buildBattleActions(this)
-                    clazz("game")
-
-                })
+            ResponseEntity.status(204)
+                .contentType(JsonMediaType)
+                .build<Unit>()
         }
     }
 

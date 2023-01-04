@@ -78,15 +78,20 @@ class GameServices(
     /**
      * If user is in a game quit game by finishing and giving the win to the other player
      */
-    fun quitCurrentGame(userId : Int) : GameQuitResult{
+    fun quitGame(userId : Int, gameId: Int) : GameQuitResult {
         return transactionManager.run {
             val gamesDb = it.gamesRepository
             val usersDb = it.usersRepository
             if (usersDb.isInQueue(userId)) {
-                logger.info("User $userId: Game id retrieval failed: user is in queue")
+                logger.info("User $userId: Game quit failed: user is in queue")
                 return@run Either.Left(GameQuitError.UserInGameQueue)
             }
-            TODO("To implement in games repository")
+            val game = gamesDb.getGame(gameId) ?: return@run Either.Left(GameQuitError.GameNotFound)
+                .also { logger.info("User $userId: Game quit failed: game not found") }
+            val newGame = game.setWinner(game.otherPlayer(userId))
+            gamesDb.updateGame(newGame)
+            Either.Right(newGame.id)
+                .also { logger.info("User $userId: Game quit successful") }
         }
     }
 
@@ -237,7 +242,7 @@ class GameServices(
         }
     }
 
-    fun getGameByUser(userId: Int): GameByUserResult {
+    fun getCurrentGameByUser(userId: Int): GameByUserResult {
         return transactionManager.run {
             val db = it.gamesRepository
             val game = db.getGameByUser(userId) ?: return@run Either.Left(GameByUserError.GameNotFound)

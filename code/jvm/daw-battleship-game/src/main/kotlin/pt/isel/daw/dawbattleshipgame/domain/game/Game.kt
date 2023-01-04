@@ -92,6 +92,8 @@ class Game(
         }
     }
 
+    fun otherPlayer(userId: Int) = if (userId == player1) player2 else player1
+
     internal fun setWinner(winner: Int) =
             Game(
                     id, configuration, player1,

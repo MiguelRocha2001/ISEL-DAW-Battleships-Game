@@ -120,8 +120,8 @@ export function Authentication({title, action}: { title: string, action: Action}
                 </form>
             </div>
             <div>
-                <p><h4>{error}</h4></p>
-                <p><h4>{successSignUp}</h4></p>
+                <h4>{error}</h4>
+                <h4>{successSignUp}</h4>
             </div>
 
         </div>
