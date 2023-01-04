@@ -43,6 +43,10 @@ type State =
     }
     |
     {
+        type : "waitingForConfirmation"
+    }
+    |
+    {
         type : "shooting",
         row : number,
         col : number
@@ -88,6 +92,10 @@ type Action =
     }
     |
     {
+        type : "setWaitingForConfirmation"
+    }
+    |
+    {
         type : "setShooting",
         row : number,
         col : number
@@ -124,6 +132,10 @@ function reducer(state: State, action: Action): State {
         case 'setConfirmingFleet' : {
             logger.info("setConfirmingFleet")
             return {type : 'confirmingFleet'}
+        }
+        case 'setWaitingForConfirmation' : {
+            logger.info("setWaitingForConfirmation")
+            return {type : 'waitingForConfirmation'}
         }
         case 'setShooting' : {
             logger.info("setShooting")
@@ -219,7 +231,7 @@ export function Game() {
         if (typeof resp === 'string') {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+            dispatch({type:'setWaitingForConfirmation'})
         }
     }
 
@@ -237,6 +249,26 @@ export function Game() {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
         } else {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+        }
+    }
+
+    async function updateUntilConfirmation() {
+        logger.info("updatingUntilConfirmation")
+        const resp = await Services.getGame(currentUser)
+        if (cancelRequest) {
+            logger.info("updateUntilConfirmation cancelled")
+            return
+        }
+        if (typeof resp === 'string') {
+            dispatch({type:'setWaitingForConfirmation'})
+        } else {
+            const player = resp.myPlayer
+            const myBoard = player === 'one' ? resp.board1 : resp.board2
+            if (myBoard.isConfirmed) {
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+            } else {
+                dispatch({type:'setWaitingForConfirmation'})
+            }
         }
     }
 
@@ -258,13 +290,16 @@ export function Game() {
             return
         }
         if (typeof resp !== 'string') {
-            if (resp.state != 'battle' || isMyTurn(resp)) {
+            if (resp.state !== 'battle' || isMyTurn(resp)) {
                 if (resp.state === 'fleet_setup') {
                     const player = resp.myPlayer
                     const myBoard = player === 'one' ? resp.board1 : resp.board2
                     const enemyBoard = player === 'one' ? resp.board2 : resp.board1
                     if (myBoard.isConfirmed && !enemyBoard.isConfirmed) {
-                        dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: 'Waiting for opponent to confirm ship selection'})
+                        setTimeout(() => {
+                            dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: 'Waiting for opponent'})
+                        }, 1000)
+                        return
                     }
                 }
                 dispatch({type: 'setPlaying', game: resp})
@@ -307,6 +342,10 @@ export function Game() {
                 }
                 case 'confirmingFleet' : {
                     await confirmFleet()
+                    break
+                }
+                case 'waitingForConfirmation' : {
+                    await updateUntilConfirmation()
                     break
                 }
                 case 'shooting' : {
@@ -358,6 +397,13 @@ export function Game() {
                 </div>
             )
         }
+    } else if (state.type === "waitingForConfirmation") {
+        return (
+            <div>
+                <h1>Waiting For Confirmation</h1>
+                <Loading />
+            </div>
+        )
     } else if (state.type === "placingShips") {
         return (<div>Placing ships</div>)
     } else if (state.type === "confirmingFleet") {
@@ -430,27 +476,17 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequ
             winner = "Opponent"
     }
 
-    const updateButton = <p><button onClick={onUpdateRequest}>Update Game</button></p>
-
     if (game.state === "fleet_setup") {
         return (
-            <div>
-                <FleetSetup
-                    board={myBoard}
-                    fleetConfirmed={fleetConfirmed}
-                    onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
-                    onConfirmFleet={onConfirmFleet}
-                />
-                {updateButton}
-            </div>
+            <FleetSetup
+                board={myBoard}
+                fleetConfirmed={fleetConfirmed}
+                onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
+                onConfirmFleet={onConfirmFleet}
+            />
         )
     } else if (game.state === "battle") {
-        return (
-            <div>
-                <Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>
-                {updateButton}
-            </div>
-        )
+        return (<Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>)
     } else if (game.state === "finished") {
         return (
             <Finished winner={winner} />
