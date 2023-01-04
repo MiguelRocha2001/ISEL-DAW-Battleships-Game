@@ -29,7 +29,7 @@ class GamesController(
                 .contentType(SirenMediaType)
                 .body(siren(
                     GameOutputModel(
-                        gameId = it.first.id,
+                        id = it.first.id,
                         configuration = it.first.configuration,
                         player1 = it.first.player1,
                         player2 = it.first.player2,
@@ -216,12 +216,12 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.BY_ID)
+    @PostMapping(Uris.Games.BY_ID1)
     fun quitGame(
         user: User,
-        gameId: Int
+        @PathVariable id: Int
     ): ResponseEntity<*> {
-        val res = gameServices.quitGame(user.id, gameId)
+        val res = gameServices.quitGame(user.id, id)
         return res.map {
             ResponseEntity.status(204)
                 .contentType(JsonMediaType)
@@ -229,7 +229,7 @@ class GamesController(
         }
     }
 
-    @DeleteMapping(Uris.Games.BY_ID)
+    @DeleteMapping(Uris.Games.BY_ID2)
     fun deleteGame(
         @PathVariable id: Int
     ): ResponseEntity<*> {

@@ -63,7 +63,7 @@ enum class GameStateOutputModel {
 }
 
 data class GameOutputModel(
-    val gameId: Int,
+    val id: Int,
     val configuration: Configuration,
     val player1: Int,
     val player2: Int,

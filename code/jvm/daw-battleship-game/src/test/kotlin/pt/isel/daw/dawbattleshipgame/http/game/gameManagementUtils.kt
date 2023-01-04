@@ -72,7 +72,7 @@ internal fun createGame(client: WebTestClient): GameInfo {
 
 
 internal fun deleteGame(client: WebTestClient, gameId: Int) {
-    client.delete().uri(Uris.Games.BY_ID, gameId)
+    client.delete().uri(Uris.Games.BY_ID2, gameId)
         .exchange()
         .expectStatus().isOk
 }

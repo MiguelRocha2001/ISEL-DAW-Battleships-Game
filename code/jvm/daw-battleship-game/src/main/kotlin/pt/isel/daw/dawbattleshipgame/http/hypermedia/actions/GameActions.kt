@@ -61,8 +61,8 @@ fun battleActions(sirenBuilderScope: SirenBuilderScope<*>) {
 fun quitGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
     sirenBuilderScope.action(
         name = "quit-game",
-        href = URI(Uris.Games.BY_ID),
-        method = HttpMethod.PUT,
+        href = URI(Uris.Games.BY_ID2),
+        method = HttpMethod.POST,
         type = MediaType.APPLICATION_JSON
     ) {}
 }

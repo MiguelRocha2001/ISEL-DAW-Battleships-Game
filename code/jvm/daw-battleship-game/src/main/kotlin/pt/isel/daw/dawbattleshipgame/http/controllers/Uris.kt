@@ -36,10 +36,11 @@ object Uris {
 
     object Games {
         const val ALL = "/games"
-        const val BY_ID = "/games/:id"
+        const val BY_ID1 = "/games/{id}"
+        const val BY_ID2 = "/games/:id"
 
         fun all(): URI = URI(ALL)
-        fun byId(id: Int) = UriTemplate(BY_ID).expand(id)
+        fun byId(id: Int) = UriTemplate(BY_ID2).expand(id)
 
         object Ships {
             const val ALL = Games.ALL + "/ships"
