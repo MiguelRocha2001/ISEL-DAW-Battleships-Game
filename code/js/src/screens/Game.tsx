@@ -259,6 +259,14 @@ export function Game() {
         }
         if (typeof resp !== 'string') {
             if (resp.state != 'battle' || isMyTurn(resp)) {
+                if (resp.state === 'fleet_setup') {
+                    const player = resp.myPlayer
+                    const myBoard = player === 'one' ? resp.board1 : resp.board2
+                    const enemyBoard = player === 'one' ? resp.board2 : resp.board1
+                    if (myBoard.isConfirmed && !enemyBoard.isConfirmed) {
+                        dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: 'Waiting for opponent to confirm ship selection'})
+                    }
+                }
                 dispatch({type: 'setPlaying', game: resp})
                 return
             }
@@ -402,20 +410,28 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequ
     let myBoard: Board
     let fleetConfirmed: boolean
     let enemyBoard: Board
+    let winner: string | undefined
     if (game.myPlayer === "one") {
         myBoard = game.board1
         fleetConfirmed = game.board1.isConfirmed
         enemyBoard = game.board2
+        if (game.winner == game.player1)
+            winner = "You"
+        else if (game.winner == game.player2)
+            winner = "Opponent"
     }
     else {
         myBoard = game.board2
         fleetConfirmed = game.board2.isConfirmed
         enemyBoard = game.board1
+        if (winner && game.winner == game.player2)
+            winner = "You"
+        else if (winner && game.winner == game.player1)
+            winner = "Opponent"
     }
 
     const updateButton = <p><button onClick={onUpdateRequest}>Update Game</button></p>
 
-    console.log("myBoard", myBoard)
     if (game.state === "fleet_setup") {
         return (
             <div>
@@ -437,7 +453,7 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequ
         )
     } else if (game.state === "finished") {
         return (
-            <Finished winner={game.winner} />
+            <Finished winner={winner} />
         )
     }
 }
@@ -464,8 +480,8 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
         else setSelectedOrientation("HORIZONTAL")
     }
 
-    function onPlaceShipAux(x : number, y : number) {
-        if (fleetConfirmed != true) {
+    function placeShipIfNecessary(x : number, y : number) {
+        if (fleetConfirmed != true && selectedShip != null) {
             onPlaceShip(selectedShip, x, y, selectedOrientation)
             setSelectedShip(null)
         }
@@ -492,7 +508,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
         <div className={styles.fullWidth}>
             <p><h1 className={styles.h1}>{title}</h1></p>
             <div className={styles.left}>
-                <Board board={board} onCellClick={onPlaceShipAux}/></div>
+                <Board board={board} onCellClick={placeShipIfNecessary}/></div>
             {options}
         </div>
     )
@@ -504,7 +520,6 @@ function ShipOptions({curOrientation, onShipClick, onOrientationChange} : {
     onOrientationChange : () => void
 }) {
     function onChangeValue(event) {
-        console.log("event.target.value", event.target.value)
         onShipClick(event.target.value)
     }
     return (
@@ -566,11 +581,12 @@ function Battle({myBoard, enemyBoard, onShot} : {
     )
 }
 
+// TODO: text appears to be invisible
 function Finished({winner} : {winner : string}) {
     return (
         <div>
             <h1>Finished</h1>
-            <p>Player {winner} has won</p>
+            <p>{winner} has won</p>
         </div>
     )
 }

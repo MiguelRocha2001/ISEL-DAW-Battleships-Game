@@ -7,7 +7,7 @@ export type Game = {
     board1: Board,
     board2: Board,
     myPlayer: string,
-    winner: string,
+    winner: number,
     playerTurn: number,
 }
 
