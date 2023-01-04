@@ -6,6 +6,7 @@ import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
+import {Button} from "react-bootstrap";
 
 
 const logger = new Logger({ name: "GameComponent" });
@@ -57,8 +58,17 @@ type State =
         game : Game,
         msg : string
     }
+    |
+    {
+        type : "quitGame",
+        gameId : number
+    }
 
 type Action =
+    {
+        type : "setCheckForExistingOnGoingGame",
+    }
+    |
     {
         type : "setMenu",
         msg : string,
@@ -106,9 +116,18 @@ type Action =
         game : Game,
         msg : string
     }
+    |
+    {
+        type : "setQuitGame",
+        gameId : number
+    }
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
+        case "setCheckForExistingOnGoingGame" : {
+            logger.info("setCheckForExistingOnGoingGame")
+            return {type: "checkingForExistingOnGoingGame"}
+        }
         case 'setMenu' : {
             logger.info("setStatic")
             return {type : 'menu', msg: action.msg}
@@ -144,6 +163,10 @@ function reducer(state: State, action: Action): State {
         case 'setUpdatingGameWhileNecessary' : {
             logger.info("setUpdatingGameWhileNecessary")
             return {type : 'updatingGameWhileNecessary', game : action.game, msg : action.msg}
+        }
+        case 'setQuitGame' : {
+            logger.info("setQuitGame")
+            return {type : 'quitGame', gameId : action.gameId}
         }
     }
 }
@@ -321,6 +344,20 @@ export function Game() {
         }
     }
 
+    async function quitGame(gameId: number) {
+        logger.info("quittingGame")
+        const resp = await Services.quitGame(gameId, currentUser)
+        if (cancelRequest) {
+            logger.info("quitGame cancelled")
+            return
+        }
+        if (typeof resp === 'string') {
+            dispatch({type:'setMenu', msg: resp})
+        } else {
+            dispatch({type:'setMenu', msg: undefined})
+        }
+    }
+
     useEffect(() => {
         async function stateMachineHandler() {
             switch(state.type) {
@@ -350,6 +387,11 @@ export function Game() {
                 }
                 case 'shooting' : {
                     await shoot(state.row, state.col)
+                    break
+                }
+                case 'quitGame' : {
+                    await quitGame(state.gameId)
+                    break
                 }
             }
         }
@@ -372,7 +414,7 @@ export function Game() {
             onPlaceShip={(ship, row, col, orient) => dispatch({type : 'setPlacingShips', ship, row, col, orient})}
             onConfirmFleetRequest={() => dispatch({type : 'setConfirmingFleet'})}
             onShot={(row, col) => dispatch({type : 'setShooting', row, col})}
-            onUpdateRequest={() => dispatch({type : 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})}
+            onQuitRequest={(gameId: number) => dispatch({type : 'setQuitGame', gameId})}
         />
     } else if (state.type === "updatingGameWhileNecessary") {
         const title = state.msg ? state.msg : "Updating game"
@@ -385,7 +427,7 @@ export function Game() {
                         onPlaceShip={() => {}}
                         onConfirmFleetRequest={() => {}}
                         onShot={() => {}}
-                        onUpdateRequest={() => {}}
+                        onQuitRequest={() => {}}
                     />
                 </div>
             )
@@ -441,12 +483,12 @@ function CreatingGame() {
     )
 }
 
-function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequest} : {
+function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onQuitRequest} : {
     game : Game,
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleetRequest : () => void,
     onShot : (x : number, y : number) => void,
-    onUpdateRequest : () => void
+    onQuitRequest : (gameId: number) => void
  }) {
 
     function onConfirmFleet() {
@@ -476,17 +518,27 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onUpdateRequ
             winner = "Opponent"
     }
 
+    const quitButton = <Button onClick={() => {onQuitRequest(game.id)}} variant="contained" color="secondary">Quit</Button>
+
     if (game.state === "fleet_setup") {
         return (
-            <FleetSetup
-                board={myBoard}
-                fleetConfirmed={fleetConfirmed}
-                onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
-                onConfirmFleet={onConfirmFleet}
-            />
+            <div>
+                <FleetSetup
+                    board={myBoard}
+                    fleetConfirmed={fleetConfirmed}
+                    onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
+                    onConfirmFleet={onConfirmFleet}
+                />
+                {quitButton}
+            </div>
         )
     } else if (game.state === "battle") {
-        return (<Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>)
+        return (
+            <div>
+                <Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>
+                {quitButton}
+            </div>
+        )
     } else if (game.state === "finished") {
         return (
             <Finished winner={winner} />
@@ -502,8 +554,6 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
 }) {
     const [selectedShip, setSelectedShip] = useState<string>(null)
     const [selectedOrientation, setSelectedOrientation] = useState<Orientation>('HORIZONTAL')
-    console.log("selectedShip", selectedShip)
-    console.log("selectedOrientation", selectedOrientation)
 
     function onConfirmFleetAux() {
         setSelectedShip(null)
@@ -511,7 +561,6 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     }
 
     function onOrientationChange() {
-        console.log("insixde selectedShip", selectedShip)
         if (selectedOrientation === "HORIZONTAL") setSelectedOrientation("VERTICAL")
         else setSelectedOrientation("HORIZONTAL")
     }

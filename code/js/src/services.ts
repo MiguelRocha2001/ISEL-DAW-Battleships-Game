@@ -21,6 +21,7 @@ function useFetchHome(): any | string {
         const createGameAction = Siren.extractCreateGameAction(siren.actions)
         const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
         const getGameLink = Siren.extractGetGameLink(siren.links)
+        const getQuitGameAction = Siren.extractQuitGameAction(siren.actions)
         if (serverInfoLink)
             logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
         if (battleshipRanksLink)
@@ -37,6 +38,8 @@ function useFetchHome(): any | string {
             logger.info("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
         if (getGameLink)
             logger.info("fetchHome: setting up new get game link: ", getGameLink)
+        if (getQuitGameAction)
+            logger.info("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
         links.setInfoLink(serverInfoLink)
         links.setBattleshipRanksLink(battleshipRanksLink)
         links.setUserLink(getUserLink)
@@ -45,6 +48,7 @@ function useFetchHome(): any | string {
         links.setCreateGameAction(createGameAction)
         links.setCurrentGameIdLink(getCurrentGameIdLink)
         links.setGetGameLink(getGameLink)
+        links.setQuitGameAction(getQuitGameAction)
         return siren.properties
     })
 }
@@ -260,7 +264,7 @@ async function getCurrentGameId(user: string): Promise<number | string> {
         const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined, token: user })
         if (response) {
             logger.info("getGame: response successful")
-            const gameId = response.properties.gameId
+            const gameId = response.properties.id
             if (gameId) {
                 return gameId
             } else {
@@ -280,6 +284,7 @@ async function getGame(user: string): Promise<Game | string> {
         const placeShipsAction = Siren.extractPlaceShipsAction(response.actions)
         const confirmFleetAction = Siren.extractConfirmFleetAction(response.actions)
         const attackAction = Siren.extractAttackAction(response.actions)
+        const quitGameAction = Siren.extractQuitGameAction(response.actions)
         if (placeShipsAction) {
             links.setPlaceShipsAction(placeShipsAction)
             logger.info("getGame: setting up new place ships action: ", placeShipsAction.name)
@@ -300,6 +305,13 @@ async function getGame(user: string): Promise<Game | string> {
         } else {
             logger.error("getGame: attack action not found in response")
             return "Couldn't find attack action"
+        }
+        if (quitGameAction) {
+            links.setQuitGameAction(quitGameAction)
+            logger.info("getGame: setting up new quit game action: ", quitGameAction.name)
+        } else {
+            logger.error("getGame: quit game action not found in response")
+            return "Couldn't find quit game action"
         }
         return undefined
     }
@@ -398,6 +410,9 @@ async function attack(attackRequest: any, user: string): Promise<void | string> 
             if (siren) {
                 logger.info("attack: response successful")
                 return
+            } else {
+                logger.error("attack: bad response")
+                return 'Received bad response'
             }
         } catch (e) {
             logger.error("attack: error: ", e.title)
@@ -405,6 +420,38 @@ async function attack(attackRequest: any, user: string): Promise<void | string> 
         }
     }
     return 'attackRequest not valid'
+}
+
+async function quitGame(gameId: number, user: string): Promise<void | string> {
+    const action = links.getQuitGameAction()
+    if (!user || !action) {
+        logger.error("quitGame: token or quit game action undefined")
+        return "quitGame: token or quit game action undefined"
+    }
+    const template = action.href
+    const href = template.replace(':id', gameId.toString())
+    const request = {} // request is set here because it is always the same
+    if (Siren.validateFields(request, action)) {
+        const internalReq = {
+            url: href,
+            method: action.method,
+            body: Fetch.toBody(request),
+            token: user
+        }
+        try {
+            const siren = await doFetch(internalReq)
+            if (siren) {
+                logger.info("quitGame: response successful")
+                return
+            } else {
+                logger.error("quitGame: bad response")
+                return 'Received bad response'
+            }
+        } catch (e) {
+            logger.error("quitGame: error: ", e.title)
+            return e.title
+        }
+    }
 }
 
 function handlerOrError(state: State, handler: (siren: Siren) => any): any | string {
@@ -437,5 +484,6 @@ export const Services = {
     fetchUserHome: useFetchUserHome,
     placeShips,
     confirmFleet,
-    attack
+    attack,
+    quitGame
 }

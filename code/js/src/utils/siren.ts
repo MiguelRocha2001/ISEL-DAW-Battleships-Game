@@ -90,6 +90,10 @@ function extractAttackAction(actions: any[]): Action {
     return extractAction(actions, "place-shot")
 }
 
+function extractQuitGameAction(actions: any[]): Action {
+    return extractAction(actions, "quit-game")
+}
+
 function extractLink(linksArg: Link[], rel: string): string {
     for (let i = 0; i < linksArg.length; i++) {
         const link = linksArg[i]
@@ -140,5 +144,6 @@ export const Siren = {
     extractPlaceShipsAction,
     extractConfirmFleetAction,
     extractAttackAction,
+    extractQuitGameAction,
     validateFields
 }

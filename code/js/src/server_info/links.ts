@@ -16,7 +16,7 @@ let userHomeLink: string | undefined
 let placeShipsAction: Action | undefined
 let confirmFleetAction: Action | undefined
 let attackAction: Action | undefined
-
+let quitGameAction: Action | undefined
 
 function getInfoLink() {
     return infoLink
@@ -103,6 +103,13 @@ function setAttackAction(action: Action) {
     attackAction = action
 }
 
+function getQuitGameAction() {
+    return quitGameAction
+}
+function setQuitGameAction(action: Action) {
+    quitGameAction = action
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -130,4 +137,6 @@ export const links = {
     setConfirmFleetAction,
     getAttackAction,
     setAttackAction,
+    getQuitGameAction,
+    setQuitGameAction,
 }
