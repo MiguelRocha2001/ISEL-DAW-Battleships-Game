@@ -22,4 +22,5 @@ object Rels {
     val GAME_ID = LinkRelation("game-id")
     val GAME = LinkRelation("game")
     val GAME_INFO = LinkRelation("game-info")
+    val GAME_QUEUE_BY_ID = LinkRelation("user-in-queue")
 }

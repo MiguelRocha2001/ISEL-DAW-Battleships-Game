@@ -18,6 +18,17 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 class GamesController(
     private val gameServices: GameServices
 ) {
+    @GetMapping(Uris.Games.Queue.BY_ID1)
+    fun isInWaitingRoom(
+        user: User
+    ): ResponseEntity<*> {
+        val result = gameServices.isInWaitingRoom(user.id)
+        return ResponseEntity.status(200)
+            .contentType(SirenMediaType)
+            .body(siren(
+                UserInQueueOutputModel(result)
+            ))
+    }
 
     @GetMapping(Uris.Games.My.CURRENT)
     fun getGame(

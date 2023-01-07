@@ -88,3 +88,5 @@ enum class PlayerOutputModel {
         }
     }
 }
+
+data class UserInQueueOutputModel(val isInQueue: Boolean)

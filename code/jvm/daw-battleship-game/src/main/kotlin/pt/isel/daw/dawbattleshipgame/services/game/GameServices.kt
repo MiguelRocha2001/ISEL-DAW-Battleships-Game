@@ -17,6 +17,14 @@ class GameServices(
 ) {
     private val logger: Logger = LoggerFactory.getLogger("GameServices")
 
+    fun isInWaitingRoom(userId: Int): Boolean {
+        return transactionManager.run {
+            val userDb = it.usersRepository
+            if (userDb.isAlreadyInQueue(userId)) return@run true
+            return@run false
+        }
+    }
+
     /**
      * Initiates a new game with some other user, awaiting. If there's none,
      * joins a queue and waits for another user to join.
