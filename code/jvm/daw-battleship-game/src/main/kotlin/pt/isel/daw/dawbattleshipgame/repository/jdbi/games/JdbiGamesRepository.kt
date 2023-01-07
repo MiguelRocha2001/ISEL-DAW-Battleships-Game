@@ -22,7 +22,7 @@ class JdbiGamesRepository(
         return handle.createQuery(
             """
                 SELECT id FROM GAME
-                WHERE (player1 = :userId OR player2 = :userId) AND state != 'FINISHED'
+                WHERE (player1 = :userId OR player2 = :userId) AND state != 'finished'
             """.trimIndent()
         )
             .bind("userId", userId)

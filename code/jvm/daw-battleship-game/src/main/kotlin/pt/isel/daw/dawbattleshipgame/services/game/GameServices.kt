@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.*
+import pt.isel.daw.dawbattleshipgame.domain.player.Player
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.repository.GamesRepository
@@ -40,7 +41,7 @@ class GameServices(
                 logger.info("User $userId: Game creation failed: user is already in queue")
                 return@run Either.Left(GameCreationError.UserAlreadyInQueue)
             }
-            if (gameDb.isInGame(userId)) {
+            if (isUserInAGame(userId)) {
                 logger.info("User $userId: Game creation failed: user is already in game")
                 return@run Either.Left(GameCreationError.UserAlreadyInGame)
             }
@@ -114,7 +115,7 @@ class GameServices(
     ): PlaceShipsResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            var game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShipsError.GameNotFound)
+            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(PlaceShipsError.GameNotFound)
                 .also { logger.info("User $userId: Place ships failed: game not found") }
             val player = game.getUser(userId)
             if (game.state != GameState.FLEET_SETUP)
@@ -141,7 +142,7 @@ class GameServices(
     fun updateShip(userId: Int, position: Coordinate, newCoordinate: Coordinate? = null): UpdateShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(UpdateShipError.GameNotFound)
+            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(UpdateShipError.GameNotFound)
                 .also { logger.info("User $userId: Update ship failed: game not found") }
             val player = game.getUser(userId)
             if(game.state != GameState.FLEET_SETUP)
@@ -163,7 +164,7 @@ class GameServices(
     fun updateFleetState(userId: Int, confirmed: Boolean): FleetConfirmationResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(FleetConfirmationError.GameNotFound)
+            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(FleetConfirmationError.GameNotFound)
                 .also { logger.info("User $userId: Fleet confirmation failed: game not found") }
             if(game.state != GameState.FLEET_SETUP) {
                 logger.info("User $userId: Fleet confirmation failed: action not permitted")
@@ -189,7 +190,7 @@ class GameServices(
     fun placeShots(userId: Int, c: List<Coordinate>): PlaceShotResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(PlaceShotError.GameNotFound)
+            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(PlaceShotError.GameNotFound)
                 .also { logger.info("User $userId: Place shot failed: game not found") }
 
             if(game.state != GameState.BATTLE || game.playerTurn != userId) {
@@ -211,8 +212,7 @@ class GameServices(
 
     fun getMyFleetLayout(userId: Int): BoardResult {
         return transactionManager.run {
-            val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
+            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(GameSearchError.GameNotFound)
                 .also { logger.info("User $userId: Get my fleet layout failed: game not found") }
             logger.info("User $userId: Get my fleet layout successful")
             return@run Either.Right(game.getBoard(game.getUser(userId)))
@@ -221,8 +221,7 @@ class GameServices(
 
     fun getOpponentFleet(userId: Int): BoardResult {
         return transactionManager.run {
-            val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameSearchError.GameNotFound)
+            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(GameSearchError.GameNotFound)
                 .also { logger.info("User $userId: Get opponent fleet failed: game not found") }
             val opponent = game.getUser(userId).other()
             logger.info("User $userId: Get opponent fleet successful")
@@ -250,12 +249,36 @@ class GameServices(
         }
     }
 
-    fun getCurrentGameByUser(userId: Int): GameByUserResult {
+    /**
+     * Fetches, in the database, the first active game that the user is in.
+     */
+    fun getCurrentActiveGame(userId: Int): GameByUserResult {
+        return transactionManager.run {
+            val result = getCurrentActiveGameInternal(userId) ?: return@run Either.Left(GameByUserError.GameNotFound)
+            return@run Either.Right(result.first to result.second)
+        }
+    }
+
+    private fun getCurrentActiveGameInternal(userId: Int): Pair<Game, Player>? {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGameByUser(userId) ?: return@run Either.Left(GameByUserError.GameNotFound)
+            val gameId = getCurrentActiveGameId(userId) ?: return@run null
+            val game = db.getGame(gameId) ?: return@run null
             val player = game.getUser(userId)
-            Either.Right(game to player)
+            game to player
+        }
+    }
+
+    fun getCurrentActiveGameId(userId: Int): Int? {
+        return transactionManager.run {
+            val db = it.gamesRepository
+            return@run db.getNotFinishedGamesByUser(userId).firstOrNull()
+        }
+    }
+
+    private fun isUserInAGame(userId: Int): Boolean {
+        return transactionManager.run {
+            return@run getCurrentActiveGameId(userId) != null
         }
     }
 
@@ -265,7 +288,7 @@ class GameServices(
         db.saveGame(game)
     }
 
-    private fun updateGame(db: GamesRepository, game: Game){
+    private fun updateGame(db: GamesRepository, game: Game) {
         db.updateGame(game)
     }
 

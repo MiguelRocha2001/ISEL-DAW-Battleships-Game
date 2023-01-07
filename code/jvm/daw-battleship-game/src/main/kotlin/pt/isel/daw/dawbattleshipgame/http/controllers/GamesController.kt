@@ -31,10 +31,10 @@ class GamesController(
     }
 
     @GetMapping(Uris.Games.My.CURRENT)
-    fun getGame(
+    fun getActiveGame(
         user: User,
     ): ResponseEntity<*> {
-        val res = gameServices.getCurrentGameByUser(user.id)
+        val res = gameServices.getCurrentActiveGame(user.id)
         return res.map {
             ResponseEntity.status(200)
                 .contentType(SirenMediaType)
