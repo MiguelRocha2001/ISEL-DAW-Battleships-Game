@@ -45,7 +45,6 @@ class GamePlaceShotServicesTests {
 
             //game before last shot
             game = gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
-            game.value.debug()
             assertEquals(GameState.FINISHED, game.value.state)
 
             //game after last shot

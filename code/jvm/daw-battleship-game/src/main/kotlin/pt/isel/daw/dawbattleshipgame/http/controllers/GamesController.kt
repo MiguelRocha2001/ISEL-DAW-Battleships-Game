@@ -100,16 +100,6 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.My.CURRENT_ID)
-    fun quitCurrentGame(user: User): ResponseEntity<*> {
-        val res = gameServices.getGameIdByUser(user.id)
-        return res.map {
-            ResponseEntity.status(200)
-                    .contentType(SirenMediaType)
-                    TODO()
-        }
-    }
-
     @PostMapping(Uris.Games.My.Current.My.Ships.ALL)
     fun postShips(
         user: User,
@@ -239,7 +229,6 @@ class GamesController(
                 .contentType(SirenMediaType)
                 .body(siren(it) {
                     clazz("game")
-
                 })
         }
     }

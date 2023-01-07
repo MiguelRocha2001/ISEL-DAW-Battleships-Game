@@ -58,15 +58,7 @@ class Game(
 
         val winner: Int? = null
 ) {
-    fun debug() = println(
-            "Game(id = $id, " +
-                    "configuration = $configuration, " +
-                    "player1 = $player1, " +
-                    "player2 = $player2, " +
-                    "board1 = $board1, " +
-                    "board2 = $board2, " +
-                    "state = $state)"
-    )
+
 
     init {
         when (state) {
@@ -98,7 +90,7 @@ class Game(
             Game(
                     id, configuration, player1,
                     player2, board1, board2, FINISHED,
-                    instants, playerTurn, winner
+                    instants, winner ,winner = winner
             )
 
     fun getUser(userId: Int) = when (userId) {
