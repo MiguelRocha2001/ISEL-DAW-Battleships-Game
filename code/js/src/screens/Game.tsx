@@ -202,7 +202,7 @@ export function Game() {
                 "DESTROYER": 2
             },
             shots: 1,
-            roundTimeout: 200,
+            roundTimeout: 10,
         }, currentUser)
         if (cancelRequest) {
             logger.info("createGame cancelled")

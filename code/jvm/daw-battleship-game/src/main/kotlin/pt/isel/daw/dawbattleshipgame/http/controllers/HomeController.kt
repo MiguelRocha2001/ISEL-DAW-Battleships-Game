@@ -8,6 +8,7 @@ import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createGameSirenAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createTokenSirenAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createUserSirenAction
+import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.quitGameAction
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.homeLinks
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
 import pt.isel.daw.dawbattleshipgame.http.model.home.AuthorOutputModel
@@ -31,6 +32,7 @@ class HomeController(
                     createUserSirenAction(this)
                     createTokenSirenAction(this)
                     createGameSirenAction(this)
+                    quitGameAction(this)
                 }
             )
     }
