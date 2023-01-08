@@ -218,12 +218,13 @@ function useFetchUserHome(user: string): UserStats | string {
     return "Token at fault, or user home link not found"
 }
 
-async function createGame(request: CreateGameRequest, user: string): Promise<CreateGameResponse | string> {
+async function createGame(request: CreateGameRequest | undefined, user: string): Promise<CreateGameResponse | string> {
     const action = links.getCreateGameAction()
     if (!user || !action) {
         logger.error("createGame: token or create game action undefined")
         return "createGame: token or create game action undefined"
     }
+    // TODO request could be undefined
     if (Siren.validateFields(request, action)) {
         const internalReq = {
             url: action.href,

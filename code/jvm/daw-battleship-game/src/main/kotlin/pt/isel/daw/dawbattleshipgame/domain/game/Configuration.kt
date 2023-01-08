@@ -52,7 +52,7 @@ data class Configuration(
                         ShipType.SUBMARINE to 3,
                         ShipType.DESTROYER to 2,
                 ),
-                roundTimeout = 120
+                roundTimeout = 10
         )
     }
 
