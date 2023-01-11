@@ -52,7 +52,7 @@ internal fun createGame(client: WebTestClient): GameInfo {
         .responseBody ?: Assertions.fail("Game id is null")
 
     // assertEquals("Game", gameId1Siren.)
-    val gameId1 = (gameId1Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: Assertions.fail("Game id is null")
+    val gameId1 = (gameId1Siren.properties as LinkedHashMap<String, *>)["id"] as? Int ?: Assertions.fail("Game id is null")
 
     // player 2 should be able to get the game
     val gameId2Siren = client.get().uri(Uris.Games.My.CURRENT)
@@ -64,7 +64,7 @@ internal fun createGame(client: WebTestClient): GameInfo {
         .responseBody ?: Assertions.fail("Game id is null")
 
     Assertions.assertNotNull(gameId1Siren)
-    val gameId2 = (gameId2Siren.properties as LinkedHashMap<String, *>)["gameId"] as? Int ?: Assertions.fail("Game id is null")
+    val gameId2 = (gameId2Siren.properties as LinkedHashMap<String, *>)["id"] as? Int ?: Assertions.fail("Game id is null")
 
     Assertions.assertEquals(gameId1, gameId2)
     return GameInfo(gameId1, player1Id, player1Token, player2Id, player2Token)
@@ -72,7 +72,7 @@ internal fun createGame(client: WebTestClient): GameInfo {
 
 
 internal fun deleteGame(client: WebTestClient, gameId: Int) {
-    client.delete().uri(Uris.Games.BY_ID2, gameId)
+    client.delete().uri(Uris.Games.BY_ID1, gameId)
         .exchange()
         .expectStatus().isOk
 }

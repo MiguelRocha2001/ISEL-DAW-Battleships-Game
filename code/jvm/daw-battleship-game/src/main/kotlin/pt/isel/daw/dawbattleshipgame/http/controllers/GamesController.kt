@@ -25,13 +25,11 @@ class GamesController(
         val result = gameServices.isInWaitingRoom(user.id)
         return ResponseEntity.status(200)
             .contentType(SirenMediaType)
-            .body(siren(
-                UserInQueueOutputModel(result)
-            ))
+            .body(siren(UserInQueueOutputModel(result)))
     }
 
-    @GetMapping(Uris.Games.Queue.BY_ID1)
-    fun getGame(
+    @GetMapping(Uris.Games.BY_ID1)
+    fun getGameAndPlayer(
         user: User,
         @PathVariable id: Int
     ): ResponseEntity<*> {
@@ -45,7 +43,9 @@ class GamesController(
                             it.first.toGameOutputModel(),
                             it.second.toPlayerOutputModel()
                         )
-                    )
+                    ) {
+                        clazz("game")
+                    }
                 )
         }
     }
@@ -237,7 +237,7 @@ class GamesController(
         }
     }
 
-    @DeleteMapping(Uris.Games.BY_ID2)
+    @DeleteMapping(Uris.Games.BY_ID1)
     fun deleteGame(
         @PathVariable id: Int
     ): ResponseEntity<*> {
