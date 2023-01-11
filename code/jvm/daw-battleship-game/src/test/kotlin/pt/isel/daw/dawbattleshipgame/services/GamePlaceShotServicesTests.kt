@@ -1,6 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.services
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
@@ -9,7 +10,8 @@ import pt.isel.daw.dawbattleshipgame.domain.board.toCoordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.services.game.*
+import pt.isel.daw.dawbattleshipgame.services.game.GameServices
+import pt.isel.daw.dawbattleshipgame.services.game.PlaceShotError
 import pt.isel.daw.dawbattleshipgame.utils.*
 
 class GamePlaceShotServicesTests {
@@ -34,8 +36,7 @@ class GamePlaceShotServicesTests {
             //var game = gameServices.getGame(gameId) as Either.Right
             gameServices.updateFleetState(userPair.first, true)
             gameServices.updateFleetState(userPair.second, true)
-            var game = gameServices.getGame(gameId)
-            assertTrue(game is Either.Right)
+            gameServices.getGame(gameId) ?: fail { "Game not found" }
 
             //place all the shots with the objective of sinking all player two ships
             gameServices.placeShots(userPair.first, listOf(Coordinate(1,1)))
@@ -44,12 +45,12 @@ class GamePlaceShotServicesTests {
 
 
             //game before last shot
-            game = gameServices.getGame(gameId) as? Either.Right ?: fail("Expected game result")
-            assertEquals(GameState.FINISHED, game.value.state)
+            val game = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assertEquals(GameState.FINISHED, game.state)
 
             //game after last shot
-            assertEquals(userPair.first ,game.value.winner)
-            assertTrue(game.value.board2["A1".toCoordinate()].isHit)
+            assertEquals(userPair.first ,game.winner)
+            assertTrue(game.board2["A1".toCoordinate()].isHit)
         }
     }
 

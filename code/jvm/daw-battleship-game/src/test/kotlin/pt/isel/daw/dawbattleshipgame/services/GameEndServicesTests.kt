@@ -1,7 +1,7 @@
 package pt.isel.daw.dawbattleshipgame.services
 
 import org.junit.jupiter.api.Test
-import pt.isel.daw.dawbattleshipgame.Either
+import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.utils.createGame
@@ -23,9 +23,9 @@ class GameEndServicesTests {
 
             gameServices.quitGame(userPair.first, gameId)
 
-            val game = gameServices.getGame(gameId) as Either.Right
-            assert(game.value.state == GameState.FINISHED)
-            assert(game.value.winner == userPair.second)
+            val game = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assert(game.state == GameState.FINISHED)
+            assert(game.winner == userPair.second)
         }
     }
 }

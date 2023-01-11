@@ -3,6 +3,7 @@ package pt.isel.daw.dawbattleshipgame.services
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
@@ -51,20 +52,20 @@ class GameServicesConfirmLayoutTests {
             )
             assertTrue(res2 is Either.Right)
 
-            var game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(GameState.FLEET_SETUP, game.value.state)
+            val game1 = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assertEquals(GameState.FLEET_SETUP, game1.state)
 
             val confRes1 = gameServices.updateFleetState(userPair.first, true)
             assertTrue(confRes1 is Either.Right)
 
-            game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(GameState.FLEET_SETUP, game.value.state)
+            val game2 = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assertEquals(GameState.FLEET_SETUP, game2.state)
 
             val confRes2 = gameServices.updateFleetState(userPair.second, true)
             assertTrue(confRes2 is Either.Right)
 
-            game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(GameState.BATTLE, game.value.state)
+            val game3 = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assertEquals(GameState.BATTLE, game3.state)
         }
     }
 }

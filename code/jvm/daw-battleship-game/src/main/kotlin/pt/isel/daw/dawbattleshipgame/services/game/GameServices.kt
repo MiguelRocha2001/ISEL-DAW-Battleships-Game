@@ -239,20 +239,27 @@ class GameServices(
         }
     }
 
-    fun getGame(gameId: Int): GameResult {
+    fun getGameAndPlayer(gameId: Int, userId: Int): GameResult {
+        return transactionManager.run {
+            val game = getGame(gameId) ?: return@run Either.Left(GameError.GameNotFound)
+                .also { logger.info("Game $gameId: Get game failed: game not found") }
+            val player = game.getUser(userId)
+            logger.info("Game $gameId: Get game successful")
+            Either.Right(game to player)
+        }
+    }
+
+    fun getGame(gameId: Int): Game? {
         return transactionManager.run {
             val db = it.gamesRepository
-            val game = db.getGame(gameId) ?: return@run Either.Left(GameError.GameNotFound)
-                .also { logger.info("Game $gameId: Get game failed: game not found") }
-            logger.info("Game $gameId: Get game successful")
-            Either.Right(game)
+            return@run db.getGame(gameId)
         }
     }
 
     /**
      * Fetches, in the database, the first active game that the user is in.
      */
-    fun getCurrentActiveGame(userId: Int): GameByUserResult {
+    fun getCurrentActiveGameAndPlayer(userId: Int): GameByUserResult {
         return transactionManager.run {
             val result = getCurrentActiveGameInternal(userId) ?: return@run Either.Left(GameByUserError.GameNotFound)
             return@run Either.Right(result.first to result.second)

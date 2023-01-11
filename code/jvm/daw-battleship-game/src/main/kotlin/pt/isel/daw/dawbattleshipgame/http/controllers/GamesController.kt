@@ -30,28 +30,35 @@ class GamesController(
             ))
     }
 
+    @GetMapping(Uris.Games.Queue.BY_ID1)
+    fun getGame(
+        user: User,
+        @PathVariable id: Int
+    ): ResponseEntity<*> {
+        val result = gameServices.getGameAndPlayer(id, user.id)
+        return result.map {
+            ResponseEntity.status(200)
+                .contentType(SirenMediaType)
+                .body(
+                    siren(
+                        GameAndPlayerOutputModel(
+                            it.first.toGameOutputModel(),
+                            it.second.toPlayerOutputModel()
+                        )
+                    )
+                )
+        }
+    }
+
     @GetMapping(Uris.Games.My.CURRENT)
-    fun getActiveGame(
+    fun getActiveGameAndPlayer(
         user: User,
     ): ResponseEntity<*> {
-        val res = gameServices.getCurrentActiveGame(user.id)
+        val res = gameServices.getCurrentActiveGameAndPlayer(user.id)
         return res.map {
             ResponseEntity.status(200)
                 .contentType(SirenMediaType)
-                .body(siren(
-                    GameOutputModel(
-                        id = it.first.id,
-                        configuration = it.first.configuration,
-                        player1 = it.first.player1,
-                        player2 = it.first.player2,
-                        state = GameStateOutputModel.get(it.first.state),
-                        board1 = it.first.board1.toBoardOutputModel(),
-                        board2 = it.first.board2.toBoardOutputModel(),
-                        playerTurn = it.first.playerTurn,
-                        winner = it.first.winner,
-                        myPlayer = PlayerOutputModel.get(it.second)
-                    )
-                ) {
+                .body(siren(it.first.toGameOutputModel()) {
                     preparationActions(this)
                     battleActions(this)
                     quitGameAction(this)

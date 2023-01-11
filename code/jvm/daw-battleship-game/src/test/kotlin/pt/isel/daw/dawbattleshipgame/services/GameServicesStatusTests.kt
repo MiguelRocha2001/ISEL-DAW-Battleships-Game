@@ -8,7 +8,6 @@ import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.services.game.DeleteGameError
-import pt.isel.daw.dawbattleshipgame.services.game.GameError
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.game.GameStateError
 import pt.isel.daw.dawbattleshipgame.utils.createGame
@@ -124,22 +123,22 @@ class GameServicesStatusTests {
             placeShip(gameServices, userPair.first, ShipType.DESTROYER, Coordinate(7, 7), Orientation.VERTICAL)
             placeShip(gameServices, userPair.second, ShipType.DESTROYER, Coordinate(5, 9), Orientation.VERTICAL)
 
-            var game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(GameState.FLEET_SETUP, game.value.state)
-            assertTrue(game.value.board1.isShip(Coordinate(2,3)))
-            assertEquals(ShipType.BATTLESHIP, game.value.board1.getShips().first().type)
-            assertEquals(userPair.first, game.value.player1)
+            val game1 = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assertEquals(GameState.FLEET_SETUP, game1.state)
+            assertTrue(game1.board1.isShip(Coordinate(2,3)))
+            assertEquals(ShipType.BATTLESHIP, game1.board1.getShips().first().type)
+            assertEquals(userPair.first, game1.player1)
 
 
-            assertTrue(game.value.board2.isShip(Coordinate(6,9)))
-            assertEquals(ShipType.BATTLESHIP, game.value.board2.getShips().first().type)
-            assertEquals(userPair.second, game.value.player2)
+            assertTrue(game1.board2.isShip(Coordinate(6,9)))
+            assertEquals(ShipType.BATTLESHIP, game1.board2.getShips().first().type)
+            assertEquals(userPair.second, game1.player2)
 
             gameServices.updateFleetState(userPair.first, true)
             gameServices.updateFleetState(userPair.second, true)
 
-            game = gameServices.getGame(gameId) as Either.Right
-            assertEquals(GameState.BATTLE, game.value.state)
+            val game2 = gameServices.getGame(gameId) ?: org.junit.jupiter.api.fail { "Game not found" }
+            assertEquals(GameState.BATTLE, game2.state)
         }
     }
 
@@ -147,9 +146,10 @@ class GameServicesStatusTests {
     fun getInvalidGame(){
         testWithTransactionManagerAndRollback { transactionManager->
             val gameServices = GameServices(transactionManager)
+            val invalidGameId = -1
 
-            val game = gameServices.getGame(-1) as Either.Left
-            assertEquals(GameError.GameNotFound, game.value)
+            val game = gameServices.getGame(invalidGameId)
+            assertNull(game)
         }
     }
 
@@ -169,8 +169,8 @@ class GameServicesStatusTests {
 
             gameServices.deleteGame(gameId) as Either.Right
 
-            val game = gameServices.getGame(gameId) as Either.Left
-            assertEquals(GameError.GameNotFound, game.value)
+          val game = gameServices.getGame(gameId)
+          assertNull(game)
 
       }
     }

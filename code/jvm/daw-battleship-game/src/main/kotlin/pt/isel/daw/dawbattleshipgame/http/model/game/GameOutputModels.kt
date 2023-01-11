@@ -3,6 +3,7 @@ package pt.isel.daw.dawbattleshipgame.http.model.game
 import com.fasterxml.jackson.annotation.JsonValue
 import pt.isel.daw.dawbattleshipgame.domain.board.Board
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
+import pt.isel.daw.dawbattleshipgame.domain.game.Game
 import pt.isel.daw.dawbattleshipgame.domain.game.GameState
 import pt.isel.daw.dawbattleshipgame.domain.player.Player
 
@@ -62,6 +63,8 @@ enum class GameStateOutputModel {
     }
 }
 
+data class GameAndPlayerOutputModel(val game: GameOutputModel, val player: PlayerOutputModel)
+
 data class GameOutputModel(
     val id: Int,
     val configuration: Configuration,
@@ -72,20 +75,33 @@ data class GameOutputModel(
     val board2: BoardOutputModel,
     val playerTurn: Int?,
     val winner: Int?,
-    val myPlayer: PlayerOutputModel
 )
 
-enum class PlayerOutputModel {
-    ONE, TWO;
+fun Game.toGameOutputModel(): GameOutputModel {
+    return GameOutputModel(
+        id = id,
+        configuration = configuration,
+        player1 = player1,
+        player2 = player2,
+        state = GameStateOutputModel.get(state),
+        board1 = board1.toBoardOutputModel(),
+        board2 = board2.toBoardOutputModel(),
+        playerTurn = playerTurn,
+        winner = winner,
+    )
+}
 
+enum class PlayerOutputModel {
+
+    ONE, TWO;
     @JsonValue
     fun getName() = name.lowercase()
+}
 
-    companion object {
-        fun get(value: Player) = when (value) {
-            Player.ONE -> ONE
-            Player.TWO -> TWO
-        }
+fun Player.toPlayerOutputModel(): PlayerOutputModel {
+    return when (this) {
+        Player.ONE -> PlayerOutputModel.ONE
+        Player.TWO -> PlayerOutputModel.TWO
     }
 }
 

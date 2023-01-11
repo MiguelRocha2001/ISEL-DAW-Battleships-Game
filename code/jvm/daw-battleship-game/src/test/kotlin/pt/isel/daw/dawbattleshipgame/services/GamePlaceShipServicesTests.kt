@@ -22,16 +22,12 @@ class GamePlaceShipServicesTests {
             val userPair = createUserPair(transactionManager)
 
             val gameId = createGame(gameServices, userPair.first, userPair.second, configuration)
-            val placeShip1Result = placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL) as Either.Right
-            val placeShip2Result = placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL) as Either.Right
+            placeShip(gameServices, userPair.first, ShipType.BATTLESHIP, Coordinate(2, 3), Orientation.VERTICAL) as Either.Right
+            placeShip(gameServices, userPair.second, ShipType.SUBMARINE, Coordinate(5, 5), Orientation.VERTICAL) as Either.Right
 
-            when (val game = gameServices.getGame(gameId)) {
-                is Either.Left -> fail("Unexpected $game")
-                is Either.Right -> {
-                    assertEquals(1, game.value.board1.getShips().size)
-                    assertEquals(1, game.value.board2.getShips().size)
-                }
-            }
+            val game = gameServices.getGame(gameId) ?: fail { "Game not found" }
+            assertEquals(1, game.board1.getShips().size)
+            assertEquals(1, game.board2.getShips().size)
         }
     }
 

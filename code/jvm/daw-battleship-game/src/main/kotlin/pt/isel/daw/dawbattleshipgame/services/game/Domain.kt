@@ -73,7 +73,7 @@ typealias GameQuitResult = Either<GameQuitError, Int>
 sealed class GameError : Error(){
     object GameNotFound: GameError()
 }
-typealias GameResult = Either<GameError, Game>
+typealias GameResult = Either<GameError, Pair<Game,Player>>
 
 sealed class GameByUserError : Error(){
     object GameNotFound: GameByUserError()

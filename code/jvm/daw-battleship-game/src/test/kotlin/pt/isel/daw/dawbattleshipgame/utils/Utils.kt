@@ -166,31 +166,20 @@ fun createGame(gameServices: GameServices, player1: Int, player2: Int, configura
     }
     Assertions.assertEquals(user1GameIdResult.value, user2GameIdResult.value)
 
-    val user1Game = gameServices.getGame(user1GameIdResult.value)
-    when (user1Game) {
-        is Either.Left -> fail("Unexpected $user1Game")
-        is Either.Right -> {
-            Assertions.assertEquals(user1Game.value.id, user1GameIdResult.value)
-            Assertions.assertEquals(user1Game.value.player1, player1)
-            Assertions.assertEquals(user1Game.value.player2, player2)
-            Assertions.assertEquals(user1Game.value.state, GameState.FLEET_SETUP)
-        }
-    }
-    val user2Game = gameServices.getGame(user2GameIdResult.value)
-    when (user2Game) {
-        is Either.Left -> fail("Unexpected $user2Game")
-        is Either.Right -> {
-            Assertions.assertEquals(user2Game.value.id, user2GameIdResult.value)
-            Assertions.assertEquals(user2Game.value.player1, player1)
-            Assertions.assertEquals(user2Game.value.player2, player2)
-            Assertions.assertEquals(user2Game.value.state, GameState.FLEET_SETUP)
-        }
-    }
-    // asserts if both users are playing the same game
-    val player1Game = user1Game.value
-    val player2Game = user2Game.value
-    Assertions.assertEquals(player1Game.id, player2Game.id)
-    Assertions.assertEquals(player1Game.player1, player2Game.player1)
-    Assertions.assertEquals(player1Game.player2, player2Game.player2)
+    val user1Game = gameServices.getGame(user1GameIdResult.value) ?: fail { "Game not found" }
+    Assertions.assertEquals(user1Game.id, user1GameIdResult.value)
+    Assertions.assertEquals(user1Game.player1, player1)
+    Assertions.assertEquals(user1Game.player2, player2)
+    Assertions.assertEquals(user1Game.state, GameState.FLEET_SETUP)
+
+    val user2Game = gameServices.getGame(user2GameIdResult.value) ?: fail { "Game not found" }
+    Assertions.assertEquals(user2Game.id, user2GameIdResult.value)
+    Assertions.assertEquals(user2Game.player1, player1)
+    Assertions.assertEquals(user2Game.player2, player2)
+    Assertions.assertEquals(user2Game.state, GameState.FLEET_SETUP)
+
+    Assertions.assertEquals(user1Game.id, user2Game.id)
+    Assertions.assertEquals(user1Game.player1, user2Game.player1)
+    Assertions.assertEquals(user1Game.player2, user2Game.player2)
     return user1GameIdResult.value
 }
