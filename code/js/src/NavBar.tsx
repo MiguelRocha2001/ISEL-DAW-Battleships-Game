@@ -7,44 +7,27 @@ export function Navbar () {
     const currentUser = useCurrentUser()
     const setUser = useSetUser()
 
-    const profile = (currentUser) ? (
-        <NavLink to='/me' activestyle="true">
-            Profile
-        </NavLink>
-    ):(
-        <NavLink style={{ display: "none" }} to='/me' activestyle="true">
+    const profile = (
+        <NavLink style={{display: currentUser ? undefined : "none"}} to='/me' activestyle="true">
             Profile
         </NavLink>
     )
 
-    const play = (currentUser) ? (
-        <NavLink to='/game' activestyle="true">
-            Play
-        </NavLink>
-    ):(
-        <NavLink to='/game' style={{ display: "none" }} activestyle="true">
+    const play = (
+        <NavLink to='/game' style={{display: currentUser ? undefined : "none"}} activestyle="true">
             Play
         </NavLink>
     )
 
-    const loginOrRegister = (currentUser) ? (
+    const loginOrRegister =  (
         <NavBtn>
-            <NavBtnLink style={{ display: "none" }} to= '/sign-up'>Sign Up</NavBtnLink>
-            <NavBtnLink style={{ display: "none" }} to='/sign-in'>Sign In</NavBtnLink>
-        </NavBtn>
-    ):(
-        <NavBtn>
-            <NavBtnLink to= '/sign-up'>Sign Up</NavBtnLink>
-            <NavBtnLink to='/sign-in'>Sign In</NavBtnLink>
+            <NavBtnLink style={{ display: currentUser ? "none" : undefined }} to= '/sign-up'>Sign Up</NavBtnLink>
+            <NavBtnLink style={{ display: currentUser ? "none" : undefined }} to='/sign-in'>Sign In</NavBtnLink>
         </NavBtn>
     )
 
-    const logout = (currentUser) ? (
-        <button className={style.logoutLink} onClick={() => {
-            setUser(undefined)
-        }}>LOGOUT</button>
-    ):(
-        <button style={{ display: "none" }} className={style.logoutLink} onClick={() => {
+    const logout = (
+        <button style={ {display: currentUser ? undefined : "none"}} className={style.logoutLink} onClick={() => {
             setUser(undefined)
         }}>LOGOUT</button>
     )

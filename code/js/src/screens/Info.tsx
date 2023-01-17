@@ -2,6 +2,7 @@ import * as React from 'react'
 import {Author, ServerInfo, Services} from '../services'
 import styles from './Info.module.css'
 import {Loading} from "./Loading";
+import {Error} from "../utils/Error";
 
 export function Info() {
     const response = Services.useFetchServerInfo()
@@ -10,7 +11,7 @@ export function Info() {
             return <Loading />
         }
         else {
-            return <p>{response}</p>
+            return Error(response)
         }
     }
     else {

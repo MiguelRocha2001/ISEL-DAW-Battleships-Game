@@ -12,14 +12,6 @@ export function UserDetail({user}: { user: UserStats }) {
                 <tbody>
                     <tr>
                         <td className={style.key}>
-                            USER Nº
-                        </td>
-                        <td className={style.value}>
-                            {user.id}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={style.key}>
                             USERNAME
                         </td>
                         <td className={style.value}>

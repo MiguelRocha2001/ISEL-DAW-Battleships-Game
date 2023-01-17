@@ -3,6 +3,7 @@ import {Rankings, Services, UserStats} from '../services'
 import styles from './Leaderboard.module.css'
 import {Link} from "react-router-dom";
 import {Loading} from "./Loading";
+import {Error} from "../utils/Error";
 
 export function Leaderboard() {
     const response = Services.fetchBattleshipRanks()
@@ -11,7 +12,7 @@ export function Leaderboard() {
             return <Loading />
         }
         else {
-            return <h1>{response}</h1>
+            return Error(response)
         }
     }
     else {
@@ -21,9 +22,11 @@ export function Leaderboard() {
     }
 }
 
+
 function LeaderboardInternal({rankings}: { rankings: Rankings }) {
+    console.log(rankings.users)
     if (rankings.users.length === 0) {
-        return <div><h2>No one is here <em>(yet)</em></h2></div>
+        return <div><h2>No player found <em>(yet)</em></h2></div>
     } else return (
         <div id ={styles.leaderBoard}>
             <h1 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h1>
