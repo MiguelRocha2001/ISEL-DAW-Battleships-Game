@@ -12,7 +12,7 @@ export function Leaderboard() {
             return <Loading />
         }
         else {
-            return Error(response)
+            return <Error param={response}/>
         }
     }
     else {

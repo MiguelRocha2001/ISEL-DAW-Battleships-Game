@@ -17,16 +17,16 @@ export type Board = {
     isConfirmed: boolean
 }
 
-type GameConfiguration = {
+export type GameConfiguration = {
     boardSize: number,
-    fleet: any,
+    fleet: Fleet,
     nShotsPerRound: number
     roundTimeout: number
 }
 
 export type CreateGameRequest = {
     boardSize: number,
-    fleet: any,
+    fleet: Fleet,
     shots: number,
     roundTimeout: number
 }
@@ -49,6 +49,14 @@ type PlaceShipRequest = {
 }
 
 export type Orientation = 'HORIZONTAL' | 'VERTICAL'
+
+export type Fleet = {
+    CARRIER? : number,
+    BATTLESHIP? : number,
+    CRUISER? : number,
+    SUBMARINE? : number,
+    DESTROYER? : number
+}
 
 export type Position = {
     row: number,

@@ -1,12 +1,13 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
 import {Services} from '../services'
-import {Board, Game, Orientation} from '../domain'
+import {Board, Fleet, Game, GameConfiguration, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
 import {Button} from "react-bootstrap";
+
 
 
 const logger = new Logger({ name: "GameComponent" });
@@ -488,69 +489,57 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReques
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleetRequest : () => void,
     onShot : (x : number, y : number) => void,
-    onQuitRequest : (gameId: number) => void
- }) {
+    onQuitRequest : (gameId: number) => void }) {
 
     function onConfirmFleet() {
         onConfirmFleetRequest()
     }
 
-    let myBoard: Board
-    let fleetConfirmed: boolean
-    let enemyBoard: Board
-    let winner: string | undefined
-    if (game.myPlayer === "one") {
-        myBoard = game.board1
-        fleetConfirmed = game.board1.isConfirmed
-        enemyBoard = game.board2
-        if (game.winner == game.player1)
-            winner = "You"
-        else if (game.winner == game.player2)
-            winner = "Opponent"
-    }
-    else {
-        myBoard = game.board2
-        fleetConfirmed = game.board2.isConfirmed
-        enemyBoard = game.board1
-        if (winner && game.winner == game.player2)
-            winner = "You"
-        else if (winner && game.winner == game.player1)
-            winner = "Opponent"
-    }
+    let isPlayerOne = game.myPlayer === "one"
+    let myBoard: Board = isPlayerOne ? game.board1 : game.board2
+    console.log("-------------MYBOARD--------------")
+    console.log(myBoard)
+    console.log(game.board1)
+    let fleetConfirmed: boolean = isPlayerOne ? game.board1.isConfirmed : game.board2.isConfirmed
+    let enemyBoard: Board = isPlayerOne ? game.board2 : game.board1
+    let winner: string | undefined = game.winner == game.player1 && isPlayerOne ? "You" : "Opponent"
 
     const quitButton = <Button onClick={() => {onQuitRequest(game.id)}} variant="contained" color="secondary">Quit</Button>
 
-    if (game.state === "fleet_setup") {
-        return (
-            <div>
-                <FleetSetup
-                    board={myBoard}
-                    fleetConfirmed={fleetConfirmed}
-                    onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
-                    onConfirmFleet={onConfirmFleet}
-                />
-                {quitButton}
-            </div>
-        )
-    } else if (game.state === "battle") {
-        return (
-            <div>
-                <Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>
-                {quitButton}
-            </div>
-        )
-    } else if (game.state === "finished") {
-        return (
-            <Finished winner={winner} />
-        )
+    switch(game.state) {
+        case "fleet_setup":
+            return (
+                <div>
+                    <FleetSetup
+                        board={myBoard}
+                        fleetConfirmed={fleetConfirmed}
+                        onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
+                        onConfirmFleet={onConfirmFleet}
+                        config={game.configuration}
+                    />
+                    {quitButton}
+                </div>
+            )
+        case "battle":
+            return (
+                <div>
+                    <Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>
+                    {quitButton}
+                </div>
+            )
+        case "finished":
+            return (
+                <Finished winner={winner} />
+            )
     }
 }
 
-function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
+function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config}: {
     board : Board,
     fleetConfirmed : boolean,
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
-    onConfirmFleet : () => void
+    onConfirmFleet : () => void,
+    config : GameConfiguration
 }) {
     const [selectedShip, setSelectedShip] = useState<string>(null)
     const [selectedOrientation, setSelectedOrientation] = useState<Orientation>('HORIZONTAL')
@@ -585,13 +574,14 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
                     curOrientation={selectedOrientation}
                     onShipClick={(ship: string) => setSelectedShip(ship)}
                     onOrientationChange={onOrientationChange}
+                    ships={config.fleet}
                 />
             </div>
         </div>
     ) : null
     return (
         <div className={styles.fullWidth}>
-            <p><h1 className={styles.h1}>{title}</h1></p>
+            <h1 className={styles.h1}>{title}</h1>
             <div className={styles.left}>
                 <Board board={board} onCellClick={placeShipIfNecessary}/></div>
             {options}
@@ -599,45 +589,32 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet}: {
     )
 }
 
-function ShipOptions({curOrientation, onShipClick, onOrientationChange} : {
+function ShipOptions({curOrientation, onShipClick, onOrientationChange, ships} : {
     curOrientation: Orientation,
     onShipClick : (ship : string) => void,
-    onOrientationChange : () => void
+    onOrientationChange : () => void,
+    ships: Fleet
 }) {
     function onChangeValue(event) {
         onShipClick(event.target.value)
     }
+
+    let shipsJsxList = []
+
+    console.log(ships)
+
+    for (let key in ships) {
+        shipsJsxList.push(
+            <li key={key} style={{display: "block"}}>
+                <ShipLabel shipType={key}/>
+            </li>
+        )
+    }
+
     return (
         <div>
             <div onChange={onChangeValue}>
-                <label  className={styles.radLabel} >
-                    <input type="radio" className={styles.radInput} value="CARRIER" name="gender"  />
-                    <div className={styles.radDesign}></div>
-                    <div className={styles.radText}>Carrier</div>
-                </label>
-
-                <label className={styles.radLabel}>
-                    <input type="radio" className={styles.radInput} value="BATTLESHIP" name="gender"  />
-                    <div className={styles.radDesign}></div>
-                    <div className={styles.radText}>Battleship</div>
-                </label>
-
-                <label className={styles.radLabel}>
-                    <input type="radio" className={styles.radInput} value="CRUISER" name="gender" />
-                    <div className={styles.radDesign}></div>
-                    <div className={styles.radText}>Cruiser</div>
-                </label>
-
-                <label className={styles.radLabel} >
-                    <input type="radio" className={styles.radInput} value="SUBMARINE" name="gender" />
-                    <div className={styles.radDesign}></div>
-                    <div className={styles.radText}>Submarine</div>
-                </label>
-                <label className={styles.radLabel}>
-                    <input type="radio" className={styles.radInput} value="DESTROYER" name="gender" />
-                    <div className={styles.radDesign}></div>
-                    <div className={styles.radText}>Destroyer</div>
-                </label>
+                {shipsJsxList}
             </div>
             <label className={styles.switch}>
                 <input type="checkbox" onClick={onOrientationChange}/>
@@ -646,6 +623,14 @@ function ShipOptions({curOrientation, onShipClick, onOrientationChange} : {
             </label>
         </div>
     )
+}
+
+function ShipLabel({shipType} : {shipType : string}) {
+    return <label  className={styles.radLabel} >
+        <input type="radio" className={styles.radInput} value={shipType} name="gender"  />
+        <div className={styles.radDesign}></div>
+        <div className={styles.radText}>{shipType.toString()}</div>
+    </label>
 }
 
 function Battle({myBoard, enemyBoard, onShot} : {

@@ -13,7 +13,7 @@ data class Configuration(
         @JsonProperty("boardSize")
     val boardSize: Int,
         @JsonProperty("fleet")
-    val fleet: Map<ShipType, Int>, // List<Ship:Occupation>
+    val fleet: Map<ShipType, Int>,
         @JsonProperty("shots")
     val shots: Long,
         @JsonProperty("roundTimeout")

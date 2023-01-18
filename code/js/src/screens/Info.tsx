@@ -11,7 +11,7 @@ export function Info() {
             return <Loading />
         }
         else {
-            return Error(response)
+            return <Error param={response}/>
         }
     }
     else {

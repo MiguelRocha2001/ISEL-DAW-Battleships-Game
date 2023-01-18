@@ -1,11 +1,11 @@
 import * as React from "react";
 
-export function Error(param : string) {
+export function Error({param}:{param : string}) {
     return (
         <p>
-            <h1>
+            <h6>
                 {param}
-            </h1>
+            </h6>
         </p>
     )
 }
