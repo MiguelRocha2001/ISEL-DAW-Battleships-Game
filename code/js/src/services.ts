@@ -7,50 +7,62 @@ import {State, useFetchReducer} from "./utils/useFetch-reducer";
 
 const logger = new Logger({ name: "Services" });
 
+async function fetchHome() {
+    const defaultUrl = links.defaultUrl
+    const request = { url: defaultUrl, method: "GET" }
+    const resp = await doFetch(request)
+    if (resp) {
+        extractLinksAndActionsFromHomeResponse(resp)
+    }
+}
 
 function useFetchHome(): any | string {
     const defaultUrl = links.defaultUrl
     const state = useFetchReducer({ url: defaultUrl, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
         logger.info("fetchHome: response successful")
-        const serverInfoLink = Siren.extractInfoLink(siren.links)
-        const battleshipRanksLink = Siren.extractBattleshipRanksLink(siren.links)
-        const getUserLink = Siren.extractGetUserLink(siren.links)
-        const tokenAction = Siren.extractTokenAction(siren.actions)
-        const registerAction = Siren.extractRegisterAction(siren.actions)
-        const createGameAction = Siren.extractCreateGameAction(siren.actions)
-        const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
-        const getGameLink = Siren.extractGetGameLink(siren.links)
-        const getQuitGameAction = Siren.extractQuitGameAction(siren.actions)
-        if (serverInfoLink)
-            logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
-        if (battleshipRanksLink)
-            logger.info("fetchHome: setting up new battleship ranks endpoint: ", battleshipRanksLink)
-        if (getUserLink)
-            logger.info("fetchHome: setting up new get user endpoint: ", getUserLink)
-        if (tokenAction)
-            logger.info("fetchHome: setting up new token action: ", tokenAction.name)
-        if (registerAction)
-            logger.info("fetchHome: setting up new register action: ", registerAction.name)
-        if (createGameAction)
-            logger.info("fetchHome: setting up new create game action: ", createGameAction.name)
-        if (getCurrentGameIdLink)
-            logger.info("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
-        if (getGameLink)
-            logger.info("fetchHome: setting up new get game link: ", getGameLink)
-        if (getQuitGameAction)
-            logger.info("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
-        links.setInfoLink(serverInfoLink)
-        links.setBattleshipRanksLink(battleshipRanksLink)
-        links.setUserLink(getUserLink)
-        links.setTokenAction(tokenAction)
-        links.setRegisterAction(registerAction)
-        links.setCreateGameAction(createGameAction)
-        links.setCurrentGameIdLink(getCurrentGameIdLink)
-        links.setGetGameLink(getGameLink)
-        links.setQuitGameAction(getQuitGameAction)
+        extractLinksAndActionsFromHomeResponse(siren)
         return siren.properties
     })
+}
+
+function extractLinksAndActionsFromHomeResponse(resp: Siren) {
+    const serverInfoLink = Siren.extractInfoLink(resp.links)
+    const battleshipRanksLink = Siren.extractBattleshipRanksLink(resp.links)
+    const getUserLink = Siren.extractGetUserLink(resp.links)
+    const tokenAction = Siren.extractTokenAction(resp.actions)
+    const registerAction = Siren.extractRegisterAction(resp.actions)
+    const createGameAction = Siren.extractCreateGameAction(resp.actions)
+    const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(resp.links)
+    const getGameLink = Siren.extractGetGameLink(resp.links)
+    const getQuitGameAction = Siren.extractQuitGameAction(resp.actions)
+    if (serverInfoLink)
+        logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
+    if (battleshipRanksLink)
+        logger.info("fetchHome: setting up new battleship ranks endpoint: ", battleshipRanksLink)
+    if (getUserLink)
+        logger.info("fetchHome: setting up new get user endpoint: ", getUserLink)
+    if (tokenAction)
+        logger.info("fetchHome: setting up new token action: ", tokenAction.name)
+    if (registerAction)
+        logger.info("fetchHome: setting up new register action: ", registerAction.name)
+    if (createGameAction)
+        logger.info("fetchHome: setting up new create game action: ", createGameAction.name)
+    if (getCurrentGameIdLink)
+        logger.info("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
+    if (getGameLink)
+        logger.info("fetchHome: setting up new get game link: ", getGameLink)
+    if (getQuitGameAction)
+        logger.info("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
+    links.setInfoLink(serverInfoLink)
+    links.setBattleshipRanksLink(battleshipRanksLink)
+    links.setUserLink(getUserLink)
+    links.setTokenAction(tokenAction)
+    links.setRegisterAction(registerAction)
+    links.setCreateGameAction(createGameAction)
+    links.setCurrentGameIdLink(getCurrentGameIdLink)
+    links.setGetGameLink(getGameLink)
+    links.setQuitGameAction(getQuitGameAction)
 }
 
 export type ServerInfo = {
@@ -474,6 +486,7 @@ function handlerOrError(state: State, handler: (siren: Siren) => any): any | str
 
 export const Services = {
     useFetchHome,
+    fetchHome,
     useFetchServerInfo,
     fetchBattleshipRanks: useFetchBattleshipRanks,
     getUser,
