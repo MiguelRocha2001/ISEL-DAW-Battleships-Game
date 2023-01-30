@@ -1,14 +1,27 @@
-export type Game = {
-    id: number,
-    configuration: GameConfiguration,
-    player1: number,
-    player2: number,
-    state: string,
-    board1: Board,
-    board2: Board,
-    myPlayer: string,
-    winner: number,
-    playerTurn: number,
+export class Match {
+    constructor(
+        public id: number,
+        public configuration: GameConfiguration,
+        public player1: number,
+        public player2: number,
+        public state: string,
+        public board1: Board,
+        public board2: Board,
+        public myPlayer: string,
+        public winner: number,
+        public playerTurn: number,
+    ) {
+        this.id = id;
+        this.configuration = configuration;
+        this.player1 = player1;
+        this.player2 = player2;
+        this.state = state;
+        this.board1 = board1;
+        this.board2 = board2;
+        this.myPlayer = myPlayer;
+        this.winner = winner;
+        this.playerTurn = playerTurn;
+    }
 }
 
 export type Board = {

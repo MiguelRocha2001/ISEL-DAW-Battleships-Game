@@ -137,7 +137,7 @@ class GamesController(
         user: User,
         placeShipsInputModel: PlaceShipsInputModel
     ): ResponseEntity<*> {
-        println(placeShipsInputModel)
+        // println(placeShipsInputModel)
         val res = gameServices.placeShips(
             user.id,
             placeShipsInputModel.ships.map { Triple(

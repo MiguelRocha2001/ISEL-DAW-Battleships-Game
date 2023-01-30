@@ -131,7 +131,7 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
                 getPlayerId(player),
                 GameState.BATTLE
         )
-        println("gameResult = ${gameResult.getBoard(player.other())}")
+        // println("gameResult = ${gameResult.getBoard(player.other())}")
         if (gameResult.getBoard(player.other()).allShipsSunk()) {
             gameResult.setWinner(userId)
         } else {

@@ -2,12 +2,12 @@ import {links} from './server_info/links'
 import {Action, Siren} from './utils/siren'
 import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
-import {CreateGameRequest, CreateGameResponse, Game, PlaceShipsRequest} from './domain'
+import {CreateGameRequest, CreateGameResponse, Match, PlaceShipsRequest} from './domain'
 import {State, useFetchReducer} from "./utils/useFetch-reducer";
 
 const logger = new Logger({ name: "Services" });
 
-async function fetchHome(): Promise<void | string> {
+async function fetchHome(): Promise<void | Error> {
     const defaultUrl = links.defaultUrl
     const request = { url: defaultUrl, method: "GET" }
     try {
@@ -17,7 +17,7 @@ async function fetchHome(): Promise<void | string> {
         }
     } catch (e) {
         logger.error("fetchHome: error: ", e)
-        return 'Error'
+        return new Error("fetchHome: error: " + e)
     }
 }
 
@@ -127,7 +127,7 @@ function getUser(userId: number): UserStats | string {
     return 'Please, return to home page'
 }
 
-async function doLogin(fields: KeyValuePair[]): Promise<void | string> {
+async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
     const action = links.getTokenAction()
     if (action) {
         const request = action ? {
@@ -159,11 +159,15 @@ async function doLogin(fields: KeyValuePair[]): Promise<void | string> {
             return e
         }
     }
-    logger.error("fetchToken: token action not found")
-    return 'Please, return to home page'
+    logger.error("Login action not found")
+    return new Error("Login action not found")
 }
 
-async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
+/**
+ * @param fields
+ * @return {Promise<void | Error>} if successful, returns undefined, otherwise returns an error
+ */
+async function createUser(fields: KeyValuePair[]): Promise<undefined | Error> {
     const action = links.getRegisterAction()
     if (action) {
         const request = action ? {
@@ -191,7 +195,7 @@ async function createUser(fields: KeyValuePair[]): Promise<string | undefined> {
         }
     }
     logger.error("createUser: register action not found")
-    return undefined
+    return new Error("Register action not found")
 }
 
 function useFetchUserHome(): UserStats | string {
@@ -236,11 +240,11 @@ function useFetchUserHome(): UserStats | string {
     return "User home link not found"
 }
 
-async function createGame(request: CreateGameRequest | undefined, user: string): Promise<CreateGameResponse | string> {
+async function createGame(request: CreateGameRequest | undefined): Promise<CreateGameResponse | Error> {
     const action = links.getCreateGameAction()
-    if (!user || !action) {
-        logger.error("createGame: token or create game action undefined")
-        return "createGame: token or create game action undefined"
+    if (!action) {
+        logger.error("createGame: create game action not found")
+        return new Error("create game action undefined")
     }
     // TODO request could be undefined
     if (Siren.validateFields(request, action)) {
@@ -264,20 +268,21 @@ async function createGame(request: CreateGameRequest | undefined, user: string):
                     return createGameResponse
                 } else {
                     logger.error("createGame: gameId not found in response")
-                    return 'GameId not found in response'
+                    return new Error("GameId not found in response")
                 }
             }
         } catch (e) {
             logger.error("createGame: error: ", e.title)
-            return e.title
+            return new Error(e.title)
         }
     }
-    return 'createGameRequest not valid'
+    logger.error("createGame: fields not valid")
 }
 
-async function getCurrentGameId(): Promise<number | string> {
+async function getCurrentGameId(): Promise<number | Error> {
     const currentGameIdLink = links.getCurrentGameIdLink()
-    if (!currentGameIdLink) return 'Token or get-current-game-id link undefined'
+    if (!currentGameIdLink)
+        return new Error("current game id link not found")
     try {
         const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined })
         if (response) {
@@ -287,16 +292,16 @@ async function getCurrentGameId(): Promise<number | string> {
                 return gameId
             } else {
                 logger.error("getCurrentGameId: gameId not found in response")
-                return 'GameId not found in response'
+                return new Error("GameId not found in response")
             }
         }
     } catch (e) {
         logger.error("getCurrentGameId: error: ", e)
-        return e.title
+        return new Error(e)
     }
 }
 
-async function getGame(): Promise<Game | string> {
+async function getGame(): Promise<Match | Error> {
 
     function checkLinks(response: Siren): string {
         const placeShipsAction = Siren.extractPlaceShipsAction(response.actions)
@@ -308,7 +313,6 @@ async function getGame(): Promise<Game | string> {
             logger.info("getGame: setting up new place ships action: ", placeShipsAction.name)
         } else {
             logger.error("getGame: place ships action not found in response")
-            return "Couldn't find place ships action"
         }
         if (confirmFleetAction) {
             links.setConfirmFleetAction(confirmFleetAction)
@@ -334,33 +338,50 @@ async function getGame(): Promise<Game | string> {
         return undefined
     }
 
+    function fromSirenPropsToMatch(props: any): Match {
+        return new Match(
+            props.id,
+            props.configuration,
+            props.player1,
+            props.player2,
+            props.state,
+            props.board1,
+            props.board2,
+            props.myPlayer,
+            props.winner,
+            props.playerTurn,
+        )
+    }
+
 
     const gameLink = links.getGameLink()
-    if (!gameLink) return 'Token or get-game link not found'
+    if (!gameLink)
+        return new Error("game link not found")
     try {
         const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined })
         if (response) {
             const error = checkLinks(response) // returns a string if there is an error
-            if (error) return error
-            logger.info("getGame: response sucessfull")
-            return response.properties
+            if (error)
+                return new Error(error)
+            logger.info("getGame: response successful")
+            return fromSirenPropsToMatch(response.properties)
         } else {
             logger.error("getGame: bad response")
-            return 'Received bad response'
+            return new Error("Bad response")
         }
     } catch (e) {
         logger.error("getGame: error: ", e)
-        return 'Bad response from server'
+        return new Error(e)
     }
 }
 
 
 // TODO -> fails when parsing placeShipsRequest to JSON (but server doesnt responds well)
-async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | string> {
+async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | Error> {
     const action = links.getPlaceShipsAction()
     if (!action) {
         logger.error("placeShips: token or place ships action undefined")
-        return "placeShips: token or place ships action undefined"
+        return new Error("token or place ships action undefined")
     }
     if (Siren.validateFields(placeShipsRequest, action)) {
         const internalReq = {
@@ -379,14 +400,14 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
             return e.title
         }
     }
-    return 'placeShipsRequest not valid'
+    logger.error("placeShips: fields not valid")
 }
-async function confirmFleet(): Promise<void | string> {
+async function confirmFleet(): Promise<void | Error> {
     const action = links.getConfirmFleetAction()
     console.log('Action', action)
     if (!action) {
         logger.error("confirmFleet: token or confirm fleet action undefined")
-        return "confirmFleet: token or confirm fleet action undefined"
+        return new Error("token or confirm fleet action undefined")
     }
     const request = {fleetConfirmed: true} // request is set here because it is always the same
     if (Siren.validateFields(request, action)) {
@@ -408,11 +429,11 @@ async function confirmFleet(): Promise<void | string> {
     }
 }
 
-async function attack(attackRequest: any): Promise<void | string> {
+async function attack(attackRequest: any): Promise<void | Error> {
     const action = links.getAttackAction()
     if (!action) {
         logger.error("attack: token or attack action undefined")
-        return "attack: token or attack action undefined"
+        return new Error("token or attack action undefined")
     }
     if (Siren.validateFields(attackRequest, action)) {
         const internalReq = {
@@ -427,14 +448,14 @@ async function attack(attackRequest: any): Promise<void | string> {
                 return
             } else {
                 logger.error("attack: bad response")
-                return 'Received bad response'
+                return new Error("Bad response")
             }
         } catch (e) {
             logger.error("attack: error: ", e.title)
             return e.title
         }
     }
-    return 'attackRequest not valid'
+    logger.error("attack: fields not valid")
 }
 
 async function quitGame(gameId: number): Promise<void | string> {
@@ -468,7 +489,7 @@ async function quitGame(gameId: number): Promise<void | string> {
     }
 }
 
-function handlerOrError(state: State, handler: (siren: Siren) => any): any | string {
+function handlerOrError(state: State, handler: (siren: Siren) => any): any | Error {
     switch (state.type) {
         case 'response' : {
             return handler(state.response)

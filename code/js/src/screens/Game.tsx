@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
 import {Services} from '../services'
-import {Board, Fleet, Game, GameConfiguration, Orientation} from '../domain'
+import {Board, Fleet, Match, GameConfiguration, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
@@ -28,7 +28,7 @@ type State =
     |
     {
         type : "playing",
-        game: Game,
+        game: Match,
         msg : string
     }
     |
@@ -56,7 +56,7 @@ type State =
     |
     {
         type : "updatingGameWhileNecessary",
-        game : Game,
+        game : Match,
         msg : string
     }
     |
@@ -81,12 +81,12 @@ type Action =
     |
     {
         type : "setPlaying",
-        game : Game
+        game : Match
     }
     |
     {
         type : "setPlayingWithMsg",
-        game : Game,
+        game : Match,
         msg : string
     }
     |
@@ -114,7 +114,7 @@ type Action =
     |
     {
         type : "setUpdatingGameWhileNecessary",
-        game : Game,
+        game : Match,
         msg : string
     }
     |
@@ -184,8 +184,8 @@ export function Game() {
             logger.info("checkForExistingOnGoingGame cancelled")
             return
         }
-        if (typeof resp === 'string') {
-            dispatch({type:'setMenu', msg: resp})
+        if (resp instanceof Error) {
+            dispatch({type:'setMenu', msg: resp.message})
         } else {
             dispatch({type:'setUpdatingGameWhileNecessary', game: resp, msg : undefined})
         }
@@ -204,7 +204,7 @@ export function Game() {
             },
             shots: 1,
             roundTimeout: 10,
-        }, currentUser)
+        })
         if (cancelRequest) {
             logger.info("createGame cancelled")
             return
@@ -282,7 +282,7 @@ export function Game() {
             logger.info("updateUntilConfirmation cancelled")
             return
         }
-        if (typeof resp === 'string') {
+        if (resp instanceof Error) {
             dispatch({type:'setWaitingForConfirmation'})
         } else {
             const player = resp.myPlayer
@@ -299,7 +299,7 @@ export function Game() {
      * Fetches game from data and updates state accordingly.
      */
     async function updateGameWhileNecessary() {
-        function isMyTurn(game: Game) {
+        function isMyTurn(game: Match) {
             const myPlayer = game.myPlayer
             const playerTurn = game.playerTurn
                 if (playerTurn === game.player1 && myPlayer === 'one') return true
@@ -312,7 +312,7 @@ export function Game() {
             logger.info("updateGameWhileNecessary cancelled")
             return
         }
-        if (typeof resp !== 'string') {
+        if (resp instanceof Match) {
             if (resp.state !== 'battle' || isMyTurn(resp)) {
                 if (resp.state === 'fleet_setup') {
                     const player = resp.myPlayer
@@ -410,7 +410,7 @@ export function Game() {
         return <CreatingGame />
     } else if (state.type === "playing") {
         return <Playing
-            game={state.game}
+            match={state.game}
             onPlaceShip={(ship, row, col, orient) => dispatch({type : 'setPlacingShips', ship, row, col, orient})}
             onConfirmFleetRequest={() => dispatch({type : 'setConfirmingFleet'})}
             onShot={(row, col) => dispatch({type : 'setShooting', row, col})}
@@ -423,7 +423,7 @@ export function Game() {
                 <div>
                     <h1>{title}</h1>
                     <Playing
-                        game={state.game}
+                        match={state.game}
                         onPlaceShip={() => {}}
                         onConfirmFleetRequest={() => {}}
                         onShot={() => {}}
@@ -483,8 +483,8 @@ function CreatingGame() {
     )
 }
 
-function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onQuitRequest} : {
-    game : Game,
+function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitRequest} : {
+    match : Match,
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleetRequest : () => void,
     onShot : (x : number, y : number) => void,
@@ -494,18 +494,22 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReques
         onConfirmFleetRequest()
     }
 
-    let isPlayerOne = game.myPlayer === "one"
-    let myBoard: Board = isPlayerOne ? game.board1 : game.board2
+    let isPlayerOne = match.myPlayer === "one"
+    let myBoard: Board = isPlayerOne ? match.board1 : match.board2
+
+    /*
     console.log("-------------MYBOARD--------------")
     console.log(myBoard)
-    console.log(game.board1)
-    let fleetConfirmed: boolean = isPlayerOne ? game.board1.isConfirmed : game.board2.isConfirmed
-    let enemyBoard: Board = isPlayerOne ? game.board2 : game.board1
-    let winner: string | undefined = game.winner == game.player1 && isPlayerOne ? "You" : "Opponent"
+    console.log(match.board1)
+     */
 
-    const quitButton = <Button onClick={() => {onQuitRequest(game.id)}} variant="contained" color="secondary">Quit</Button>
+    let fleetConfirmed: boolean = isPlayerOne ? match.board1.isConfirmed : match.board2.isConfirmed
+    let enemyBoard: Board = isPlayerOne ? match.board2 : match.board1
+    let winner: string | undefined = match.winner == match.player1 && isPlayerOne ? "You" : "Opponent"
 
-    switch(game.state) {
+    const quitButton = <Button onClick={() => {onQuitRequest(match.id)}} variant="contained" color="secondary">Quit</Button>
+
+    switch(match.state) {
         case "fleet_setup":
             return (
                 <div>
@@ -514,7 +518,7 @@ function Playing({game, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReques
                         fleetConfirmed={fleetConfirmed}
                         onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
                         onConfirmFleet={onConfirmFleet}
-                        config={game.configuration}
+                        config={match.configuration}
                     />
                     {quitButton}
                 </div>

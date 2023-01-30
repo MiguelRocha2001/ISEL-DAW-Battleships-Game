@@ -103,7 +103,7 @@ class JdbiUsersRepository(
                 .bind("userid", userId)
                 .mapTo<String>()
                 .firstOrNull() ?: return null
-        println(jsonConfig)
+        // println(jsonConfig)
         return Configuration.mapper.readValue(jsonConfig, Configuration::class.java)
     }
 

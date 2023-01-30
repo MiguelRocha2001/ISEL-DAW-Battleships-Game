@@ -17,7 +17,7 @@ export async function authenticate(username: string, password: string): Promise<
     return typeof result !== "string"; // If the result is a string, it's an error message
 }
 
-export async function createUser(username: string, password: string): Promise<string | undefined> {
+export async function createUser(username: string, password: string): Promise<undefined | Error> {
     return Services.createUser([
         {name: "username", value: username},
         {name: "password", value: password},
@@ -61,7 +61,7 @@ export function Authentication({title, action}: { title: string, action: Action}
         const username = inputs.username
         const password = inputs.password
         if (action === "login") {
-            console.log("Logging in")
+            logger.info("Logging in")
             authenticate(username, password)
                 .then((successful) => {
                     setIsSubmitting(false)

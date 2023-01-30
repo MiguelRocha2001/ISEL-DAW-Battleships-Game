@@ -121,7 +121,6 @@ class UsersController(
     @GetMapping(Uris.Users.STATS)
     fun getUserStats(): ResponseEntity<*> {
         val res = userService.getUserRanking()
-        println(res)
         val userStats = res.map { UserStatOutputModel(it.id, it.username, it.wins, it.gamesPlayed) }
         return ResponseEntity.status(200)
             .contentType(SirenMediaType)
