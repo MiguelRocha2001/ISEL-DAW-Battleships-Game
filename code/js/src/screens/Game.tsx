@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
-import {Services} from '../services'
+import {InvalidArgumentError, ResolutionLinkError, Services} from '../services'
 import {Board, Fleet, GameConfiguration, Match, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
@@ -8,6 +8,7 @@ import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
 import {Button} from "react-bootstrap";
 import {ErrorScreen} from "../utils/ErrorScreen";
+import {NetworkError, ServerError} from "../utils/domain";
 
 
 const logger = new Logger({ name: "GameComponent" });
@@ -192,15 +193,17 @@ export function Game() {
 
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
-        const resp = await Services.getGame()
+        const result = await Services.getGame()
         if (cancelRequest) {
             logger.info("checkForExistingOnGoingGame cancelled")
             return
         }
-        if (resp instanceof Error) {
-            dispatch({type:'setMenu', msg: resp.message})
+        if (result instanceof Error) {
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type: 'setMenu', msg: result.message})
+            })
         } else {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: resp, msg : undefined})
+            dispatch({type:'setUpdatingGameWhileNecessary', game: result, msg : undefined})
         }
     }
 
@@ -223,11 +226,9 @@ export function Game() {
             return
         }
         if (result instanceof Error) {
-            if (result.message === 'User already in a queue') {
-                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
-            } else {
-                dispatch({type:'setError', error: result})
-            }
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type: 'setMenu', msg: result.message})
+            })
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
     }
 
@@ -251,7 +252,9 @@ export function Game() {
                 return
             }
             if (result instanceof Error) {
-                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+                dispatchToErrorScreenOrDoHandler(result, () => {
+                    dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+                })
             } else {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
             }
@@ -266,7 +269,9 @@ export function Game() {
             return
         }
         if (result instanceof Error) {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+            })
         } else {
             dispatch({type:'setWaitingForConfirmation'})
         }
@@ -282,7 +287,9 @@ export function Game() {
             return
         }
         if (result instanceof Error) {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+            })
         } else {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
         }
@@ -290,15 +297,17 @@ export function Game() {
 
     async function updateUntilConfirmation() {
         logger.info("updatingUntilConfirmation")
-        const resp = await Services.getGame()
+        const result = await Services.getGame()
         if (cancelRequest) {
             logger.info("updateUntilConfirmation cancelled")
             return
         }
-        if (resp instanceof Error) {
-            dispatch({type:'setWaitingForConfirmation'})
+        if (result instanceof Error) {
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type:'setWaitingForConfirmation'})
+            })
         } else {
-            const myBoard = resp.myPlayer === 'one' ? resp.board1 : resp.board2
+            const myBoard = result.myPlayer === 'one' ? result.board1 : result.board2
             if (myBoard.isConfirmed) {
                 dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
             } else {
@@ -364,10 +373,19 @@ export function Game() {
             return
         }
         if (result instanceof Error) {
-            dispatch({type:'setMenu', msg: result.message})
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type:'setMenu', msg: result.message})
+            })
         } else {
             dispatch({type:'setMenu', msg: undefined})
         }
+    }
+
+    function dispatchToErrorScreenOrDoHandler(error: Error, handler: () => void) {
+        if (error instanceof ServerError)
+            dispatch({type:'setMenu', msg: error.message})
+        else
+            handler()
     }
 
     useEffect(() => {

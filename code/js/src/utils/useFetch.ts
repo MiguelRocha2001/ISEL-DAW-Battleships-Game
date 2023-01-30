@@ -33,7 +33,7 @@ function validateRequestMethod(request: Request): boolean {
     return request.url && (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE')
 }
 
-export async function doFetch(request: Request): Promise<Siren> {
+export async function doFetch(request: Request): Promise<Siren | ServerError> {
     if (request && validateRequestMethod(request)) {
         logger.info("sending request to: ", links.host + request.url)
         // console.log("body: ", request.body ? buildBody(request.body) : undefined)
@@ -49,7 +49,7 @@ export async function doFetch(request: Request): Promise<Siren> {
             const body = await resp.json()
             if (resp.status >= 300) {
                 logger.error("doFetch: ", resp.status)
-                return Promise.reject(new ServerError("No Info"))
+                return new ServerError("No Info", resp.status)
             }
             return body
         } catch (error) {

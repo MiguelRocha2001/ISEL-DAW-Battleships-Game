@@ -23,7 +23,8 @@ export type State =
     |
     {
         type : "serverError",
-        error : string
+        error : string,
+        status : number
     }
     |
     {
@@ -48,7 +49,8 @@ type Action =
     |
     {
         type : "setServerError",
-        message : string
+        message : string,
+        status : number
     }
 
 function reducer(state:State, action:Action): State {
@@ -56,7 +58,7 @@ function reducer(state:State, action:Action): State {
         case 'startFetch' : return {type : 'fetching'}
         case 'setResponse' : return {type : 'response' , response : action.response}
         case 'setNetworkError' : return {type : 'networkError' , error : action.message}
-        case 'setServerError' : return {type : 'serverError' , error : action.message}
+        case 'setServerError' : return {type : 'serverError' , error : action.message , status : action.status}
     }
 }
 
@@ -97,7 +99,7 @@ export function useFetchReducer(request: Request) : State {
                     if (!cancelled) {
                         if (response.status >= 300) {
                             logger.error("Response Error: ", response.status)
-                            dispatcher({type:'setServerError', message: body})
+                            dispatcher({type:'setServerError', message: body, status: response.status})
                         }
                         dispatcher({type : 'setResponse', response: body})
                     }

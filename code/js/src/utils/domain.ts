@@ -6,8 +6,9 @@ export class NetworkError extends Error {
 }
 
 export class ServerError extends Error {
-    constructor(message: string) {
+    constructor(message: string, public status: number) {
         super(message)
         this.name = "ServerError"
+        this.status = status
     }
 }

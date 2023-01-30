@@ -13,6 +13,9 @@ async function fetchHome(): Promise<void | Error> {
     const request = { url: defaultUrl, method: "GET" }
     try {
         const resp = await doFetch(request)
+        if (resp instanceof ServerError) {
+            return logAndGetError('fetchHome', resp)
+        }
         extractSirenInfo(resp)
     } catch (e) {
         return logAndGetError('fetchHome', e)
@@ -135,6 +138,9 @@ async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
         } : undefined
         try {
             const resp = await doFetch(request)
+            if (resp instanceof ServerError) {
+                return logAndGetError('doLogin', resp)
+            }
             logger.info("fetchToken: response successfully")
             const createGameAction = Siren.extractCreateGameAction(resp.actions)
             const userHomeLink = Siren.extractUserHomeLink(resp.links)
@@ -173,22 +179,19 @@ async function createUser(fields: KeyValuePair[]): Promise<undefined | Error> {
         } : undefined
         try {
             const resp = await doFetch(request)
-            if (resp) {
-                const userId = resp.properties.userId
-                if (userId) {
-                    logger.info("createUser: response successfully")
-                    const tokenAction = Siren.extractTokenAction(resp.actions)
-                    if (tokenAction) {
-                        links.setTokenAction(tokenAction)
-                        logger.info("createUser: setting up new token action: ", tokenAction.name)
-                    } else {
-                        logger.error("createUser: token action not found in response")
-                    }
-                    return userId
-                } else {
-                    logger.error("createUser: userId not found in response")
-                }
+            if (resp instanceof ServerError) {
+                return logAndGetError('createUser', resp)
             }
+            const userId = resp.properties.userId
+            logger.info("createUser: response successfully")
+            const tokenAction = Siren.extractTokenAction(resp.actions)
+            if (tokenAction) {
+                links.setTokenAction(tokenAction)
+                logger.info("createUser: setting up new token action: ", tokenAction.name)
+            } else {
+                logger.error("createUser: token action not found in response")
+            }
+            return userId
         } catch (e) {
             return logAndGetError('createUser', e)
         }
@@ -246,21 +249,22 @@ async function createGame(request: CreateGameRequest | undefined): Promise<Creat
             body: Fetch.toBody(request),
         }
         try {
-            const siren = await doFetch(internalReq)
-            if (siren) {
-                const getGameLink = Siren.extractGetGameLink(siren.links)
-                // const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
-                if (getGameLink) {
-                    links.setGetGameLink(getGameLink)
-                    logger.info("createGame: setting up new get game link: ", getGameLink)
-                }
-                const createGameResponse = siren.properties
-                if (createGameResponse) {
-                    logger.info("createGame: responde sucessfull")
-                    return createGameResponse
-                } else {
-                    logger.error("createGame: create game response not found")
-                }
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('createGame', result)
+            }
+            const getGameLink = Siren.extractGetGameLink(result.links)
+            // const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(result.links)
+            if (getGameLink) {
+                links.setGetGameLink(getGameLink)
+                logger.info("createGame: setting up new get game link: ", getGameLink)
+            }
+            const createGameResponse = result.properties
+            if (createGameResponse) {
+                logger.info("createGame: responde sucessfull")
+                return createGameResponse
+            } else {
+                logger.error("createGame: create game response not found")
             }
         } catch (e) {
             return logAndGetError('createGame', e)
@@ -275,15 +279,16 @@ async function getCurrentGameId(): Promise<number | Error> {
         return logAndGetError('getCurrentGameId', new ResolutionLinkError('current game id link not found'))
 
     try {
-        const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined })
-        if (response) {
-            logger.info("getGame: response successful")
-            const gameId = response.properties.id
-            if (gameId) {
-                return gameId
-            } else {
-                logger.error("getGame: game id not found in response")
-            }
+        const result = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined })
+        if (result instanceof ServerError) {
+            return logAndGetError('getCurrentGameId', result)
+        }
+        logger.info("getGame: response successful")
+        const gameId = result.properties.id
+        if (gameId) {
+            return gameId
+        } else {
+            logger.error("getGame: game id not found in response")
         }
     } catch (e) {
         return logAndGetError('getGame', e)
@@ -345,6 +350,9 @@ async function getGame(): Promise<Match | Error> {
 
     try {
         const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined })
+        if (response instanceof ServerError) {
+            return logAndGetError('getGame', response)
+        }
         const error = checkLinks(response) // returns a string if there is an error
         if (error)
             return new Error(error)
@@ -463,7 +471,7 @@ function handlerOrError(origin: string, state: State, handler: (siren: Siren) =>
             return logAndGetNetworkError(origin, new NetworkError(state.error))
         }
         case "serverError" : {
-            return logAndGetServerError(origin, new ServerError(state.error))
+            return logAndGetServerError(origin, new ServerError(state.error, state.status))
         }
         case 'started' : {
             return new Fetching()
