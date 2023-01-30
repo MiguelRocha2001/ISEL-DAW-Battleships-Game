@@ -6,9 +6,10 @@ import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Info() {
     const response = Services.useFetchServerInfo()
+    console.log('response', response)
 
     if (response instanceof Error) {
-        return <ErrorScreen param={response.message}/>
+        return <ErrorScreen message={response.message}/>
     } else if (response instanceof Fetching) {
         return <Loading />
     } else {

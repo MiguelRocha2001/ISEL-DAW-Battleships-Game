@@ -1,11 +1,15 @@
 import * as React from 'react'
 import {Services} from '../services'
 import styles from './Home.module.css'
+import {Logger} from "tslog";
 
+const logger = new Logger({ name: "HomeComponent" });
 
 export function Home() {
-    console.log("Home")
+    logger.debug("Rendering home page")
+
     Services.useFetchHome() // Fetch the home resource
+
     return (
         <div id={styles.mainDiv}>
             <div id={styles.content}>

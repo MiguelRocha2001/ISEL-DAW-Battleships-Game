@@ -4,7 +4,6 @@ import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
 import {CreateGameRequest, CreateGameResponse, Match, PlaceShipsRequest} from './domain'
 import {State, useFetchReducer} from "./utils/useFetch-reducer";
-import {Fetcher} from "react-router-dom";
 
 const logger = new Logger({ name: "Services" });
 
@@ -17,8 +16,7 @@ async function fetchHome(): Promise<void | Error> {
             extractLinksAndActionsFromHomeResponse(resp)
         }
     } catch (e) {
-        logger.error("fetchHome: error: ", e)
-        return new Error("fetchHome: error: " + e)
+        return loggAndReturnError('fetchHome: error: ' + e)
     }
 }
 
@@ -85,11 +83,14 @@ export type Author = {
 }
 function useFetchServerInfo(): ServerInfo | Fetching | Error {
     const infoLink = links.getInfoLink()
-    const state = useFetchReducer({ url: infoLink, method: "GET" })
-    return handlerOrError(state, (siren: Siren) => {
-        logger.info("fetchServerInfo: response successfully")
-        return siren.properties
-    })
+    if (infoLink) {
+        const state = useFetchReducer({url: infoLink, method: "GET"})
+        return handlerOrError(state, (siren: Siren) => {
+            logger.info("fetchServerInfo: response successfully")
+            return siren.properties
+        })
+    }
+    return loggAndReturnError('useFetchServerInfo: link not found')
 }
 
 export type Rankings = {
@@ -110,8 +111,7 @@ function useFetchBattleshipRanks(): Rankings | Fetching | Error {
             return siren.properties
         })
     }
-    logger.error("useFetchBattleshipRanks: link not found")
-    return 'Please, return to home page'
+    return loggAndReturnError('useFetchBattleshipRanks: link not found')
 }
 
 function getUser(userId: number): UserStats | Error {
@@ -124,8 +124,7 @@ function getUser(userId: number): UserStats | Error {
             return siren.properties
         })
     }
-    logger.error("getUser: link not found")
-    return new Error("getUser: link not found")
+    return loggAndReturnError('getUser: link not found')
 }
 
 async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
@@ -156,12 +155,10 @@ async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
             logger.info("login successful")
             return
         } catch (e) {
-            logger.error("fetchToken: error: ", e)
-            return e
+            return loggAndReturnError('fetchToken: error: ' + e)
         }
     }
-    logger.error("Login action not found")
-    return new Error("Login action not found")
+    return loggAndReturnError('fetchToken: action not found')
 }
 
 /**
@@ -190,18 +187,15 @@ async function createUser(fields: KeyValuePair[]): Promise<undefined | Error> {
                 }
                 return userId
             } else {
-                logger.error("createUser: token not found in response")
-                return undefined
+                logger.error("createUser: userId not found in response")
             }
         }
     }
-    logger.error("createUser: register action not found")
-    return new Error("Register action not found")
+    return loggAndReturnError('createUser: action not found')
 }
 
 function useFetchUserHome(): UserStats | Fetching | Error {
     const userHomeLink = links.getUserHomeLink()
-    console.log("userHomeLink: ", userHomeLink)
     if (userHomeLink) {
         const request = {
             url: userHomeLink,
@@ -218,28 +212,24 @@ function useFetchUserHome(): UserStats | Fetching | Error {
                 links.setCreateGameAction(createGameAction)
                 logger.info("fetchUserHome: setting up new create game action: ", createGameAction.name)
             } else {
-                logger.error("fetchUserHome: create game action not found in response")
-                return "Couldn't find create game action"
+                return loggAndReturnError('fetchUserHome: create game action not found in response')
             }
             if (getCurrentGameIdLink) {
                 links.setCurrentGameIdLink(getCurrentGameIdLink)
                 logger.info("fetchUserHome: setting up new get_current_game_id link: ", getCurrentGameIdLink)
             } else {
-                logger.error("fetchUserHome: get_current_game_id link not found in response")
-                return "Couldn't find get current game id link"
+                return loggAndReturnError('fetchUserHome: get_current_game_id link not found in response')
             }
             if (getGameLink) {
                 links.setGetGameLink(getGameLink)
                 logger.info("fetchUserHome: setting up new get_game link: ", getGameLink)
             } else {
-                logger.error("fetchUserHome: get_game link not found in response")
-                return "Couldn't find get game link"
+                return loggAndReturnError('fetchUserHome: get_game link not found in response')
             }
             return siren.properties
         })
     }
-    logger.error("fetchUserHome: user home link not found")
-    return new Error("User home link not found")
+    return loggAndReturnError('fetchUserHome: link not found')
 }
 
 async function createGame(request: CreateGameRequest | undefined): Promise<CreateGameResponse | Error> {
@@ -269,22 +259,20 @@ async function createGame(request: CreateGameRequest | undefined): Promise<Creat
                     logger.info("createGame: responde sucessfull")
                     return createGameResponse
                 } else {
-                    logger.error("createGame: gameId not found in response")
-                    return new Error("GameId not found in response")
+                    logger.error("createGame: create game response not found")
                 }
             }
         } catch (e) {
-            logger.error("createGame: error: ", e.title)
-            return new Error(e.title)
+            return loggAndReturnError('createGame: error: ' + e)
         }
     }
-    logger.error("createGame: fields not valid")
+    return loggAndReturnError('createGame: fields not valid')
 }
 
 async function getCurrentGameId(): Promise<number | Error> {
     const currentGameIdLink = links.getCurrentGameIdLink()
     if (!currentGameIdLink)
-        return new Error("current game id link not found")
+        return loggAndReturnError('getCurrentGameId: link not found')
     try {
         const response = await Fetch.doFetch({ url: currentGameIdLink, method: "GET", body: undefined })
         if (response) {
@@ -293,13 +281,11 @@ async function getCurrentGameId(): Promise<number | Error> {
             if (gameId) {
                 return gameId
             } else {
-                logger.error("getCurrentGameId: gameId not found in response")
-                return new Error("GameId not found in response")
+                logger.error("getGame: game id not found in response")
             }
         }
     } catch (e) {
-        logger.error("getCurrentGameId: error: ", e)
-        return new Error(e)
+        return loggAndReturnError('getGame: error: ' + e)
     }
 }
 
@@ -321,21 +307,18 @@ async function getGame(): Promise<Match | Error> {
             logger.info("getGame: setting up new confirm fleet action: ", confirmFleetAction.name)
         } else {
             logger.error("getGame: confirm fleet action not found in response")
-            return "Couldn't find confirm fleet action"
         }
         if (attackAction) {
             links.setAttackAction(attackAction)
             logger.info("getGame: setting up new attack action: ", attackAction.name)
         } else {
             logger.error("getGame: attack action not found in response")
-            return "Couldn't find attack action"
         }
         if (quitGameAction) {
             links.setQuitGameAction(quitGameAction)
             logger.info("getGame: setting up new quit game action: ", quitGameAction.name)
         } else {
             logger.error("getGame: quit game action not found in response")
-            return "Couldn't find quit game action"
         }
         return undefined
     }
@@ -358,7 +341,7 @@ async function getGame(): Promise<Match | Error> {
 
     const gameLink = links.getGameLink()
     if (!gameLink)
-        return new Error("game link not found")
+        return loggAndReturnError('getGame: game link not found')
     try {
         const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined })
         if (response) {
@@ -368,12 +351,10 @@ async function getGame(): Promise<Match | Error> {
             logger.info("getGame: response successful")
             return fromSirenPropsToMatch(response.properties)
         } else {
-            logger.error("getGame: bad response")
-            return new Error("Bad response")
+            return loggAndReturnError('getGame: response undefined')
         }
     } catch (e) {
-        logger.error("getGame: error: ", e)
-        return new Error(e)
+        return loggAndReturnError('getGame: error: ' + e)
     }
 }
 
@@ -398,19 +379,16 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
                 return
             }
         } catch (e) {
-            logger.error("placeShips: error: ", e.title)
-            return e.title
+            return loggAndReturnError('placeShips: error: ' + e)
         }
     }
-    logger.error("placeShips: fields not valid")
+    return loggAndReturnError('placeShips: fields not valid')
 }
 async function confirmFleet(): Promise<void | Error> {
     const action = links.getConfirmFleetAction()
-    console.log('Action', action)
-    if (!action) {
-        logger.error("confirmFleet: token or confirm fleet action undefined")
-        return new Error("token or confirm fleet action undefined")
-    }
+    if (!action)
+        return loggAndReturnError('confirmFleet: token or confirm fleet action undefined')
+
     const request = {fleetConfirmed: true} // request is set here because it is always the same
     if (Siren.validateFields(request, action)) {
         const internalReq = {
@@ -425,10 +403,10 @@ async function confirmFleet(): Promise<void | Error> {
                 return
             }
         } catch (e) {
-            logger.error("confirmFleet: error: ", e.title)
-            return e.title
+            return loggAndReturnError('confirmFleet: error: ' + e)
         }
     }
+    return loggAndReturnError('confirmFleet: fields not valid')
 }
 
 async function attack(attackRequest: any): Promise<void | Error> {
@@ -449,23 +427,20 @@ async function attack(attackRequest: any): Promise<void | Error> {
                 logger.info("attack: response successful")
                 return
             } else {
-                logger.error("attack: bad response")
-                return new Error("Bad response")
+                return loggAndReturnError('attack: response undefined')
             }
         } catch (e) {
-            logger.error("attack: error: ", e.title)
-            return e.title
+            return loggAndReturnError('attack: error: ' + e)
         }
     }
-    logger.error("attack: fields not valid")
+    return loggAndReturnError('attack: fields not valid')
 }
 
 async function quitGame(gameId: number): Promise<void | Error> {
     const action = links.getQuitGameAction()
-    if (!action) {
-        logger.error("quitGame: token or quit game action undefined")
-        return new Error("token or quit game action undefined")
-    }
+    if (!action)
+        return loggAndReturnError('quitGame: token or quit game action undefined')
+
     const template = action.href
     const href = template.replace(':id', gameId.toString())
     const request = {} // request is set here because it is always the same
@@ -481,12 +456,10 @@ async function quitGame(gameId: number): Promise<void | Error> {
                 logger.info("quitGame: response successful")
                 return
             } else {
-                logger.error("quitGame: bad response")
-                return new Error("Bad response")
+                return loggAndReturnError('quitGame: response undefined')
             }
         } catch (e) {
-            logger.error("quitGame: error: ", e.title)
-            return e.title
+            return loggAndReturnError('quitGame: error: ' + e)
         }
     }
 }
@@ -508,6 +481,11 @@ function handlerOrError(state: State, handler: (siren: Siren) => any): any | Err
             return new Fetching()
         }
     }
+}
+
+function loggAndReturnError(error: string): Error {
+    logger.error(error)
+    return new Error(error)
 }
 
 export const Services = {

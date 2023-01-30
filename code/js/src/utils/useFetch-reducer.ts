@@ -86,14 +86,14 @@ export function useFetchReducer(request: Request) : State {
                     const body = await response.json()
                     if (!cancelled) {
                         if (response.status >= 300) {
-                            logger.error("doFetch: ", response.status)
+                            logger.error("Response Error: ", response.status)
                             dispatcher({type:'setError', message: body})
                         }
                         dispatcher({type : 'setResponse', response: body})
                     }
                     return body
                 } catch (error) {
-                    logger.error("doFetch: ", error)
+                    logger.error("Network Error: ", error)
                     if (cancelled) return
                     dispatcher({type:'setError', message:error.message})
                 }

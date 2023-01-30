@@ -1,13 +1,12 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
 import {Services} from '../services'
-import {Board, Fleet, Match, GameConfiguration, Orientation} from '../domain'
+import {Board, Fleet, GameConfiguration, Match, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
 import {Button} from "react-bootstrap";
-
 
 
 const logger = new Logger({ name: "GameComponent" });
@@ -604,7 +603,7 @@ function ShipOptions({curOrientation, onShipClick, onOrientationChange, ships} :
 
     let shipsJsxList = []
 
-    console.log(ships)
+    // console.log(ships)
 
     for (let key in ships) {
         shipsJsxList.push(

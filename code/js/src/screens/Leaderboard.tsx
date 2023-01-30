@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Fetching, Rankings, ServerInfo, Services, UserStats} from '../services'
+import {Fetching, Rankings, Services, UserStats} from '../services'
 import styles from './Leaderboard.module.css'
 import {Link} from "react-router-dom";
 import {Loading} from "./Loading";
@@ -9,7 +9,7 @@ export function Leaderboard() {
     const response = Services.fetchBattleshipRanks()
 
     if (response instanceof Error) {
-        return <ErrorScreen param={response.message}/>
+        return <ErrorScreen message={response.message}/>
     } else if (response instanceof Fetching) {
         return <Loading />
     } else {

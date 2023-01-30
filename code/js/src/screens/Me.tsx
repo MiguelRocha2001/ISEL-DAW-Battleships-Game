@@ -5,7 +5,6 @@ import {Link} from 'react-router-dom'
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
-import {useCurrentUser} from "./auth/Authn";
 import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Me() {
@@ -31,7 +30,7 @@ export function Me() {
                 </div>
             )
         } else {
-                return <ErrorScreen param={response.message}/>
+                return <ErrorScreen message={response.message}/>
         }
     } else if (response instanceof Fetching) {
         return <Loading />

@@ -1,11 +1,9 @@
 import * as React from "react";
 
-export function ErrorScreen({param}:{param : string}) {
+export function ErrorScreen({message} : {message : string}) {
     return (
-        <p>
-            <h6>
-                {param}
-            </h6>
-        </p>
+        <h4>
+            Something went wrong: {message}
+        </h4>
     )
 }
