@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
 import pt.isel.daw.dawbattleshipgame.http.requireWithException
+import java.util.*
+import kotlin.math.absoluteValue
 
 /**
  * Represents the game configuration
@@ -56,6 +58,9 @@ data class Configuration(
         )
     }
 
+    override fun hashCode(): Int {
+        return Objects.hash(boardSize, shots, roundTimeout)
+    }
     fun isShipValid(shipType: ShipType) =
             fleet[shipType] != null
 

@@ -49,6 +49,8 @@ class GameServices(
             val userWaiting = if(quickGame) userDb.getFirstUserInQueue()
             else userDb.getFirstUserWithSameConfigInQueue(configuration!!) //safe double bang
 
+            logger.info(configuration.hashCode().toString())
+ // userWaiting = userDb.getFirstUserInQueue()
             if (userWaiting == null) {
                 userDb.insertInGameQueue(userId,configuration ?: Configuration.DEFAULT)
                 logger.info("User $userId: Game creation successful: user is now in queue")
