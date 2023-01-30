@@ -1,32 +1,36 @@
 package pt.isel.daw.dawbattleshipgame.http.pipeline
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import pt.isel.daw.dawbattleshipgame.domain.player.User
+import pt.isel.daw.dawbattleshipgame.services.user.UserServices
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
 class AuthenticationInterceptor(
-    private val authorizationHeaderProcessor: AuthorizationHeaderProcessor
+    val usersService: UserServices
 ) : HandlerInterceptor {
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         if (handler is HandlerMethod && handler.methodParameters.any { it.parameterType == User::class.java }
         ) {
             // enforce authentication
-            val user = authorizationHeaderProcessor.process(request.getHeader(NAME_AUTHORIZATION_HEADER))
-            return if (user == null) {
-                response.status = 401
-                response.addHeader(NAME_WWW_AUTHENTICATE_HEADER, AuthorizationHeaderProcessor.SCHEME)
-                false.also { logger.info("Request: ${request.method} ${request.requestURI} - Unauthorized") }
-            } else {
-                UserArgumentResolver.addUserTo(user, request)
-                true.also { logger.info("Request: ${request.method} ${request.requestURI} - Authorized") }
+            val token = request.cookies?.find { it.name == "token" }?.value
+            if (token != null) {
+                val user = usersService.getUserByToken(token)
+                if (user != null) {
+                    UserArgumentResolver.addUserTo(user, request)
+                    return true.also { logger.info("Request: ${request.method} ${request.requestURI} - Authorized") }
+                }
             }
+            response.status = 401
+            // response.addHeader(NAME_WWW_AUTHENTICATE_HEADER, AuthorizationHeaderProcessor.SCHEME)
+            return false.also { logger.info("Request: ${request.method} ${request.requestURI} - Unauthorized") }
         }
 
         return true
