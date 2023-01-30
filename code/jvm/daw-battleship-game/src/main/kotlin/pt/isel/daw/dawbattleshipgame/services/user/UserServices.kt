@@ -75,11 +75,11 @@ class UserServices(
         }
     }
 
-    fun getUserRanking() : List<UserRanking> {
+    fun getUserRanking(page: Int?, pageSize: Int?): List<UserRanking> {
         return transactionManager.run {
             val usersRepository = it.usersRepository
             logger.info("User rankings retrieved")
-            usersRepository.getUsersRanking()
+            usersRepository.getUsersRanking(page ?: 1, pageSize ?: 4)
         }
     }
 

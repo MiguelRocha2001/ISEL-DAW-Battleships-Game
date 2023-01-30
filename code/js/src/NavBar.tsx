@@ -43,7 +43,7 @@ export function Navbar () {
                 <NavLink to='/info' activestyle="true">
                     About
                 </NavLink>
-                <NavLink to='/leadership' activestyle="true">
+                <NavLink to='/leadership/1' activestyle="true">
                     Rankings
                 </NavLink>
                 {profile}

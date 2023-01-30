@@ -23,7 +23,7 @@ export function App() {
                         <Routes>
                             <Route path='/' element={<Home />} />
                             <Route path='/info' element={<Info />} />
-                            <Route path='/leadership' element={<Leaderboard />} />
+                            <Route path='/leadership/:page' element={<Leaderboard />} />
                             <Route path='/users/:id' element={<User />} />
                             <Route path='/sign-in' element={<Authentication title={'Sign in'} action={'login'}/>} />
                             <Route path='/sign-up' element={<Authentication title={'Sign Up'} action={'register'}/>} />

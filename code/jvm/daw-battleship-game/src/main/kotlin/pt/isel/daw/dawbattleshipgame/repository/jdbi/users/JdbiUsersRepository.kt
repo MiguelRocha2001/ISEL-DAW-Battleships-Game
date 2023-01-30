@@ -48,10 +48,12 @@ class JdbiUsersRepository(
             .mapTo<Int>()
             .one()
 
-    override fun getUsersRanking(): List<UserRanking> {
-        return handle.createQuery(
-            "select id, username, wins, gamesPlayed from _user order by wins DESC , gamesPlayed limit 20"
-        ).mapTo<UserRanking>().toList()
+    override fun getUsersRanking(page: Int, pageSize: Int): List<UserRanking> {
+        return handle.createQuery("select id, username, wins, gamesPlayed from _USER order by wins desc limit :pageSize offset :offset")
+                .bind("pageSize", pageSize)
+                .bind("offset", (page - 1) * pageSize)
+                .mapTo<UserRanking>()
+                .list()
     }
 
     override fun isUserStoredByUsername(username: String): Boolean =

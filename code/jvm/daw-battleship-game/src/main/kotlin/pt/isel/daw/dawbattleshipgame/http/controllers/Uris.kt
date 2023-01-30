@@ -28,10 +28,7 @@ object Uris {
         fun byId(id: Int) = UriTemplate(BY_ID1).expand(id)
         fun createToken(): URI = URI(TOKEN)
         fun home(): URI = URI(HOME)
-        fun logout(): URI = URI(TOKEN)
-        fun register(): URI = URI(ALL)
         fun stats(): URI = URI(STATS)
-        fun battleshipsStatistics(): URI = URI(STATS)
     }
 
     object Games {

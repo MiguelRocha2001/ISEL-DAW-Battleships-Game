@@ -105,10 +105,11 @@ export type UserStats = {
     gamesPlayed: number
     wins: number
 }
-function useFetchBattleshipRanks(): Rankings | Fetching | Error {
+function useFetchBattleshipRanks(page: number, pageSize: number): Rankings | Fetching | Error {
     const ranksLink = links.getBattleshipRanksLink()
+    const ranksLinkWithParams = ranksLink + `?page=${page}&pageSize=${pageSize}`
     if (ranksLink) {
-        const state = useFetchReducer({url: ranksLink, method: "GET"})
+        const state = useFetchReducer({url: ranksLinkWithParams, method: "GET"})
         return handlerOrError("useFetchBattleshipRanks", state, (siren: Siren) => {
             return siren.properties
         })
@@ -536,7 +537,7 @@ export const Services = {
     useFetchHome,
     fetchHome,
     useFetchServerInfo,
-    fetchBattleshipRanks: useFetchBattleshipRanks,
+    useFetchBattleshipRanks,
     useGetUser,
     doLogin,
     createUser,
