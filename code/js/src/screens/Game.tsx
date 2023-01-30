@@ -179,7 +179,7 @@ export function Game() {
 
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
-        const resp = await Services.getGame(currentUser)
+        const resp = await Services.getGame()
         if (cancelRequest) {
             logger.info("checkForExistingOnGoingGame cancelled")
             return
@@ -232,7 +232,7 @@ export function Game() {
                     }
                 ],
                 fleetConfirmed: false
-            }, currentUser)
+            })
             if (cancelRequest) {
                 logger.info("placeShip cancelled")
                 return
@@ -247,7 +247,7 @@ export function Game() {
 
     async function confirmFleet() {
         logger.info("confirming fleet")
-        const resp = await Services.confirmFleet(currentUser)
+        const resp = await Services.confirmFleet()
         if (cancelRequest) {
             logger.info("confirmFleet cancelled")
             return
@@ -262,8 +262,7 @@ export function Game() {
     async function shoot(row: number, col: number) {
         logger.info("shooting in " + row + " " + col)
         const resp = await Services.attack(
-            {shots: Array({row: row, column: col})},
-            currentUser
+            {shots: Array({row: row, column: col})}
         )
         if (cancelRequest) {
             logger.info("shoot cancelled")
@@ -278,7 +277,7 @@ export function Game() {
 
     async function updateUntilConfirmation() {
         logger.info("updatingUntilConfirmation")
-        const resp = await Services.getGame(currentUser)
+        const resp = await Services.getGame()
         if (cancelRequest) {
             logger.info("updateUntilConfirmation cancelled")
             return
@@ -308,7 +307,7 @@ export function Game() {
         }
 
         logger.info("updateGameWhileNecessary")
-        const resp = await Services.getGame(currentUser)
+        const resp = await Services.getGame()
         if (cancelRequest) {
             logger.info("updateGameWhileNecessary cancelled")
             return
@@ -347,7 +346,7 @@ export function Game() {
 
     async function quitGame(gameId: number) {
         logger.info("quittingGame")
-        const resp = await Services.quitGame(gameId, currentUser)
+        const resp = await Services.quitGame(gameId)
         if (cancelRequest) {
             logger.info("quitGame cancelled")
             return

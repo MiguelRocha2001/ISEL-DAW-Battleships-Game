@@ -10,7 +10,6 @@ export type Request = {
     url: string
     method: string
     body?: Body
-    token?: string
 }
 
 export type Body = KeyValuePair[]
@@ -41,12 +40,10 @@ export async function doFetch(request: Request): Promise<Siren> {
             const resp = await fetch(links.host + request.url, {
                 method: request.method,
                 body: request.body ? buildBody(request.body) : undefined,
-                headers: request.token ? {
+                headers: {
                     'Content-Type': CONTENT_TYPE_JSON,
-                     'Authorization': 'Bearer ' + request.token 
-                } : {
-                    'Content-Type': CONTENT_TYPE_JSON
-                }
+                },
+                credentials: "include"
             })
             const body = await resp.json()
             if (resp.status >= 300) {

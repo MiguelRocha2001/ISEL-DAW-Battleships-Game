@@ -11,12 +11,23 @@ const LoggedInContext = createContext<ContextType>({
 })
 
 export function AuthnContainer({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState(undefined)
+    const [user, setUser] = useState(extractTokenFromCookie())
     return (
         <LoggedInContext.Provider value={{ user: user, setUser: setUser }}>
             {children}
         </LoggedInContext.Provider>
     )
+}
+
+function extractTokenFromCookie(): string | undefined {
+    const cookieStr = document.cookie
+    const cookieArr = cookieStr.split(';')
+    const cookieArrTrimmed = cookieArr.map((c) => c.trim())
+    const token = cookieArrTrimmed.find((c) => c.startsWith('token='))
+    if (token) {
+        return  token.split('=')[1]
+    }
+    return undefined
 }
 
 export function useCurrentUser() {

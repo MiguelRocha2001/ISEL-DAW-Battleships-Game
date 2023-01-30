@@ -8,13 +8,12 @@ import {Loading} from "./Loading";
 import {useCurrentUser} from "./auth/Authn";
 
 export function Me() {
-    const currentUser = useCurrentUser()
-    const response = Services.fetchUserHome(currentUser)
+    const response = Services.fetchUserHome()
     const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
 
     useEffect(() => {
         async function setGameButtonIfGameIsOngoing() {
-            const gameId = await Services.getCurrentGameId(currentUser)
+            const gameId = await Services.getCurrentGameId()
             if (typeof gameId === 'number') {
                 setJoinPrevGameButton(true)
             }
@@ -28,11 +27,11 @@ export function Me() {
                 <Loading />
             )
         }
-        else if (response === "Token at fault, or user home link not found") {
+        else if (response === "User home link not found") {
             //redirects to login page
             return (
                 <div>
-                    <p><h2>Please login before accessing your profile</h2></p>
+                    <h2>Please login before accessing your profile</h2>
                     <p><Link id={style.login} to="/sign-in">Login</Link></p>
                 </div>
             )

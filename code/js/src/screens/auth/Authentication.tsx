@@ -9,11 +9,12 @@ import {Logger} from "tslog";
 
 const logger = new Logger({ name: "Authentication" });
 
-export async function authenticate(username: string, password: string): Promise<string | undefined> {
-    return Services.fetchToken([
+export async function authenticate(username: string, password: string): Promise<boolean> {
+    const result = await Services.fetchToken([
         {name: "username", value: username},
         {name: "password", value: password},
     ])
+    return typeof result !== "string"; // If the result is a string, it's an error message
 }
 
 export async function createUser(username: string, password: string): Promise<string | undefined> {
@@ -62,13 +63,13 @@ export function Authentication({title, action}: { title: string, action: Action}
         if (action === "login") {
             console.log("Logging in")
             authenticate(username, password)
-                .then(token => {
+                .then((successful) => {
                     setIsSubmitting(false)
-                    if (token) {
-                        setUser(token)
+                    if (successful) {
+                        setUser("TO CHANGE LATER") // TODO: Change this to the user object
                         setRedirect(location.state?.source?.pathname || "/me")
                     } else {
-                        setError("Some error has occurred, please go to the home page and try again")
+                        setError("Some error has occurred")
                     }
                 })
                 .catch(error => {

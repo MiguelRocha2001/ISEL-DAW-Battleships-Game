@@ -54,7 +54,6 @@ export type Request = {
     url: string
     method: string
     body?: Body,
-    token?: string
 }
 
 export type Body = KeyValuePair[]
@@ -78,12 +77,10 @@ export function useFetchReducer(request: Request) : State {
                     const response = await fetch(links.host + request.url, {
                         method: request.method,
                         body: request.body ? buildBody(request.body) : undefined,
-                        headers: request.token ? {
+                        headers: {
                             'Content-Type': CONTENT_TYPE_JSON,
-                            'Authorization': 'Bearer ' + request.token
-                        } : {
-                            'Content-Type': CONTENT_TYPE_JSON
-                        }
+                        },
+                        credentials: 'include'
                     })
                     if (cancelled) return
                     const body = await response.json()

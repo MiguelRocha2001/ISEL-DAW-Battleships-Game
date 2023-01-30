@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.createGameSirenAction
@@ -11,6 +12,8 @@ import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.map
 import pt.isel.daw.dawbattleshipgame.http.model.user.*
 import pt.isel.daw.dawbattleshipgame.services.user.UserServices
+import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 class UsersController(
@@ -35,13 +38,23 @@ class UsersController(
     }
 
     @PostMapping(Uris.Users.TOKEN)
-    fun token(@RequestBody input: UserCreateTokenInputModel): ResponseEntity<*> {
+    fun token(
+        @RequestBody input: UserCreateTokenInputModel,
+        response: HttpServletResponse
+    ): ResponseEntity<*> {
         val res = userService.createToken(input.username, input.password)
+
+        // adds cookie to response
+        if (res is Either.Right) {
+            val cookie = Cookie("token", res.value)
+            cookie.path = "/"
+            response.addCookie(cookie)
+        }
         return res.map {
             ResponseEntity.status(201)
                 .contentType(SirenMediaType)
                 .body(
-                    siren(TokenOutputModel(it)) {
+                    siren(Unit) {
                         link(Uris.Users.createToken(), Rels.SELF)
                         link(Uris.Users.home(), Rels.USER_HOME)
                         createGameSirenAction(this)
