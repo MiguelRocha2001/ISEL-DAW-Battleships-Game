@@ -1,24 +1,19 @@
 import * as React from 'react'
-import {Rankings, Services, UserStats} from '../services'
+import {Fetching, Rankings, ServerInfo, Services, UserStats} from '../services'
 import styles from './Leaderboard.module.css'
 import {Link} from "react-router-dom";
 import {Loading} from "./Loading";
-import {Error} from "../utils/Error";
+import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Leaderboard() {
     const response = Services.fetchBattleshipRanks()
-    if (typeof response === "string") {
-        if (response === "Loading") {
-            return <Loading />
-        }
-        else {
-            return <Error param={response}/>
-        }
-    }
-    else {
-        return (
-            <LeaderboardInternal rankings={response}/>
-        )
+
+    if (response instanceof Error) {
+        return <ErrorScreen param={response.message}/>
+    } else if (response instanceof Fetching) {
+        return <Loading />
+    } else {
+        return <LeaderboardInternal rankings={response}/>
     }
 }
 

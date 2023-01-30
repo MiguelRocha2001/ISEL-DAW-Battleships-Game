@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export function Error({param}:{param : string}) {
+export function ErrorScreen({param}:{param : string}) {
     return (
         <p>
             <h6>

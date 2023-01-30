@@ -1,23 +1,18 @@
 import * as React from 'react'
-import {Author, ServerInfo, Services} from '../services'
+import {Author, Fetching, ServerInfo, Services} from '../services'
 import styles from './Info.module.css'
 import {Loading} from "./Loading";
-import {Error} from "../utils/Error";
+import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Info() {
     const response = Services.useFetchServerInfo()
-    if (typeof response === "string") {
-        if (response === "Loading") {
-            return <Loading />
-        }
-        else {
-            return <Error param={response}/>
-        }
-    }
-    else {
-        return (
-            <ServerInfo info={response}/>
-        )
+
+    if (response instanceof Error) {
+        return <ErrorScreen param={response.message}/>
+    } else if (response instanceof Fetching) {
+        return <Loading />
+    } else {
+        return <ServerInfo info={response}/>
     }
 }
 

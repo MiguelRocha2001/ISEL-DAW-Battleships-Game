@@ -4,6 +4,7 @@ import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
 import {CreateGameRequest, CreateGameResponse, Match, PlaceShipsRequest} from './domain'
 import {State, useFetchReducer} from "./utils/useFetch-reducer";
+import {Fetcher} from "react-router-dom";
 
 const logger = new Logger({ name: "Services" });
 
@@ -21,7 +22,7 @@ async function fetchHome(): Promise<void | Error> {
     }
 }
 
-function useFetchHome(): any | string {
+function useFetchHome(): any | Fetching| Error {
     const defaultUrl = links.defaultUrl
     const state = useFetchReducer({ url: defaultUrl, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
@@ -82,7 +83,7 @@ export type Author = {
     name: string
     email: string
 }
-function useFetchServerInfo(): ServerInfo | string {
+function useFetchServerInfo(): ServerInfo | Fetching | Error {
     const infoLink = links.getInfoLink()
     const state = useFetchReducer({ url: infoLink, method: "GET" })
     return handlerOrError(state, (siren: Siren) => {
@@ -100,7 +101,7 @@ export type UserStats = {
     gamesPlayed: number
     wins: number
 }
-function useFetchBattleshipRanks(): Rankings | string {
+function useFetchBattleshipRanks(): Rankings | Fetching | Error {
     const ranksLink = links.getBattleshipRanksLink()
     if (ranksLink) {
         const state = useFetchReducer({url: ranksLink, method: "GET"})
@@ -113,7 +114,7 @@ function useFetchBattleshipRanks(): Rankings | string {
     return 'Please, return to home page'
 }
 
-function getUser(userId: number): UserStats | string {
+function getUser(userId: number): UserStats | Error {
     const oldLink = links.getUserLink()
     const userLink = oldLink.replace(':id', userId.toString())
     if (userLink) {
@@ -124,7 +125,7 @@ function getUser(userId: number): UserStats | string {
         })
     }
     logger.error("getUser: link not found")
-    return 'Please, return to home page'
+    return new Error("getUser: link not found")
 }
 
 async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
@@ -198,7 +199,7 @@ async function createUser(fields: KeyValuePair[]): Promise<undefined | Error> {
     return new Error("Register action not found")
 }
 
-function useFetchUserHome(): UserStats | string {
+function useFetchUserHome(): UserStats | Fetching | Error {
     const userHomeLink = links.getUserHomeLink()
     console.log("userHomeLink: ", userHomeLink)
     if (userHomeLink) {
@@ -237,7 +238,8 @@ function useFetchUserHome(): UserStats | string {
             return siren.properties
         })
     }
-    return "User home link not found"
+    logger.error("fetchUserHome: user home link not found")
+    return new Error("User home link not found")
 }
 
 async function createGame(request: CreateGameRequest | undefined): Promise<CreateGameResponse | Error> {
@@ -458,11 +460,11 @@ async function attack(attackRequest: any): Promise<void | Error> {
     logger.error("attack: fields not valid")
 }
 
-async function quitGame(gameId: number): Promise<void | string> {
+async function quitGame(gameId: number): Promise<void | Error> {
     const action = links.getQuitGameAction()
     if (!action) {
         logger.error("quitGame: token or quit game action undefined")
-        return "quitGame: token or quit game action undefined"
+        return new Error("token or quit game action undefined")
     }
     const template = action.href
     const href = template.replace(':id', gameId.toString())
@@ -480,7 +482,7 @@ async function quitGame(gameId: number): Promise<void | string> {
                 return
             } else {
                 logger.error("quitGame: bad response")
-                return 'Received bad response'
+                return new Error("Bad response")
             }
         } catch (e) {
             logger.error("quitGame: error: ", e.title)
@@ -489,19 +491,21 @@ async function quitGame(gameId: number): Promise<void | string> {
     }
 }
 
-function handlerOrError(state: State, handler: (siren: Siren) => any): any | Error {
+
+export class Fetching {}
+function handlerOrError(state: State, handler: (siren: Siren) => any): any | Error | Fetching {
     switch (state.type) {
         case 'response' : {
             return handler(state.response)
         }
         case "fetching" : {
-            return 'Loading'
+            return new Fetching()
         }
         case "error" : {
-            return 'Error'
+            return Error(state.message)
         }
         case 'started' : {
-            return 'Loading'
+            return new Fetching()
         }
     }
 }

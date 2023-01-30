@@ -1,11 +1,12 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
-import {Services} from '../services'
+import {Fetching, Services} from '../services'
 import {Link} from 'react-router-dom'
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
 import {useCurrentUser} from "./auth/Authn";
+import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Me() {
     const response = Services.fetchUserHome()
@@ -21,21 +22,19 @@ export function Me() {
         setGameButtonIfGameIsOngoing()
     }, [joinPrevGameButton, setJoinPrevGameButton])
 
-    if (typeof response === "string") {
-        if (response === "Loading") {
-            return (
-                <Loading />
-            )
-        }
-        else if (response === "User home link not found") {
-            //redirects to login page
+    if (response instanceof Error) {
+        if (response.message === 'User home link not found') {
             return (
                 <div>
                     <h2>Please login before accessing your profile</h2>
                     <p><Link id={style.login} to="/sign-in">Login</Link></p>
                 </div>
             )
+        } else {
+                return <ErrorScreen param={response.message}/>
         }
+    } else if (response instanceof Fetching) {
+        return <Loading />
     } else {
         if (joinPrevGameButton) {
             return (
