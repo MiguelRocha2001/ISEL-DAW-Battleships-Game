@@ -383,9 +383,9 @@ export function Game() {
 
     function dispatchToErrorScreenOrDoHandler(error: Error, handler: () => void) {
         if (error instanceof ServerError)
-            dispatch({type:'setMenu', msg: error.message})
-        else
             handler()
+        else
+            dispatch({type: 'setError', error: error})
     }
 
     useEffect(() => {

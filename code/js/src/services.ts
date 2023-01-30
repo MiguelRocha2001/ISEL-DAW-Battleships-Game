@@ -376,11 +376,11 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
             body: Fetch.toBody(placeShipsRequest),
         }
         try {
-            const siren = await doFetch(internalReq)
-            if (siren) {
-                logger.info("placeShips: response successful")
-                return
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('placeShips', result)
             }
+            logger.info("placeShips: response successful")
         } catch (e) {
             return logAndGetError('placeShips', e)
         }
@@ -400,9 +400,11 @@ async function confirmFleet(): Promise<void | Error> {
             body: Fetch.toBody({fleetConfirmed: true}),
         }
         try {
-            await doFetch(internalReq)
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('confirmFleet', result)
+            }
             logger.info("confirmFleet: response successful")
-            return
         } catch (e) {
             return logAndGetError('confirmFleet', e)
         }
@@ -422,9 +424,11 @@ async function attack(attackRequest: any): Promise<void | Error> {
             body: Fetch.toBody(attackRequest),
         }
         try {
-            await doFetch(internalReq)
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('attack', result)
+            }
             logger.info("attack: response successful")
-            return
         } catch (e) {
             return logAndGetError('attack', e)
         }
@@ -447,9 +451,11 @@ async function quitGame(gameId: number): Promise<void | Error> {
             body: Fetch.toBody(request),
         }
         try {
-            await doFetch(internalReq)
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('quitGame', result)
+            }
             logger.info("quitGame: response successful")
-            return
         } catch (e) {
             return logAndGetError('quitGame', e)
         }
