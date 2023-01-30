@@ -7,11 +7,17 @@ import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
 import {Button} from "react-bootstrap";
+import {ErrorScreen} from "../utils/ErrorScreen";
 
 
 const logger = new Logger({ name: "GameComponent" });
 
 type State =
+    {
+        type: "error",
+        error: Error
+    }
+    |
     {
         type : "checkingForExistingOnGoingGame",
     }
@@ -65,6 +71,11 @@ type State =
     }
 
 type Action =
+    {
+        type : "setError",
+        error : Error
+    }
+    |
     {
         type : "setCheckForExistingOnGoingGame",
     }
@@ -124,6 +135,10 @@ type Action =
 
 function reducer(state: State, action: Action): State {
     switch(action.type) {
+        case "setError": {
+            logger.error("Error: " + action.error)
+            return { type: "error", error: action.error }
+        }
         case "setCheckForExistingOnGoingGame" : {
             logger.info("setCheckForExistingOnGoingGame")
             return {type: "checkingForExistingOnGoingGame"}
@@ -173,7 +188,6 @@ function reducer(state: State, action: Action): State {
 
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
-    const currentUser = useCurrentUser()
     let cancelRequest = false
 
     async function checkForExistingOnGoingGame() {
@@ -192,7 +206,7 @@ export function Game() {
 
     async function createGame() {
         logger.info("creatingGame")
-        const createGameResponse = await Services.createGame({
+        const result = await Services.createGame({
             boardSize: 10,
             fleet: {
                 "CARRIER": 5,
@@ -208,11 +222,11 @@ export function Game() {
             logger.info("createGame cancelled")
             return
         }
-        if (typeof createGameResponse === 'string') {
-            if (createGameResponse === 'User already in a queue') {
+        if (result instanceof Error) {
+            if (result.message === 'User already in a queue') {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
             } else {
-                dispatch({type:'setMenu', msg: createGameResponse})
+                dispatch({type:'setError', error: result})
             }
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
     }
@@ -221,7 +235,7 @@ export function Game() {
     async function placeShip(ship: string, row: number, col: number, orientation: Orientation) {
         logger.info("placingShip: " + ship + " at " + row + "," + col + " " + orientation)
         if (ship) {
-            const resp = await Services.placeShips({
+            const result = await Services.placeShips({
                 operation: "place-ships",
                 ships: [
                     {
@@ -236,8 +250,8 @@ export function Game() {
                 logger.info("placeShip cancelled")
                 return
             }
-            if (typeof resp === 'string') {
-                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
+            if (result instanceof Error) {
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
             } else {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
             }
@@ -246,13 +260,13 @@ export function Game() {
 
     async function confirmFleet() {
         logger.info("confirming fleet")
-        const resp = await Services.confirmFleet()
+        const result = await Services.confirmFleet()
         if (cancelRequest) {
             logger.info("confirmFleet cancelled")
             return
         }
-        if (typeof resp === 'string') {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
+        if (result instanceof Error) {
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
         } else {
             dispatch({type:'setWaitingForConfirmation'})
         }
@@ -260,15 +274,15 @@ export function Game() {
 
     async function shoot(row: number, col: number) {
         logger.info("shooting in " + row + " " + col)
-        const resp = await Services.attack(
+        const result = await Services.attack(
             {shots: Array({row: row, column: col})}
         )
         if (cancelRequest) {
             logger.info("shoot cancelled")
             return
         }
-        if (typeof resp === 'string') {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: resp})
+        if (result instanceof Error) {
+            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
         } else {
             dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
         }
@@ -284,8 +298,7 @@ export function Game() {
         if (resp instanceof Error) {
             dispatch({type:'setWaitingForConfirmation'})
         } else {
-            const player = resp.myPlayer
-            const myBoard = player === 'one' ? resp.board1 : resp.board2
+            const myBoard = resp.myPlayer === 'one' ? resp.board1 : resp.board2
             if (myBoard.isConfirmed) {
                 dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
             } else {
@@ -345,13 +358,13 @@ export function Game() {
 
     async function quitGame(gameId: number) {
         logger.info("quittingGame")
-        const resp = await Services.quitGame(gameId)
+        const result = await Services.quitGame(gameId)
         if (cancelRequest) {
             logger.info("quitGame cancelled")
             return
         }
-        if (typeof resp === 'string') {
-            dispatch({type:'setMenu', msg: resp})
+        if (result instanceof Error) {
+            dispatch({type:'setMenu', msg: result.message})
         } else {
             dispatch({type:'setMenu', msg: undefined})
         }
@@ -401,7 +414,9 @@ export function Game() {
         };
     }, [state])
 
-    if (state.type === "checkingForExistingOnGoingGame") {
+    if (state.type === 'error') {
+        return <ErrorScreen error={state.error}/>
+    } else if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
     } if (state.type === "menu") {
         return <Menu onCreateGameRequest={() => dispatch({type : 'setCreatingGame'})}/>

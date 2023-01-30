@@ -1,6 +1,7 @@
 import {Siren} from './siren'
 import {links} from '../server_info/links'
 import {Logger} from "tslog";
+import {NetworkError, ServerError} from "./domain";
 
 const logger = new Logger({ name: "useFetch" });
 
@@ -48,12 +49,12 @@ export async function doFetch(request: Request): Promise<Siren> {
             const body = await resp.json()
             if (resp.status >= 300) {
                 logger.error("doFetch: ", resp.status)
-                return Promise.reject(body)
+                return Promise.reject(new ServerError("No Info"))
             }
             return body
         } catch (error) {
             logger.error("doFetch: ", error)
-            return Promise.reject(error)
+            return Promise.reject(new NetworkError(error.message))
         }
     }
 }

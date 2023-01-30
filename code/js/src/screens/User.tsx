@@ -8,10 +8,10 @@ import {Loading} from "./Loading";
 
 export function User() {
     const { id } = useParams()
-    const result = Services.getUser(+id)
+    const result = Services.useGetUser(+id)
 
     if (result instanceof Error) {
-        return <ErrorScreen message={result.message}/>
+        return <ErrorScreen error={result}/>
     } else if (result instanceof Fetching) {
         return <Loading />
     } else {

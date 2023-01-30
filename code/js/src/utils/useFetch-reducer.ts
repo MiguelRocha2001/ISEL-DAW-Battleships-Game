@@ -17,8 +17,13 @@ export type State =
     }
     |
     {
-        type : "error",
-        message : string
+        type : "networkError",
+        error : string
+    }
+    |
+    {
+        type : "serverError",
+        error : string
     }
     |
     {
@@ -32,21 +37,26 @@ type Action =
     }
     |
     {
-        type : "setError",
+        type : "setResponse",
+        response : Siren
+    }
+    |
+    {
+        type : "setNetworkError",
         message : string
     }
     |
     {
-        type : "setResponse",
-        response : Siren
+        type : "setServerError",
+        message : string
     }
-
 
 function reducer(state:State, action:Action): State {
     switch(action.type){
         case 'startFetch' : return {type : 'fetching'}
-        case 'setError' : return {type : 'error' , message : action.message}
         case 'setResponse' : return {type : 'response' , response : action.response}
+        case 'setNetworkError' : return {type : 'networkError' , error : action.message}
+        case 'setServerError' : return {type : 'serverError' , error : action.message}
     }
 }
 
@@ -87,7 +97,7 @@ export function useFetchReducer(request: Request) : State {
                     if (!cancelled) {
                         if (response.status >= 300) {
                             logger.error("Response Error: ", response.status)
-                            dispatcher({type:'setError', message: body})
+                            dispatcher({type:'setServerError', message: body})
                         }
                         dispatcher({type : 'setResponse', response: body})
                     }
@@ -95,7 +105,7 @@ export function useFetchReducer(request: Request) : State {
                 } catch (error) {
                     logger.error("Network Error: ", error)
                     if (cancelled) return
-                    dispatcher({type:'setError', message:error.message})
+                    dispatcher({type:'setNetworkError', message:error.message})
                 }
             }
         }

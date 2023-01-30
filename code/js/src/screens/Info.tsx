@@ -5,15 +5,14 @@ import {Loading} from "./Loading";
 import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Info() {
-    const response = Services.useFetchServerInfo()
-    console.log('response', response)
+    const result = Services.useFetchServerInfo()
 
-    if (response instanceof Error) {
-        return <ErrorScreen message={response.message}/>
-    } else if (response instanceof Fetching) {
+    if (result instanceof Error) {
+        return <ErrorScreen error={result}/>
+    } else if (result instanceof Fetching) {
         return <Loading />
     } else {
-        return <ServerInfo info={response}/>
+        return <ServerInfo info={result}/>
     }
 }
 

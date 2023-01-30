@@ -6,14 +6,14 @@ import {Loading} from "./Loading";
 import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Leaderboard() {
-    const response = Services.fetchBattleshipRanks()
+    const result = Services.fetchBattleshipRanks()
 
-    if (response instanceof Error) {
-        return <ErrorScreen message={response.message}/>
-    } else if (response instanceof Fetching) {
+    if (result instanceof Error) {
+        return <ErrorScreen error={result}/>
+    } else if (result instanceof Fetching) {
         return <Loading />
     } else {
-        return <LeaderboardInternal rankings={response}/>
+        return <LeaderboardInternal rankings={result}/>
     }
 }
 
