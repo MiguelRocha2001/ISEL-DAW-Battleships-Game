@@ -10,7 +10,7 @@ interface UsersRepository {
         username: String,
         passwordValidation: PasswordValidationInfo,
     ): Int
-    fun getUsersRanking() : List<UserRanking>
+    fun getUsersRanking(page: Int, pageSize: Int): List<UserRanking>
     fun getUserByUsername(username: String): User?
     fun getUserById(id: Int): UserRanking?
     fun getUserByTokenValidationInfo(tokenValidationInfo: TokenValidationInfo): User?

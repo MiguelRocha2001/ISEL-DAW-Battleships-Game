@@ -1,25 +1,39 @@
 import * as React from 'react'
-import {Fetching, Rankings, ServerInfo, Services, UserStats} from '../services'
+import {Fetching, Rankings, Services, UserStats} from '../services'
 import styles from './Leaderboard.module.css'
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {Loading} from "./Loading";
 import {ErrorScreen} from "../utils/ErrorScreen";
 
-export function Leaderboard() {
-    const response = Services.fetchBattleshipRanks()
+const PAGE_SIZE = 3
 
-    if (response instanceof Error) {
-        return <ErrorScreen param={response.message}/>
-    } else if (response instanceof Fetching) {
+export function Leaderboard() {
+    const { page } = useParams()
+    const result = Services.useFetchBattleshipRanks(Number(page), PAGE_SIZE)
+    const curPage = Number(page)
+
+    if (result instanceof Error) {
+        return <ErrorScreen error={result}/>
+    } else if (result instanceof Fetching) {
         return <Loading />
     } else {
-        return <LeaderboardInternal rankings={response}/>
+        const prevButton = curPage > 1 ? <Link to={`/leadership/${curPage - 1}`}>Previous</Link>
+            : <span></span>
+        const nextButton = result.users.length >= PAGE_SIZE ? <Link to={`/leadership/${curPage + 1}`}>Next</Link>
+            : <span></span>
+
+        return (
+            <div>
+                <LeaderboardInternal rankings={result} />
+                {prevButton}
+                {nextButton}
+            </div>
+        )
     }
 }
 
-
 function LeaderboardInternal({rankings}: { rankings: Rankings }) {
-    console.log(rankings.users)
+
     if (rankings.users.length === 0) {
         return <div><h2>No player found <em>(yet)</em></h2></div>
     } else return (

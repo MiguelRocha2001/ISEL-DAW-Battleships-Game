@@ -5,11 +5,10 @@ import {Link} from 'react-router-dom'
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
-import {useCurrentUser} from "./auth/Authn";
 import {ErrorScreen} from "../utils/ErrorScreen";
 
 export function Me() {
-    const response = Services.fetchUserHome()
+    const result = Services.fetchUserHome()
     const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
 
     useEffect(() => {
@@ -22,8 +21,8 @@ export function Me() {
         setGameButtonIfGameIsOngoing()
     }, [joinPrevGameButton, setJoinPrevGameButton])
 
-    if (response instanceof Error) {
-        if (response.message === 'User home link not found') {
+    if (result instanceof Error) {
+        if (result.message === 'User home link not found') {
             return (
                 <div>
                     <h2>Please login before accessing your profile</h2>
@@ -31,16 +30,16 @@ export function Me() {
                 </div>
             )
         } else {
-                return <ErrorScreen param={response.message}/>
+                return <ErrorScreen error={result}/>
         }
-    } else if (response instanceof Fetching) {
+    } else if (result instanceof Fetching) {
         return <Loading />
     } else {
         if (joinPrevGameButton) {
             return (
                 <div id={style.userProfile}>
                     <div className={style.alignCenter}>
-                        <UserDetail user={response}/>
+                        <UserDetail user={result}/>
                     </div>
                     <Link to="/game" className={style.link}>Resume Match</Link>
                 </div>
@@ -48,7 +47,7 @@ export function Me() {
         } else {
             return (
                 <div className={style.alignCenter}>
-                    <UserDetail user={response}/>
+                    <UserDetail user={result}/>
                 </div>
             )
         }

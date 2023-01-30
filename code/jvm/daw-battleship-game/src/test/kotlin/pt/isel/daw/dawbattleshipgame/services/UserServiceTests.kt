@@ -167,7 +167,7 @@ class UserServiceTests {
 
             createGame(gameServices, userPair.first, userPair.second, getGameTestConfiguration1())
 
-            val rankings = userService.getUserRanking()
+            val rankings = userService.getUserRanking(page, pageSize)
             println(rankings)
             assertEquals(0, rankings[0].wins)
             assertTrue(rankings[0].gamesPlayed == 1, "games played should be 1")

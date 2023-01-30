@@ -1,6 +1,7 @@
 import {Siren} from './siren'
 import {links} from '../server_info/links'
 import {Logger} from "tslog";
+import {NetworkError, ServerError} from "./domain";
 
 const logger = new Logger({ name: "useFetch" });
 
@@ -32,7 +33,7 @@ function validateRequestMethod(request: Request): boolean {
     return request.url && (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE')
 }
 
-export async function doFetch(request: Request): Promise<Siren> {
+export async function doFetch(request: Request): Promise<Siren | ServerError> {
     if (request && validateRequestMethod(request)) {
         logger.info("sending request to: ", links.host + request.url)
         // console.log("body: ", request.body ? buildBody(request.body) : undefined)
@@ -48,12 +49,12 @@ export async function doFetch(request: Request): Promise<Siren> {
             const body = await resp.json()
             if (resp.status >= 300) {
                 logger.error("doFetch: ", resp.status)
-                return Promise.reject(body)
+                return new ServerError("No Info", resp.status)
             }
             return body
         } catch (error) {
             logger.error("doFetch: ", error)
-            return Promise.reject(error)
+            return Promise.reject(new NetworkError(error.message))
         }
     }
 }

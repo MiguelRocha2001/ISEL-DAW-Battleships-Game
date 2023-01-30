@@ -10,7 +10,7 @@ import {Logger} from "tslog";
 const logger = new Logger({ name: "Authentication" });
 
 export async function authenticate(username: string, password: string): Promise<boolean> {
-    const result = await Services.fetchToken([
+    const result = await Services.doLogin([
         {name: "username", value: username},
         {name: "password", value: password},
     ])

@@ -20,7 +20,9 @@ class UsersController(
     private val userService: UserServices
 ) {
     @PostMapping(Uris.Users.ALL)
-    fun create(@RequestBody input: UserCreateInputModel): ResponseEntity<*> {
+    fun create(
+        @RequestBody input: UserCreateInputModel
+    ): ResponseEntity<*> {
         val res = userService.createUser(input.username, input.password)
         return res.map {
             ResponseEntity.status(201)
@@ -78,7 +80,9 @@ class UsersController(
     }
 
     @GetMapping(Uris.Users.BY_ID1)
-    fun getById(@PathVariable id: Int) : ResponseEntity<*>{
+    fun getById(
+        @PathVariable id: Int
+    ) : ResponseEntity<*>{
         val user = userService.getUserById(id)?.toUserStatOutputModel() ?:
             return Problem.response(404, Problem.userNotFound)
         return ResponseEntity.status(200)
@@ -107,7 +111,9 @@ class UsersController(
     }
 
     @DeleteMapping(Uris.Users.BY_ID1)
-    fun deleteUser(@PathVariable id: Int): ResponseEntity<*> {
+    fun deleteUser(
+        @PathVariable id: Int
+    ): ResponseEntity<*> {
         val res = userService.deleteUser(id)
         return res.map {
             ResponseEntity.status(204)
@@ -119,8 +125,11 @@ class UsersController(
     }
 
     @GetMapping(Uris.Users.STATS)
-    fun getUserStats(): ResponseEntity<*> {
-        val res = userService.getUserRanking()
+    fun getUserStats(
+        @RequestParam(required = false) page: Int?,
+        @RequestParam(required = false) pageSize: Int?
+    ): ResponseEntity<*> {
+        val res = userService.getUserRanking(page, pageSize)
         val userStats = res.map { UserStatOutputModel(it.id, it.username, it.wins, it.gamesPlayed) }
         return ResponseEntity.status(200)
             .contentType(SirenMediaType)

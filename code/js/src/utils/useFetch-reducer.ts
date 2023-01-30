@@ -17,8 +17,14 @@ export type State =
     }
     |
     {
-        type : "error",
-        message : string
+        type : "networkError",
+        error : string
+    }
+    |
+    {
+        type : "serverError",
+        error : string,
+        status : number
     }
     |
     {
@@ -32,21 +38,27 @@ type Action =
     }
     |
     {
-        type : "setError",
+        type : "setResponse",
+        response : Siren
+    }
+    |
+    {
+        type : "setNetworkError",
         message : string
     }
     |
     {
-        type : "setResponse",
-        response : Siren
+        type : "setServerError",
+        message : string,
+        status : number
     }
-
 
 function reducer(state:State, action:Action): State {
     switch(action.type){
         case 'startFetch' : return {type : 'fetching'}
-        case 'setError' : return {type : 'error' , message : action.message}
         case 'setResponse' : return {type : 'response' , response : action.response}
+        case 'setNetworkError' : return {type : 'networkError' , error : action.message}
+        case 'setServerError' : return {type : 'serverError' , error : action.message , status : action.status}
     }
 }
 
@@ -86,16 +98,16 @@ export function useFetchReducer(request: Request) : State {
                     const body = await response.json()
                     if (!cancelled) {
                         if (response.status >= 300) {
-                            logger.error("doFetch: ", response.status)
-                            dispatcher({type:'setError', message: body})
+                            logger.error("Response Error: ", response.status)
+                            dispatcher({type:'setServerError', message: body, status: response.status})
                         }
                         dispatcher({type : 'setResponse', response: body})
                     }
                     return body
                 } catch (error) {
-                    logger.error("doFetch: ", error)
+                    logger.error("Network Error: ", error)
                     if (cancelled) return
-                    dispatcher({type:'setError', message:error.message})
+                    dispatcher({type:'setNetworkError', message:error.message})
                 }
             }
         }

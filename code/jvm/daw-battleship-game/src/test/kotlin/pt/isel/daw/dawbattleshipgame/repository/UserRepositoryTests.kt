@@ -43,7 +43,7 @@ class UserRepositoryTests {
             gamesRepo.startGame(InitGame(userRepo.getUserByUsername("user1")!!.id,
                     userRepo.getUserByUsername("user2")!!.id, getGameTestConfiguration1()))
 
-            val ur = tr.usersRepository.getUsersRanking()
+            val ur = tr.usersRepository.getUsersRanking(page, pageSize)
             println(ur)
             val user1 = ur.first{it.username == "user1"}
             val user2 = ur.first{it.username == "user1"}
