@@ -29,6 +29,7 @@ export function Navbar () {
     const logout = (
         <button style={ {display: currentUser ? undefined : "none"}} className={style.logoutLink} onClick={() => {
             setUser(undefined)
+            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         }}>LOGOUT</button>
     )
 

@@ -7,12 +7,17 @@ import {State, useFetchReducer} from "./utils/useFetch-reducer";
 
 const logger = new Logger({ name: "Services" });
 
-async function fetchHome() {
+async function fetchHome(): Promise<void | string> {
     const defaultUrl = links.defaultUrl
     const request = { url: defaultUrl, method: "GET" }
-    const resp = await doFetch(request)
-    if (resp) {
-        extractLinksAndActionsFromHomeResponse(resp)
+    try {
+        const resp = await doFetch(request)
+        if (resp) {
+            extractLinksAndActionsFromHomeResponse(resp)
+        }
+    } catch (e) {
+        logger.error("fetchHome: error: ", e)
+        return 'Error'
     }
 }
 
