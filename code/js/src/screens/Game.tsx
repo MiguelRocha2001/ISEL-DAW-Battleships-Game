@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
 import {InvalidArgumentError, ResolutionLinkError, Services} from '../services'
-import {Board, Fleet, GameConfiguration, Match, Orientation} from '../domain'
+import {Board, Fleet, GameConfiguration, isTheSame, Match, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
@@ -200,6 +200,7 @@ export function Game() {
         }
         if (result instanceof Error) {
             dispatchToErrorScreenOrDoHandler(result, () => {
+                console.log("NWABDHSABWDH")
                 dispatch({type: 'setMenu', msg: result.message})
             })
         } else {
@@ -259,7 +260,7 @@ export function Game() {
                     dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
                 })
             } else {
-                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: "Loading"})
             }
         }
     }
@@ -281,24 +282,42 @@ export function Game() {
     }
 
     async function shoot(row: number, col: number) {
+
+        async function dispatchOrDoNothing() : Promise<boolean> {
+            const result = await Services.getGame()
+
+            if (result instanceof Error) {
+                dispatch({type: 'setError', error: result})
+                return true
+            } else {
+                // only dispatches when our shot was confirmed
+                if (!isMyTurn(result)) {
+                    dispatch({type:'setUpdatingGameWhileNecessary', game: result, msg: "Waiting for opponent's shot"})
+                    return true
+                } else
+                    return false
+            }
+        }
+
         logger.info("shooting in " + row + " " + col)
-        const result = await Services.attack(
+        await Services.attack(
             {shots: Array({row: row, column: col})}
         )
-        if (cancelRequest) {
-            logger.info("shoot cancelled")
-            return
-        }
-        if (result instanceof Error) {
-            dispatchToErrorScreenOrDoHandler(result, () => {
-                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
-            })
-        } else {
-            dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
-        }
+
+        const tic = setInterval(async () => {
+            if (cancelRequest) {
+                logger.info("shot cancelled")
+                clearInterval(tic)
+                return
+            }
+            if (await dispatchOrDoNothing()) {
+                clearInterval(tic)
+                return
+            }
+        }, 100)
     }
 
-    async function updateUntilConfirmation() {
+    async function updateUntilConfirmed() {
         async function dispatchOrDoNothing() : Promise<boolean> {
             const result = await Services.getGame()
 
@@ -320,25 +339,28 @@ export function Game() {
         const tic = setInterval(async () => {
             if (cancelRequest) {
                 logger.info("updateUntilConfirmation cancelled")
+                clearInterval(tic)
                 return
             }
             const dispatched = await dispatchOrDoNothing()
             if (dispatched) {
                 clearInterval(tic)
+                return
             }
         }, 100)
+    }
+
+    function isMyTurn(game: Match) {
+        const myPlayer = game.localPlayer
+        const playerTurn = game.playerTurn
+        if (playerTurn === game.player1 && myPlayer === 'one') return true
+        return playerTurn === game.player2 && myPlayer === 'two';
     }
 
     /**
      * Fetches game from data and updates state accordingly.
      */
     async function updateGameWhileNecessary() {
-        function isMyTurn(game: Match) {
-            const myPlayer = game.localPlayer
-            const playerTurn = game.playerTurn
-                if (playerTurn === game.player1 && myPlayer === 'one') return true
-            return playerTurn === game.player2 && myPlayer === 'two';
-        }
 
         /**
          * Checks if the appropriate msg is being displayed.
@@ -346,8 +368,8 @@ export function Game() {
          * @param msg the msg that should be displayed
          * @return true if state was changed and false otherwise
          */
-        function changeStateToShowCorrectMsgIfNecessary(state: State, msg: string) {
-            if (state.type === 'updatingGameWhileNecessary' && state.msg != msg) {
+        function updateStateToShowCorrectMsgIfNecessary(state: State, msg: string) {
+            if (state.type === 'updatingGameWhileNecessary' && state.msg !== msg) {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: state.game, msg: msg})
                 return true
             }
@@ -362,31 +384,36 @@ export function Game() {
             const resp = await Services.getGame()
 
             if (resp instanceof Match) {
-                // if game is not being displayed, updates state to show game
-                if (state.type === 'updatingGameWhileNecessary' && state.game == undefined) {
+                if (state.type === 'updatingGameWhileNecessary' && !isTheSame(resp, state.game)) {
                     dispatch({type:'setUpdatingGameWhileNecessary', game: resp, msg: state.msg})
                     return true
                 }
 
-                if (resp.state !== 'battle' || isMyTurn(resp)) {
-                    if (resp.state === 'fleet_setup') {
+                switch (resp.state) {
+                    case 'fleet_setup' : {
                         const player = resp.localPlayer
                         const myBoard = player === 'one' ? resp.board1 : resp.board2
                         const enemyBoard = player === 'one' ? resp.board2 : resp.board1
                         if (myBoard.isConfirmed && !enemyBoard.isConfirmed) { // awaiting opponent confirmation
-                            return changeStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to confirm')
+                            return updateStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to confirm')
                         }
-                        console.log("resp", resp)
                         dispatch({type: 'setPlaying', game: resp})
                         return true
                     }
-                    dispatch({type: 'setPlaying', game: resp})
-                    return true
-                } else { // awaiting opponent to shoot
-                    return changeStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to shoot')
+                    case 'battle' : {
+                        if (isMyTurn(resp)) {
+                            dispatch({type: 'setPlaying', game: resp})
+                            return true
+                        } else
+                            return updateStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to shoot')
+                    }
+                    case 'finished' : {
+                        dispatch({type: 'setPlaying', game: resp})
+                        return true
+                    }
                 }
-            }
-            return false
+            } else
+                return false // no game available
         }
 
         logger.info("updatingGameWhileNecessary")
@@ -394,10 +421,12 @@ export function Game() {
             if (cancelRequest) {
                 logger.info("updateGameWhileNecessary cancelled")
                 clearInterval(tid)
+                return
             }
             const dispatched = await dispatchToPlayingOrNothing(state)
             if (dispatched) {
                 clearInterval(tid)
+                return
             }
         }, 100)
     }
@@ -449,7 +478,7 @@ export function Game() {
                     break
                 }
                 case 'waitingForConfirmation' : {
-                    await updateUntilConfirmation()
+                    await updateUntilConfirmed()
                     break
                 }
                 case 'shooting' : {
@@ -634,7 +663,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config,
         }
     }
 
-    const title = fleetConfirmed == true ? "Await For Opponent" : "Place your ships"
+    const title = fleetConfirmed == true ? "Wait For Opponent" : "Place your ships"
 
     const options = fleetConfirmed == false ? (
         <div className={styles.right}>

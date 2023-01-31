@@ -5,8 +5,10 @@ import {Logger} from "tslog";
 import {CreateGameRequest, CreateGameResponse, Match, PlaceShipsRequest} from './domain'
 import {State, useFetchReducer} from "./utils/useFetch-reducer";
 import {NetworkError, ServerError} from "./utils/domain";
+import {LogLevel} from "ts-loader/dist/logger";
 
-const logger = new Logger({ name: "Services" });
+const logger = new Logger({name: "Services"});
+logger.settings.minLevel = 3 // LogLevel: INFO
 
 async function fetchHome(): Promise<void | Error> {
     const defaultUrl = links.defaultUrl
@@ -27,7 +29,7 @@ function useFetchHome(): any | Fetching | Error {
     if (defaultUrl) {
         const state = useFetchReducer({url: defaultUrl, method: "GET"})
         return handlerOrError("useFetchHome", state, (siren: Siren) => {
-            logger.info("fetchHome: response successful")
+            logger.debug("fetchHome: response successful")
             return siren.properties
         })
     }
@@ -45,26 +47,28 @@ function extractSirenInfo(resp: Siren) {
     const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(resp.links)
     const getGameLink = Siren.extractGetGameLink(resp.links)
     const getQuitGameAction = Siren.extractQuitGameAction(resp.actions)
+
     if (serverInfoLink)
-        logger.info("fetchHome: setting up new info endpoint: ", serverInfoLink)
+        logger.debug("fetchHome: setting up new info endpoint: ", serverInfoLink)
     if (battleshipRanksLink)
         logger.info("fetchHome: setting up new battleship ranks endpoint: ", battleshipRanksLink)
     if (getUserLink)
-        logger.info("fetchHome: setting up new get user endpoint: ", getUserLink)
+        logger.debug("fetchHome: setting up new get user endpoint: ", getUserLink)
     if (userHomeLink)
-        logger.info("fetchHome: setting up new user home endpoint: ", userHomeLink)
+        logger.debug("fetchHome: setting up new user home endpoint: ", userHomeLink)
     if (tokenAction)
-        logger.info("fetchHome: setting up new token action: ", tokenAction.name)
+        logger.debug("fetchHome: setting up new token action: ", tokenAction.name)
     if (registerAction)
-        logger.info("fetchHome: setting up new register action: ", registerAction.name)
+        logger.debug("fetchHome: setting up new register action: ", registerAction.name)
     if (createGameAction)
-        logger.info("fetchHome: setting up new create game action: ", createGameAction.name)
+        logger.debug("fetchHome: setting up new create game action: ", createGameAction.name)
     if (getCurrentGameIdLink)
-        logger.info("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
+        logger.debug("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
     if (getGameLink)
-        logger.info("fetchHome: setting up new get game link: ", getGameLink)
+        logger.debug("fetchHome: setting up new get game link: ", getGameLink)
     if (getQuitGameAction)
-        logger.info("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
+        logger.debug("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
+
     links.setInfoLink(serverInfoLink)
     links.setBattleshipRanksLink(battleshipRanksLink)
     links.setUserLink(getUserLink)
@@ -142,22 +146,22 @@ async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
             if (resp instanceof ServerError) {
                 return logAndGetError('doLogin', resp)
             }
-            logger.info("fetchToken: response successfully")
+            logger.debug("fetchToken: response successfully")
             const createGameAction = Siren.extractCreateGameAction(resp.actions)
             const userHomeLink = Siren.extractUserHomeLink(resp.links)
             if (createGameAction) {
                 links.setCreateGameAction(createGameAction)
-                logger.info("fetchToken: setting up new create game action: ", createGameAction.name)
+                logger.debug("fetchToken: setting up new create game action: ", createGameAction.name)
             } else {
                 logger.error("fetchToken: create game action not found in response")
             }
             if (userHomeLink) {
                 links.setUserHomeLink(userHomeLink)
-                logger.info("fetchToken: setting up new user home link: ", userHomeLink)
+                logger.debug("fetchToken: setting up new user home link: ", userHomeLink)
             } else {
                 logger.error("fetchToken: user home link not found in response")
             }
-            logger.info("login successful")
+            logger.debug("login successful")
             return
         } catch (e) {
             return logAndGetError('doLogin', e)
@@ -184,11 +188,11 @@ async function createUser(fields: KeyValuePair[]): Promise<undefined | Error> {
                 return logAndGetError('createUser', resp)
             }
             const userId = resp.properties.userId
-            logger.info("createUser: response successfully")
+            logger.debug("createUser: response successfully")
             const tokenAction = Siren.extractTokenAction(resp.actions)
             if (tokenAction) {
                 links.setTokenAction(tokenAction)
-                logger.info("createUser: setting up new token action: ", tokenAction.name)
+                logger.debug("createUser: setting up new token action: ", tokenAction.name)
             } else {
                 logger.error("createUser: token action not found in response")
             }
@@ -215,19 +219,19 @@ function useFetchUserHome(): UserStats | Fetching | Error {
 
             if (createGameAction) {
                 links.setCreateGameAction(createGameAction)
-                logger.info("fetchUserHome: setting up new create game action: ", createGameAction.name)
+                logger.debug("fetchUserHome: setting up new create game action: ", createGameAction.name)
             } else {
                 return logAndGetError('useFetchUserHome', new ResolutionLinkError('create game action not found'))
             }
             if (getCurrentGameIdLink) {
                 links.setCurrentGameIdLink(getCurrentGameIdLink)
-                logger.info("fetchUserHome: setting up new get_current_game_id link: ", getCurrentGameIdLink)
+                logger.debug("fetchUserHome: setting up new get_current_game_id link: ", getCurrentGameIdLink)
             } else {
                 return logAndGetError('useFetchUserHome', new ResolutionLinkError('get_current_game_id link not found'))
             }
             if (getGameLink) {
                 links.setGetGameLink(getGameLink)
-                logger.info("fetchUserHome: setting up new get_game link: ", getGameLink)
+                logger.debug("fetchUserHome: setting up new get_game link: ", getGameLink)
             } else {
                 return logAndGetError('useFetchUserHome', new ResolutionLinkError('get_game link not found'))
             }
@@ -258,7 +262,7 @@ async function createGame(request: CreateGameRequest | undefined): Promise<Creat
             // const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(result.links)
             if (getGameLink) {
                 links.setGetGameLink(getGameLink)
-                logger.info("createGame: setting up new get game link: ", getGameLink)
+                logger.debug("createGame: setting up new get game link: ", getGameLink)
             }
             const createGameResponse = result.properties
             if (createGameResponse) {
@@ -284,7 +288,7 @@ async function getCurrentGameId(): Promise<number | Error> {
         if (result instanceof ServerError) {
             return logAndGetError('getCurrentGameId', result)
         }
-        logger.info("getGame: response successful")
+        logger.debug("getGame: response successful")
         const gameId = result.properties.id
         if (gameId) {
             return gameId
@@ -305,25 +309,25 @@ async function getGame(): Promise<Match | Error> {
         const quitGameAction = Siren.extractQuitGameAction(response.actions)
         if (placeShipsAction) {
             links.setPlaceShipsAction(placeShipsAction)
-            logger.info("getGame: setting up new place ships action: ", placeShipsAction.name)
+            logger.debug("getGame: setting up new place ships action: ", placeShipsAction.name)
         } else {
             logger.error("getGame: place ships action not found in response")
         }
         if (confirmFleetAction) {
             links.setConfirmFleetAction(confirmFleetAction)
-            logger.info("getGame: setting up new confirm fleet action: ", confirmFleetAction.name)
+            logger.debug("getGame: setting up new confirm fleet action: ", confirmFleetAction.name)
         } else {
             logger.error("getGame: confirm fleet action not found in response")
         }
         if (attackAction) {
             links.setAttackAction(attackAction)
-            logger.info("getGame: setting up new attack action: ", attackAction.name)
+            logger.debug("getGame: setting up new attack action: ", attackAction.name)
         } else {
             logger.error("getGame: attack action not found in response")
         }
         if (quitGameAction) {
             links.setQuitGameAction(quitGameAction)
-            logger.info("getGame: setting up new quit game action: ", quitGameAction.name)
+            logger.debug("getGame: setting up new quit game action: ", quitGameAction.name)
         } else {
             logger.error("getGame: quit game action not found in response")
         }
@@ -357,7 +361,7 @@ async function getGame(): Promise<Match | Error> {
         const error = checkLinks(response) // returns a string if there is an error
         if (error)
             return new Error(error)
-        logger.info("getGame: response successful")
+        logger.debug("getGame: response successful")
         return fromSirenPropsToMatch(response.properties)
     } catch (e) {
         return logAndGetError('getGame', e)
@@ -381,7 +385,7 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
             if (result instanceof ServerError) {
                 return logAndGetError('placeShips', result)
             }
-            logger.info("placeShips: response successful")
+            logger.debug("placeShips: response successful")
         } catch (e) {
             return logAndGetError('placeShips', e)
         }
@@ -405,7 +409,7 @@ async function confirmFleet(): Promise<void | Error> {
             if (result instanceof ServerError) {
                 return logAndGetError('confirmFleet', result)
             }
-            logger.info("confirmFleet: response successful")
+            logger.debug("confirmFleet: response successful")
         } catch (e) {
             return logAndGetError('confirmFleet', e)
         }
@@ -456,7 +460,7 @@ async function quitGame(gameId: number): Promise<void | Error> {
             if (result instanceof ServerError) {
                 return logAndGetError('quitGame', result)
             }
-            logger.info("quitGame: response successful")
+            logger.debug("quitGame: response successful")
         } catch (e) {
             return logAndGetError('quitGame', e)
         }
@@ -468,7 +472,7 @@ export class Fetching {}
 function handlerOrError(origin: string, state: State, handler: (siren: Siren) => any): any | Error | Fetching {
     switch (state.type) {
         case 'response' : {
-            logger.info(origin, "response successful")
+            logger.debug(origin, "response successful")
             return handler(state.response)
         }
         case "fetching" : {
