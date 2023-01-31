@@ -2,6 +2,7 @@ import {Siren} from './siren'
 import {links} from '../server_info/links'
 import {Logger} from "tslog";
 import {NetworkError, ServerError} from "./domain";
+import {fetchRequest, getSirenOrProblemOrUndefined, ProblemJson} from "./fetchCommons";
 
 const logger = new Logger({ name: "useFetch" });
 
@@ -33,27 +34,21 @@ function validateRequestMethod(request: Request): boolean {
     return request.url && (method === 'GET' || method === 'POST' || method === 'PUT' || method === 'DELETE')
 }
 
-export async function doFetch(request: Request): Promise<Siren | ServerError> {
+export async function doFetch(request: Request): Promise<Siren | undefined | ServerError> {
     if (request && validateRequestMethod(request)) {
         logger.info("sending request to: ", links.host + request.url)
         // console.log("body: ", request.body ? buildBody(request.body) : undefined)
         try {
-            const resp = await fetch(links.host + request.url, {
-                method: request.method,
-                body: request.body ? buildBody(request.body) : undefined,
-                headers: {
-                    'Content-Type': CONTENT_TYPE_JSON,
-                },
-                credentials: "include"
-            })
-            const body = await resp.json()
-            if (resp.status >= 300) {
-                logger.error("doFetch: ", resp.status)
-                return new ServerError("No Info", resp.status)
+            const resp = await fetchRequest(request)
+            const data = await getSirenOrProblemOrUndefined(resp)
+
+            if (data instanceof ProblemJson) {
+                logger.error("Response Error: ", data.title)
+                return new ServerError(data.title, resp.status)
             }
-            return body
+            return data
         } catch (error) {
-            logger.error("doFetch: ", error)
+            logger.error("Network Error: ", error)
             return Promise.reject(new NetworkError(error.message))
         }
     }

@@ -136,7 +136,6 @@ data class Problem(
     }
 }
 
-
 val problems = mapOf(
         "UserAlreadyExists" to Problem.response(400, Problem.userAlreadyExists),
 

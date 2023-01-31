@@ -385,8 +385,8 @@ async function placeShips(placeShipsRequest: PlaceShipsRequest): Promise<void | 
         } catch (e) {
             return logAndGetError('placeShips', e)
         }
-    }
-    return logAndGetError('placeShips', new InvalidArgumentError('place ships request not valid'))
+    } else
+        return logAndGetError('placeShips', new InvalidArgumentError('place ships request not valid'))
 }
 async function confirmFleet(): Promise<void | Error> {
     const action = links.getConfirmFleetAction()
@@ -409,8 +409,8 @@ async function confirmFleet(): Promise<void | Error> {
         } catch (e) {
             return logAndGetError('confirmFleet', e)
         }
-    }
-    return logAndGetError('confirmFleet', new InvalidArgumentError('confirm fleet action not found'))
+    } else
+        return logAndGetError('confirmFleet', new InvalidArgumentError('confirm fleet action not found'))
 }
 
 async function attack(attackRequest: any): Promise<void | Error> {
@@ -433,8 +433,8 @@ async function attack(attackRequest: any): Promise<void | Error> {
         } catch (e) {
             return logAndGetError('attack', e)
         }
-    }
-    return logAndGetError('attack', new InvalidArgumentError('attack action not found'))
+    } else
+        return logAndGetError('attack', new InvalidArgumentError('attack action not found'))
 }
 
 async function quitGame(gameId: number): Promise<void | Error> {
@@ -460,8 +460,8 @@ async function quitGame(gameId: number): Promise<void | Error> {
         } catch (e) {
             return logAndGetError('quitGame', e)
         }
-    }
-    return logAndGetError('quitGame', new ResolutionLinkError('quit game action not found'))
+    } else
+        return logAndGetError('quitGame', new ResolutionLinkError('quit game action not found'))
 }
 
 export class Fetching {}

@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom'
 import style from "./Me.module.css"
 import {UserDetail} from "./Commons";
 import {Loading} from "./Loading";
-import {ErrorScreen} from "../utils/ErrorScreen";
+import {ErrorScreen} from "./ErrorScreen";
 
 export function Me() {
     const result = Services.fetchUserHome()

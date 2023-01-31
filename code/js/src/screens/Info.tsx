@@ -2,7 +2,7 @@ import * as React from 'react'
 import {Author, Fetching, ServerInfo, Services} from '../services'
 import styles from './Info.module.css'
 import {Loading} from "./Loading";
-import {ErrorScreen} from "../utils/ErrorScreen";
+import {ErrorScreen} from "./ErrorScreen";
 
 export function Info() {
     const result = Services.useFetchServerInfo()

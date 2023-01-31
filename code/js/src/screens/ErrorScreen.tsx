@@ -1,5 +1,5 @@
 import * as React from "react";
-import {NetworkError, ServerError} from "./domain";
+import {NetworkError, ServerError} from "../utils/domain";
 import {InvalidArgumentError, ResolutionLinkError} from "../services";
 
 export function ErrorScreen({error} : {error : Error}) {

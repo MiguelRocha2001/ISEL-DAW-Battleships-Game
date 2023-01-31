@@ -3,9 +3,9 @@ import {Fetching, Rankings, Services, UserStats} from '../services'
 import styles from './Leaderboard.module.css'
 import {Link, useParams} from "react-router-dom";
 import {Loading} from "./Loading";
-import {ErrorScreen} from "../utils/ErrorScreen";
+import {ErrorScreen} from "./ErrorScreen";
 
-const PAGE_SIZE = 3
+const PAGE_SIZE = 4
 
 export function Leaderboard() {
     const { page } = useParams()

@@ -7,7 +7,7 @@ import styles from './Game.module.css'
 import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
 import {Button} from "react-bootstrap";
-import {ErrorScreen} from "../utils/ErrorScreen";
+import {ErrorScreen} from "./ErrorScreen";
 import {NetworkError, ServerError} from "../utils/domain";
 
 
@@ -227,7 +227,10 @@ export function Game() {
         }
         if (result instanceof Error) {
             dispatchToErrorScreenOrDoHandler(result, () => {
-                dispatch({type: 'setMenu', msg: result.message})
+                if (result.message === "User already in a queue")
+                    dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
+                else
+                    dispatch({type: 'setMenu', msg: result.message})
             })
         } else dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg : 'Matchmaking'})
     }

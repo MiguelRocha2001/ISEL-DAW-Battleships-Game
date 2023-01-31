@@ -2,6 +2,7 @@ import {useEffect, useReducer,} from 'react'
 import {links} from "../server_info/links";
 import {Logger} from "tslog";
 import {Siren} from "./siren";
+import {fetchRequest, getSirenOrProblemOrUndefined, ProblemJson} from "./fetchCommons";
 
 const logger = new Logger({ name: "useFetchReducer" });
 
@@ -86,24 +87,18 @@ export function useFetchReducer(request: Request) : State {
                 logger.info("sending request to: ", links.host + request.url)
                 // console.log("body: ", request.body ? buildBody(request.body) : undefined)
                 try {
-                    const response = await fetch(links.host + request.url, {
-                        method: request.method,
-                        body: request.body ? buildBody(request.body) : undefined,
-                        headers: {
-                            'Content-Type': CONTENT_TYPE_JSON,
-                        },
-                        credentials: 'include'
-                    })
+                    const response = await fetchRequest(request)
                     if (cancelled) return
-                    const body = await response.json()
+
+                    const data = await getSirenOrProblemOrUndefined(response)
                     if (!cancelled) {
-                        if (response.status >= 300) {
-                            logger.error("Response Error: ", response.status)
-                            dispatcher({type:'setServerError', message: body, status: response.status})
+                        if (data instanceof ProblemJson) {
+                            logger.error("Response Error: ", data.title)
+                            dispatcher({type:'setServerError', message: data.title, status: data.status})
                         }
-                        dispatcher({type : 'setResponse', response: body})
+                        else
+                            dispatcher({type : 'setResponse', response: data})
                     }
-                    return body
                 } catch (error) {
                     logger.error("Network Error: ", error)
                     if (cancelled) return

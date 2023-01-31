@@ -2,7 +2,7 @@ import {useParams} from "react-router-dom";
 import {Fetching, Services} from "../services";
 import * as React from "react";
 import {UserDetail} from "./Commons";
-import {ErrorScreen} from "../utils/ErrorScreen";
+import {ErrorScreen} from "./ErrorScreen";
 import {Loading} from "./Loading";
 
 
