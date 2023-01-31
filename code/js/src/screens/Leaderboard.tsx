@@ -17,13 +17,13 @@ export function Leaderboard() {
     } else if (result instanceof Fetching) {
         return <Loading />
     } else {
-        const prevButton = curPage > 1 ? <Link to={`/leadership/${curPage - 1}`}>Previous</Link>
+        const prevButton = curPage > 1 ? <Link className={styles.pageButton} id={styles.previousButton} to={`/leadership/${curPage - 1}`}> ↢ </Link>
             : <span></span>
-        const nextButton = result.users.length >= PAGE_SIZE ? <Link to={`/leadership/${curPage + 1}`}>Next</Link>
+        const nextButton = result.users.length >= PAGE_SIZE ? <Link className={styles.pageButton} id={styles.nextButton} to={`/leadership/${curPage + 1}`}> ↣ </Link>
             : <span></span>
 
         return (
-            <div>
+            <div className={styles.rankingsMainPage}>
                 <LeaderboardInternal rankings={result} />
                 {prevButton}
                 {nextButton}

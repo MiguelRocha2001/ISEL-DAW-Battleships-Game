@@ -86,3 +86,32 @@ a:hover {
     font-weight: 700;
 }
 
+#nextButton{
+    position: fixed;
+    right: 50px;
+}
+
+#previousButton{
+    position: fixed;
+    left: 50px;
+}
+
+.rankingsMainPage{
+    text-align: center;
+}
+
+.pageButton{
+    background-color: #26FFDF;
+    padding: 1em;
+    color: black;
+    border-radius: 0.5em;
+    text-decoration: none;
+    margin-top:3%;
+    font-size:20px
+}
+
+.pageButton:hover{
+    color: #26FFDF;
+    background-color: black;
+
+}

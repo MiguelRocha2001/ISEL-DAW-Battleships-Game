@@ -435,3 +435,15 @@ input:checked + .slider:before {
 #orientation{
    margin-left: 60px;
 }
+
+#quitButton{
+   margin-left: 30px;
+    background-color: lightslategray;
+}
+
+#quitButton:hover {
+    --primary: hsla(0, 0%, 50%, 1);
+}
+#quitButton:active {
+    --primary: hsla(0, 0%, 50%, 1);
+}

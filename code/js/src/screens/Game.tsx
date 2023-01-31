@@ -542,7 +542,10 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
     let enemyBoard: Board = isPlayerOne ? match.board2 : match.board1
     let winner: string | undefined = match.winner == match.player1 && isPlayerOne ? "You" : "Opponent"
 
-    const quitButton = <Button onClick={() => {onQuitRequest(match.id)}} variant="contained" color="secondary">Quit</Button>
+    const quitButton = <button  id={styles.quitButton} className={styles.cybrBtn} onClick={() => {onQuitRequest(match.id)}}>
+        Leave Match<span aria-hidden></span>
+        <span aria-hidden className={styles.cybrbtn__glitch}>Leave Match</span>
+    </button>
 
     switch(match.state) {
         case "fleet_setup":
@@ -554,8 +557,9 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
                         onPlaceShip={(ship, x, y, o) => onPlaceShip(ship, x, y, o)}
                         onConfirmFleet={onConfirmFleet}
                         config={match.configuration}
+                        buttonQuit = {quitButton}
                     />
-                    {quitButton}
+
                 </div>
             )
         case "battle":
@@ -572,12 +576,13 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
     }
 }
 
-function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config}: {
+function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config, buttonQuit}: {
     board : Board,
     fleetConfirmed : boolean,
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleet : () => void,
-    config : GameConfiguration
+    config : GameConfiguration,
+    buttonQuit : JSX.Element
 }) {
     const [selectedShip, setSelectedShip] = useState<string>(null)
     const [selectedOrientation, setSelectedOrientation] = useState<Orientation>('HORIZONTAL')
@@ -607,6 +612,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config}
                 Ready!<span aria-hidden>_</span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Ready</span>
             </button>
+            {buttonQuit}
             <div id={styles.buttonsForSelectShips}>
                 <ShipOptions
                     curOrientation={selectedOrientation}
