@@ -310,9 +310,9 @@ export function Game() {
                 dispatch({type:'setWaitingForConfirmation'})
             })
         } else {
-            const myBoard = result.myPlayer === 'one' ? result.board1 : result.board2
+            const myBoard = result.localPlayer === 'one' ? result.board1 : result.board2
             if (myBoard.isConfirmed) {
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: undefined})
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: 'Waiting for opponent to confirm'})
             } else {
                 dispatch({type:'setWaitingForConfirmation'})
             }
@@ -324,48 +324,72 @@ export function Game() {
      */
     async function updateGameWhileNecessary() {
         function isMyTurn(game: Match) {
-            const myPlayer = game.myPlayer
+            const myPlayer = game.localPlayer
             const playerTurn = game.playerTurn
                 if (playerTurn === game.player1 && myPlayer === 'one') return true
             return playerTurn === game.player2 && myPlayer === 'two';
         }
 
-        logger.info("updateGameWhileNecessary")
-        const resp = await Services.getGame()
-        if (cancelRequest) {
-            logger.info("updateGameWhileNecessary cancelled")
-            return
+        /**
+         * Checks if the appropriate msg is being displayed.
+         * @param state the current state
+         * @param msg the msg that should be displayed
+         * @return true if state was changed and false otherwise
+         */
+        function changeStateToShowCorrectMsgIfNecessary(state: State, msg: string) {
+            if (state.type === 'updatingGameWhileNecessary' && state.msg != msg) {
+                dispatch({type:'setUpdatingGameWhileNecessary', game: state.game, msg: msg})
+                return true
+            }
+            return false
         }
-        if (resp instanceof Match) {
-            if (resp.state !== 'battle' || isMyTurn(resp)) {
-                if (resp.state === 'fleet_setup') {
-                    const player = resp.myPlayer
-                    const myBoard = player === 'one' ? resp.board1 : resp.board2
-                    const enemyBoard = player === 'one' ? resp.board2 : resp.board1
-                    if (myBoard.isConfirmed && !enemyBoard.isConfirmed) {
-                        setTimeout(() => {
-                            dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: 'Waiting for opponent'})
-                        }, 1000)
-                        return
-                    }
+
+        /**
+         * Updates state to playing if is appropriate, and returns true if it was updated.
+         * Otherwise, returns false.
+         */
+        async function dispatchToPlayingOrNothing(state: State) : Promise<boolean> {
+            const resp = await Services.getGame()
+
+            if (resp instanceof Match) {
+                // if game is not being displayed, updates state to show game
+                if (state.type === 'updatingGameWhileNecessary' && state.game == undefined) {
+                    dispatch({type:'setUpdatingGameWhileNecessary', game: resp, msg: state.msg})
+                    return true
                 }
-                dispatch({type: 'setPlaying', game: resp})
-                return
+
+                if (resp.state !== 'battle' || isMyTurn(resp)) {
+                    if (resp.state === 'fleet_setup') {
+                        const player = resp.localPlayer
+                        const myBoard = player === 'one' ? resp.board1 : resp.board2
+                        const enemyBoard = player === 'one' ? resp.board2 : resp.board1
+                        if (myBoard.isConfirmed && !enemyBoard.isConfirmed) { // awaiting opponent confirmation
+                            return changeStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to confirm')
+                        }
+                        console.log("resp", resp)
+                        dispatch({type: 'setPlaying', game: resp})
+                        return true
+                    }
+                    dispatch({type: 'setPlaying', game: resp})
+                    return true
+                } else { // awaiting opponent to shoot
+                    return changeStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to shoot')
+                }
             }
-            setTimeout(() => {
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: resp, msg: 'Waiting for opponent'})
-            }, 1000)
-        } else {
-            let msg;
-            if (state.type === 'updatingGameWhileNecessary' && state.msg === 'Matchmaking') {
-                msg = 'Matchmaking'
-            } else {
-                msg = undefined
-            }
-            setTimeout(() => {
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: msg})
-            }, 1000)
+            return false
         }
+
+        logger.info("updatingGameWhileNecessary")
+        const tid = setInterval(async () => {
+            if (cancelRequest) {
+                logger.info("updateGameWhileNecessary cancelled")
+                clearInterval(tid)
+            }
+            const dispatched = await dispatchToPlayingOrNothing(state)
+            if (dispatched) {
+                clearInterval(tid)
+            }
+        }, 1000)
     }
 
     async function quitGame(gameId: number) {
@@ -529,14 +553,8 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
         onConfirmFleetRequest()
     }
 
-    let isPlayerOne = match.myPlayer === "one"
+    let isPlayerOne = match.localPlayer === "one"
     let myBoard: Board = isPlayerOne ? match.board1 : match.board2
-
-    /*
-    console.log("-------------MYBOARD--------------")
-    console.log(myBoard)
-    console.log(match.board1)
-     */
 
     let fleetConfirmed: boolean = isPlayerOne ? match.board1.isConfirmed : match.board2.isConfirmed
     let enemyBoard: Board = isPlayerOne ? match.board2 : match.board1
@@ -546,6 +564,8 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
         Leave Match<span aria-hidden></span>
         <span aria-hidden className={styles.cybrbtn__glitch}>Leave Match</span>
     </button>
+
+    console.log("match", match)
 
     switch(match.state) {
         case "fleet_setup":
@@ -604,7 +624,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config,
         }
     }
 
-    const title = fleetConfirmed == false ? "Await For Opponent" : "Place your ships"
+    const title = fleetConfirmed == true ? "Await For Opponent" : "Place your ships"
 
     const options = fleetConfirmed == false ? (
         <div className={styles.right}>

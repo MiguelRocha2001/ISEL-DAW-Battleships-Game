@@ -14,7 +14,7 @@ export async function authenticate(username: string, password: string): Promise<
         {name: "username", value: username},
         {name: "password", value: password},
     ])
-    return typeof result !== "string"; // If the result is a string, it's an error message
+    return !(result instanceof Error);
 }
 
 export async function createUser(username: string, password: string): Promise<undefined | Error> {

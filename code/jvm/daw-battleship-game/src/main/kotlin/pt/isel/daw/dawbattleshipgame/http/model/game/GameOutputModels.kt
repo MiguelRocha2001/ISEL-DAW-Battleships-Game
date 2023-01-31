@@ -63,8 +63,6 @@ enum class GameStateOutputModel {
     }
 }
 
-data class GameAndPlayerOutputModel(val game: GameOutputModel, val player: PlayerOutputModel)
-
 data class GameOutputModel(
     val id: Int,
     val configuration: Configuration,
@@ -75,9 +73,10 @@ data class GameOutputModel(
     val board2: BoardOutputModel,
     val playerTurn: Int?,
     val winner: Int?,
+    val localPlayer: PlayerOutputModel
 )
 
-fun Game.toGameOutputModel(): GameOutputModel {
+fun Game.toGameOutputModel(localPlayer: Player): GameOutputModel {
     return GameOutputModel(
         id = id,
         configuration = configuration,
@@ -88,6 +87,7 @@ fun Game.toGameOutputModel(): GameOutputModel {
         board2 = board2.toBoardOutputModel(),
         playerTurn = playerTurn,
         winner = winner,
+        localPlayer = PlayerOutputModel.get(localPlayer)
     )
 }
 
@@ -96,12 +96,12 @@ enum class PlayerOutputModel {
     ONE, TWO;
     @JsonValue
     fun getName() = name.lowercase()
-}
 
-fun Player.toPlayerOutputModel(): PlayerOutputModel {
-    return when (this) {
-        Player.ONE -> PlayerOutputModel.ONE
-        Player.TWO -> PlayerOutputModel.TWO
+    companion object {
+        fun get(value: Player) = when (value) {
+            Player.ONE -> ONE
+            Player.TWO -> TWO
+        }
     }
 }
 

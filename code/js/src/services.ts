@@ -339,9 +339,9 @@ async function getGame(): Promise<Match | Error> {
             props.state,
             props.board1,
             props.board2,
-            props.myPlayer,
             props.winner,
             props.playerTurn,
+            props.localPlayer
         )
     }
 

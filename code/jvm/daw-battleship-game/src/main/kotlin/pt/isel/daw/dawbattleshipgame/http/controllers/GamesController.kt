@@ -39,10 +39,7 @@ class GamesController(
                 .contentType(SirenMediaType)
                 .body(
                     siren(
-                        GameAndPlayerOutputModel(
-                            it.first.toGameOutputModel(),
-                            it.second.toPlayerOutputModel()
-                        )
+                        it.first.toGameOutputModel(it.second)
                     ) {
                         clazz("game")
                     }
@@ -58,7 +55,7 @@ class GamesController(
         return res.map {
             ResponseEntity.status(200)
                 .contentType(SirenMediaType)
-                .body(siren(it.first.toGameOutputModel()) {
+                .body(siren(it.first.toGameOutputModel(it.second)) {
                     preparationActions(this)
                     battleActions(this)
                     quitGameAction(this)

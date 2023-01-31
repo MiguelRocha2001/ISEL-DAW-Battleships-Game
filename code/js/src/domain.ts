@@ -7,9 +7,9 @@ export class Match {
         public state: string,
         public board1: Board,
         public board2: Board,
-        public myPlayer: string,
         public winner: number,
         public playerTurn: number,
+        public localPlayer: string,
     ) {
         this.id = id;
         this.configuration = configuration;
@@ -18,7 +18,7 @@ export class Match {
         this.state = state;
         this.board1 = board1;
         this.board2 = board2;
-        this.myPlayer = myPlayer;
+        this.localPlayer = localPlayer;
         this.winner = winner;
         this.playerTurn = playerTurn;
     }
