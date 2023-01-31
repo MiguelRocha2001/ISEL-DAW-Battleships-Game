@@ -299,24 +299,34 @@ export function Game() {
     }
 
     async function updateUntilConfirmation() {
-        logger.info("updatingUntilConfirmation")
-        const result = await Services.getGame()
-        if (cancelRequest) {
-            logger.info("updateUntilConfirmation cancelled")
-            return
-        }
-        if (result instanceof Error) {
-            dispatchToErrorScreenOrDoHandler(result, () => {
-                dispatch({type:'setWaitingForConfirmation'})
-            })
-        } else {
-            const myBoard = result.localPlayer === 'one' ? result.board1 : result.board2
-            if (myBoard.isConfirmed) {
-                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: 'Waiting for opponent to confirm'})
+        async function dispatchOrDoNothing() : Promise<boolean> {
+            const result = await Services.getGame()
+
+            if (result instanceof Error) {
+                dispatch({type: 'setError', error: result})
+                return true
             } else {
-                dispatch({type:'setWaitingForConfirmation'})
+                const myBoard = result.localPlayer === 'one' ? result.board1 : result.board2
+                if (myBoard.isConfirmed) {
+                    dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg: 'Waiting for opponent to confirm'})
+                    return true
+                } else {
+                    return false
+                }
             }
         }
+
+        logger.info("updatingUntilConfirmation")
+        const tic = setInterval(async () => {
+            if (cancelRequest) {
+                logger.info("updateUntilConfirmation cancelled")
+                return
+            }
+            const dispatched = await dispatchOrDoNothing()
+            if (dispatched) {
+                clearInterval(tic)
+            }
+        }, 100)
     }
 
     /**
@@ -389,7 +399,7 @@ export function Game() {
             if (dispatched) {
                 clearInterval(tid)
             }
-        }, 1000)
+        }, 100)
     }
 
     async function quitGame(gameId: number) {
