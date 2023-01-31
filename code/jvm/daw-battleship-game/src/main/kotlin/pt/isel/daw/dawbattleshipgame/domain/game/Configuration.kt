@@ -6,6 +6,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
 import pt.isel.daw.dawbattleshipgame.http.requireWithException
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.absoluteValue
 
 /**
@@ -47,7 +48,7 @@ data class Configuration(
         val DEFAULT = Configuration(
                 boardSize = 10,
                 shots = 1,
-                fleet = mapOf(
+                fleet = hashMapOf(
                         ShipType.CARRIER to 5,
                         ShipType.BATTLESHIP to 4,
                         ShipType.CRUISER to 3,
@@ -59,7 +60,7 @@ data class Configuration(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(boardSize, shots, roundTimeout)
+        return Objects.hash(fleet, boardSize, shots, roundTimeout)
     }
     fun isShipValid(shipType: ShipType) =
             fleet[shipType] != null
