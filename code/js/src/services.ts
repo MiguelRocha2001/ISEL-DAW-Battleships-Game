@@ -2,7 +2,7 @@ import {links} from './server_info/links'
 import {Action, Siren} from './utils/siren'
 import {doFetch, Fetch, KeyValuePair} from './utils/useFetch'
 import {Logger} from "tslog";
-import {CreateGameRequest, CreateGameResponse, Match, PlaceShipsRequest} from './domain'
+import {CreateGameResponse, GameConfiguration, Match, PlaceShipsRequest} from './domain'
 import {State, useFetchReducer} from "./utils/useFetch-reducer";
 import {NetworkError, ServerError} from "./utils/domain";
 import {LogLevel} from "ts-loader/dist/logger";
@@ -241,7 +241,7 @@ function useFetchUserHome(): UserStats | Fetching | Error {
     return logAndGetError('useFetchUserHome', new ResolutionLinkError('user home link not found'))
 }
 
-async function createGame(request: CreateGameRequest | undefined): Promise<CreateGameResponse | Error> {
+async function createGame(request: GameConfiguration | undefined): Promise<CreateGameResponse | Error> {
     const action = links.getCreateGameAction()
     if (!action)
         return logAndGetError('createGame', new ResolutionLinkError('create game action not found'))

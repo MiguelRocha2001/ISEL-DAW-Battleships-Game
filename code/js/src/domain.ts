@@ -68,13 +68,6 @@ export function isTheSameGameConfiguration(a: GameConfiguration, b: GameConfigur
         isTheSameFleet(a.fleet, b.fleet);
 }
 
-export type CreateGameRequest = {
-    boardSize: number,
-    fleet: Fleet,
-    shots: number,
-    roundTimeout: number
-}
-
 export type CreateGameResponse = {
     gameState: string,
     gameId: number

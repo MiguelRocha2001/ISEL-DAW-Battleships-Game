@@ -29,7 +29,8 @@ type State =
     }
     |
     {
-        type : "creatingGame"
+        type : "creatingGame",
+        config : GameConfiguration,
     }
     |
     {
@@ -87,7 +88,8 @@ type Action =
     }
     |
     {
-        type : "setCreatingGame"
+        type : "setCreatingGame",
+        config : GameConfiguration,
     }
     |
     {
@@ -135,53 +137,47 @@ type Action =
     }
 
 function reducer(state: State, action: Action): State {
+    // logs the action
+    if (action.type === "setError")
+        logger.error("Error: " + action.error)
+    else
+        logger.info("Action: " + action.type)
+
     switch(action.type) {
         case "setError": {
-            logger.error("Error: " + action.error)
             return { type: "error", error: action.error }
         }
         case "setCheckForExistingOnGoingGame" : {
-            logger.info("setCheckForExistingOnGoingGame")
             return {type: "checkingForExistingOnGoingGame"}
         }
         case 'setMenu' : {
-            logger.info("setStatic")
             return {type : 'menu', msg: action.msg}
         }
         case 'setCreatingGame' : {
-            logger.info("setCreatingGame")
-            return {type : 'creatingGame'}
+            return {type : 'creatingGame', config : action.config}
         }
         case 'setPlaying' : {
-            logger.info("setPlaying")
             return {type : 'playing', game : action.game, msg : null}
         }
         case 'setPlayingWithMsg' : {
-            logger.info("setPlayingWithMsg")
             return {type : 'playing', game : action.game, msg : action.msg}
         }
         case 'setPlacingShips' : {
-            logger.info("setPlacingShips")
             return {type : 'placingShips', ship : action.ship, row : action.row, col : action.col, orient : action.orient}
         }
         case 'setConfirmingFleet' : {
-            logger.info("setConfirmingFleet")
             return {type : 'confirmingFleet'}
         }
         case 'setWaitingForConfirmation' : {
-            logger.info("setWaitingForConfirmation")
             return {type : 'waitingForConfirmation'}
         }
         case 'setShooting' : {
-            logger.info("setShooting")
             return {type : 'shooting', row : action.row, col : action.col}
         }
         case 'setUpdatingGameWhileNecessary' : {
-            logger.info("setUpdatingGameWhileNecessary")
             return {type : 'updatingGameWhileNecessary', game : action.game, msg : action.msg}
         }
         case 'setQuitGame' : {
-            logger.info("setQuitGame")
             return {type : 'quitGame', gameId : action.gameId}
         }
     }
@@ -208,20 +204,9 @@ export function Game() {
         }
     }
 
-    async function createGame() {
+    async function createGame(gameConfiguration: GameConfiguration) {
         logger.info("creatingGame")
-        const result = await Services.createGame({
-            boardSize: 10,
-            fleet: {
-                "CARRIER": 5,
-                "BATTLESHIP": 4,
-                "CRUISER": 3,
-                "SUBMARINE": 3,
-                "DESTROYER": 2
-            },
-            shots: 1,
-            roundTimeout: 10,
-        })
+        const result = await Services.createGame(gameConfiguration)
         if (cancelRequest) {
             logger.info("createGame cancelled")
             return
@@ -468,7 +453,7 @@ export function Game() {
                     break
                 }
                 case 'creatingGame' : {
-                    await createGame()
+                    await createGame(state.config)
                     break
                 }
                 case 'updatingGameWhileNecessary': {
@@ -509,7 +494,7 @@ export function Game() {
     } else if (state.type === "checkingForExistingOnGoingGame") {
         return <CheckingForExistingOnGoingGame />
     } if (state.type === "menu") {
-        return <Menu onCreateGameRequest={() => dispatch({type : 'setCreatingGame'})}/>
+        return <Menu onCreateGameRequest={(config: GameConfiguration) => dispatch({type : 'setCreatingGame', config})}/>
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
     } else if (state.type === "playing") {
@@ -567,17 +552,67 @@ function CheckingForExistingOnGoingGame() {
     )
 }
 
-function Menu({onCreateGameRequest} : {onCreateGameRequest : () => void}) {
+function Menu({onCreateGameRequest} : { onCreateGameRequest: (conf: GameConfiguration) => void }) {
+    const [
+        onBoardSizeChange,
+        onNShotsPerRoundChange,
+        onRoundTimeoutChange,
+        gameConfiguration,
+    ] = useGameConfiguration()
+
     return (
         <div id = {styles.buttonsToPlay}>
-            <button id={styles.newGame} className={styles.cybrBtn} onClick={onCreateGameRequest}>
+            <label htmlFor="quantity">BOARD SIZE</label>
+            <input type="number" id="quantity" name="quantity" min="8" max="13" onChange={onBoardSizeChange}/>
+
+            <label htmlFor="quantity">SHOTS PER ROUND</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" onChange={onNShotsPerRoundChange}/>
+
+            <label htmlFor="quantity">ROUND TIMEOUT</label>
+            <input type="number" id="quantity" name="quantity" min="10" max="240" onChange={onRoundTimeoutChange}/>
+
+            <button id={styles.newGame} className={styles.cybrBtn} onClick={() => {
+                onCreateGameRequest(gameConfiguration)
+            }}>
                 Create New<span aria-hidden>_</span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Create New</span>
             </button>
         </div>
     )
 }
-    
+
+function useGameConfiguration(): Array<any> {
+    const [boardSize, setBoardSize] = useState(10)
+    const [nShotsPerRound, setNShotsPerRound] = useState(1)
+    const [roundTimeout, setRoundTimeout] = useState(10)
+    const fleet = { // TODO: make this configurable
+        CARRIER : 5,
+        BATTLESHIP : 4,
+        CRUISER : 3,
+        SUBMARINE : 3,
+        DESTROYER : 2
+    }
+
+    function onBoardSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setBoardSize(parseInt(event.target.value))
+    }
+
+    function onNShotsPerRoundChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setNShotsPerRound(parseInt(event.target.value))
+    }
+
+    function onRoundTimeoutChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setRoundTimeout(parseInt(event.target.value))
+    }
+
+    return [
+        onBoardSizeChange,
+        onNShotsPerRoundChange,
+        onRoundTimeoutChange,
+        {boardSize, nShotsPerRound, roundTimeout, fleet}
+    ]
+}
+
 
 function CreatingGame() {
     return (

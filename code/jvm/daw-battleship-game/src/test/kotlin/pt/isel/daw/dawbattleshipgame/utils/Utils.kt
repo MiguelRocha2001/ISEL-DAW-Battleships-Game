@@ -74,7 +74,7 @@ fun getGameTestConfiguration5() = Configuration(
 
 fun getCreateGameInputModel() = CreateGameInputModel(
     boardSize = 10,
-    shots = 5,
+    nShotsPerRound = 5,
     fleet = mapOf(
         ShipTypeInputModel.CARRIER to 5,
         ShipTypeInputModel.BATTLESHIP to 4,
