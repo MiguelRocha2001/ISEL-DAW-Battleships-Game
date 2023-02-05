@@ -49,7 +49,7 @@ fun battleActions(sirenBuilderScope: SirenBuilderScope<*>) {
         type = MediaType.APPLICATION_JSON
     ) {
         this.arrayField(
-            name = "shots",
+            name = "nShotsPerRound",
             block = {
                 this.numberField("row")
                 this.numberField("column")

@@ -45,7 +45,6 @@ data class CreateGameInputModel(
             )
 }
 
-
 data class CoordinateInputModel(val row: Int, val column: Int) {
     fun toCoordinate() = Coordinate(row, column)
 }

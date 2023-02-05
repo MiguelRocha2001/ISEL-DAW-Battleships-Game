@@ -557,19 +557,43 @@ function Menu({onCreateGameRequest} : { onCreateGameRequest: (conf: GameConfigur
         onBoardSizeChange,
         onNShotsPerRoundChange,
         onRoundTimeoutChange,
+        onCarrierChange,
+        onBattleshipChange,
+        onCruiserChange,
+        onSubmarineChange,
+        onDestroyerChange,
         gameConfiguration,
     ] = useGameConfiguration()
+
+    function onKeyDown() {
+        return false
+    }
 
     return (
         <div id = {styles.buttonsToPlay}>
             <label htmlFor="quantity">BOARD SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="8" max="13" onChange={onBoardSizeChange}/>
+            <input type="number" id="quantity" name="quantity" min="8" max="13" value={gameConfiguration.boardSize} onChange={onBoardSizeChange} />
 
             <label htmlFor="quantity">SHOTS PER ROUND</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" onChange={onNShotsPerRoundChange}/>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.nShotsPerRound} onChange={onNShotsPerRoundChange}/>
 
             <label htmlFor="quantity">ROUND TIMEOUT</label>
-            <input type="number" id="quantity" name="quantity" min="10" max="240" onChange={onRoundTimeoutChange}/>
+            <input type="number" id="quantity" name="quantity" min="10" max="240" value={gameConfiguration.roundTimeout} onChange={onRoundTimeoutChange}/>
+
+            <label htmlFor="quantity">CARRIER SIZE</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.CARRIER} onChange={onCarrierChange}/>
+
+            <label htmlFor="quantity">BATTLESHIP SIZE</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.BATTLESHIP} onChange={onBattleshipChange}/>
+
+            <label htmlFor="quantity">CRUISER SIZE</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.CRUISER} onChange={onCruiserChange}/>
+
+            <label htmlFor="quantity">SUBMARINE SIZE</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.SUBMARINE} onChange={onSubmarineChange}/>
+
+            <label htmlFor="quantity">DESTROYER SIZE</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.DESTROYER} onChange={onDestroyerChange}/>
 
             <button id={styles.newGame} className={styles.cybrBtn} onClick={() => {
                 onCreateGameRequest(gameConfiguration)
@@ -585,30 +609,73 @@ function useGameConfiguration(): Array<any> {
     const [boardSize, setBoardSize] = useState(10)
     const [nShotsPerRound, setNShotsPerRound] = useState(1)
     const [roundTimeout, setRoundTimeout] = useState(10)
-    const fleet = { // TODO: make this configurable
-        CARRIER : 5,
-        BATTLESHIP : 4,
-        CRUISER : 3,
-        SUBMARINE : 3,
-        DESTROYER : 2
+    const [carrierSize, setCarrierSize] = useState(5)
+    const [battleshipSize, setBattleshipSize] = useState(4)
+    const [cruiserSize, setCruiserSize] = useState(3)
+    const [submarineSize, setSubmarineSize] = useState(3)
+    const [destroyerSize, setDestroyerSize] = useState(2)
+
+    const fleet = {
+        CARRIER : carrierSize,
+        BATTLESHIP : battleshipSize,
+        CRUISER : cruiserSize,
+        SUBMARINE : submarineSize,
+        DESTROYER : destroyerSize
     }
 
     function onBoardSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setBoardSize(parseInt(event.target.value))
+        const value = parseInt(event.target.value)
+        if (!isNaN(value) && value >= 8 && value <= 13)
+            setBoardSize(parseInt(event.target.value))
     }
-
     function onNShotsPerRoundChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setNShotsPerRound(parseInt(event.target.value))
+        const value = parseInt(event.target.value)
+        if (!isNaN(value) && value >= 1 && value <= 5)
+            setNShotsPerRound(parseInt(event.target.value))
+    }
+    function onRoundTimeoutChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(event.target.value)
+        if (!isNaN(value) && value >= 10 && value <= 240)
+            setRoundTimeout(parseInt(event.target.value))
     }
 
-    function onRoundTimeoutChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setRoundTimeout(parseInt(event.target.value))
+    function isValidShipSize(size: number) { return !isNaN(size) && size >= 1 && size <= 5 }
+
+    function onCarrierSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(event.target.value)
+        if (isValidShipSize(value))
+            setCarrierSize(parseInt(event.target.value))
+    }
+    function onBattleshipSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(event.target.value)
+        if (isValidShipSize(value))
+            setBattleshipSize(parseInt(event.target.value))
+    }
+    function onCruiserSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(event.target.value)
+        if (isValidShipSize(value))
+            setCruiserSize(parseInt(event.target.value))
+    }
+    function onSubmarineSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(event.target.value)
+        if (isValidShipSize(value))
+            setSubmarineSize(parseInt(event.target.value))
+    }
+    function onDestroyerSizeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(event.target.value)
+        if (isValidShipSize(value))
+            setDestroyerSize(parseInt(event.target.value))
     }
 
     return [
         onBoardSizeChange,
         onNShotsPerRoundChange,
         onRoundTimeoutChange,
+        onCarrierSizeChange,
+        onBattleshipSizeChange,
+        onCruiserSizeChange,
+        onSubmarineSizeChange,
+        onDestroyerSizeChange,
         {boardSize, nShotsPerRound, roundTimeout, fleet}
     ]
 }
