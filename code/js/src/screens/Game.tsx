@@ -300,9 +300,15 @@ export function Game() {
         }
 
         logger.info("shooting in " + row + " " + col)
-        await Services.attack(
+        const result = await Services.attack(
             {shots: Array({row: row, column: col})}
         )
+        if (result instanceof Error) {
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type:'setUpdatingGameWhileNecessary', game: undefined, msg: result.message})
+            })
+            return
+        }
 
         const tic = setInterval(async () => {
             if (cancelRequest) {
