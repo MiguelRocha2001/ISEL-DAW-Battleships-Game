@@ -13,6 +13,7 @@ import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.services.game.GameServices
 import pt.isel.daw.dawbattleshipgame.services.game.PlaceShotError
 import pt.isel.daw.dawbattleshipgame.utils.*
+import java.lang.Thread.sleep
 
 class GamePlaceShotServicesTests {
     private val configuration = getGameTestConfiguration3()
@@ -81,7 +82,7 @@ class GamePlaceShotServicesTests {
                 )
             )
             assertEquals(Either.Right(Unit), placeShotResult1)
-
+                sleep(100)
             // valid
             val placeShotResult2 = gameServices.placeShots(
                 userPair.second,
@@ -94,7 +95,7 @@ class GamePlaceShotServicesTests {
                 )
             )
             assertEquals(Either.Right(Unit), placeShotResult2)
-
+            sleep(100)
             // same coordinate
             val result = gameServices.placeShots(
                 userPair.first,

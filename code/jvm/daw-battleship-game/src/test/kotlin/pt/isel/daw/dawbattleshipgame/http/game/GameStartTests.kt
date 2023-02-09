@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
@@ -51,7 +52,7 @@ class GameStartTests {
         // player 1 tries to create another game
         client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
             .expectHeader().contentType("application/problem+json")
@@ -62,7 +63,7 @@ class GameStartTests {
         // player 2 tries to create another game
         client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $player2Token")
+            .header(HttpHeaders.COOKIE, "token=$player2Token")
             .exchange()
             .expectStatus().isEqualTo(405)
             .expectHeader().contentType("application/problem+json")
@@ -88,14 +89,14 @@ class GameStartTests {
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $userToken")
+            .header(HttpHeaders.COOKIE, "token=$userToken")
             .exchange()
             .expectStatus().isAccepted
 
         // player 1 will try to create a game, and will be put in the waiting list
         client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $userToken")
+            .header(HttpHeaders.COOKIE, "token=$userToken")
             .exchange()
             .expectStatus().isEqualTo(405)
             .expectHeader().contentType("application/problem+json")
@@ -117,7 +118,7 @@ class GameStartTests {
         // Invalid user will try to create a game, without success
         client.post().uri(Uris.Games.My.ALL)
             .bodyValue(gameConfig)
-            .header("Authorization", "Bearer $nonValidUserToken")
+            .header(HttpHeaders.COOKIE, "token=$nonValidUserToken")
             .exchange()
             .expectStatus().isUnauthorized
 

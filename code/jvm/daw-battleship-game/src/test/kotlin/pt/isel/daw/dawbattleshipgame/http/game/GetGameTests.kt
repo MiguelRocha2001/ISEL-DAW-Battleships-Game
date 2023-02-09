@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
@@ -46,7 +47,7 @@ class GetGameTests {
 
         // player 1 should be able to get the game
         client.get().uri(Uris.Games.BY_ID1, gameId)
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectBody(SirenModel::class.java)
             .returnResult()
@@ -69,7 +70,7 @@ class GetGameTests {
 
         // player 1 should be able to get the game
         client.get().uri(Uris.Games.BY_ID1, invalidGameId)
-            .header("Authorization", "Bearer $userToken")
+            .header(HttpHeaders.COOKIE, "token=$userToken")
             .exchange()
             .expectStatus().isNotFound
 
@@ -89,7 +90,7 @@ class GetGameTests {
 
         // player 1 should be able to get the game
         client.get().uri(Uris.Games.My.CURRENT)
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectBody(SirenModel::class.java)
             .returnResult()
@@ -111,7 +112,7 @@ class GetGameTests {
 
         // player 1 should be able to get the game
         client.get().uri(Uris.Games.My.CURRENT)
-            .header("Authorization", "Bearer $userToken")
+            .header(HttpHeaders.COOKIE, "token=$userToken")
             .exchange()
             .expectStatus().isNotFound
 

@@ -7,40 +7,19 @@ import pt.isel.daw.dawbattleshipgame.domain.board.Coordinate
 import pt.isel.daw.dawbattleshipgame.domain.game.Configuration
 import pt.isel.daw.dawbattleshipgame.domain.ship.Orientation
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
-import pt.isel.daw.dawbattleshipgame.http.model.INVALID_INPUT
-import pt.isel.daw.dawbattleshipgame.http.requireWithException
 
 data class CreateGameInputModel(
     val boardSize: Int,
     val fleet: Map<ShipTypeInputModel, Int>,
-    val nShotsPerRound: Long,
+    val nshotsPerRound: Long,
     val roundTimeout: Long
 ) {
-    init {
-        requireWithException(
-                INVALID_INPUT,
-                "Board size must be in range [8..13]") {
-            boardSize in 8..13
-        }
-        requireWithException(INVALID_INPUT,
-                "There must be at least one boat") {
-            fleet.isNotEmpty()
-        }
-        requireWithException(INVALID_INPUT,
-                "Number of shots per round must be in range [1..5] shots = $nShotsPerRound"){
-            nShotsPerRound in (1..5)
-        }
-        requireWithException(INVALID_INPUT,
-                "Round timeout must be in range [10..240]"){
-            roundTimeout in 10..240
-        }
-    }
 
     fun toConfiguration() =
             Configuration(
                     boardSize,
                     fleet.map { it.key.toShipType() to it.value }.toMap(),
-                    nShotsPerRound,
+                    nshotsPerRound,
                     roundTimeout
             )
 }

@@ -69,7 +69,7 @@ fun insertConfiguration(handle: Handle, gameId: Int, configuration: Configuratio
     )
         .bind("game", gameId)
         .bind("board_size", configuration.boardSize)
-        .bind("n_shots", configuration.shots)
+        .bind("n_shots", configuration.nShotsPerRound)
         .bind("timeout", configuration.roundTimeout)
         .bind("fleet", Configuration.mapper.writeValueAsString(configuration.fleet))
         .execute()

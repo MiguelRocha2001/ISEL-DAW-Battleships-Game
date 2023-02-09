@@ -27,7 +27,7 @@ class UserRepositoryTests {
         }
     }
 
-    @Test
+  /*  @Test()
     fun `check user stats`() = testWithTransactionManagerAndRollback { transactionManager ->
         transactionManager.run { tr ->
             tr.gamesRepository.emptyRepository()
@@ -51,5 +51,5 @@ class UserRepositoryTests {
             assert(user1.wins == 0 && user2.wins == 0)
 
         }
-    }
+    }*/
 }

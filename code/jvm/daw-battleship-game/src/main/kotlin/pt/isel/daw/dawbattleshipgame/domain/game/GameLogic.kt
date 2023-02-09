@@ -144,7 +144,7 @@ fun Game.placeShot(userId: Int, shot: Coordinate, player: Player): Game? {
 
 fun Game.placeShots(userId: Int, shots: List<Coordinate>, player: Player): Game? {
     var game: Game = this
-    if (shots.size != configuration.shots.toInt()) throw ApiException(
+    if (shots.size != configuration.nShotsPerRound.toInt()) throw ApiException(
             Problem.DEFAULT_URI,
             "Not all shots were placed",
             "Not all shots were placed, try again",

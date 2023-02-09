@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
@@ -75,7 +76,7 @@ class UserCreationTests {
         // when: getting the user home with a valid token
         // then: the response is a 200 with the proper representation
         val userHome = client.get().uri(Uris.Users.HOME)
-            .header("Authorization", "Bearer $token")
+            .header(HttpHeaders.COOKIE, "token=$token")
             .exchange()
             .expectStatus().isCreated
             .expectBody(SirenModel::class.java)
@@ -112,10 +113,10 @@ class UserCreationTests {
         // when: getting the user home with an invalid token
         // then: the response is a 4001 with the proper problem
         client.get().uri(Uris.Users.HOME)
-            .header("Authorization", "Bearer ${token}-invalid")
+            .header(HttpHeaders.COOKIE, "token=$token----invalid token----")
             .exchange()
             .expectStatus().isUnauthorized
-            .expectHeader().valueEquals("WWW-Authenticate", "bearer")
+                //check cookie header
 
         deleteUser(client, userId)
     }

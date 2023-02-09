@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import pt.isel.daw.dawbattleshipgame.domain.game.validate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.JsonMediaType
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
@@ -73,6 +74,9 @@ class GamesController(
         @RequestBody(required = false)
         createGameInputModel: CreateGameInputModel?
     ): ResponseEntity<*> {
+
+        if(createGameInputModel!=null && !createGameInputModel.validate())
+            return ResponseEntity.status(400).contentType(JsonMediaType).body("Invalid input")
         val res = gameServices.startGame(
                 user.id,
                 createGameInputModel?.toConfiguration()

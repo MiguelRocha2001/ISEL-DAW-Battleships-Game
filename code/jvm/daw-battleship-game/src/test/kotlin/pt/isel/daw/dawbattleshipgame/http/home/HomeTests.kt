@@ -20,7 +20,7 @@ import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 class HomeTests {
 
     // One of the very few places where we use property injection
-    @LocalServerPort //TODO PERGUNTAR SE É PRECISO TER ESTA TRALHA TODA EM CADA TESTE
+    @LocalServerPort
     var port: Int = 0
 
     @TestConfiguration
@@ -58,7 +58,7 @@ class HomeTests {
 
         // asserting links
         val links = siren.links
-        assertEquals(7, links.size)
+        assertEquals(8, links.size)
 
         assertEquals("/", links[0].href)
         assertEquals(1, links[0].rel.size)
@@ -90,7 +90,7 @@ class HomeTests {
 
         // asserting actions
         val actions = siren.actions
-        assertEquals(3, actions.size)
+        assertEquals(4, actions.size)
 
         assertEquals("create-user", actions[0].name)
         assertEquals("/users", actions[0].href)

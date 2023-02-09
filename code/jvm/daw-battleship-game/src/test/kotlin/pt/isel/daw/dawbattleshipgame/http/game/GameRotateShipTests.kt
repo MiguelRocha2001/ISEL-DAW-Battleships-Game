@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
@@ -57,7 +58,7 @@ class GameRotateShipTests {
                     "destination" to null,
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isNoContent
 
@@ -91,7 +92,7 @@ class GameRotateShipTests {
                     "destination" to null,
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().is4xxClientError
 
@@ -126,7 +127,7 @@ class GameRotateShipTests {
                     "destination" to null,
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isNoContent
 

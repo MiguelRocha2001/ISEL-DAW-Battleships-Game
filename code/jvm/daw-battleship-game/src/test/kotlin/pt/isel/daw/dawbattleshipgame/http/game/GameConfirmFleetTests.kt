@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
@@ -39,7 +40,6 @@ class GameConfirmFleetTests {
     fun `can confirm fleet`() {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-
         val gameInfo = createGame(client)
         val gameId = gameInfo.gameId
         val player1Id = gameInfo.player1Id
@@ -58,7 +58,7 @@ class GameConfirmFleetTests {
                     "fleetConfirmed" to "true",
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isNoContent
 
@@ -68,7 +68,7 @@ class GameConfirmFleetTests {
                     "fleetConfirmed" to "true",
                 )
             )
-            .header("Authorization", "Bearer $player2Token")
+            .header(HttpHeaders.COOKIE, "token=$player2Token")
             .exchange()
             .expectStatus().isNoContent
 
@@ -106,7 +106,7 @@ class GameConfirmFleetTests {
                     "fleetConfirmed" to "true",
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isNoContent
 
@@ -116,7 +116,7 @@ class GameConfirmFleetTests {
                     "fleetConfirmed" to "true",
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().is4xxClientError
 
@@ -145,7 +145,7 @@ class GameConfirmFleetTests {
                     "fleetConfirmed" to "true",
                 )
             )
-            .header("Authorization", "Bearer $fakeToken")
+            .header(HttpHeaders.COOKIE, "token=$fakeToken")
             .exchange()
             .expectStatus().isUnauthorized
 
@@ -177,7 +177,7 @@ class GameConfirmFleetTests {
                     "fleetConfirmed" to "true",
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().is4xxClientError
 

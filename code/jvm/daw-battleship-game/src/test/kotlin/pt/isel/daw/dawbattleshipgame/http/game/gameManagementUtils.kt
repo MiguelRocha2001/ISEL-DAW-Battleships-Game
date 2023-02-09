@@ -7,6 +7,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.utils.getCreateGameInputModel
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.lang.Thread.sleep
+import org.springframework.http.HttpHeaders
 import java.util.*
 
 
@@ -17,8 +18,11 @@ data class GameInfo(val gameId: Int, val player1Id : Int, val player1Token: Stri
  * Also, asserts if the behavior is correct.
  * @return the game id along with the two tokens
  */
+
 internal fun createGame(client: WebTestClient): GameInfo {
     val gameConfig = getCreateGameInputModel()
+
+
 
     val player1 = createUser(client)
     val player1Id = player1.first
@@ -31,20 +35,20 @@ internal fun createGame(client: WebTestClient): GameInfo {
     // player 1 will try to create a game, and will be put in the waiting list
     client.post().uri(Uris.Games.My.ALL)
         .bodyValue(gameConfig)
-        .header("Authorization", "Bearer $player1Token")
+        .header(HttpHeaders.COOKIE, "token=$player1Token")
         .exchange()
         .expectStatus().isAccepted
 
     // player 2 should be able to create a game
     client.post().uri(Uris.Games.My.ALL)
         .bodyValue(gameConfig)
-        .header("Authorization", "Bearer $player2Token")
+        .header(HttpHeaders.COOKIE, "token=$player2Token")
         .exchange()
         .expectStatus().isCreated
 
     // player 1 should be able to get the game
     val gameId1Siren = client.get().uri(Uris.Games.My.CURRENT)
-        .header("Authorization", "Bearer $player1Token")
+        .header(HttpHeaders.COOKIE, "token=$player1Token")
         .exchange()
         .expectStatus().isOk
         .expectBody(SirenModel::class.java)
@@ -56,7 +60,7 @@ internal fun createGame(client: WebTestClient): GameInfo {
 
     // player 2 should be able to get the game
     val gameId2Siren = client.get().uri(Uris.Games.My.CURRENT)
-        .header("Authorization", "Bearer $player2Token")
+        .header(HttpHeaders.COOKIE, "token=$player2Token")
         .exchange()
         .expectStatus().isOk
         .expectBody(SirenModel::class.java)
@@ -172,7 +176,7 @@ internal fun placeSomeShips(client: WebTestClient, playerToken: String){
                 )
             )
         )
-        .header("Authorization", "Bearer $playerToken")
+        .header(HttpHeaders.COOKIE, "token=$playerToken")
         .exchange()
         .expectStatus().isCreated
     sleep(500)
@@ -187,7 +191,7 @@ internal fun confirmPlayerFleet(playerToken:String,client: WebTestClient){
                 "fleetConfirmed" to "true",
             )
         )
-        .header("Authorization", "Bearer $playerToken")
+        .header(HttpHeaders.COOKIE, "token=$playerToken")
         .exchange()
         .expectStatus().isNoContent
     sleep(500)

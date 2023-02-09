@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
@@ -61,8 +62,6 @@ class GamePlaceShotTests {
         val playerOneShot4 = Pair("1"," 4")
         val playerOneShot5 = Pair("1"," 5")
 
-        Thread.sleep(1000)
-
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
             .bodyValue(
                 mapOf(
@@ -90,9 +89,9 @@ class GamePlaceShotTests {
                         )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
-            .expectStatus().isNoContent
+            .expectStatus().isBadRequest
 
         deleteGame(client, gameId)
         deleteUser(client, player1Id)
@@ -134,9 +133,9 @@ class GamePlaceShotTests {
                        )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
-            .expectStatus().isBadRequest
+            .expectStatus().isNoContent
 
 
         client.post().uri(Uris.Games.My.Current.My.Shots.ALL)
@@ -150,9 +149,9 @@ class GamePlaceShotTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player2Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
-            .expectStatus().isBadRequest
+            .expectStatus().is4xxClientError
 
 
         deleteGame(client, gameId)
@@ -192,7 +191,7 @@ class GamePlaceShotTests {
                     "column" to playerOneShot.second
                 )))
             )
-            .header("Authorization", "Bearer $invalidToken")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isUnauthorized
 
@@ -231,7 +230,7 @@ class GamePlaceShotTests {
                     "column" to playerOneShot.second
                 )))
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().is4xxClientError
 

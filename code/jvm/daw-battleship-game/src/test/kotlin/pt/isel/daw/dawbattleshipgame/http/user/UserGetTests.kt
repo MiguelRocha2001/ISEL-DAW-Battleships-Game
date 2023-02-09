@@ -16,6 +16,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenModel
 import pt.isel.daw.dawbattleshipgame.repository.jdbi.configure
 import pt.isel.daw.dawbattleshipgame.utils.getRandomPassword
 import java.util.*
+import org.springframework.http.HttpHeaders
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserGetTests {
@@ -49,7 +50,7 @@ class UserGetTests {
         val id = creationResult.first
         val token = creationResult.second
         val beforeDeletion = client.get().uri(Uris.Users.HOME)
-            .header("Authorization", "Bearer $token")
+            .header(HttpHeaders.COOKIE, "token=$token")
             .exchange()
             .expectStatus().isCreated
             .expectHeader().contentType(SirenMediaType)
@@ -63,7 +64,8 @@ class UserGetTests {
         deleteUser(client,id)
 
         val afterDeletion = client.get().uri(Uris.Users.HOME)
-            .header("Authorization", "Bearer $token")
+            //add cookie
+            .header(HttpHeaders.COOKIE, "token=$token")
             .exchange()
             .expectStatus().isUnauthorized
 

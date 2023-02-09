@@ -56,7 +56,7 @@ class UsersController(
             ResponseEntity.status(201)
                 .contentType(SirenMediaType)
                 .body(
-                    siren(Unit) {
+                    siren(TokenOutputModel(it)) {
                         link(Uris.Users.createToken(), Rels.SELF)
                         link(Uris.Users.home(), Rels.USER_HOME)
                         createGameSirenAction(this)

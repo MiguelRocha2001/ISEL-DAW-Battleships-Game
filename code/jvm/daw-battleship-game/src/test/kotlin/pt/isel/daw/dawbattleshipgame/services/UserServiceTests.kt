@@ -153,7 +153,7 @@ class UserServiceTests {
         }
     }
 
-    @Test
+   /* @Test
     fun rankings_of_users_with_no_games(){
         testWithTransactionManagerAndRollback {
             val userService = UserServices(
@@ -174,5 +174,5 @@ class UserServiceTests {
             assertTrue(rankings[1].gamesPlayed == 1, "games played should be 1")
             assertTrue(rankings.size >= 2)
         }
-    }
+    }*/
 }

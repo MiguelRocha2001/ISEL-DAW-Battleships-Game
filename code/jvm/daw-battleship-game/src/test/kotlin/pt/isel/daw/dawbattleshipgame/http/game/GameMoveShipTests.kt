@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
@@ -39,7 +40,6 @@ class GameMoveShipTests {
 
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
-
         val gameInfo = createGame(client)
         val gameId = gameInfo.gameId
         val player1Id = gameInfo.player1Id
@@ -60,7 +60,7 @@ class GameMoveShipTests {
                     "destination" to mapOf("row" to "6", "column" to "7"),
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isNoContent
 
@@ -92,7 +92,7 @@ class GameMoveShipTests {
                     "destination" to mapOf("row" to "6", "column" to "7"),
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().is4xxClientError
 
@@ -127,7 +127,7 @@ class GameMoveShipTests {
                     "destination" to mapOf("row" to "1", "column" to "2"),
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().is4xxClientError
 
