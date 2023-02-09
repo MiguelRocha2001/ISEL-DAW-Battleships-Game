@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
+import org.springframework.http.HttpHeaders
 import org.springframework.test.web.reactive.server.WebTestClient
 import pt.isel.daw.dawbattleshipgame.http.controllers.Uris
 import pt.isel.daw.dawbattleshipgame.http.user.deleteUser
@@ -90,7 +91,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isCreated
 
@@ -127,7 +128,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $nonValidToken")
+            .header(HttpHeaders.COOKIE, "token=$nonValidToken")
             .exchange()
             .expectStatus().isUnauthorized
 
@@ -163,7 +164,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isCreated
 
@@ -183,7 +184,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isCreated
 
@@ -219,7 +220,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isCreated
 
@@ -239,7 +240,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -276,7 +277,7 @@ class GamePlaceShipsTests {
                 )
 
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isBadRequest // bad request because position is invalid
 
@@ -296,7 +297,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405) // method not allowed because, even though position is valid, it is not in the board context
 
@@ -332,7 +333,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isCreated
 
@@ -352,7 +353,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -372,7 +373,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -392,7 +393,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -428,7 +429,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isCreated
 
@@ -449,7 +450,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -470,7 +471,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -491,7 +492,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -512,7 +513,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -548,7 +549,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -568,7 +569,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
@@ -588,7 +589,7 @@ class GamePlaceShipsTests {
                     )
                 )
             )
-            .header("Authorization", "Bearer $player1Token")
+            .header(HttpHeaders.COOKIE, "token=$player1Token")
             .exchange()
             .expectStatus().isEqualTo(405)
 
