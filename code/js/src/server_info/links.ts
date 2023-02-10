@@ -17,6 +17,8 @@ let placeShipsAction: Action | undefined
 let confirmFleetAction: Action | undefined
 let attackAction: Action | undefined
 let quitGameAction: Action | undefined
+let isInGameQueueLink: string | undefined
+let quitGameQueueAction: Action | undefined
 
 function getInfoLink() {
     return infoLink
@@ -110,6 +112,20 @@ function setQuitGameAction(action: Action) {
     quitGameAction = action
 }
 
+function getIsInGameQueueLink() {
+    return isInGameQueueLink
+}
+function setIsInGameQueueLink(link: string) {
+    isInGameQueueLink = link
+}
+
+function getQuitGameQueueAction() {
+    return quitGameQueueAction
+}
+function setQuitGameQueueAction(action: Action) {
+    quitGameQueueAction = action
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -139,4 +155,8 @@ export const links = {
     setAttackAction,
     getQuitGameAction,
     setQuitGameAction,
+    getIsInGameQueueLink,
+    setIsInGameQueueLink,
+    getQuitGameQueueAction,
+    setQuitGameQueueAction,
 }

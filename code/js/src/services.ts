@@ -47,6 +47,8 @@ function extractSirenInfo(resp: Siren) {
     const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(resp.links)
     const getGameLink = Siren.extractGetGameLink(resp.links)
     const getQuitGameAction = Siren.extractQuitGameAction(resp.actions)
+    const inGameQueueLink = Siren.extractInGameQueueLink(resp.links)
+    const quitGameQueueAction = Siren.extractQuitGameQueueAction(resp.actions)
 
     if (serverInfoLink)
         logger.debug("fetchHome: setting up new info endpoint: ", serverInfoLink)
@@ -68,6 +70,10 @@ function extractSirenInfo(resp: Siren) {
         logger.debug("fetchHome: setting up new get game link: ", getGameLink)
     if (getQuitGameAction)
         logger.debug("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
+    if (inGameQueueLink)
+        logger.debug("fetchHome: setting up new in game queue link: ", inGameQueueLink)
+    if (quitGameQueueAction)
+        logger.debug("fetchHome: setting up new quit game queue action: ", quitGameQueueAction.name)
 
     links.setInfoLink(serverInfoLink)
     links.setBattleshipRanksLink(battleshipRanksLink)
@@ -79,6 +85,8 @@ function extractSirenInfo(resp: Siren) {
     links.setCurrentGameIdLink(getCurrentGameIdLink)
     links.setGetGameLink(getGameLink)
     links.setQuitGameAction(getQuitGameAction)
+    links.setIsInGameQueueLink(inGameQueueLink)
+    links.setQuitGameQueueAction(quitGameQueueAction)
 }
 
 export type ServerInfo = {
@@ -300,6 +308,29 @@ async function getCurrentGameId(): Promise<number | Error> {
     }
 }
 
+async function isInGameQueue(): Promise<boolean | Error> {
+    const link = links.getIsInGameQueueLink()
+    if (!link)
+        return logAndGetError('isInGameQueue', new ResolutionLinkError('is in game queue link not found'))
+
+    try {
+        const response = await Fetch.doFetch({ url: link, method: "GET", body: undefined })
+        if (response instanceof ServerError) {
+            return logAndGetError('isInGameQueue', response)
+        }
+        logger.debug("isInGameQueue: response successful")
+        const inGameQueue = response.properties.isInQueue
+        if (inGameQueue) {
+            return inGameQueue
+        } else {
+            logger.error("getGame: isInQueue property not found in response")
+        }
+        return inGameQueue
+    } catch (e) {
+        return logAndGetError('isInGameQueue', e)
+    }
+}
+
 async function getGame(): Promise<Match | Error> {
 
     function checkLinks(response: Siren): string {
@@ -468,6 +499,31 @@ async function quitGame(gameId: number): Promise<void | Error> {
         return logAndGetError('quitGame', new ResolutionLinkError('quit game action not found'))
 }
 
+async function quitGameQueue(): Promise<void | Error> {
+    const action = links.getQuitGameQueueAction()
+    if (!action)
+        return logAndGetError('quitGameQueue', new ResolutionLinkError('quit game queue action not found'))
+
+    const request = {} // request is set here because it is always the same
+    if (Siren.validateFields(request, action)) {
+        const internalReq = {
+            url: action.href,
+            method: action.method,
+            body: Fetch.toBody(request),
+        }
+        try {
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('quitGameQueue', result)
+            }
+            logger.debug("quitGameQueue: response successful")
+        } catch (e) {
+            return logAndGetError('quitGameQueue', e)
+        }
+    } else
+        return logAndGetError('quitGameQueue', new ResolutionLinkError('quit game queue action not found'))
+}
+
 export class Fetching {}
 function handlerOrError(origin: string, state: State, handler: (siren: Siren) => any): any | Error | Fetching {
     switch (state.type) {
@@ -552,5 +608,7 @@ export const Services = {
     placeShips,
     confirmFleet,
     attack,
-    quitGame
+    quitGame,
+    isInGameQueue,
+    quitGameQueue,
 }

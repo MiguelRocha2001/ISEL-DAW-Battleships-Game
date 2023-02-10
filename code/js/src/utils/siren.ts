@@ -94,6 +94,14 @@ function extractQuitGameAction(actions: any[]): Action {
     return extractAction(actions, "quit-game")
 }
 
+function extractInGameQueueLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "in-waiting-queue")
+}
+
+function extractQuitGameQueueAction(actions: any[]): Action {
+    return extractAction(actions, "quit-game-queue")
+}
+
 function extractLink(linksArg: Link[], rel: string): string {
     for (let i = 0; i < linksArg.length; i++) {
         const link = linksArg[i]
@@ -145,5 +153,7 @@ export const Siren = {
     extractConfirmFleetAction,
     extractAttackAction,
     extractQuitGameAction,
+    extractInGameQueueLink,
+    extractQuitGameQueueAction,
     validateFields
 }

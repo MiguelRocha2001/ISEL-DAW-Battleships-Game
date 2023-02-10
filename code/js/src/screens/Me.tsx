@@ -9,17 +9,38 @@ import {ErrorScreen} from "./ErrorScreen";
 
 export function Me() {
     const result = Services.fetchUserHome()
-    const [joinPrevGameButton, setJoinPrevGameButton] = useState(false)
+    const [showJoinPrevGameButton, setShowJoinPrevGameButton] = useState(false)
+    const [showAbandonGameQueueButton, setAbandonGameQueueButton] = useState(false)
 
     useEffect(() => {
         async function setGameButtonIfGameIsOngoing() {
             const gameId = await Services.getCurrentGameId()
             if (typeof gameId === 'number') {
-                setJoinPrevGameButton(true)
+                setShowJoinPrevGameButton(true)
             }
         }
+        async function setAbandonGameQueueButtonIfGameIsQueued() {
+            const inGameQueue = await Services.isInGameQueue()
+            if (typeof inGameQueue === 'boolean' && inGameQueue) {
+                setAbandonGameQueueButton(true)
+            }
+        }
+
         setGameButtonIfGameIsOngoing()
-    }, [joinPrevGameButton, setJoinPrevGameButton])
+        setAbandonGameQueueButtonIfGameIsQueued()
+    }, [showJoinPrevGameButton, setShowJoinPrevGameButton])
+
+    async function abandonGameQueue() {
+        await Services.quitGameQueue()
+        setAbandonGameQueueButton(false)
+    }
+
+    let joinGameButton = <span />
+    let abandonGameQueueButton = <span />
+    if (showJoinPrevGameButton)
+        joinGameButton = <Link to="/game" className={style.link}>Resume Match</Link>
+    if (showAbandonGameQueueButton)
+        abandonGameQueueButton = <button onClick={abandonGameQueue} className={style.link}>Abandon Game Queue</button>
 
     if (result instanceof Error) {
         if (result.message === 'User home link not found') {
@@ -35,21 +56,14 @@ export function Me() {
     } else if (result instanceof Fetching) {
         return <Loading />
     } else {
-        if (joinPrevGameButton) {
-            return (
-                <div id={style.userProfile}>
-                    <div className={style.alignCenter}>
-                        <UserDetail user={result}/>
-                    </div>
-                    <Link to="/game" className={style.link}>Resume Match</Link>
-                </div>
-            )
-        } else {
-            return (
+        return (
+            <div id={style.userProfile}>
                 <div className={style.alignCenter}>
                     <UserDetail user={result}/>
                 </div>
-            )
-        }
+                {joinGameButton}
+                {abandonGameQueueButton}
+            </div>
+        )
     }
 }

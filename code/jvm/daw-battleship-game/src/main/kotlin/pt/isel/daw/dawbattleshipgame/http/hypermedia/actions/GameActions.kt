@@ -66,3 +66,12 @@ fun quitGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
         type = MediaType.APPLICATION_JSON
     ) {}
 }
+
+fun quitGameQueueAction(sirenBuilderScope: SirenBuilderScope<*>) {
+    sirenBuilderScope.action(
+        name = "quit-game-queue",
+        href = URI(Uris.Games.BY_ID2),
+        method = HttpMethod.DELETE,
+        type = MediaType.APPLICATION_JSON
+    ) {}
+}

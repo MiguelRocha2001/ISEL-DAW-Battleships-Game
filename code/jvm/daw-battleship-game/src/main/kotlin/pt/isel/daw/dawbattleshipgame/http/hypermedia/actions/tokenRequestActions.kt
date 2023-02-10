@@ -14,7 +14,7 @@ fun createGameSirenAction(sirenBuilderScope: SirenBuilderScope<*>) {
         type = MediaType.APPLICATION_JSON
     ) {
         numberField("boardSize")
-        numberField("nShotsPerRound")
+        numberField("nshotsPerRound")
         numberField("roundTimeout")
         // TODO(): Add fleet
     }

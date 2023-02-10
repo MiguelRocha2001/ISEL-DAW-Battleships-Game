@@ -565,10 +565,6 @@ function Menu({onCreateGameRequest} : { onCreateGameRequest: (conf: GameConfigur
         gameConfiguration,
     ] = useGameConfiguration()
 
-    function onKeyDown() {
-        return false
-    }
-
     return (
         <div id = {styles.buttonsToPlay}>
             <label htmlFor="quantity">BOARD SIZE</label>
@@ -676,7 +672,7 @@ function useGameConfiguration(): Array<any> {
         onCruiserSizeChange,
         onSubmarineSizeChange,
         onDestroyerSizeChange,
-        {boardSize, nShotsPerRound, roundTimeout, fleet}
+        {boardSize, nshotsPerRound: nShotsPerRound, roundTimeout, fleet}
     ]
 }
 

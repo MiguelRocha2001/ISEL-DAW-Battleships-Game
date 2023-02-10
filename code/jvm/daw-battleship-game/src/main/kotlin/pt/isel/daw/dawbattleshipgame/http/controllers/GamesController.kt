@@ -19,7 +19,7 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 class GamesController(
     private val gameServices: GameServices
 ) {
-    @GetMapping(Uris.Games.Queue.BY_ID1)
+    @GetMapping(Uris.Games.Queue.ME)
     fun isInWaitingRoom(
         user: User
     ): ResponseEntity<*> {
@@ -238,7 +238,7 @@ class GamesController(
         }
     }
 
-    @PostMapping(Uris.Games.Queue.BY_ID1)
+    @DeleteMapping(Uris.Games.Queue.BY_ID1)
     fun quitWaitingRoom(
         user: User
     ): ResponseEntity<*> {

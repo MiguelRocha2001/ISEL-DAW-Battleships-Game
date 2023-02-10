@@ -57,13 +57,13 @@ export function isTheSameBoard(a: Board, b: Board): boolean {
 export type GameConfiguration = {
     boardSize: number,
     fleet: Fleet,
-    nShotsPerRound: number
+    nshotsPerRound: number
     roundTimeout: number
 }
 
 export function isTheSameGameConfiguration(a: GameConfiguration, b: GameConfiguration): boolean {
     return a.boardSize === b.boardSize &&
-        a.nShotsPerRound === b.nShotsPerRound &&
+        a.nshotsPerRound === b.nshotsPerRound &&
         a.roundTimeout === b.roundTimeout &&
         isTheSameFleet(a.fleet, b.fleet);
 }
