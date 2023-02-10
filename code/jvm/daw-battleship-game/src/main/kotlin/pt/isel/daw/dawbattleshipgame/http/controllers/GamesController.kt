@@ -238,7 +238,7 @@ class GamesController(
         }
     }
 
-    @DeleteMapping(Uris.Games.Queue.BY_ID1)
+    @DeleteMapping(Uris.Games.Queue.ME)
     fun quitWaitingRoom(
         user: User
     ): ResponseEntity<*> {

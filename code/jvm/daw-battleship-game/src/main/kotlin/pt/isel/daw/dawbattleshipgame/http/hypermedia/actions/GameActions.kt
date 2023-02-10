@@ -70,7 +70,7 @@ fun quitGameAction(sirenBuilderScope: SirenBuilderScope<*>) {
 fun quitGameQueueAction(sirenBuilderScope: SirenBuilderScope<*>) {
     sirenBuilderScope.action(
         name = "quit-game-queue",
-        href = URI(Uris.Games.BY_ID2),
+        href = URI(Uris.Games.Queue.ME),
         method = HttpMethod.DELETE,
         type = MediaType.APPLICATION_JSON
     ) {}
