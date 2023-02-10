@@ -1,14 +1,12 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
-import {InvalidArgumentError, ResolutionLinkError, Services} from '../services'
+import {Services} from '../services'
 import {Board, Fleet, GameConfiguration, isTheSame, Match, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
-import {useCurrentUser} from "./auth/Authn";
 import {Loading} from "./Loading";
-import {Button} from "react-bootstrap";
 import {ErrorScreen} from "./ErrorScreen";
-import {NetworkError, ServerError} from "../utils/domain";
+import {ServerError} from "../utils/domain";
 
 
 const logger = new Logger({ name: "GameComponent" });
@@ -21,6 +19,10 @@ type State =
     |
     {
         type : "checkingForExistingOnGoingGame",
+    }
+    |
+    {
+        type : "checkingIfIsInWaitingQueue",
     }
     |
     {
@@ -184,8 +186,30 @@ function reducer(state: State, action: Action): State {
 }
 
 export function Game() {
-    const [state, dispatch] = React.useReducer(reducer, {type : 'checkingForExistingOnGoingGame'})
+    const [state, dispatch] = React.useReducer(reducer, {type : 'checkingIfIsInWaitingQueue'})
     let cancelRequest = false
+
+    async function checkIfIsInWaitingQueue() {
+        logger.info("checkingIfIsInWaitingQueue")
+
+        const result = await Services.isInGameQueue()
+        if (cancelRequest) {
+            logger.info("checkIfIsInWaitingQueue cancelled")
+            return
+        }
+        if (result instanceof Error) {
+            dispatchToErrorScreenOrDoHandler(result, () => {
+                dispatch({type: 'setMenu', msg: result.message})
+            })
+        } else {
+            console.log('result: ', result)
+            if (result == true) {
+                dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg : "You are in the waiting queue"})
+            } else {
+                dispatch({type: 'setCheckForExistingOnGoingGame'})
+            }
+        }
+    }
 
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
@@ -196,7 +220,6 @@ export function Game() {
         }
         if (result instanceof Error) {
             dispatchToErrorScreenOrDoHandler(result, () => {
-                console.log("NWABDHSABWDH")
                 dispatch({type: 'setMenu', msg: result.message})
             })
         } else {
@@ -450,6 +473,10 @@ export function Game() {
             switch(state.type) {
                 case 'checkingForExistingOnGoingGame' : {
                     await checkForExistingOnGoingGame()
+                    break
+                }
+                case 'checkingIfIsInWaitingQueue' : {
+                    await checkIfIsInWaitingQueue()
                     break
                 }
                 case 'creatingGame' : {
