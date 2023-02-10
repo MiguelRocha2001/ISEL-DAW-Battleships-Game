@@ -62,8 +62,6 @@ sealed class GameIdError : Error(){
 }
 typealias GameIdResult = Either<GameIdError, Int>
 
-
-
 sealed class GameQuitError : Error(){
     object GameNotFound: GameQuitError()
     object UserInGameQueue: GameQuitError()
@@ -84,3 +82,8 @@ sealed class DeleteGameError: Error() {
     object GameNotFound: DeleteGameError()
 }
 typealias DeleteGameResult = Either<DeleteGameError, Unit>
+
+sealed class QuitGameQueueError: Error() {
+    object NotInGameQueue: QuitGameQueueError()
+}
+typealias QuitGameQueueResult = Either<QuitGameQueueError, Unit>

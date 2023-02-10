@@ -20,10 +20,11 @@ interface UsersRepository {
     fun getFirstUserWithSameConfigInQueue(config: Configuration) : Int?
     fun getConfigFromUserQueue(userId: Int) : Configuration?
     fun removeUserFromQueue(userWaiting: Int)
-    fun isAlreadyInQueue(userId: Int): Boolean
+    fun inQueue(userId: Int): Boolean
     fun insertInGameQueue(userId: Int, config : Configuration): Boolean
     fun deleteUser(userId: Int)
     fun isUserStoredById(userId: Int): Boolean
     fun deleteToken(userId: Int)
     fun isInQueue(userId: Int): Boolean
+    fun removeFromGameQueue(userId: Int)
 }

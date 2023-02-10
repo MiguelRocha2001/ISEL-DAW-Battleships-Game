@@ -238,6 +238,20 @@ class GamesController(
         }
     }
 
+    @PostMapping(Uris.Games.Queue.BY_ID1)
+    fun quitWaitingRoom(
+        user: User
+    ): ResponseEntity<*> {
+        val result = gameServices.quitWaitingRoom(user.id)
+        return result.map {
+            ResponseEntity.status(200)
+                .contentType(SirenMediaType)
+                .body(siren(it) {
+                    clazz("game")
+                })
+        }
+    }
+
     @DeleteMapping(Uris.Games.BY_ID1)
     fun deleteGame(
         @PathVariable id: Int

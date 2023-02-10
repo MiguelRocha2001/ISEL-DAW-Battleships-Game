@@ -115,7 +115,7 @@ class JdbiUsersRepository(
             .execute()
     }
 
-    override fun isAlreadyInQueue(userId: Int): Boolean {
+    override fun inQueue(userId: Int): Boolean {
         return handle.createQuery("select count(*) from USER_QUEUE where _user = :_user")
             .bind("_user", userId)
             .mapTo<Int>()
@@ -123,7 +123,7 @@ class JdbiUsersRepository(
     }
 
     override fun insertInGameQueue(userId: Int, config : Configuration): Boolean {
-        if (!isAlreadyInQueue(userId)) {
+        if (!inQueue(userId)) {
             handle.createUpdate("insert into USER_QUEUE(_user, config_hash, config) values (:_user, :config_hash, :config)")
                 .bind("_user", userId)
                 .bind("config_hash", config.hashCode().also { println(it) }) //will generate a hash that is equal if two configs are equal
@@ -158,6 +158,12 @@ class JdbiUsersRepository(
             .bind("_user", userId)
             .mapTo<Int>()
             .single() != 0
+    }
+
+    override fun removeFromGameQueue(userId: Int) {
+        handle.createUpdate("delete from USER_QUEUE where _user = :_user")
+            .bind("_user", userId)
+            .execute()
     }
 
 

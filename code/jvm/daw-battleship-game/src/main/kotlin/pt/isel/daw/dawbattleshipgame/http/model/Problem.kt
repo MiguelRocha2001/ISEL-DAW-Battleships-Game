@@ -133,6 +133,11 @@ data class Problem(
                 "Board is already confirmed",
                 "Unable to perform operation, board is already confirmed"
         )
+        val notInGameQueue = Problem(
+            URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/not-in-game-queue"),
+            "User not in game queue",
+            "User is not in game queue"
+        )
     }
 }
 
@@ -168,4 +173,6 @@ val problems = mapOf(
         "InvalidInputBody" to Problem.response(405, Problem.invalidInputBody),
 
         "NotAllShipsPlaced" to Problem.response(405, Problem.notAllShipsPlaced),
+
+        "NotInGameQueue" to Problem.response(404, Problem.notInGameQueue)
 )

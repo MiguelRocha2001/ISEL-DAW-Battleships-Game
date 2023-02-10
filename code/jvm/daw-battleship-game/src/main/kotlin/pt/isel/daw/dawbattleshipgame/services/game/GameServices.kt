@@ -21,8 +21,19 @@ class GameServices(
     fun isInWaitingRoom(userId: Int): Boolean {
         return transactionManager.run {
             val userDb = it.usersRepository
-            if (userDb.isAlreadyInQueue(userId)) return@run true
+            if (userDb.inQueue(userId)) return@run true
             return@run false
+        }
+    }
+
+    fun quitWaitingRoom(userId: Int): QuitGameQueueResult {
+        return transactionManager.run {
+            if (!isInWaitingRoom(userId)) return@run Either.Left(QuitGameQueueError.NotInGameQueue)
+                .also { logger.info("User $userId: Quit game queue failed: user is not in queue") }
+            val userDb = it.usersRepository
+            userDb.removeFromGameQueue(userId)
+            return@run Either.Right(Unit)
+                .also { logger.info("User $userId: Quit game queue success") }
         }
     }
 
@@ -37,7 +48,7 @@ class GameServices(
         return transactionManager.run {
             val gameDb = it.gamesRepository
             val userDb = it.usersRepository
-            if (userDb.isAlreadyInQueue(userId)) {
+            if (userDb.inQueue(userId)) {
                 logger.info("User $userId: Game creation failed: user is already in queue")
                 return@run Either.Left(GameCreationError.UserAlreadyInQueue)
             }
