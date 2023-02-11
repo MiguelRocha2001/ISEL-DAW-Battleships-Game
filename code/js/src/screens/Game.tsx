@@ -593,35 +593,52 @@ function Menu({onCreateGameRequest} : { onCreateGameRequest: (conf: GameConfigur
     ] = useGameConfiguration()
 
     return (
+        <div id={styles.menu}>
         <div id = {styles.buttonsToPlay}>
-            <label htmlFor="quantity">BOARD SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="8" max="13" value={gameConfiguration.boardSize} onChange={onBoardSizeChange} />
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Board size</label>
+                <input type="number" id="quantity" name="quantity" min="8" max="13" value={gameConfiguration.boardSize} onChange={onBoardSizeChange} />
+            </div>
 
-            <label htmlFor="quantity">SHOTS PER ROUND</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.nShotsPerRound} onChange={onNShotsPerRoundChange}/>
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Shots per round</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.nShotsPerRound} onChange={onNShotsPerRoundChange}/>
+            </div>
 
-            <label htmlFor="quantity">ROUND TIMEOUT</label>
-            <input type="number" id="quantity" name="quantity" min="10" max="240" value={gameConfiguration.roundTimeout} onChange={onRoundTimeoutChange}/>
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Round timeout</label>
+                <input type="number" id="quantity" name="quantity" min="10" max="240" value={gameConfiguration.roundTimeout} onChange={onRoundTimeoutChange}/>
+            </div>
 
-            <label htmlFor="quantity">CARRIER SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.CARRIER} onChange={onCarrierChange}/>
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Carrier size</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.CARRIER} onChange={onCarrierChange}/>
+            </div>
 
-            <label htmlFor="quantity">BATTLESHIP SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.BATTLESHIP} onChange={onBattleshipChange}/>
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Battleship Size</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.BATTLESHIP} onChange={onBattleshipChange}/>
+            </div>
 
-            <label htmlFor="quantity">CRUISER SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.CRUISER} onChange={onCruiserChange}/>
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Cruiser Size</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.CRUISER} onChange={onCruiserChange}/>
+            </div>
 
-            <label htmlFor="quantity">SUBMARINE SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.SUBMARINE} onChange={onSubmarineChange}/>
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Submarine Size</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.SUBMARINE} onChange={onSubmarineChange}/>
+            </div>
 
-            <label htmlFor="quantity">DESTROYER SIZE</label>
-            <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.DESTROYER} onChange={onDestroyerChange}/>
-
+            <div id={styles.inputWrapper}>
+                <label htmlFor="quantity">Destroyer Size</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.fleet.DESTROYER} onChange={onDestroyerChange}/>
+            </div>
+        </div>
             <button id={styles.newGame} className={styles.cybrBtn} onClick={() => {
                 onCreateGameRequest(gameConfiguration)
             }}>
-                Create New<span aria-hidden>_</span>
+                Create New<span aria-hidden></span>
                 <span aria-hidden className={styles.cybrbtn__glitch}>Create New</span>
             </button>
         </div>
