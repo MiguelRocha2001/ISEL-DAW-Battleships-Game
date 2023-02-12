@@ -87,7 +87,7 @@ function extractConfirmFleetAction(actions: any[]): Action {
 }
 
 function extractAttackAction(actions: any[]): Action {
-    return extractAction(actions, "place-shot")
+    return extractAction(actions, "place-shots")
 }
 
 function extractQuitGameAction(actions: any[]): Action {

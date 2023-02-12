@@ -43,13 +43,13 @@ fun preparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
 
 fun battleActions(sirenBuilderScope: SirenBuilderScope<*>) {
     sirenBuilderScope.action(
-        name = "place-shot",
+        name = "place-shots",
         href = URI(Uris.Games.My.Current.My.Shots.ALL),
         method = HttpMethod.POST,
         type = MediaType.APPLICATION_JSON
     ) {
         this.arrayField(
-            name = "nShotsPerRound",
+            name = "shots",
             block = {
                 this.numberField("row")
                 this.numberField("column")

@@ -5,7 +5,6 @@ import {Logger} from "tslog";
 import {CreateGameResponse, GameConfiguration, Match, PlaceShipsRequest} from './domain'
 import {State, useFetchReducer} from "./utils/useFetch-reducer";
 import {NetworkError, ServerError} from "./utils/domain";
-import {LogLevel} from "ts-loader/dist/logger";
 
 const logger = new Logger({name: "Services"});
 logger.settings.minLevel = 3 // LogLevel: INFO
@@ -274,7 +273,7 @@ async function createGame(request: GameConfiguration | undefined): Promise<Creat
             }
             const createGameResponse = result.properties
             if (createGameResponse) {
-                logger.info("createGame: responde sucessfull")
+                logger.info("createGame: response successful")
                 return createGameResponse
             } else {
                 logger.error("createGame: create game response not found")
