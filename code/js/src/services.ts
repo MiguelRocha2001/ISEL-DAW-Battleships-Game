@@ -48,6 +48,9 @@ function extractSirenInfo(resp: Siren) {
     const getQuitGameAction = Siren.extractQuitGameAction(resp.actions)
     const inGameQueueLink = Siren.extractInGameQueueLink(resp.links)
     const quitGameQueueAction = Siren.extractQuitGameQueueAction(resp.actions)
+    const placeShipsAction = Siren.extractPlaceShipsAction(resp.actions)
+    const confirmFleetAction = Siren.extractConfirmFleetAction(resp.actions)
+    const attackAction = Siren.extractAttackAction(resp.actions)
 
     if (serverInfoLink)
         logger.debug("fetchHome: setting up new info endpoint: ", serverInfoLink)
@@ -73,6 +76,12 @@ function extractSirenInfo(resp: Siren) {
         logger.debug("fetchHome: setting up new in game queue link: ", inGameQueueLink)
     if (quitGameQueueAction)
         logger.debug("fetchHome: setting up new quit game queue action: ", quitGameQueueAction.name)
+    if (placeShipsAction)
+        logger.debug("fetchHome: setting up new place ships action: ", placeShipsAction.name)
+    if (confirmFleetAction)
+        logger.debug("fetchHome: setting up new confirm fleet action: ", confirmFleetAction.name)
+    if (attackAction)
+        logger.debug("fetchHome: setting up new attack action: ", attackAction.name)
 
     links.setInfoLink(serverInfoLink)
     links.setBattleshipRanksLink(battleshipRanksLink)
@@ -86,6 +95,9 @@ function extractSirenInfo(resp: Siren) {
     links.setQuitGameAction(getQuitGameAction)
     links.setIsInGameQueueLink(inGameQueueLink)
     links.setQuitGameQueueAction(quitGameQueueAction)
+    links.setPlaceShipsAction(placeShipsAction)
+    links.setConfirmFleetAction(confirmFleetAction)
+    links.setAttackAction(attackAction)
 }
 
 export type ServerInfo = {

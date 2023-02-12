@@ -7,7 +7,7 @@ import pt.isel.daw.dawbattleshipgame.http.infra.SirenBuilderScope
 import pt.isel.daw.dawbattleshipgame.http.model.game.GameOutputModel
 import java.net.URI
 
-fun preparationActions(sirenBuilderScope: SirenBuilderScope<GameOutputModel>) {
+fun preparationActions(sirenBuilderScope: SirenBuilderScope<*>) {
     // Place Ship
     sirenBuilderScope.action(
         name = "place-ships",
