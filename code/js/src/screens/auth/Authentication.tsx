@@ -9,16 +9,15 @@ import {Logger} from "tslog";
 
 const logger = new Logger({ name: "Authentication" });
 
-export async function authenticate(username: string, password: string): Promise<boolean> {
-    const result = await Services.doLogin([
+export async function authenticate(username: string, password: string): Promise<void | Error> {
+    return await Services.doLogin([
         {name: "username", value: username},
         {name: "password", value: password},
     ])
-    return !(result instanceof Error);
 }
 
-export async function createUser(username: string, password: string): Promise<undefined | Error> {
-    return Services.createUser([
+export async function createUser(username: string, password: string): Promise<void | Error> {
+    return await Services.createUser([
         {name: "username", value: username},
         {name: "password", value: password},
     ])
@@ -63,13 +62,13 @@ export function Authentication({title, action}: { title: string, action: Action}
         if (action === "login") {
             logger.info("Logging in")
             authenticate(username, password)
-                .then((successful) => {
+                .then((result) => {
                     setIsSubmitting(false)
-                    if (successful) {
+                    if (result instanceof Error) {
+                        setError(result.message)
+                    } else {
                         setUser("TO CHANGE LATER") // TODO: Change this to the user object
                         setRedirect(location.state?.source?.pathname || "/me")
-                    } else {
-                        setError("Some error has occurred")
                     }
                 })
                 .catch(error => {
@@ -80,14 +79,15 @@ export function Authentication({title, action}: { title: string, action: Action}
         } else {
             console.log("Registering")
             createUser(username, password)
-                .then((userId) => {
+                .then((result) => {
                     setIsSubmitting(false)
-                    if(userId) {
+                    if(result instanceof Error)
+                        setError(result.message)
+                    else {
                         setSuccessSignUp("User created successfully, you can now sign in")
                         setError("")
                         navigate("/sign-in")
                     }
-                    else setError("Some error has occurred, please go to the home page and try again")
                     // setRedirect(location.state?.source?.pathname || "/sign-in") // fixme - results in endless loop
                 })
                 .catch(error => {
