@@ -33,6 +33,15 @@ data class Problem(
             .body(problem)
         val DEFAULT_URI = URI("https://github.com/isel-leic-daw/2022-daw-leic52d-2-22-daw-leic52d-g11/docs/problem/an-error-has-occurred")
 
+        fun buildInputError(value: String) = response(
+            400,
+            Problem(
+                DEFAULT_URI,
+                INVALID_INPUT,
+                "Invalid value: $value"
+            )
+        )
+
         val errorHasOccurred = Problem(
             DEFAULT_URI,
         "Error",
@@ -142,37 +151,37 @@ data class Problem(
 }
 
 val problems = mapOf(
-        "UserAlreadyExists" to Problem.response(400, Problem.userAlreadyExists),
+    "UserAlreadyExists" to Problem.response(400, Problem.userAlreadyExists),
 
-        "BoardIsConfirmed" to Problem.response(405, Problem.boardIsConfirmed),
+    "BoardIsConfirmed" to Problem.response(405, Problem.boardIsConfirmed),
 
-        "InsecurePassword" to Problem.response(400, Problem.insecurePassword),
+    "InsecurePassword" to Problem.response(400, Problem.insecurePassword),
 
-        "InvalidUsername" to Problem.response(400, Problem.invalidUsername),
+    "InvalidUsername" to Problem.response(400, Problem.invalidUsername),
 
-        "UserOrPasswordAreInvalid" to Problem.response(403, Problem.userOrPasswordAreInvalid),
+    "UserOrPasswordAreInvalid" to Problem.response(403, Problem.userOrPasswordAreInvalid),
 
-        "UserAlreadyInQueue" to Problem.response(405, Problem.userAlreadyInQueue),
+    "UserAlreadyInQueue" to Problem.response(405, Problem.userAlreadyInQueue),
 
-        "UserAlreadyInGame" to Problem.response(405, Problem.userAlreadyInGame),
+    "UserAlreadyInGame" to Problem.response(405, Problem.userAlreadyInGame),
 
-        "UserInGameQueue" to Problem.response(404, Problem.userInGameQueue),
+    "UserInGameQueue" to Problem.response(404, Problem.userInGameQueue),
 
-        "GameNotFound" to Problem.response(404, Problem.gameNotFound),
+    "GameNotFound" to Problem.response(404, Problem.gameNotFound),
 
-        "ActionNotPermitted" to Problem.response(405, Problem.actionNotPermitted),
+    "ActionNotPermitted" to Problem.response(405, Problem.actionNotPermitted),
 
-        "EmptyShotsList" to Problem.response(400, Problem.noShotWasSelected),
+    "EmptyShotsList" to Problem.response(400, Problem.noShotWasSelected),
 
-        "InvalidMove" to Problem.response(405, Problem.invalidMove),
+    "InvalidMove" to Problem.response(405, Problem.invalidMove),
 
-        "InvalidShot" to Problem.response(405, Problem.invalidShot),
+    "InvalidShot" to Problem.response(405, Problem.invalidShot),
 
-        "UserNotFound" to Problem.response(404, Problem.userNotFound),
+    "UserNotFound" to Problem.response(404, Problem.userNotFound),
 
-        "InvalidInputBody" to Problem.response(405, Problem.invalidInputBody),
+    "InvalidInputBody" to Problem.response(405, Problem.invalidInputBody),
 
-        "NotAllShipsPlaced" to Problem.response(405, Problem.notAllShipsPlaced),
+    "NotAllShipsPlaced" to Problem.response(405, Problem.notAllShipsPlaced),
 
-        "NotInGameQueue" to Problem.response(404, Problem.notInGameQueue)
+    "NotInGameQueue" to Problem.response(404, Problem.notInGameQueue),
 )

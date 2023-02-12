@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import pt.isel.daw.dawbattleshipgame.domain.game.validate
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.JsonMediaType
@@ -11,6 +12,7 @@ import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.battleActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.preparationActions
 import pt.isel.daw.dawbattleshipgame.http.hypermedia.actions.quitGameAction
 import pt.isel.daw.dawbattleshipgame.http.infra.siren
+import pt.isel.daw.dawbattleshipgame.http.model.Problem
 import pt.isel.daw.dawbattleshipgame.http.model.game.*
 import pt.isel.daw.dawbattleshipgame.http.model.map
 import pt.isel.daw.dawbattleshipgame.services.game.*
@@ -19,6 +21,11 @@ import pt.isel.daw.dawbattleshipgame.services.game.*
 class GamesController(
     private val gameServices: GameServices
 ) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatch(ex: MethodArgumentTypeMismatchException): ResponseEntity<Problem> {
+        return Problem.buildInputError(ex.value.toString())
+    }
+
     @GetMapping(Uris.Games.Queue.ME)
     fun isInWaitingRoom(
         user: User

@@ -2,6 +2,7 @@ package pt.isel.daw.dawbattleshipgame.http.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import pt.isel.daw.dawbattleshipgame.Either
 import pt.isel.daw.dawbattleshipgame.domain.player.User
 import pt.isel.daw.dawbattleshipgame.http.SirenMediaType
@@ -19,6 +20,11 @@ import javax.servlet.http.HttpServletResponse
 class UsersController(
     private val userService: UserServices
 ) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleMethodArgumentTypeMismatch(ex: MethodArgumentTypeMismatchException): ResponseEntity<Problem> {
+        return Problem.buildInputError(ex.value.toString())
+    }
+
     @PostMapping(Uris.Users.ALL)
     fun create(
         @RequestBody input: UserCreateInputModel
@@ -82,7 +88,7 @@ class UsersController(
     @GetMapping(Uris.Users.BY_ID1)
     fun getById(
         @PathVariable id: Int
-    ) : ResponseEntity<*>{
+    ) : ResponseEntity<*> {
         val user = userService.getUserById(id)?.toUserStatOutputModel() ?:
             return Problem.response(404, Problem.userNotFound)
         return ResponseEntity.status(200)

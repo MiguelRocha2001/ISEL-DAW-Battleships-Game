@@ -58,7 +58,7 @@ class GameServices(
             }
 
             val userWaiting = if(quickGame) userDb.getFirstUserInQueue()
-            else userDb.getFirstUserWithSameConfigInQueue(configuration!!) //safe double bang
+            else userDb.getFirstUserWithSameConfigInQueue(configuration!!) // safe double bang
 
             if (userWaiting == null) {
                 userDb.insertInGameQueue(userId,configuration ?: Configuration.DEFAULT)
