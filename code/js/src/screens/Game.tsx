@@ -42,7 +42,7 @@ type State =
     }
     |
     {
-        type : "placingShips",
+        type : "placingShip",
         ship : string,
         row : number,
         col : number,
@@ -106,7 +106,7 @@ type Action =
     }
     |
     {
-        type : "setPlacingShips",
+        type : "setPlacingShip",
         ship : string,
         row : number,
         col : number,
@@ -164,8 +164,8 @@ function reducer(state: State, action: Action): State {
         case 'setPlayingWithMsg' : {
             return {type : 'playing', game : action.game, msg : action.msg}
         }
-        case 'setPlacingShips' : {
-            return {type : 'placingShips', ship : action.ship, row : action.row, col : action.col, orient : action.orient}
+        case 'setPlacingShip' : {
+            return {type : 'placingShip', ship : action.ship, row : action.row, col : action.col, orient : action.orient}
         }
         case 'setConfirmingFleet' : {
             return {type : 'confirmingFleet'}
@@ -487,7 +487,7 @@ export function Game() {
                     await updateGameWhileNecessary()
                     break
                 }
-                case 'placingShips' : {
+                case 'placingShip' : {
                     await placeShip(state.ship, state.row, state.col, state.orient)
                     break
                 }
@@ -519,15 +519,17 @@ export function Game() {
     if (state.type === 'error') {
         return <ErrorScreen error={state.error}/>
     } else if (state.type === "checkingForExistingOnGoingGame") {
-        return <CheckingForExistingOnGoingGame />
-    } if (state.type === "menu") {
+        return (<h1 id={styles.actionTitle}>Checking for existing on going game</h1>)
+    } else if (state.type === "checkingIfIsInWaitingQueue") {
+        return (<h1 id={styles.actionTitle}>Checking if is in waiting queue</h1>)
+    } else if (state.type === "menu") {
         return <Menu onCreateGameRequest={(config: GameConfiguration) => dispatch({type : 'setCreatingGame', config})}/>
     } else if (state.type === "creatingGame") {
         return <CreatingGame />
     } else if (state.type === "playing") {
         return <Playing
             match={state.game}
-            onPlaceShip={(ship, row, col, orient) => dispatch({type : 'setPlacingShips', ship, row, col, orient})}
+            onPlaceShip={(ship, row, col, orient) => dispatch({type : 'setPlacingShip', ship, row, col, orient})}
             onConfirmFleetRequest={() => dispatch({type : 'setConfirmingFleet'})}
             onShot={(row, col) => dispatch({type : 'setShooting', row, col})}
             onQuitRequest={(gameId: number) => dispatch({type : 'setQuitGame', gameId})}
@@ -562,21 +564,15 @@ export function Game() {
                 <Loading />
             </div>
         )
-    } else if (state.type === "placingShips") {
-        return (<div>Placing ships</div>)
+    } else if (state.type === "placingShip") {
+        return (<h1 id={styles.actionTitle}>Placing Ship</h1>)
     } else if (state.type === "confirmingFleet") {
-        return (<div>Confirming fleet</div>)
+        return (<h1 id={styles.actionTitle}>Confirming fleet</h1>)
+    } else if (state.type === "shooting") {
+        return (<h1 id={styles.actionTitle}>Making the Shot</h1>)
     } else {
-        return <div>Unknown state</div>
+        return (<h1 id={styles.actionTitle}>Unknown state</h1>)
     }
-}
-
-function CheckingForExistingOnGoingGame() {
-    return (
-        <div>
-            <h1>Checking for existing game</h1>
-        </div>
-    )
 }
 
 function Menu({onCreateGameRequest} : { onCreateGameRequest: (conf: GameConfiguration) => void }) {

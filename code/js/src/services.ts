@@ -165,21 +165,6 @@ async function doLogin(fields: KeyValuePair[]): Promise<void | Error> {
             if (resp instanceof ServerError) {
                 return logAndGetError('doLogin', resp)
             }
-            logger.debug("fetchToken: response successfully")
-            const createGameAction = Siren.extractCreateGameAction(resp.actions)
-            const userHomeLink = Siren.extractUserHomeLink(resp.links)
-            if (createGameAction) {
-                links.setCreateGameAction(createGameAction)
-                logger.debug("fetchToken: setting up new create game action: ", createGameAction.name)
-            } else {
-                logger.error("fetchToken: create game action not found in response")
-            }
-            if (userHomeLink) {
-                links.setUserHomeLink(userHomeLink)
-                logger.debug("fetchToken: setting up new user home link: ", userHomeLink)
-            } else {
-                logger.error("fetchToken: user home link not found in response")
-            }
             logger.debug("login successful")
             return
         } catch (e) {
@@ -208,13 +193,6 @@ async function createUser(fields: KeyValuePair[]): Promise<undefined | Error> {
             }
             const userId = resp.properties.userId
             logger.debug("createUser: response successfully")
-            const tokenAction = Siren.extractTokenAction(resp.actions)
-            if (tokenAction) {
-                links.setTokenAction(tokenAction)
-                logger.debug("createUser: setting up new token action: ", tokenAction.name)
-            } else {
-                logger.error("createUser: token action not found in response")
-            }
             return userId
         } catch (e) {
             return logAndGetError('createUser', e)
@@ -232,28 +210,6 @@ function useFetchUserHome(): UserStats | Fetching | Error {
         }
         const resp = useFetchReducer(request)
         return handlerOrError('useFetchUserHome', resp, (siren: Siren) => {
-            const createGameAction = Siren.extractCreateGameAction(siren.actions)
-            const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(siren.links)
-            const getGameLink = Siren.extractGetGameLink(siren.links)
-
-            if (createGameAction) {
-                links.setCreateGameAction(createGameAction)
-                logger.debug("fetchUserHome: setting up new create game action: ", createGameAction.name)
-            } else {
-                return logAndGetError('useFetchUserHome', new ResolutionLinkError('create game action not found'))
-            }
-            if (getCurrentGameIdLink) {
-                links.setCurrentGameIdLink(getCurrentGameIdLink)
-                logger.debug("fetchUserHome: setting up new get_current_game_id link: ", getCurrentGameIdLink)
-            } else {
-                return logAndGetError('useFetchUserHome', new ResolutionLinkError('get_current_game_id link not found'))
-            }
-            if (getGameLink) {
-                links.setGetGameLink(getGameLink)
-                logger.debug("fetchUserHome: setting up new get_game link: ", getGameLink)
-            } else {
-                return logAndGetError('useFetchUserHome', new ResolutionLinkError('get_game link not found'))
-            }
             return siren.properties
         })
     }
@@ -276,12 +232,6 @@ async function createGame(request: GameConfiguration | undefined): Promise<Creat
             const result = await doFetch(internalReq)
             if (result instanceof ServerError) {
                 return logAndGetError('createGame', result)
-            }
-            const getGameLink = Siren.extractGetGameLink(result.links)
-            // const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(result.links)
-            if (getGameLink) {
-                links.setGetGameLink(getGameLink)
-                logger.debug("createGame: setting up new get game link: ", getGameLink)
             }
             const createGameResponse = result.properties
             if (createGameResponse) {
@@ -330,11 +280,12 @@ async function isInGameQueue(): Promise<boolean | Error> {
             return logAndGetError('isInGameQueue', response)
         }
         logger.debug("isInGameQueue: response successful")
+        console.log('response: ', response)
         const inGameQueue = response.properties.isInQueue
-        if (inGameQueue) {
+        if (inGameQueue !== undefined) {
             return inGameQueue
         } else {
-            logger.error("getGame: isInQueue property not found in response")
+            logger.error("isInGameQueue: isInQueue not found in response")
         }
         return inGameQueue
     } catch (e) {
@@ -343,39 +294,6 @@ async function isInGameQueue(): Promise<boolean | Error> {
 }
 
 async function getGame(): Promise<Match | Error> {
-
-    function checkLinks(response: Siren): string {
-        const placeShipsAction = Siren.extractPlaceShipsAction(response.actions)
-        const confirmFleetAction = Siren.extractConfirmFleetAction(response.actions)
-        const attackAction = Siren.extractAttackAction(response.actions)
-        const quitGameAction = Siren.extractQuitGameAction(response.actions)
-        if (placeShipsAction) {
-            links.setPlaceShipsAction(placeShipsAction)
-            logger.debug("getGame: setting up new place ships action: ", placeShipsAction.name)
-        } else {
-            logger.error("getGame: place ships action not found in response")
-        }
-        if (confirmFleetAction) {
-            links.setConfirmFleetAction(confirmFleetAction)
-            logger.debug("getGame: setting up new confirm fleet action: ", confirmFleetAction.name)
-        } else {
-            logger.error("getGame: confirm fleet action not found in response")
-        }
-        if (attackAction) {
-            links.setAttackAction(attackAction)
-            logger.debug("getGame: setting up new attack action: ", attackAction.name)
-        } else {
-            logger.error("getGame: attack action not found in response")
-        }
-        if (quitGameAction) {
-            links.setQuitGameAction(quitGameAction)
-            logger.debug("getGame: setting up new quit game action: ", quitGameAction.name)
-        } else {
-            logger.error("getGame: quit game action not found in response")
-        }
-        return undefined
-    }
-
     function fromSirenPropsToMatch(props: any): Match {
         return new Match(
             props.id,
@@ -400,9 +318,6 @@ async function getGame(): Promise<Match | Error> {
         if (response instanceof ServerError) {
             return logAndGetError('getGame', response)
         }
-        const error = checkLinks(response) // returns a string if there is an error
-        if (error)
-            return new Error(error)
         logger.debug("getGame: response successful")
         return fromSirenPropsToMatch(response.properties)
     } catch (e) {

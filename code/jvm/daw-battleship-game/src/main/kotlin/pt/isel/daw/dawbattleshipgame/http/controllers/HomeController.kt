@@ -35,10 +35,8 @@ class HomeController(
                     createUserSirenAction(this)
                     createTokenSirenAction(this)
                     createGameSirenAction(this)
-
                     preparationActions(this)
                     battleActions(this)
-
                     quitGameAction(this)
                     quitGameQueueAction(this)
                 }
