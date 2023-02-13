@@ -762,7 +762,7 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
 
     let fleetConfirmed: boolean = isPlayerOne ? match.board1.isConfirmed : match.board2.isConfirmed
     let enemyBoard: Board = isPlayerOne ? match.board2 : match.board1
-    let winner: string | undefined = match.winner == match.player1 && isPlayerOne ? "You" : "Opponent"
+    let haveIWon: boolean | undefined = isPlayerOne ? match.winner === match.player1 : match.winner === match.player2
 
     const quitButton = <button  id={styles.quitButton} className={styles.cybrBtn} onClick={() => {onQuitRequest(match.id)}}>
         Leave Match<span aria-hidden></span>
@@ -793,7 +793,7 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
             )
         case "finished":
             return (
-                <Finished winner={winner} />
+                <Finished amIWinner={haveIWon} />
             )
     }
 }
@@ -937,11 +937,11 @@ function Battle({myBoard, enemyBoard, isMyTurn, nShotsPerRound, onShot} : {
 }
 
 // TODO: text appears to be invisible
-function Finished({winner} : {winner : string}) {
+function Finished({amIWinner} : {amIWinner : boolean}) {
     return (
         <div>
             <h1>Finished</h1>
-            <p className = {styles.black}> {winner} has won</p>
+            <h3>{amIWinner ? "You won!" : "You lost!"}</h3>
         </div>
     )
 }
