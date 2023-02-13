@@ -191,7 +191,7 @@ class GamePlaceShotTests {
                     "column" to playerOneShot.second
                 )))
             )
-            .header(HttpHeaders.COOKIE, "token=$player1Token")
+            .header(HttpHeaders.COOKIE, "token=$invalidToken")
             .exchange()
             .expectStatus().isUnauthorized
 

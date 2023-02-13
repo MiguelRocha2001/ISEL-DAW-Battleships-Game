@@ -39,7 +39,7 @@ class HomeTests {
         // given: an HTTP client
         val client = WebTestClient.bindToServer().baseUrl("http://localhost:$port").build()
 
-        // when: creating an user
+        // when: creating a user
         // then: the response is a 201 with a proper Location header
         val siren = client.get().uri(Uris.Home.HOME)
             .exchange()
@@ -58,7 +58,7 @@ class HomeTests {
 
         // asserting links
         val links = siren.links
-        assertEquals(8, links.size)
+        assertEquals(9, links.size)
 
         assertEquals("/", links[0].href)
         assertEquals(1, links[0].rel.size)
@@ -90,7 +90,7 @@ class HomeTests {
 
         // asserting actions
         val actions = siren.actions
-        assertEquals(4, actions.size)
+        assertEquals(8, actions.size)
 
         assertEquals("create-user", actions[0].name)
         assertEquals("/users", actions[0].href)
