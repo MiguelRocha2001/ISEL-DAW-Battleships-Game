@@ -38,7 +38,7 @@ function LeaderboardInternal({rankings}: { rankings: Rankings }) {
         return <div><h2>No player found <em>(yet)</em></h2></div>
     } else return (
         <div id ={styles.leaderBoard}>
-            <h1 id={styles.topPlayers}>TOP {rankings.users.length} PLAYERS</h1>
+            <h1 id={styles.topPlayers}>TOP PLAYERS</h1>
             <table className={styles.table}>
                 <thead>
                     <tr>
