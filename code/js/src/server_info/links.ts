@@ -10,8 +10,9 @@ let userLink: string | undefined
 let tokenAction: Action | undefined
 let registerAction: Action | undefined
 let createGameAction: Action | undefined
-let gameLink: string | undefined
+let currentGameLink: string | undefined
 let currentGameId: string | undefined
+let getGameByIdLink: string | undefined
 let userHomeLink: string | undefined
 let placeShipsAction: Action | undefined
 let confirmFleetAction: Action | undefined
@@ -62,11 +63,11 @@ function setCreateGameAction(action: Action) {
     createGameAction = action
 }
 
-function getGameLink() {
-    return gameLink
+function getCurrentActiveGameLink() {
+    return currentGameLink
 }
-function setGetGameLink(link: string) {
-    gameLink = link
+function setGetCurrentActiveGameLink(link: string) {
+    currentGameLink = link
 }
 
 function getCurrentGameIdLink() {
@@ -74,6 +75,14 @@ function getCurrentGameIdLink() {
 }
 function setCurrentGameIdLink(id: string) {
     currentGameId = id
+}
+
+function getGetGameByIdLink() {
+    return getGameByIdLink
+}
+
+function setGetGameByIdLink(link: string) {
+    getGameByIdLink = link
 }
 
 function getUserHomeLink() {
@@ -141,10 +150,12 @@ export const links = {
     setRegisterAction,
     getCreateGameAction,
     setCreateGameAction,
-    getGameLink,
-    setGetGameLink,
+    getCurrentActiveGameLink,
+    setGetCurrentActiveGameLink,
     getCurrentGameIdLink,
     setCurrentGameIdLink,
+    getGetGameByIdLink,
+    setGetGameByIdLink,
     getUserHomeLink,
     setUserHomeLink,
     getPlaceShipsAction,

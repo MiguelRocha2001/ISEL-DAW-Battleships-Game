@@ -44,7 +44,8 @@ function extractSirenInfo(resp: Siren) {
     const registerAction = Siren.extractRegisterAction(resp.actions)
     const createGameAction = Siren.extractCreateGameAction(resp.actions)
     const getCurrentGameIdLink = Siren.extractGetCurrentGameIdLink(resp.links)
-    const getGameLink = Siren.extractGetGameLink(resp.links)
+    const getCurrentActiveGameLink = Siren.extractGetGameLink(resp.links)
+    const getGameByIdLink = Siren.extractGetGameByIdLink(resp.links)
     const getQuitGameAction = Siren.extractQuitGameAction(resp.actions)
     const inGameQueueLink = Siren.extractInGameQueueLink(resp.links)
     const quitGameQueueAction = Siren.extractQuitGameQueueAction(resp.actions)
@@ -68,8 +69,10 @@ function extractSirenInfo(resp: Siren) {
         logger.debug("fetchHome: setting up new create game action: ", createGameAction.name)
     if (getCurrentGameIdLink)
         logger.debug("fetchHome: setting up new get current game id link: ", getCurrentGameIdLink)
-    if (getGameLink)
-        logger.debug("fetchHome: setting up new get game link: ", getGameLink)
+    if (getCurrentActiveGameLink)
+        logger.debug("fetchHome: setting up new get game link: ", getCurrentActiveGameLink)
+    if (getGameByIdLink)
+        logger.debug("fetchHome: setting up new get game by id link: ", getGameByIdLink)
     if (getQuitGameAction)
         logger.debug("fetchHome: setting up new quit game action: ", getQuitGameAction.name)
     if (inGameQueueLink)
@@ -91,7 +94,8 @@ function extractSirenInfo(resp: Siren) {
     links.setRegisterAction(registerAction)
     links.setCreateGameAction(createGameAction)
     links.setCurrentGameIdLink(getCurrentGameIdLink)
-    links.setGetGameLink(getGameLink)
+    links.setGetCurrentActiveGameLink(getCurrentActiveGameLink)
+    links.setGetGameByIdLink(getGameByIdLink)
     links.setQuitGameAction(getQuitGameAction)
     links.setIsInGameQueueLink(inGameQueueLink)
     links.setQuitGameQueueAction(quitGameQueueAction)
@@ -280,7 +284,6 @@ async function isInGameQueue(): Promise<boolean | Error> {
             return logAndGetError('isInGameQueue', response)
         }
         logger.debug("isInGameQueue: response successful")
-        console.log('response: ', response)
         const inGameQueue = response.properties.isInQueue
         if (inGameQueue !== undefined) {
             return inGameQueue
@@ -293,7 +296,7 @@ async function isInGameQueue(): Promise<boolean | Error> {
     }
 }
 
-async function getGame(): Promise<Match | Error> {
+async function getCurrentActiveGame(): Promise<Match | Error> {
     function fromSirenPropsToMatch(props: any): Match {
         return new Match(
             props.id,
@@ -309,12 +312,48 @@ async function getGame(): Promise<Match | Error> {
         )
     }
 
-    const gameLink = links.getGameLink()
+    const gameLink = links.getCurrentActiveGameLink()
     if (!gameLink)
         return logAndGetError('getGame', new ResolutionLinkError('game link not found'))
 
     try {
         const response = await Fetch.doFetch({ url: gameLink, method: "GET", body: undefined })
+        if (response instanceof ServerError) {
+            return logAndGetError('getGame', response)
+        }
+        logger.debug("getGame: response successful")
+        return fromSirenPropsToMatch(response.properties)
+    } catch (e) {
+        return logAndGetError('getGame', e)
+    }
+}
+
+async function getGame(gameId: number): Promise<Match | Error> {
+    function fromSirenPropsToMatch(props: any): Match {
+        return new Match(
+            props.id,
+            props.configuration,
+            props.player1,
+            props.player2,
+            props.state,
+            props.board1,
+            props.board2,
+            props.winner,
+            props.playerTurn,
+            props.localPlayer
+        )
+    }
+
+    if (gameId === undefined)
+        return logAndGetError('getGame', new InvalidArgumentError('gameId is undefined'))
+
+    const gameLink = links.getGetGameByIdLink()
+    const gameLinkWithId = gameLink.replace(':id', gameId.toString())
+    if (!gameLink)
+        return logAndGetError('getGame', new ResolutionLinkError('game link not found'))
+
+    try {
+        const response = await Fetch.doFetch({ url: gameLinkWithId, method: "GET", body: undefined })
         if (response instanceof ServerError) {
             return logAndGetError('getGame', response)
         }
@@ -530,6 +569,7 @@ export const Services = {
     createGame,
     getCurrentGameId,
     getGame,
+    getCurrentActiveGame,
     fetchUserHome: useFetchUserHome,
     placeShips,
     confirmFleet,

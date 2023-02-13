@@ -187,6 +187,8 @@ function reducer(state: State, action: Action): State {
 
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingIfIsInWaitingQueue'})
+    const [gameId, setGameId] = useState<number>(undefined)
+
     let cancelRequest = false
 
     async function checkIfIsInWaitingQueue() {
@@ -202,7 +204,6 @@ export function Game() {
                 dispatch({type: 'setMenu', msg: result.message})
             })
         } else {
-            console.log('result: ', result)
             if (result == true) {
                 dispatch({type: 'setUpdatingGameWhileNecessary', game: undefined, msg : "You are in the waiting queue"})
             } else {
@@ -213,7 +214,7 @@ export function Game() {
 
     async function checkForExistingOnGoingGame() {
         logger.info("checkingForExistingOnGoingGame")
-        const result = await Services.getGame()
+        const result = await Services.getCurrentActiveGame()
         if (cancelRequest) {
             logger.info("checkForExistingOnGoingGame cancelled")
             return
@@ -223,6 +224,7 @@ export function Game() {
                 dispatch({type: 'setMenu', msg: result.message})
             })
         } else {
+            setGameId(result.id)
             dispatch({type:'setUpdatingGameWhileNecessary', game: result, msg : undefined})
         }
     }
@@ -292,7 +294,11 @@ export function Game() {
     async function shoot(shots: shot[]) {
 
         async function dispatchOrDoNothing() : Promise<boolean> {
-            const result = await Services.getGame()
+            if (gameId === undefined) {
+                dispatch({type: 'setError', error: new Error("gameId should not be undefined")})
+                return true
+            }
+            const result = await Services.getGame(gameId)
 
             if (result instanceof Error) {
                 dispatch({type: 'setError', error: result})
@@ -333,7 +339,11 @@ export function Game() {
 
     async function updateUntilConfirmed() {
         async function dispatchOrDoNothing() : Promise<boolean> {
-            const result = await Services.getGame()
+            if (gameId === undefined) {
+                dispatch({type: 'setError', error: new Error("gameId should not be undefined")})
+                return true
+            }
+            const result = await Services.getGame(gameId)
 
             if (result instanceof Error) {
                 dispatch({type: 'setError', error: result})
@@ -388,7 +398,16 @@ export function Game() {
          * Otherwise, returns false.
          */
         async function dispatchToPlayingOrNothing(state: State) : Promise<boolean> {
-            const resp = await Services.getGame()
+            if (gameId === undefined) {
+                const gameIdInternal = await Services.getCurrentGameId()
+                if (typeof gameIdInternal === 'number') {
+                    setGameId(gameIdInternal)
+                }
+            }
+
+            if (gameId === undefined) return false
+
+            const resp = await Services.getGame(gameId)
 
             if (resp instanceof Match) {
                 if (!cancelRequest && state.type === 'updatingGameWhileNecessary' && !isTheSame(resp, state.game)) {
@@ -430,6 +449,7 @@ export function Game() {
         }
 
         logger.info("updatingGameWhileNecessary")
+
         const tid = setInterval(async () => {
             const dispatched = await dispatchToPlayingOrNothing(state)
             if (cancelRequest) {
@@ -513,7 +533,7 @@ export function Game() {
             cancelRequest = true
             logger.info("Game unmounted")
         };
-    }, [state])
+    }, [state, gameId])
 
     if (state.type === 'error') {
         return <ErrorScreen error={state.error}/>

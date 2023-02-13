@@ -21,7 +21,6 @@ export function Me() {
         }
         async function setAbandonGameQueueButtonIfGameIsQueued() {
             const inGameQueue = await Services.isInGameQueue()
-            console.log('inGameQueue: ', inGameQueue)
             if (typeof inGameQueue === 'boolean' && inGameQueue) {
                 setAbandonGameQueueButton(true)
             }

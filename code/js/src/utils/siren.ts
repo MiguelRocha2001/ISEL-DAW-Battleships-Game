@@ -74,6 +74,10 @@ function extractGetGameLink(linksArg: Link[]): string {
     return extractLink(linksArg, "game")
 }
 
+function extractGetGameByIdLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "game-by-id")
+}
+
 function extractGetCurrentGameIdLink(linksArg: Link[]): string {
     return extractLink(linksArg, "game-id")
 }
@@ -149,6 +153,7 @@ export const Siren = {
     extractCreateGameAction,
     extractGetGameLink,
     extractGetCurrentGameIdLink,
+    extractGetGameByIdLink,
     extractPlaceShipsAction,
     extractConfirmFleetAction,
     extractAttackAction,
