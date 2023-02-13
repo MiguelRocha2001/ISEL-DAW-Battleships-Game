@@ -851,7 +851,7 @@ function FleetSetup({board, fleetConfirmed, onPlaceShip, onConfirmFleet, config,
         <div className={styles.fullWidth}>
             <h1 className={styles.h1}>{title}</h1>
             <div className={styles.left}>
-                <Board board={board} onCellClick={placeShipIfNecessary}/></div>
+                <Board board={board} displayShip={true} onCellClick={placeShipIfNecessary}/></div>
             {options}
         </div>
     )
@@ -928,11 +928,11 @@ function Battle({myBoard, enemyBoard, isMyTurn, nShotsPerRound, onShot} : {
             <h3>Shots left: {shotsLeft}</h3>
             <div id={styles.myBoard}>
                 <h2 className={styles.h2}>My Board</h2>
-                <Board board={myBoard} onCellClick={() => {}}/>
+                <Board board={myBoard} displayShip={true} onCellClick={() => {}}/>
             </div>
             <div id={styles.enemyBoard}>
                 <h2 className={styles.h2}>Enemy Board</h2>
-                <Board board={enemyBoard} onCellClick={onShotHandler}/>
+                <Board board={enemyBoard} displayShip={false} onCellClick={onShotHandler}/>
             </div>
         </div>
     )
@@ -948,7 +948,7 @@ function Finished({amIWinner} : {amIWinner : boolean}) {
     )
 }
 
-function Board({board, onCellClick} : {board : Board, onCellClick? : (row: number, col: number) => void}) {
+function Board({board, displayShip, onCellClick} : {board : Board, displayShip: boolean, onCellClick? : (row: number, col: number) => void}) {
     const boardStr = board.cells
     const rowNumber = Math.sqrt(board.ncells)
     const collNumber = rowNumber
@@ -963,7 +963,7 @@ function Board({board, onCellClick} : {board : Board, onCellClick? : (row: numbe
                                 const cell = boardStr[row * rowNumber + coll]
                                 return (
                                     <td key={coll}>
-                                        <Cell cell={cell} onClick={() => { onCellClick(row + 1, coll + 1) }} />
+                                        <Cell cell={cell} displayShip={displayShip} onClick={() => { onCellClick(row + 1, coll + 1) }} />
                                     </td>
                                 )
                             })}
@@ -976,21 +976,23 @@ function Board({board, onCellClick} : {board : Board, onCellClick? : (row: numbe
     )
 }
 
-function Cell({cell, onClick} : {cell : string, onClick? : () => void}) {
+function Cell({cell, displayShip, onClick} : {cell : string, displayShip: boolean, onClick? : () => void}) {
     const isHit = cell > 'a' && cell < 'z'
-    const isWater = cell === ' '
-    const idNameCell = isHit ? styles.hit : isWater ? styles.water : styles.ship
+    const isWater = cell === ' ' || cell === 'x' // ' ' -> water, 'x' -> hit water
+
+    let colorStyle
+    if (isHit) {
+        if (isWater) colorStyle = styles.hitWater
+        else colorStyle = styles.hitShip
+    } else {
+        if (isWater) colorStyle = styles.water
+        else if (displayShip) colorStyle = styles.ship
+        else colorStyle = styles.water
+    }
+
     return (
-        <button className={styles.cell} id={idNameCell} onClick={onClick}>
+        <button className={styles.cell} id={colorStyle} onClick={onClick}>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </button>
-    )
-}
-
-function ErrorMsg({msg} : {msg : string}) {
-    return (
-        <div>
-            <p style={{color: "red"}}>{msg}</p>
-        </div>
     )
 }

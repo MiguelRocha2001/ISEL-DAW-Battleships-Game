@@ -43,20 +43,14 @@
     height: 50px;
     border-radius: 11px;
 }
-#hit{
+
+#hitShip{
     background-color: orangered;
 }
-#water{
+#hitWater{
     background-color: blue;
 }
-#ship{
-    background-color: grey;
-}
 
-
-#hit{
-    background-color: orangered;
-}
 #water{
     background: linear-gradient(to right, #26FFDF, #00A7E1);
 }
