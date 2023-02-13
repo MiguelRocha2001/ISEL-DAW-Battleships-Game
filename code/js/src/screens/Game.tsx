@@ -941,7 +941,7 @@ function Finished({winner} : {winner : string}) {
     return (
         <div>
             <h1>Finished</h1>
-            <p>{winner} has won</p>
+            <p className = {styles.black}> {winner} has won</p>
         </div>
     )
 }

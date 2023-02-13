@@ -520,3 +520,7 @@ input[type="number"]:focus {
     right: 0;
     bottom: 0;
 }
+
+.black{
+    color: black;
+}
