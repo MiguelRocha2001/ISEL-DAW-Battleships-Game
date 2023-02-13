@@ -188,6 +188,7 @@ function reducer(state: State, action: Action): State {
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingIfIsInWaitingQueue'})
     const [gameId, setGameId] = useState<number>(undefined)
+    console.log("GameId: " + gameId)
 
     let cancelRequest = false
 
@@ -476,6 +477,7 @@ export function Game() {
                 dispatch({type:'setMenu', msg: result.message})
             })
         } else {
+            setGameId(undefined)
             dispatch({type:'setMenu', msg: undefined})
         }
     }
