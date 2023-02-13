@@ -2,9 +2,11 @@ package pt.isel.daw.dawbattleshipgame.domain.game
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import pt.isel.daw.dawbattleshipgame.domain.ship.ShipType
 import pt.isel.daw.dawbattleshipgame.http.model.INVALID_ARGUMENT
 import pt.isel.daw.dawbattleshipgame.http.model.game.CreateGameInputModel
+import pt.isel.daw.dawbattleshipgame.http.pipeline.LoggerInterceptor
 import pt.isel.daw.dawbattleshipgame.http.requireWithException
 import java.util.*
 
@@ -58,8 +60,23 @@ data class Configuration(
         )
     }
 
+    private fun hashFleet(fleet: Map<ShipType, Int>): Int {
+        val sortedFleet = fleet.toList().sortedBy { (shipType, _) -> shipType }
+        var result = 1
+        for ((shipType, count) in sortedFleet) {
+            result = 31 * result + shipType.hashCode()
+            result = 31 * result + count
+        }
+        return result
+    }
+
     override fun hashCode(): Int {
-        return Objects.hash(fleet, boardSize, nShotsPerRound, roundTimeout)
+        //log the value of the hash
+        val logger = LoggerFactory.getLogger(LoggerInterceptor::class.java)
+        //cast map to hashMap for docker to work
+        val a = Objects.hash(hashFleet(fleet), boardSize, nShotsPerRound, roundTimeout)
+        logger.info("hash: $a")
+        return a
     }
     fun isShipValid(shipType: ShipType) =
             fleet[shipType] != null

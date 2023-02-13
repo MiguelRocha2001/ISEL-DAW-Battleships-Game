@@ -19,6 +19,7 @@ enum class ShipType(private val icon: Char) {
             it.icon == icon.uppercaseChar()
         }
     }
+
 }
 
 fun Char.getPanel(c: Coordinate): Panel {
