@@ -49,7 +49,7 @@ data class Configuration(
         val DEFAULT = Configuration(
                 boardSize = 10,
                 nShotsPerRound = 1,
-                fleet = hashMapOf(
+                fleet = mapOf(
                         ShipType.CARRIER to 5,
                         ShipType.BATTLESHIP to 4,
                         ShipType.CRUISER to 3,
