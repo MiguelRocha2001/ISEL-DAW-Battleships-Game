@@ -153,7 +153,7 @@ class GameServices(
     fun updateShip(userId: Int, position: Coordinate, newCoordinate: Coordinate? = null): UpdateShipResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(UpdateShipError.GameNotFound)
+            val game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(UpdateShipError.GameNotFound)
                 .also { logger.info("User $userId: Update ship failed: game not found") }
             val player = game.getUser(userId)
             if(game.state != GameState.FLEET_SETUP)
@@ -175,7 +175,7 @@ class GameServices(
     fun updateFleetState(userId: Int, confirmed: Boolean): FleetConfirmationResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(FleetConfirmationError.GameNotFound)
+            val game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(FleetConfirmationError.GameNotFound)
                 .also { logger.info("User $userId: Fleet confirmation failed: game not found") }
             if(game.state != GameState.FLEET_SETUP) {
                 logger.info("User $userId: Fleet confirmation failed: action not permitted")
@@ -201,7 +201,7 @@ class GameServices(
     fun placeShots(userId: Int, c: List<Coordinate>): PlaceShotResult {
         return transactionManager.run {
             val db = it.gamesRepository
-            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(PlaceShotError.GameNotFound)
+            val game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(PlaceShotError.GameNotFound)
                 .also { logger.info("User $userId: Place shot failed: game not found") }
 
             if(game.state != GameState.BATTLE || game.playerTurn != userId) {
@@ -223,7 +223,7 @@ class GameServices(
 
     fun getMyFleetLayout(userId: Int): BoardResult {
         return transactionManager.run {
-            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(GameSearchError.GameNotFound)
+            val game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(GameSearchError.GameNotFound)
                 .also { logger.info("User $userId: Get my fleet layout failed: game not found") }
             logger.info("User $userId: Get my fleet layout successful")
             return@run Either.Right(game.getBoard(game.getUser(userId)))
@@ -232,7 +232,7 @@ class GameServices(
 
     fun getOpponentFleet(userId: Int): BoardResult {
         return transactionManager.run {
-            var game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(GameSearchError.GameNotFound)
+            val game = getCurrentActiveGameInternal(userId)?.first ?: return@run Either.Left(GameSearchError.GameNotFound)
                 .also { logger.info("User $userId: Get opponent fleet failed: game not found") }
             val opponent = game.getUser(userId).other()
             logger.info("User $userId: Get opponent fleet successful")
