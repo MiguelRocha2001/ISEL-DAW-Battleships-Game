@@ -42,6 +42,13 @@ export function isTheSame(a: Match, b: Match): boolean {
     return res1 && res2 && res3;
 }
 
+export function isMyTurn(game: Match) {
+    const myPlayer = game.localPlayer
+    const playerTurn = game.playerTurn
+    if (playerTurn === game.player1 && myPlayer === 'one') return true
+    return playerTurn === game.player2 && myPlayer === 'two';
+}
+
 export type Board = {
     cells: string,
     ncells: number,

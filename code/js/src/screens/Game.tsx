@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {useEffect, useState} from 'react'
 import {Services} from '../services'
-import {Board, Fleet, GameConfiguration, isTheSame, Match, Orientation} from '../domain'
+import {Board, Fleet, GameConfiguration, isMyTurn, isTheSame, Match, Orientation} from '../domain'
 import {Logger} from "tslog";
 import styles from './Game.module.css'
 import {Loading} from "./Loading";
@@ -10,6 +10,8 @@ import {ServerError} from "../utils/domain";
 
 
 const logger = new Logger({ name: "GameComponent" });
+
+type shot = {row: number, column: number}
 
 type State =
     {
@@ -59,8 +61,7 @@ type State =
     |
     {
         type : "shooting",
-        row : number,
-        col : number
+        shots: shot[],
     }
     |
     {
@@ -123,8 +124,7 @@ type Action =
     |
     {
         type : "setShooting",
-        row : number,
-        col : number
+        shots: shot[],
     }
     |
     {
@@ -174,7 +174,7 @@ function reducer(state: State, action: Action): State {
             return {type : 'waitingForConfirmation'}
         }
         case 'setShooting' : {
-            return {type : 'shooting', row : action.row, col : action.col}
+            return {type : 'shooting', shots : action.shots}
         }
         case 'setUpdatingGameWhileNecessary' : {
             return {type : 'updatingGameWhileNecessary', game : action.game, msg : action.msg}
@@ -289,7 +289,7 @@ export function Game() {
         }
     }
 
-    async function shoot(row: number, col: number) {
+    async function shoot(shots: shot[]) {
 
         async function dispatchOrDoNothing() : Promise<boolean> {
             const result = await Services.getGame()
@@ -307,9 +307,9 @@ export function Game() {
             }
         }
 
-        logger.info("shooting in " + row + " " + col)
+        logger.info("shooting in: ", shots)
         const result = await Services.attack(
-            {shots: Array({row: row, column: col})}
+            {shots}
         )
         if (result instanceof Error) {
             dispatchToErrorScreenOrDoHandler(result, () => {
@@ -328,7 +328,7 @@ export function Game() {
                 clearInterval(tic)
                 return
             }
-        }, 100)
+        }, 500)
     }
 
     async function updateUntilConfirmed() {
@@ -361,14 +361,7 @@ export function Game() {
                 clearInterval(tic)
                 return
             }
-        }, 100)
-    }
-
-    function isMyTurn(game: Match) {
-        const myPlayer = game.localPlayer
-        const playerTurn = game.playerTurn
-        if (playerTurn === game.player1 && myPlayer === 'one') return true
-        return playerTurn === game.player2 && myPlayer === 'two';
+        }, 500)
     }
 
     /**
@@ -383,7 +376,7 @@ export function Game() {
          * @return true if state was changed and false otherwise
          */
         function updateStateToShowCorrectMsgIfNecessary(state: State, msg: string) {
-            if (state.type === 'updatingGameWhileNecessary' && state.msg !== msg) {
+            if (!cancelRequest && state.type === 'updatingGameWhileNecessary' && state.msg !== msg) {
                 dispatch({type:'setUpdatingGameWhileNecessary', game: state.game, msg: msg})
                 return true
             }
@@ -398,7 +391,7 @@ export function Game() {
             const resp = await Services.getGame()
 
             if (resp instanceof Match) {
-                if (state.type === 'updatingGameWhileNecessary' && !isTheSame(resp, state.game)) {
+                if (!cancelRequest && state.type === 'updatingGameWhileNecessary' && !isTheSame(resp, state.game)) {
                     dispatch({type:'setUpdatingGameWhileNecessary', game: resp, msg: state.msg})
                     return true
                 }
@@ -411,19 +404,25 @@ export function Game() {
                         if (myBoard.isConfirmed && !enemyBoard.isConfirmed) { // awaiting opponent confirmation
                             return updateStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to confirm')
                         }
-                        dispatch({type: 'setPlaying', game: resp})
-                        return true
+                        if (!cancelRequest) {
+                            dispatch({type: 'setPlaying', game: resp})
+                            return true
+                        } else
+                            return false
                     }
                     case 'battle' : {
-                        if (isMyTurn(resp)) {
+                        if (!cancelRequest && isMyTurn(resp)) {
                             dispatch({type: 'setPlaying', game: resp})
                             return true
                         } else
                             return updateStateToShowCorrectMsgIfNecessary(state, 'Waiting for opponent to shoot')
                     }
                     case 'finished' : {
-                        dispatch({type: 'setPlaying', game: resp})
-                        return true
+                        if (!cancelRequest) {
+                            dispatch({type: 'setPlaying', game: resp})
+                            return true
+                        }
+                        return false
                     }
                 }
             } else
@@ -432,17 +431,17 @@ export function Game() {
 
         logger.info("updatingGameWhileNecessary")
         const tid = setInterval(async () => {
+            const dispatched = await dispatchToPlayingOrNothing(state)
             if (cancelRequest) {
                 logger.info("updateGameWhileNecessary cancelled")
                 clearInterval(tid)
                 return
             }
-            const dispatched = await dispatchToPlayingOrNothing(state)
             if (dispatched) {
                 clearInterval(tid)
                 return
             }
-        }, 100)
+        }, 500)
     }
 
     async function quitGame(gameId: number) {
@@ -500,7 +499,7 @@ export function Game() {
                     break
                 }
                 case 'shooting' : {
-                    await shoot(state.row, state.col)
+                    await shoot(state.shots)
                     break
                 }
                 case 'quitGame' : {
@@ -531,7 +530,7 @@ export function Game() {
             match={state.game}
             onPlaceShip={(ship, row, col, orient) => dispatch({type : 'setPlacingShip', ship, row, col, orient})}
             onConfirmFleetRequest={() => dispatch({type : 'setConfirmingFleet'})}
-            onShot={(row, col) => dispatch({type : 'setShooting', row, col})}
+            onShot={(shots: shot[]) => dispatch({type : 'setShooting', shots})}
             onQuitRequest={(gameId: number) => dispatch({type : 'setQuitGame', gameId})}
         />
     } else if (state.type === "updatingGameWhileNecessary") {
@@ -570,6 +569,8 @@ export function Game() {
         return (<h1 id={styles.actionTitle}>Confirming fleet</h1>)
     } else if (state.type === "shooting") {
         return (<h1 id={styles.actionTitle}>Making the Shot</h1>)
+    } else if (state.type === "quitGame") {
+        return (<h1 id={styles.actionTitle}>Quiting Game</h1>)
     } else {
         return (<h1 id={styles.actionTitle}>Unknown state</h1>)
     }
@@ -729,7 +730,7 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
     match : Match,
     onPlaceShip : (ship: string, x : number, y : number, o: Orientation) => void,
     onConfirmFleetRequest : () => void,
-    onShot : (x : number, y : number) => void,
+    onShot : (shots: shot[]) => void,
     onQuitRequest : (gameId: number) => void }) {
 
     function onConfirmFleet() {
@@ -747,8 +748,6 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
         Leave Match<span aria-hidden></span>
         <span aria-hidden className={styles.cybrbtn__glitch}>Leave Match</span>
     </button>
-
-    console.log("match", match)
 
     switch(match.state) {
         case "fleet_setup":
@@ -768,7 +767,7 @@ function Playing({match, onPlaceShip, onConfirmFleetRequest, onShot, onQuitReque
         case "battle":
             return (
                 <div>
-                    <Battle myBoard={myBoard} enemyBoard={enemyBoard} onShot={onShot}/>
+                    <Battle myBoard={myBoard} enemyBoard={enemyBoard} isMyTurn={isMyTurn(match)} nShotsPerRound={match.configuration.nshotsPerRound} onShot={onShot}/>
                     {quitButton}
                 </div>
             )
@@ -880,19 +879,38 @@ function ShipLabel({shipType} : {shipType : string}) {
     </label>
 }
 
-function Battle({myBoard, enemyBoard, onShot} : {
-    myBoard : Board, enemyBoard : Board, onShot : (x : number, y : number) => void
+function Battle({myBoard, enemyBoard, isMyTurn, nShotsPerRound, onShot} : {
+    myBoard : Board,
+    enemyBoard : Board,
+    isMyTurn : boolean,
+    nShotsPerRound: number,
+    onShot : (shots: shot[]) => void,
 }) {
+    const [shots, setShots] = useState<shot[]>([])
+    function onShotHandler(row: number, column: number) {
+        if (shots.length < nShotsPerRound) {
+            setShots(shots.concat([{row, column}]))
+        }
+        if (shots.length === nShotsPerRound - 1) {
+            const totalShots = shots.concat([{row, column}])
+            onShot(totalShots)
+            setShots([])
+        }
+    }
+
+    const shotsLeft = isMyTurn ? nShotsPerRound - shots.length : 0
+
     return (
         <div className={styles.fullWidth}>
             <h1 className={styles.h1}>Battle Phase</h1>
+            <h3>Shots left: {shotsLeft}</h3>
             <div id={styles.myBoard}>
                 <h2 className={styles.h2}>My Board</h2>
                 <Board board={myBoard} onCellClick={() => {}}/>
             </div>
             <div id={styles.enemyBoard}>
                 <h2 className={styles.h2}>Enemy Board</h2>
-                <Board board={enemyBoard} onCellClick={onShot}/>
+                <Board board={enemyBoard} onCellClick={onShotHandler}/>
             </div>
         </div>
     )
