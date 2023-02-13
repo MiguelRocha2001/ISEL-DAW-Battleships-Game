@@ -77,7 +77,6 @@ export function Authentication({title, action}: { title: string, action: Action}
                     setError("Invalid username or password")
                 })
         } else {
-            console.log("Registering")
             createUser(username, password)
                 .then((result) => {
                     setIsSubmitting(false)

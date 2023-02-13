@@ -38,6 +38,7 @@ object Uris {
 
         fun all(): URI = URI(ALL)
         fun byId(id: Int) = UriTemplate(BY_ID2).expand(id)
+        fun byId() = URI(BY_ID2)
 
         object Queue {
             const val ALL = "/games/queue"
