@@ -1,48 +1,50 @@
-# Battleship Game API 
+# Battleship Game API
 
-## Description 
+## Description
 
 The **Battleship Game API** provides access to a classic battleship game where players can challenge each other by placing their ships on a board and taking turns trying to sink each other's ships. The API allows players to join a game, place their ships, and take turns firing at their opponent's ships.
 
 The API uses a *RESTful* design and returns data in *JSON* format. With the Battleship Game API, developers can easily create applications and websites that allow players to play the classic game of battleship. Whether you're building a mobile app or a website, the Battleship Game API provides a simple and straightforward way to add the game to your platform.
 
-
 ## Organization
 
 The API, that supports the Battleship game server, can be divided in three mains groups:
+
 - Home
 - Users
 - Games
 
 *****
 
-###  __***Home Endpoints***__
+### __***Home Endpoints***__
 
-
-Get home representation, *is the starting point of the aplication*
+Get home representation, *is the starting point of the application*
 
 ``` GET / ```
 
 *Parameters*
+
 - (none)
 
 </p><br>
 
-#
+# 
 
 Get the server information
 
 ``` GET /info ```
 
 *Parameters*
+
 - (none)
-</p><br>
+  
+  </p><br>
 
 *****
 
-###  __***User Endpoints***__
+### __***User Endpoints***__
 
-#
+# 
 
 This endpoint allows the creation of a *new* user in the system.
 
@@ -53,7 +55,7 @@ This endpoint allows the creation of a *new* user in the system.
     - username (String) : Name of the new user
     - password (String) : Password of the new user
 
-*Sucessfull response*
+*Successful response*
 
 - Status code 201: It is returned the user's id. The received representation contains a link to request a newly created token.
 
@@ -63,7 +65,7 @@ This endpoint allows the creation of a *new* user in the system.
 
 </p><br>
 
-#
+# 
 
 Creates a new token for a given user
 
@@ -74,7 +76,7 @@ Creates a new token for a given user
     - username (String) : Name of the new user
     - password (String) : Password of the new user
 
-*Sucessfull response*
+*Successful response*
 
 - Status code 201: It is returned the user's token. The received representation contains an action to request a new game.
 
@@ -82,10 +84,9 @@ Creates a new token for a given user
 
 - Status code 400: Credentials are not correct.
 
-
 </p><br>
 
-#
+# 
 
 Get the information about the logged user.
 
@@ -94,13 +95,14 @@ Get the information about the logged user.
 ``` GET /me ```
 
 *Parameters*
+
 - (none)
 
 *Possible error responses*
 
 - Status code 401:  The authorization token provided in the cookie is invalid.
 
-#
+# 
 
 Get the information about one user.
 
@@ -108,36 +110,37 @@ Get the information about one user.
 
 *Parameters*
   Uri:
-  - id (Integer) : Identifier of a user.
+
+- id (Integer) : Identifier of a user.
 
 *Possible error responses*
 
 - Status code 400:  The given user is not valid.
 
-#
+# 
 
 Get the all the users statistics.
 
 ``` GET /users/all/statistics ```
 
-*Sucessfull response*
+*Successful response*
 
-- Status code 200: The statistics of the users in the body.This include a list of the  games, with the following information: username, wins, number of games
-
+- Status code 200: The statistics of the users in the body. This includes a list of the  user ranking, with the following information: username, wins, number of games
 
 *****
 
-###  __***Game Endpoints***__
+### __***Game Endpoints***__
 
-*Note* : During this section is metioned the word "state":
+*Note* : During this section is mentioned the word "state":
 Is basically the game state/phase. Could be one of the following:
+
 - NOT_STARTED
 - FLEET_SETUP
 - WAITING
 - BATTLE
 - FINISHED
 
-#
+# 
 
 Requests the server to create a game for a user. If the game was created, the received representation contains a link to request the game representation. Otherwise, returns a link to ask for the current gameId.
 
@@ -149,9 +152,9 @@ Requests the server to create a game for a user. If the game was created, the re
   Body:
     - boardSize (Number) : Size of the board
     - nShotsPerRound (Number) : Number of shots per round
-    - roundTimeout (Number) : Timout time
+    - roundTimeout (Number) : Timeout time
 
-*Sucessfull response*
+*Successful response*
 
 - Status code 202: The user will be placed in a waiting queue,it happens when the user is waiting for an opponent,but for two players match, both configurations must be the same.
 
@@ -163,7 +166,7 @@ Requests the server to create a game for a user. If the game was created, the re
 
 - Status code 405 : The user is already in a game or in the waiting queue
 
-#
+# 
 
 Requests the server to return the current game of the user.
 
@@ -171,10 +174,9 @@ Requests the server to return the current game of the user.
 
 ``` GET /my/games/current ```
 
-*Sucessfull response*
+*Successful response*
 
 - Status code 200: The game identifier in the body.
-
 
 *Possible error responses*
 
@@ -182,7 +184,7 @@ Requests the server to return the current game of the user.
 
 - Status code 401 : The authorization token provided in the cookie is invalid.
 
-#
+# 
 
 Requests the server to place a ship in the game with the given identifier of the game.
 
@@ -198,7 +200,7 @@ Requests the server to place a ship in the game with the given identifier of the
 
 - Status code 405 : in case the user is not allowed to preform the action, maybe because is in a different game state or in case the user is not allowed to do the action, because it is invalid
 
-#
+# 
 
 Requests the server to move a ship in the game with the given identifier.
 
@@ -214,7 +216,7 @@ Requests the server to move a ship in the game with the given identifier.
 
 - Status code 405 : in case the user is not allowed to preform the action, maybe because is in a different game state or in case the user is not allowed to do the action, because it is invalid
 
-#
+# 
 
 Requests the server to rotate a ship in the game with the given id.
 
@@ -230,7 +232,7 @@ Requests the server to rotate a ship in the game with the given id.
 
 - Status code 405 : in case the user is not allowed to preform the action, maybe because is in a different game state or in case the user is not allowed to do the action, because it is invalid
 
-#
+# 
 
 Requests the server to confirm the fleet of the user in the game with the given id.
 
@@ -246,7 +248,7 @@ Requests the server to confirm the fleet of the user in the game with the given 
 
 - Status code 405 : in case the user is not allowed to preform the action, maybe because is in a different game state or in case the user is not allowed to do the action, because it is invalid
 
-#
+# 
 
 Requests the server to place a shot in the game with the given id.
 
@@ -262,15 +264,15 @@ Requests the server to place a shot in the game with the given id.
 
 - Status code 405 : in case the user is not allowed to preform the action, maybe because is in a different game state or in case the user is not allowed to do the action, because it is invalid
 
-#
+# 
 
 Requests the server the current fleet of the user in the game with the given id.
 
 ``` GET /games/{id}/my-fleet ```
+
 <p>
 
-
-*Sucessfull response*
+*Successful response*
 
 - Status code 200: The server responds with the fleet in the body of the response. This fleet is basically the board representation.
 
@@ -280,19 +282,19 @@ Requests the server the current fleet of the user in the game with the given id.
 
 - Status code 404 : The game does not exist.
 
-#
+# 
 
 *Same objective as the above but it is the opponent board*
 
 ``` GET /games/{id}/opponent-fleet ```
 
-#
+# 
 
 Requests the server the current state of the game with the given id.
 
 ``` GET /games/{id}/state ```
-<p>
 
+<p>
 
 *Possible error responses*
 
@@ -300,18 +302,19 @@ Requests the server the current state of the game with the given id.
 
 - Status code 404 : The game does not exist.
 
-#
+# 
 
 Requests the server the current game with the given id.
 
 ``` GET /games/{id} ```
+
 <p>
 
-*Sucessfull response*
+*Successful response*
 
-- Status code 200:   The game representation includes the gameId, both boardS representations, the state, the players and configuration.
+- Status code 200:   The game representation includes the gameId, both boards representations, the state, the players and configuration.
 
-#
+# 
 
 Returns the information if the user is in the queue
 
@@ -323,7 +326,7 @@ Returns the information if the user is in the queue
 
 - Status code 401:  The authorization token provided in the cookie is invalid.
 
-#
+# 
 
 Quit a game given the game identifier
 
@@ -336,9 +339,9 @@ Quit a game given the game identifier
 - Status code 401:  The authorization token provided in the cookie is invalid.
 - Status code 400:  The game is invalid.
 
-#
+# 
 
-Quit waiting for a game to start given the game identifier.The user leaves the queue
+Quit waiting for a game to start given the game identifier. The user leaves the queue
 
 - Authorization Token: The API requires a valid authorization token to be sent with each request in a cookie.
 
@@ -347,5 +350,3 @@ Quit waiting for a game to start given the game identifier.The user leaves the q
 *Possible error responses*
 
 - Status code 401:  The authorization token provided in the cookie is invalid.
-
-

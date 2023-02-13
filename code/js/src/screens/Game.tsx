@@ -598,7 +598,7 @@ function Menu({onCreateGameRequest} : { onCreateGameRequest: (conf: GameConfigur
 
             <div id={styles.inputWrapper}>
                 <label htmlFor="quantity">Shots per round</label>
-                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.nShotsPerRound} onChange={onNShotsPerRoundChange}/>
+                <input type="number" id="quantity" name="quantity" min="1" max="5" value={gameConfiguration.nshotsPerRound} onChange={onNShotsPerRoundChange}/>
             </div>
 
             <div id={styles.inputWrapper}>

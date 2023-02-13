@@ -14,11 +14,11 @@ Each `Board` is composed of a list of `Panels`.
 
 In the image above, `Coordinate` - A2 represents the location of the `Panel` in the `Board`
 
-A `Board` can be `confirmed`, wheter all Ships are place and the board's Player is now `Waiting `for the other player.
+A `Board` can be `confirmed`, whether all Ships are place and the board's Player is now `Waiting` for the other player.
 
 ### Panel
 
-A `Panel` represents a square in the `Board`, where a `Coordinate` only represents the relative location in the board, a Panel has all of that location's atributes:
+A `Panel` represents a square in the `Board`, whereas  a `Coordinate` only represents the relative location in the board, a Panel has all of that location's attributes:
 
                         <img src="./resources/Panel.drawio.svg" title="" alt="a " width="394">
 
@@ -36,7 +36,7 @@ data class Ship(val coordinates : Set<Coordinate>, val type : ShipType, val isSu
 
 ### ShipType
 
-Enum that represents a Type of ship, wich can be:
+Enum that represents a Type of ship, which can be:
 
 * Carrier
 
@@ -50,7 +50,7 @@ Enum that represents a Type of ship, wich can be:
 
 ### Game
 
-The main class for the Battleship game, it contains every needed atribute to initialize a game:
+The main class for the Battleship game, it contains every needed attribute to initialize a game:
 
 ```kotlin
 val gameId: Int,
@@ -66,8 +66,6 @@ val winner: Int
 
 Every `Game` has its state, for each phase of the game, witch limits operations made to the game.
 
-
-
 ### GameState
 
 Enum that represents the state of a game:
@@ -81,8 +79,6 @@ Enum that represents the state of a game:
 * BATTLE -> Both `Boards` are confirmed and now they can place shots
 
 * FINISHED -> A player has sunk all of other player's ship and is declared winner 
-
-
 
 ### GameLogic
 
@@ -100,8 +96,6 @@ There are 5 operations that can be done when in a game:
 
 * ConfirmFleet -> Confirm all of ship's location inside a board and advance to Battle
 
-
-
 ### Configuration
 
 Set of `rules` determined by a `Player` for each `Game`
@@ -117,6 +111,6 @@ boardSize -> The size of each player's `Board`
 
 fleet -> The configuration of each ship, that is, its type and its size
 
-nShotsPerRound -> The amout of shots that can be done by each `Player`  
+nShotsPerRound -> The amount of shots that can be done by each `Player`  
 
 roundTimeout -> Time limit for each Player until they have played.
