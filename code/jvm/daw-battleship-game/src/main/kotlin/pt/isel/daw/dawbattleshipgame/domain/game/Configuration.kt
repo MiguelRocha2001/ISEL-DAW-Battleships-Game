@@ -9,6 +9,7 @@ import pt.isel.daw.dawbattleshipgame.http.model.game.CreateGameInputModel
 import pt.isel.daw.dawbattleshipgame.http.pipeline.LoggerInterceptor
 import pt.isel.daw.dawbattleshipgame.http.requireWithException
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Represents the game configuration
@@ -64,7 +65,7 @@ data class Configuration(
         val sortedFleet = fleet.toList().sortedBy { (shipType, _) -> shipType }
         var result = 1
         for ((shipType, count) in sortedFleet) {
-            result = 31 * result + shipType.hashCode()
+            result = 31 * result + shipType.name.hashCode()
             result = 31 * result + count
         }
         return result
@@ -74,7 +75,7 @@ data class Configuration(
         //log the value of the hash
         val logger = LoggerFactory.getLogger(LoggerInterceptor::class.java)
         //cast map to hashMap for docker to work
-        val a = Objects.hash(hashFleet(fleet), boardSize, nShotsPerRound, roundTimeout)
+        val a = Objects.hash(hashFleet(fleet),boardSize, nShotsPerRound, roundTimeout)
         logger.info("hash: $a")
         return a
     }
