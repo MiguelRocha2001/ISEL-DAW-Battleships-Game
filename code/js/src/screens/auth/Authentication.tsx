@@ -2,7 +2,7 @@ import * as React from "react"
 import {useState} from "react"
 import {Navigate, useHref, useLocation, useNavigate} from "react-router-dom"
 import {Services} from "../../services"
-import {useSetUser} from "./Authn"
+import {useCurrentUser, useSetUser} from "./Authn"
 import styles from './Auth.module.css'
 import {Logger} from "tslog";
 
@@ -36,9 +36,15 @@ export function Authentication({title, action}: { title: string, action: Action}
     const [successSignUp, setSuccessSignUp] = useState("")
     const [redirect, setRedirect] = useState<string>(undefined)
     const setUser = useSetUser()
+    const user = useCurrentUser()
     const navigate = useNavigate()
     const location = useLocation()
     const styleId = (title === "Sign in")? styles.signIn : styles.signUp
+
+    if (user) {
+        return <Navigate to="/me" replace={true}/>
+    }
+
     if(redirect) {
         return <Navigate to={redirect} replace={true}/>
     }

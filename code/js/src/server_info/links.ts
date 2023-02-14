@@ -20,6 +20,8 @@ let attackAction: Action | undefined
 let quitGameAction: Action | undefined
 let isInGameQueueLink: string | undefined
 let quitGameQueueAction: Action | undefined
+let logoutAction: Action | undefined
+let isLoggedLink: string | undefined
 
 function getInfoLink() {
     return infoLink
@@ -135,6 +137,20 @@ function setQuitGameQueueAction(action: Action) {
     quitGameQueueAction = action
 }
 
+function getLogoutAction() {
+    return logoutAction
+}
+function setLogoutAction(action: Action) {
+    logoutAction = action
+}
+
+function getIsLoggedLink() {
+    return isLoggedLink
+}
+function setIsLoggedLink(link: string) {
+    isLoggedLink = link
+}
+
 export const links = {
     host,
     defaultUrl,
@@ -170,4 +186,8 @@ export const links = {
     setIsInGameQueueLink,
     getQuitGameQueueAction,
     setQuitGameQueueAction,
+    getLogoutAction,
+    setLogoutAction,
+    getIsLoggedLink,
+    setIsLoggedLink
 }

@@ -28,6 +28,7 @@ object Uris {
         fun byId(id: Int) = UriTemplate(BY_ID1).expand(id)
         fun createToken(): URI = URI(TOKEN)
         fun home(): URI = URI(HOME)
+        fun token(): URI = URI(TOKEN)
         fun stats(): URI = URI(STATS)
     }
 

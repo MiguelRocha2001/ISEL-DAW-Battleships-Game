@@ -45,6 +45,22 @@ class UsersController(
         }
     }
 
+    @GetMapping(Uris.Users.TOKEN)
+    fun isLogged(user: User): ResponseEntity<Unit> {
+        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping(Uris.Users.TOKEN)
+    fun logout(
+        user: User,
+        response: HttpServletResponse
+    ): ResponseEntity<Unit> {
+        val cookie = buildCookie(0, null)
+        response.addCookie(cookie)
+
+        return ResponseEntity.status(204).build()
+    }
+
     @PostMapping(Uris.Users.TOKEN)
     fun token(
         @RequestBody input: UserCreateTokenInputModel,
@@ -54,17 +70,8 @@ class UsersController(
 
         // adds cookie to response
         if (res is Either.Right) {
-            val cookieWithToken = Cookie("token", res.value) // contains token for authentication
-            cookieWithToken.path = "/"
-            cookieWithToken.isHttpOnly = true
-            cookieWithToken.secure = true
-            response.addCookie(cookieWithToken)
-
-            val cookieWithoutToken = Cookie("authenticated", "true") // indicates that user is authenticated
-            cookieWithoutToken.path = "/"
-            cookieWithoutToken.isHttpOnly = false
-            cookieWithoutToken.secure = true
-            response.addCookie(cookieWithoutToken)
+            val cookie = buildCookie(60 * 60 * 24 * 7, res.value)
+            response.addCookie(cookie)
         }
 
         return res.map {
@@ -79,6 +86,16 @@ class UsersController(
                     }
                 )
         }
+    }
+
+    private fun buildCookie(maxAge: Int, value: String?): Cookie {
+        val cookieWithToken = Cookie("token", value ?: "null")
+        cookieWithToken.path = "/"
+        cookieWithToken.isHttpOnly = true
+        cookieWithToken.secure = true
+        cookieWithToken.maxAge = maxAge
+
+        return cookieWithToken
     }
 
     @GetMapping(Uris.Users.ALL)

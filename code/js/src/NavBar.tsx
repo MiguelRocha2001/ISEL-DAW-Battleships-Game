@@ -2,6 +2,7 @@ import * as React from 'react'
 import {Bars, Nav, NavBtn, NavBtnLink, NavLink, NavMenu,} from './NavbarElements';
 import {useCurrentUser, useSetUser} from "./screens/auth/Authn";
 import style from "./LogoutButton.module.css";
+import {Services} from "./services";
 
 export function Navbar () {
     const currentUser = useCurrentUser()
@@ -27,10 +28,10 @@ export function Navbar () {
     )
 
     const logout = (
-        <button style={ {display: currentUser ? undefined : "none"}} className={style.logoutLink} onClick={() => {
+        <button style={ {display: currentUser ? undefined : "none"}} className={style.logoutLink} onClick={async () => {
             setUser(undefined)
-            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie = "authenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            await Services.logout()
+            // document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         }}>LOGOUT</button>
     )
 

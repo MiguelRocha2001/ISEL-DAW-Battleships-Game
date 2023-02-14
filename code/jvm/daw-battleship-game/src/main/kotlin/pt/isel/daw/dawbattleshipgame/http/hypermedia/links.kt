@@ -17,6 +17,7 @@ fun SirenBuilderScope<HomeOutputModel>.homeLinks() = links(
         Uris.Games.My.current() to Rels.GAME,
         Uris.Games.byId() to Rels.GAME_BY_ID,
         Uris.Games.Queue.me() to Rels.IN_WAITING_QUEUE,
+        Uris.Users.token() to Rels.TOKEN,
     )
 )
 

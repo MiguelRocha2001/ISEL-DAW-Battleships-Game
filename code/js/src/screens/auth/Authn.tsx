@@ -1,5 +1,6 @@
 import * as React from 'react'
-import {createContext, useContext, useState} from 'react'
+import {createContext, useContext, useEffect, useState} from 'react'
+import {Services} from "../../services";
 
 type ContextType = {
     user: string | undefined,
@@ -11,7 +12,15 @@ const LoggedInContext = createContext<ContextType>({
 })
 
 export function AuthnContainer({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState(extractTokenFromCookie())
+    const [user, setUser] = useState(undefined)
+
+    useEffect( () => {
+        async function fetchUser () {
+            const user = await extractTokenFromCookie()
+            setUser(user)
+        }
+        fetchUser()
+    }, [])
 
     return (
         <LoggedInContext.Provider value={{ user: user, setUser: setUser }}>
@@ -20,16 +29,13 @@ export function AuthnContainer({ children }: { children: React.ReactNode }) {
     )
 }
 
-function extractTokenFromCookie(): string | undefined {
-    const cookieStr = document.cookie
-    console.log('cookieStr: ', cookieStr)
-    const cookieArr = cookieStr.split(';')
-    const cookieArrTrimmed = cookieArr.map((c) => c.trim())
-    const token = cookieArrTrimmed.find((c) => c.startsWith('authenticated='))
-    if (token) {
-        return  token.split('=')[1]
+async function extractTokenFromCookie(): Promise<string | undefined> {
+    const isLogged = await Services.isLogged()
+    if (isLogged) {
+        return "logged"
+    } else {
+        return undefined
     }
-    return undefined
 }
 
 export function useCurrentUser() {

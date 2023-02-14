@@ -52,6 +52,8 @@ function extractSirenInfo(resp: Siren) {
     const placeShipsAction = Siren.extractPlaceShipsAction(resp.actions)
     const confirmFleetAction = Siren.extractConfirmFleetAction(resp.actions)
     const attackAction = Siren.extractAttackAction(resp.actions)
+    const logoutAction = Siren.extractLogoutAction(resp.actions)
+    const isLoggedLink = Siren.extractIsLoggedLink(resp.links)
 
     if (serverInfoLink)
         logger.debug("fetchHome: setting up new info endpoint: ", serverInfoLink)
@@ -85,6 +87,10 @@ function extractSirenInfo(resp: Siren) {
         logger.debug("fetchHome: setting up new confirm fleet action: ", confirmFleetAction.name)
     if (attackAction)
         logger.debug("fetchHome: setting up new attack action: ", attackAction.name)
+    if (logoutAction)
+        logger.debug("fetchHome: setting up new logout action: ", logoutAction.name)
+    if (isLoggedLink)
+        logger.debug("fetchHome: setting up new is logged link: ", isLoggedLink)
 
     links.setInfoLink(serverInfoLink)
     links.setBattleshipRanksLink(battleshipRanksLink)
@@ -102,6 +108,8 @@ function extractSirenInfo(resp: Siren) {
     links.setPlaceShipsAction(placeShipsAction)
     links.setConfirmFleetAction(confirmFleetAction)
     links.setAttackAction(attackAction)
+    links.setLogoutAction(logoutAction)
+    links.setIsLoggedLink(isLoggedLink)
 }
 
 export type ServerInfo = {
@@ -489,6 +497,42 @@ async function quitGameQueue(): Promise<void | Error> {
         return logAndGetError('quitGameQueue', new ResolutionLinkError('quit game queue action not found'))
 }
 
+async function logout(): Promise<void | Error> {
+    const action = links.getLogoutAction()
+    if (!action)
+        return logAndGetError('logout', new ResolutionLinkError('logout action not found'))
+
+    const request = {} // request is set here because it is always the same
+    if (Siren.validateFields(request, action)) {
+        const internalReq = {
+            url: action.href,
+            method: action.method,
+            body: Fetch.toBody(request),
+        }
+        try {
+            const result = await doFetch(internalReq)
+            if (result instanceof ServerError) {
+                return logAndGetError('logout', result)
+            }
+            logger.debug("logout: response successful")
+        } catch (e) {
+            return logAndGetError('logout', e)
+        }
+    } else
+        return logAndGetError('logout', new ResolutionLinkError('logout action not found'))
+}
+
+async function isLogged(): Promise<boolean | Error> {
+    const link = links.getIsLoggedLink()
+    if (!link)
+        return logAndGetError('isLogged', new ResolutionLinkError('is logged link not found'))
+    const response = await Fetch.doFetch({ url: link, method: "GET", body: undefined })
+    if (response instanceof ServerError) {
+        return false
+    }
+    return true
+}
+
 export class Fetching {}
 function handlerOrError(origin: string, state: State, handler: (siren: Siren) => any): any | Error | Fetching {
     switch (state.type) {
@@ -577,4 +621,6 @@ export const Services = {
     quitGame,
     isInGameQueue,
     quitGameQueue,
+    logout,
+    isLogged,
 }

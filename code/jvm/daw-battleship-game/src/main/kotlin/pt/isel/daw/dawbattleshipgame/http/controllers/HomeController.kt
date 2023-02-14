@@ -39,6 +39,7 @@ class HomeController(
                     battleActions(this)
                     quitGameAction(this)
                     quitGameQueueAction(this)
+                    logoutAction(this)
                 }
             )
     }

@@ -106,6 +106,15 @@ function extractQuitGameQueueAction(actions: any[]): Action {
     return extractAction(actions, "quit-game-queue")
 }
 
+function extractLogoutAction(actions: any[]): Action {
+    return extractAction(actions, "logout")
+}
+
+function extractIsLoggedLink(linksArg: Link[]): string {
+    return extractLink(linksArg, "token")
+}
+
+
 function extractLink(linksArg: Link[], rel: string): string {
     for (let i = 0; i < linksArg.length; i++) {
         const link = linksArg[i]
@@ -158,6 +167,8 @@ export const Siren = {
     extractConfirmFleetAction,
     extractAttackAction,
     extractQuitGameAction,
+    extractLogoutAction,
+    extractIsLoggedLink,
     extractInGameQueueLink,
     extractQuitGameQueueAction,
     validateFields
