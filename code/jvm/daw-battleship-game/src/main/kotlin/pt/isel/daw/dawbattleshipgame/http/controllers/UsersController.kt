@@ -54,10 +54,19 @@ class UsersController(
 
         // adds cookie to response
         if (res is Either.Right) {
-            val cookie = Cookie("token", res.value)
-            cookie.path = "/"
-            response.addCookie(cookie)
+            val cookieWithToken = Cookie("token", res.value) // contains token for authentication
+            cookieWithToken.path = "/"
+            cookieWithToken.isHttpOnly = true
+            cookieWithToken.secure = true
+            response.addCookie(cookieWithToken)
+
+            val cookieWithoutToken = Cookie("authenticated", "true") // indicates that user is authenticated
+            cookieWithoutToken.path = "/"
+            cookieWithoutToken.isHttpOnly = false
+            cookieWithoutToken.secure = true
+            response.addCookie(cookieWithoutToken)
         }
+
         return res.map {
             ResponseEntity.status(201)
                 .contentType(SirenMediaType)

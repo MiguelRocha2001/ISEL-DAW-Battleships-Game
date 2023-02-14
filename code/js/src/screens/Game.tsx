@@ -188,7 +188,6 @@ function reducer(state: State, action: Action): State {
 export function Game() {
     const [state, dispatch] = React.useReducer(reducer, {type : 'checkingIfIsInWaitingQueue'})
     const [gameId, setGameId] = useState<number>(undefined)
-    console.log("GameId: " + gameId)
 
     let cancelRequest = false
 
@@ -868,8 +867,6 @@ function ShipOptions({curOrientation, onShipClick, onOrientationChange, ships} :
     }
 
     let shipsJsxList = []
-
-    // console.log(ships)
 
     for (let key in ships) {
         shipsJsxList.push(
